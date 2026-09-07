@@ -1199,12 +1199,16 @@ public class NodeArea extends JButton implements MouseListener,
         int r_i, r, new_x1, new_x2, new_y1, new_y2;
         double radical, fractie;
         int transparency = 255;
+        // 2.1.3: decode the byte as unsigned (0..255). Values above 127
+        // arrived as negative bytes, so the old "< 256 && > 0" test silently
+        // ignored them and strong edges stayed at full opacity.
+        int raw_transparency = tmp_transparency & 0xFF;
         if (!this.getColorFidelity())
             transparency = 255;
         else
             {
-            if (tmp_transparency < 256 && tmp_transparency > 0)
-                transparency = (int) tmp_transparency;
+            if (raw_transparency < 256 && raw_transparency > 0)
+                transparency = raw_transparency;
             }
 
         fractie = 0;
