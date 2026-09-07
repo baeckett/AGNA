@@ -17,7 +17,8 @@ govern their use; Agna's own licence is still being decided (see README).
 - Component: skinnable Swing look-and-feel engine behind Agna's theme packs.
 - Origin: only binaries were present in the original 2.1.2 archive
   (`Lib/com/l2fprod/...`, 217 classes). These are vendored byte-for-byte in
-  `lib/l2fprod-skin-1.0.jar` and wired into the build as a local dependency.
+  `lib/l2fprod-skin-1.0.jar` and exposed to the build through a project-local
+  Maven repository (`lib/repo/`), so the jar resolves on a fresh checkout.
 - Licence: the l2fprod Skin Look and Feel was released under the GNU Lesser
   General Public License (LGPL) by L2FProd.com. No licence text was shipped in
   the original archive; if you redistribute, include the LGPL notice that
