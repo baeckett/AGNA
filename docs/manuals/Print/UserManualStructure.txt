@@ -1,0 +1,30 @@
+1. Introduction
+
+2. What Is Agna?
+
+3. Setup
+	3.1 Prerequisites
+	3.2 Installation
+	3.3 Running Agna
+	3.4 Uninstalling Agna
+
+4. Data Management
+	4.1 The Spreadsheet
+	4.2 The Visual Network Editor
+
+5. Visualizing Networks
+
+6. Analysing Data
+
+7. File Management
+	7.1 Network Data Files
+		7.1.1 Agna Data File Format (.agn)
+			7.1.1.1 A Simple Example
+			7.1.1.2 Required tags
+			7.1.1.3 Using Graphical Information
+			7.1.1.4 Graphical tags
+		7.1.2 Comma-Separated Files (.csv)
+		7.1.3 Text Tab-Separated Files (.txt, .text, .dat)
+	7.2 Output Files
+	7.3 Image Files
+

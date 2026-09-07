@@ -1,0 +1,70 @@
+File
+	New Network
+	Open Network
+	New From Chain...
+	Save Network As...
+	Save Network
+	Open Output File
+	Save Output As...
+	Save Output
+	Quit
+
+Edit
+	Cut
+	Copy
+	Paste
+	Select All
+	Clear Output
+
+
+Network
+	Title ...
+	Add Nodes...
+	Delete Selected Node
+	Renumber Nodes...
+	Remove Outsiders
+	Add Scalar...
+	Scalar Multiplication...
+	Transpose
+	Symmetrize...
+	Binarize
+	Square Matrix
+
+
+Analysis
+	Basic Description
+	Distance
+		Diameter
+		Eccentricity
+		Geodesic Matrix
+		Shortest Paths...
+		All Shortest Paths
+	Sociometrics
+		Nodal Degree
+		Outdegree
+		Indegree
+		Density
+		Cohesion
+		Emission Degree
+		Reception Degree
+		Determination Degree
+		Sociometric Status
+	Centrality
+		Bavelas-Leavitt
+		Closeness
+		Fareness
+		Betweenness
+
+
+View
+	Network Viewer
+	Close Network Viewer
+
+
+Preferences
+	Working Directory...
+
+Help
+	Contents
+	About Agna...
+

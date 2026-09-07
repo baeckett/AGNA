@@ -1,0 +1,76 @@
+pre,p,ul,li,div
+	{
+ 	font-family:		Verdana,helvetica,sans-serif;
+	font-size:		10pt;
+	font-style:		normal;
+	color:			#008080;
+	line-height:		130%;
+	font-weight:		normal;
+	text-align:		left;
+	}
+
+body
+	{
+	font-family:		Verdana,helvetica,sans-serif;
+	font-size:		10pt;
+	font-style:		normal;
+	color:			#008080;
+	line-height:		130%;
+	font-weight:		normal;
+	background-color:	white;
+	margin-left:		50px;
+	margin-top:		10px;
+	margin-bottom:		15px;
+	text-align:		left;
+	}
+
+p.normal_text
+	{
+ 	font-family:		Verdana,helvetica,sans-serif;
+	font-size:		10pt;
+	font-style:		normal;
+	color:			#008080;
+	line-height:		130%;
+	font-weight:		normal;
+	text-align:		left;
+	}
+
+p.center_text
+	{
+ 	font-family:		Verdana,helvetica,sans-serif;
+	font-size:		8pt;
+	font-style:		normal;
+	color:			#008080;
+	line-height:		120%;
+	font-weight:		normal;
+	text-align:		center;
+	}
+
+
+p.title_text
+	{
+ 	font-family:		Verdana,helvetica,sans-serif;
+	font-size:		22pt;
+	font-style:		normal;
+	font-weight:		bold;
+	color:			#008080;
+	line-height:		120%;
+	text-align:		center;
+	}
+
+
+a:link
+	{
+	COLOR: #a50522; TEXT-DECORATION: none;
+	}
+
+a:visited
+	{
+	COLOR: #575757; TEXT-DECORATION: none;
+	}
+a:hover
+	{
+	COLOR: red; TEXT-DECORATION: none;
+	}
+
+

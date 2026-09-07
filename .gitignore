@@ -1,0 +1,19 @@
+# Build outputs
+target/
+*.class
+
+# IDE / editor
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.metadata/
+
+# OS junk
+.DS_Store
+__MACOSX/
+
+# Scratch / local
+*.log

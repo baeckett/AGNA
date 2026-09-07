@@ -1,0 +1,41 @@
+package com.bentza.sna.gui.filter;
+
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
+
+public class PlainTextFilesFilter extends javax.swing.filechooser.FileFilter
+    {
+    final static String txt = "txt";
+
+    final static String text = "text";
+
+    public boolean accept(File tmp_file)
+        {
+        if (tmp_file.isDirectory())
+            {
+            return true;
+            }
+
+        String str = tmp_file.getName();
+        int i = str.lastIndexOf('.');
+
+        if (i > 0 && i < str.length() - 1)
+            {
+            String extension = str.substring(i + 1).toLowerCase();
+            if (txt.equals(extension) || text.equals(extension))
+                {
+                return true;
+                } else
+                {
+                return false;
+                }
+
+            }
+        return false;
+        }
+
+    public String getDescription()
+        {
+        return "Plain Text (*.txt; *.text)";
+        }
+    }

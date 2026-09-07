@@ -1,0 +1,4 @@
+replace actions in help files:
+
+	-behaviour -> behaviour
+	-blue links -> green links
