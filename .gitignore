@@ -17,3 +17,5 @@ __MACOSX/
 
 # Scratch / local
 *.log
+# Shade-plugin byproduct
+dependency-reduced-pom.xml
