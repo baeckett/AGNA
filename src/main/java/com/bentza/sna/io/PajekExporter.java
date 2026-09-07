@@ -1,5 +1,6 @@
 package com.bentza.sna.io;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.net.FullNet;
 import com.bentza.sna.net.Actor;
 import com.bentza.sna.net.Network;
@@ -37,7 +38,7 @@ public class PajekExporter
             edges_mat_runner = String.valueOf((byte) full_net.getArea()
                     .getEdgesMat(i, j));
             out.append(String.valueOf(i + 1) + blanc + String.valueOf(j + 1)
-                    + blanc + cursor_actor.emissions.elementAt(j) + blanc + "c"
+                    + blanc + cursor_actor.getEmissionsValue(j) + blanc + "c"
                     + " rgba(" + String.valueOf(arrow_color.getRed()) + ","
                     + String.valueOf(arrow_color.getGreen()) + ","
                     + String.valueOf(arrow_color.getBlue()) + ","
@@ -56,9 +57,9 @@ public class PajekExporter
             {
             Thread.sleep(500);
             MainFrame.progress_dialog.setPercent(60);
-            } catch (Exception e1)
-            {
-            }
+            } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
 
         final Network tmp_network = tmp_full_net.getNetwork();
 

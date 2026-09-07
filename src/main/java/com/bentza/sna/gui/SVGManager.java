@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.Environment;
 import com.bentza.sna.net.NodeArea;
@@ -383,7 +384,7 @@ class SVGManager
                 }
             } catch (IOException e)
             {
-            System.err.println("SVGManager.copyFile failed: " + infile
+            AgnaLog.warn("SVGManager.copyFile failed: " + infile
                     + " -> " + outfile + " (" + e.getMessage() + ")");
             }
         }

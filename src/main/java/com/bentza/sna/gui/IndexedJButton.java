@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.net.Actor;
 import java.io.*;
 import java.awt.*;
@@ -68,7 +69,7 @@ public class IndexedJButton extends JButton implements MouseListener,
          * Image tmp_image; try { tmp_image =
          * tmp_actor.getFace().getImage().getScaledInstance(8, -1,
          * Image.SCALE_FAST); this.setIcon(new ImageIcon(tmp_image)); }
-         * catch(Exception e) {}
+         * catch (Exception e) { AgnaLog.warn("suppressed exception", e); }
          */
         }
 

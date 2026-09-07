@@ -1,5 +1,6 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.gui.AgnaTableModel;
 import java.util.Vector;
 
@@ -184,13 +185,12 @@ import java.util.Vector;
         int i, j, n;
         boolean finval = true;
         n = all_nodes.size();
-        float[][] mat = new float[all_nodes.size()][all_nodes.size()];
-        mat = this.getMatrix();
+        // 2.1.3: no full-matrix allocation; compare cells directly
         for (i = 0; i < n; i++)
             {
             for (j = i; j < n; j++)
                 {
-                if (mat[i][j] != mat[j][i])
+                if (getValue(i, j) != getValue(j, i))
                     {
                     finval = false;
                     return finval;
@@ -262,9 +262,9 @@ import java.util.Vector;
         try
             {
             tmp_node.setObjectEmissionsValue((Float) tmp_value, j);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         }
 
     // returns emissions array of node i
@@ -343,8 +343,7 @@ import java.util.Vector;
             cursor_actor = (Actor) all_nodes.elementAt(i);
             for (j = 0; j < n; j++)
                 {
-                mat[i][j] = ((Float) (cursor_actor.emissions.elementAt(j)))
-                        .floatValue();
+                mat[i][j] = cursor_actor.getEmissionsValue(j);
                 // mat[i][j]=this.getValue(i,j);
                 }
             }
@@ -418,7 +417,6 @@ import java.util.Vector;
         int i, j, n, n_edges;
         n = this.getSize();
         n_edges = 0;
-        boolean[][] mat = new boolean[n][n];
         for (i = 0; i < n; i++)
             {
             for (j = 0; j < n; j++)
@@ -521,9 +519,9 @@ import java.util.Vector;
                     {
                     results.appendValue(index);
                     }
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             i++;
             }
         return results;
@@ -553,9 +551,9 @@ import java.util.Vector;
                         {
                         break;
                         }
-                    } catch (Exception e)
-                    {
-                    }
+                    } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                 i++;
                 } // end while
             } // end if
@@ -571,9 +569,9 @@ import java.util.Vector;
                         {
                         break;
                         }
-                    } catch (Exception e)
-                    {
-                    }
+                    } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                 i++;
                 }// end while
             } // end else
@@ -606,9 +604,9 @@ import java.util.Vector;
                         {
                         break;
                         }
-                    } catch (Exception e)
-                    {
-                    }
+                    } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                 i++;
                 } // end while
             } // end if
@@ -624,9 +622,9 @@ import java.util.Vector;
                         {
                         break;
                         }
-                    } catch (Exception e)
-                    {
-                    }
+                    } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                 i++;
                 }// end while
             } // end else
@@ -674,9 +672,9 @@ import java.util.Vector;
                     {
                     return i;
                     }
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         return -1;
         }
@@ -686,9 +684,9 @@ import java.util.Vector;
         try
             {
             return (Actor) all_nodes.elementAt(tmp_i);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         return null;
         }
 
@@ -697,9 +695,9 @@ import java.util.Vector;
         try
             {
             return ((Actor) all_nodes.elementAt(tmp_i)).getName();
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         return null;
         }
 
@@ -817,9 +815,9 @@ import java.util.Vector;
                 {
                 new_node = (Actor) all_nodes.elementAt(i);
                 new_node.addEmissionsElement();
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             /*
              * if (getActor(i) != null) { getActor(i).addEmissionsElement(); }
              */
@@ -854,9 +852,9 @@ import java.util.Vector;
                 {
                 tmp_node = (Actor) all_nodes.elementAt(i);
                 tmp_node.deleteEmissionsElement(tmp_i);
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 

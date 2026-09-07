@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.net.Network;
 import java.awt.Color;
 import java.awt.Image;
@@ -56,9 +57,9 @@ class AgnaTableHeader
                         .getImage().getScaledInstance(8, -1, Image.SCALE_FAST));
                 hr.setIcon(tmp_icon);
                 hr.setBackground(header_background_color);
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             tab_col = colmod.getColumn(i);
             tab_col.setHeaderRenderer(hr);
             try
@@ -113,9 +114,9 @@ class AgnaTableHeader
             hr.setBackground((new JButton()).getBackground());
             hr.setToolTipText(MainFrame.getCurrentNetwork().getNodeName(
                     tmp_index));
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         colmod.getColumn(tmp_index).setHeaderRenderer(hr);
         // colmod.getColumn(tmp_index).setHeaderValue(v.getName(tmp_index));
@@ -141,9 +142,9 @@ class AgnaTableHeader
                         Image.SCALE_FAST);
                 new_icon = new ImageIcon(tmp_image);
                 hr.setIcon(new_icon);
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             actor_name = (String) colmod.getColumn(i).getHeaderValue();
             colmod.getColumn(i).setHeaderRenderer(hr);
             // colmod.getColumn(i).setHeaderValue(v.getName(i));

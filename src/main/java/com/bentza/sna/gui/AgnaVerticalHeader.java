@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.net.Network;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -54,9 +55,9 @@ class AgnaVerticalHeader extends JPanel
              * MainFrame.getCurrentNetwork().getActor(tmp_index).getSmallFace(),
              * i_dim ); this.add(i_button, tmp_index);
              */
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         }
 
     public void setAllFaces(ImageIcon tmp_icon)

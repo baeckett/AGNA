@@ -1,5 +1,6 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.AgnaDialog;
 import com.bentza.sna.gui.GrNet;
@@ -68,9 +69,9 @@ class NodeSettingsDialog
                     try
                         {
                         node_size = Integer.parseInt(width_field.getText());
-                        } catch (Exception e3)
-                        {
-                        }
+                        } catch (Exception e3) {
+      AgnaLog.warn("suppressed exception", e3);
+      }
                     src_node.setSize(node_size);
                     int node_x = src_node.getX(GrNet.getAreaWidth());
                     int node_y = src_node.getY(GrNet.getAreaWidth());
@@ -78,16 +79,16 @@ class NodeSettingsDialog
                         {
                         node_x = Integer.parseInt(x_field.getText());
                         src_node.setX(node_x, GrNet.getAreaWidth());
-                        } catch (Exception ex)
-                        {
-                        }
+                        } catch (Exception ex) {
+      AgnaLog.warn("suppressed exception", ex);
+      }
                     try
                         {
                         node_y = Integer.parseInt(y_field.getText());
                         src_node.setY(node_y, GrNet.getAreaWidth());
-                        } catch (Exception ey)
-                        {
-                        }
+                        } catch (Exception ey) {
+      AgnaLog.warn("suppressed exception", ey);
+      }
                     apply_changes = true;
                     MainFrame.setNodeName(src_node.getName(), src_node_index);
                     MainFrame.setNodeFace(src_node.getFace(), src_node_index);
@@ -135,9 +136,9 @@ class NodeSettingsDialog
                         {
                         path_label.setIcon(new ImageIcon(tmp_icon.getImage()
                                 .getScaledInstance(16, -1, Image.SCALE_FAST)));
-                        } catch (Exception e1)
-                        {
-                        }
+                        } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
                     path_field.setText(tmp_image_name);
                     // n_frame.pack();
                     // n_frame.validate();
@@ -352,9 +353,9 @@ class NodeSettingsDialog
             {
             path_label.setIcon(new ImageIcon(src.getFace().getImage()
                     .getScaledInstance(16, -1, Image.SCALE_REPLICATE)));
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         path_label.setMaximumSize(new Dimension(150, 16));
         path_label.setPreferredSize(new Dimension(150, 16));
         fc.gridx = 0;
@@ -453,9 +454,9 @@ class NodeSettingsDialog
         try
             {
             n_frame.show();
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         }
 
     }

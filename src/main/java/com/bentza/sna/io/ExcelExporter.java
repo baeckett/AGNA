@@ -1,5 +1,6 @@
 package com.bentza.sna.io;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.net.FullNet;
 import com.bentza.sna.net.Network;
 import com.bentza.sna.gui.MainFrame;
@@ -33,9 +34,9 @@ public class ExcelExporter
             {
             Thread.sleep(500);
             MainFrame.progress_dialog.setPercent(60);
-            } catch (Exception e1)
-            {
-            }
+            } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
 
         final Network tmp_network = tmp_full_net.getNetwork();
         final String sheet_name = tmp_network.getName();

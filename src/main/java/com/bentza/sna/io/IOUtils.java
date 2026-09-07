@@ -15,6 +15,42 @@ public class IOUtils
         }
 
     /**
+     * 2.1.3: reader over a legacy Agna data file with an explicit charset.
+     * Old .agn/.txt/.ini files were written with Windows/ISO-8859-1 style
+     * encodings; reading them with the platform default (UTF-8 on modern
+     * systems) could garble diacritics. ISO-8859-1 maps every byte 1:1, so
+     * legacy files round-trip losslessly.
+     */
+    public static java.io.Reader reader(java.io.File file)
+            throws java.io.FileNotFoundException
+        {
+        return new java.io.InputStreamReader(new java.io.FileInputStream(file),
+                java.nio.charset.StandardCharsets.ISO_8859_1);
+        }
+
+    /**
+     * 2.1.3: writer with an explicit charset (ISO-8859-1, see reader()).
+     */
+    public static java.io.Writer writer(java.io.File file)
+            throws java.io.IOException
+        {
+        return new java.io.OutputStreamWriter(
+                new java.io.FileOutputStream(file),
+                java.nio.charset.StandardCharsets.ISO_8859_1);
+        }
+
+    /**
+     * 2.1.3: UTF-8 writer (for XML-based formats such as SVG).
+     */
+    public static java.io.Writer writerUtf8(java.io.File file)
+            throws java.io.IOException
+        {
+        return new java.io.OutputStreamWriter(
+                new java.io.FileOutputStream(file),
+                java.nio.charset.StandardCharsets.UTF_8);
+        }
+
+    /**
      * Takes a file name and an extension as parameters and returns a new string
      * representing the file name with the new extension.
      */

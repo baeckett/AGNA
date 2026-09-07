@@ -1,5 +1,6 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.gui.MainFrame;
 import com.bentza.sna.gui.GrNet;
 import java.awt.Color;
@@ -568,9 +569,9 @@ public class NodeArea extends JButton implements MouseListener,
                         + String.valueOf(MainFrame.getCurrentNetwork()
                                 .getValue(second_selected, selected_node))
                         + M07);
-                } catch (Exception e2)
-                {
-                }
+                } catch (Exception e2) {
+      AgnaLog.warn("suppressed exception", e2);
+      }
             }
         }
 
@@ -695,9 +696,9 @@ public class NodeArea extends JButton implements MouseListener,
             {
             // just in case stg_enabled has never been initialized:
             value = stg_enabled;
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         return value;
         }
@@ -1316,9 +1317,9 @@ public class NodeArea extends JButton implements MouseListener,
                 edges_gr.drawImage(background_image.getImage(),
                         background_image_x, background_image_y,
                         background_image_width, background_image_height, this);
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
 
         // background_image.paintIcon(this,edges_gr,0,0);
@@ -1470,9 +1471,9 @@ public class NodeArea extends JButton implements MouseListener,
         try
             {
             g2.drawImage(this.edges_image, 0, 0, this);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         for (i = 0; i < nodes_count; i++)
             {
             tmp_x = my_nodes[i].getX(area_width);
@@ -1489,9 +1490,9 @@ public class NodeArea extends JButton implements MouseListener,
                     g.drawImage(my_nodes[i].getFace().getImage(), tmp_x, tmp_y,
                             my_nodes[i].getFaceWidth(), my_nodes[i]
                                     .getFaceHeight(), this);
-                    } catch (Exception e1)
-                    {
-                    }
+                    } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
                 }
             // painting node names
             g.setColor(names_color);
@@ -1595,9 +1596,9 @@ public class NodeArea extends JButton implements MouseListener,
                         // GrNet.getCurrentVerticalToolBar().validate();
                         GrNet.getCurrentVerticalToolBar().repaint();
                         GrNet.getCurrentFrame().repaint();
-                        } catch (Exception e1)
-                        {
-                        }
+                        } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
                     }
                 //
                 node_dialog = null;
@@ -1614,12 +1615,12 @@ public class NodeArea extends JButton implements MouseListener,
                         // selecting the newly created node:
                         setSelectedActor(my_nodes.length - 1);
                         GrNet.enableFirst();
-                        } catch (Exception e2)
-                        {
-                        }
-                    } catch (Exception exc)
-                    {
-                    }
+                        } catch (Exception e2) {
+      AgnaLog.warn("suppressed exception", e2);
+      }
+                    } catch (Exception exc) {
+      AgnaLog.warn("suppressed exception", exc);
+      }
                 }
             return;
             }
@@ -1654,9 +1655,9 @@ public class NodeArea extends JButton implements MouseListener,
                         + String.valueOf(MainFrame.getCurrentNetwork()
                                 .getValue(second_selected, selected_node))
                         + M07);
-                } catch (Exception e1)
-                {
-                }
+                } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
             }
         // repaint();
         return;

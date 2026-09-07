@@ -103,7 +103,7 @@ public class Environment
         URL url = Agna.class.getResource("/buttons/" + button_name);
         if (url == null)
             {
-            System.err.println("Agna: image not found on classpath: /buttons/"
+            AgnaLog.warn("Agna: image not found on classpath: /buttons/"
                     + button_name);
             return null;
             }
@@ -163,7 +163,7 @@ public class Environment
             }
         catch (Exception e)
             {
-            System.err.println("Agna: could not extract bundled faces to "
+            AgnaLog.warn("Agna: could not extract bundled faces to "
                     + target_root + ": " + e.getMessage());
             }
         finally
@@ -224,7 +224,7 @@ public class Environment
                 }
             } catch (IOException e)
             {
-            System.err.println("Agna: could not clean legacy face files in "
+            AgnaLog.warn("Agna: could not clean legacy face files in "
                     + target_root + ": " + e.getMessage());
             }
         }

@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -88,9 +89,9 @@ class HelpDialog
                         editor_pane.setPage((URL) url_list
                                 .elementAt(current_url));
                         enablingManager();
-                        } catch (Exception ex)
-                        {
-                        }
+                        } catch (Exception ex) {
+      AgnaLog.warn("suppressed exception", ex);
+      }
                     }
 
                 // forward button listener:
@@ -102,9 +103,9 @@ class HelpDialog
                         editor_pane.setPage((URL) url_list
                                 .elementAt(current_url));
                         enablingManager();
-                        } catch (Exception ex)
-                        {
-                        }
+                        } catch (Exception ex) {
+      AgnaLog.warn("suppressed exception", ex);
+      }
                     }
 
                 // close button listener:

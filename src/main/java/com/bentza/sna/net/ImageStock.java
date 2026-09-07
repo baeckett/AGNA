@@ -1,5 +1,6 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import java.io.File;
 import java.util.Vector;
@@ -241,9 +242,9 @@ public class ImageStock
                 {
                 return file.getCanonicalPath();
                 }
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         return null;
         }
     }

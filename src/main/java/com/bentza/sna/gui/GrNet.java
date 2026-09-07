@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.HTMLParser;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.Environment;
@@ -148,9 +149,9 @@ import com.bentza.sna.io.JpegUtils;
                 try
                     {
                     my_area.paintEdges();
-                    } catch (Exception ex)
-                    {
-                    }
+                    } catch (Exception ex) {
+      AgnaLog.warn("suppressed exception", ex);
+      }
 
                 area_panel.setPreferredSize(new Dimension(new_width + 10,
                         new_width + 10));
@@ -761,7 +762,7 @@ import com.bentza.sna.io.JpegUtils;
                 gr_output_pane.setFileName(t_file.getCanonicalPath());
                 } catch (Exception e)
                 {
-                System.err.println("GrNet.saveOutput write failed: " + e);
+                AgnaLog.warn("GrNet.saveOutput write failed: " + e);
                 }
             gr_frame.setCursor(Cursor
                     .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -821,15 +822,15 @@ import com.bentza.sna.io.JpegUtils;
                 }
 
             String file_content = svg.getSVGContent(my_area, outfile);
-            try (FileWriter writer = new FileWriter(outfile))
+            try (Writer writer = IOUtils.writerUtf8(outfile))
                 {
                 JTextPane tmp_pane = new JTextPane();
                 tmp_pane.setText(file_content);
                 tmp_pane.write(writer);
                 }
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         svg = null;
         gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
@@ -888,13 +889,13 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 try
                     {
                     n_default_face.setIcon(new ImageIcon(tmp_image_name));
-                    } catch (Exception e1)
-                    {
-                    }
+                    } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
                 }
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         }
 
     // saving default style/settings to ini file:
@@ -1234,9 +1235,9 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try
             {
             tmp_icon = new ImageIcon(tmp_image_name);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         if (tmp_icon == null)
             return;
@@ -2936,9 +2937,9 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     + " </font>.  Edge Value: <font size = 2 color='#298C8C'>"
                     + String.valueOf(gr_full_net.my_network.getValue(my_area
                             .getSecondSelected(), my_area.getSelectedActor())));
-            } catch (Exception e3)
-            {
-            }
+            } catch (Exception e3) {
+      AgnaLog.warn("suppressed exception", e3);
+      }
         my_area.paintEdges();
         my_area.repaint();
         }
@@ -2976,9 +2977,9 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try
             {
             tmp_icon = new ImageIcon(tmp_image_name);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         if (tmp_icon == null)
             return;
         else
@@ -3159,9 +3160,9 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     try
                         {
                         makeFacesMenuItems(childs[i].getCanonicalPath(), ki);
-                        } catch (Exception ee)
-                        {
-                        }
+                        } catch (Exception ee) {
+      AgnaLog.warn("suppressed exception", ee);
+      }
                     }
                 }
             }

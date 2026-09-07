@@ -1,5 +1,6 @@
 package com.bentza.sna;
 
+import com.bentza.sna.AgnaLog;
 // Agna 2.1.2
 // February, 2005
 
@@ -51,9 +52,9 @@ public class Agna
                     try
                         {
                         GrNet.update_network_needed = true;
-                        } catch (Exception e0)
-                        {
-                        }
+                        } catch (Exception e0) {
+      AgnaLog.warn("suppressed exception", e0);
+      }
                     }
 
                 // ask before close
@@ -116,9 +117,9 @@ public class Agna
                                 read_successful = true;
                                 break;
                                 }
-                            } catch (Exception e2)
-                            {
-                            }
+                            } catch (Exception e2) {
+      AgnaLog.warn("suppressed exception", e2);
+      }
                         }
                 if (!read_successful)
                     JOptionPane

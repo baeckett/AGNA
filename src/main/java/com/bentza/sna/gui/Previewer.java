@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -41,9 +42,9 @@ class Previewer extends JComponent implements PropertyChangeListener
                 {
                 thumbnail = new ImageIcon(tmpIcon.getImage().getScaledInstance(
                         90, -1, Image.SCALE_FAST));
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             } else
             {
             thumbnail = tmpIcon;

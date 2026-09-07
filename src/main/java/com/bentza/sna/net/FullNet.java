@@ -1,5 +1,7 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.io.IOUtils;
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.AgnaTableModel;
 import com.bentza.sna.gui.MainFrame;
@@ -83,7 +85,7 @@ import javax.swing.JTextPane;
 
     public void writeInitialSettings()
         {
-        try (FileWriter writer = new FileWriter(new File(
+        try (Writer writer = IOUtils.writer(new File(
                     "AgnaDefaultSettings.ini")))
             {
             JTextPane tmp_pane = new JTextPane();
@@ -91,13 +93,13 @@ import javax.swing.JTextPane;
             tmp_pane.write(writer);
             } catch (Exception e)
             {
-            System.err.println("FullNet.writeInitialSettings failed: " + e);
+            AgnaLog.warn("FullNet.writeInitialSettings failed: " + e);
             }
         }
 
     public void readInitialSettings(NodeArea tmp_area, String file_name)
         {
-        try (FileReader reader = new FileReader(new File(file_name)))
+        try (Reader reader = IOUtils.reader(new File(file_name)))
             {
             JTextPane tmp_pane = new JTextPane();
             tmp_pane.read(reader, null);
@@ -108,9 +110,9 @@ import javax.swing.JTextPane;
                 {
                 parseAgnaNonGraphicDefaultSettings(tmp_pane.getText());
                 }
-            } catch (Exception ex)
-            {
-            }
+            } catch (Exception ex) {
+      AgnaLog.warn("suppressed exception", ex);
+      }
         }
 
     public void readInitialSettings(String file_name)
@@ -547,7 +549,7 @@ import javax.swing.JTextPane;
             if (MainFrame.getCurrentFrame() == null
                     || java.awt.GraphicsEnvironment.isHeadless())
                 {
-                System.err.println(report);
+                AgnaLog.warn(report);
                 } else
                 {
                 JOptionPane.showMessageDialog(MainFrame.getCurrentFrame(),
@@ -641,9 +643,9 @@ import javax.swing.JTextPane;
             tmp_width = Integer.parseInt(parseFindNextWord(str, "Area Width"));
             if (tmp_width > 10)
                 area.setWidth(tmp_width);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         // finding area settings:
         String tempstring;
@@ -754,9 +756,9 @@ import javax.swing.JTextPane;
             {
             nn = Integer.parseInt(parseFindNextWord(str, "Title X"));
             area.setTitleX(nn);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         try
             {
@@ -1246,18 +1248,18 @@ tmp_node.setFace(tmpname);
             {
             nn = Integer.parseInt(parseFindNextWord(str, "Selected Node"));
             net_area.setSelectedActor(nn);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         try
             {
             nn = Integer.parseInt(parseFindNextWord(str, "Second Selected"));
             if (net_area.getAllowES())
                 net_area.setSecondSelected(nn);
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         try
             {
@@ -1614,9 +1616,9 @@ tmp_node.setFace(tmpname);
                         tmp_val = Float.parseFloat((String) val.elementAt(i
                                 * (ni + 1) + j));
                         my_network.setValue(tmp_val, i - 1, j - 1);
-                        } catch (Exception e2)
-                        {
-                        }
+                        } catch (Exception e2) {
+      AgnaLog.warn("suppressed exception", e2);
+      }
 
                     }
                 }
@@ -1773,9 +1775,9 @@ tmp_node.setFace(tmpname);
                             val.addElement(str.substring(i + 1, j));
                             i = j + 1;
                             }
-                        } catch (Exception e1)
-                        {
-                        }
+                        } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
                     } else if ((int) tmp_char < 32)
                     {
                     // end of row character
@@ -1836,9 +1838,9 @@ tmp_node.setFace(tmpname);
                         {
                         // tmp_val = Float.parseFloat(tmpstr);
                         val.addElement(tmpstr);
-                        } catch (Exception e)
-                        {
-                        }
+                        } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                     }
                 tmpstr = "";
                 } else

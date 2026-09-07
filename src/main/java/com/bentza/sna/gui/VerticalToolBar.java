@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.net.Actor;
 import com.bentza.sna.net.Network;
@@ -272,9 +273,9 @@ public class VerticalToolBar extends JPanel
                     break;
                 if (tmp_actor.equals(tmp_button.getAssociateActor()))
                     tmp_button.setText(tmp_actor.getName());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 

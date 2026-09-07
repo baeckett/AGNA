@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.Agna;
 import com.bentza.sna.gui.MainFrame;
@@ -80,9 +81,9 @@ public class AgnaSplash extends JWindow
                         {
                         Thread.sleep(pause);
                         SwingUtilities.invokeAndWait(closerRunner);
-                        } catch (Exception e)
-                        {
-                        }
+                        } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                     }
             };
         setVisible(true);

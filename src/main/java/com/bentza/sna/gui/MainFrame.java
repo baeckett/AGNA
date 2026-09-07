@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.HTMLParser;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.io.ExcelExporter;
@@ -631,9 +632,9 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
                 try
                     {
                     nnodes = Integer.parseInt(tmp_str);
-                    } catch (Exception e)
-                    {
-                    }
+                    } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                 }
             }
         saveChangedNetworks(true);
@@ -709,12 +710,12 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
             {
             // Thread.sleep(500);
             progress_dialog.setPercent(60);
-            } catch (Exception e1)
-            {
-            }
+            } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
         try
             {
-            try (FileWriter writer = new FileWriter(new File(file_name)))
+            try (Writer writer = IOUtils.writer(new File(file_name)))
                 {
                 JTextPane tmp_pane = new JTextPane();
                 tmp_pane.setText(writestr);
@@ -724,7 +725,7 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
                 }
             } catch (Exception e)
             {
-            System.err.println("saveNetwork failed for " + file_name + ": " + e);
+            AgnaLog.warn("saveNetwork failed for " + file_name + ": " + e);
             }
         }
 
@@ -974,7 +975,7 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
         try
                         {
                         JTextPane tmp_pane = null;
-                        try (FileReader reader = new FileReader(t_file))
+                        try (Reader reader = IOUtils.reader(t_file))
                             {
                             tmp_pane = new JTextPane();
                             tmp_pane.read(reader, null);
@@ -997,7 +998,7 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
                         tmp_pane = null;
                         } catch (Exception e)
                         {
-                        System.err.println("Failed reading "
+                        AgnaLog.warn("Failed reading "
                                 + t_file.getAbsolutePath() + ": " + e);
                         }
 
@@ -1172,7 +1173,7 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
         MainFrame.setCurrentStatus("Reading chain file. Please wait...");
         my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         JTextPane tmp_pane = new JTextPane();
-        try (FileReader reader = new FileReader(t_file))
+        try (Reader reader = IOUtils.reader(t_file))
             {
             tmp_pane.read(reader, null);
             } catch (Exception e)
@@ -1323,7 +1324,7 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
                     output_edit.setContentType("text");
                     }
                 output_edit.setText("");
-                try (FileReader reader = new FileReader(file))
+                try (Reader reader = IOUtils.reader(file))
                     {
                     tmp_pane = new JTextPane();
                     tmp_pane.read(reader, null);
@@ -1333,9 +1334,9 @@ import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
                     output_edit.setFileName(file.getCanonicalPath());
                     output_edit.setChanged(false);
                     doAppendParagraphToOutput(tmp_pane.getText());
-                    } catch (Exception e)
-                    {
-                    }
+                    } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                 tmp_pane = null;
                 } catch (IOException e)
                 {
@@ -1712,7 +1713,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     public void readInitialSettings()
         {
-        try (FileReader reader = new FileReader(new File(
+        try (Reader reader = IOUtils.reader(new File(
                     "AgnaDefaultSettings.ini")))
             {
             JTextPane tmp_pane = new JTextPane();
@@ -2069,9 +2070,9 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         // set.toString().length()), start, text.length());
                         textPane.getStyledDocument().setCharacterAttributes(
                                 start, text.length(), set, false);
-                        } catch (Exception e1)
-                        {
-                        }
+                        } catch (Exception e1) {
+      AgnaLog.warn("suppressed exception", e1);
+      }
                     }
             });
 
@@ -2212,9 +2213,9 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             grid_model.setReady(true);
             if (my_grafic != null && my_grafic.gr_frame != null)
                 GrNet.disableFirst();
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
         setCurrentStatus(default_status);
         MainFrame.setTableCellEditor();
         my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

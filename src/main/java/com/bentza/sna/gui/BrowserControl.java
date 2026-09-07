@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import java.awt.Desktop;
 import java.net.URI;
 
@@ -104,9 +105,9 @@ public class BrowserControl
                 try
                     {
                     p = Runtime.getRuntime().exec(cmd);
-                    } catch (Exception e45)
-                    {
-                    }
+                    } catch (Exception e45) {
+      AgnaLog.warn("suppressed exception", e45);
+      }
 
                 // return;
                 }

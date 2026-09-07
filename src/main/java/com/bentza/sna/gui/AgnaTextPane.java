@@ -1,5 +1,6 @@
 package com.bentza.sna.gui;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.Environment;
 import com.bentza.sna.net.AgnaLib;
@@ -185,9 +186,9 @@ public class AgnaTextPane extends JTextPane
                 this.setChanged(true);
                 // this.setCaretPosition(this.getText().length());
                 this.setCaretPosition(doc.getLength());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -226,9 +227,9 @@ public class AgnaTextPane extends JTextPane
                         + "", 1, 0, HTML.Tag.P);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -267,9 +268,9 @@ public class AgnaTextPane extends JTextPane
                         0, HTML.Tag.TABLE);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -305,9 +306,9 @@ public class AgnaTextPane extends JTextPane
                 kit.insertHTML(doc, doc.getLength(), "<tr>", 1, 0, HTML.Tag.TR);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -345,9 +346,9 @@ public class AgnaTextPane extends JTextPane
                         HTML.Tag.TD);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -385,9 +386,9 @@ public class AgnaTextPane extends JTextPane
                         0, null);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -406,9 +407,9 @@ public class AgnaTextPane extends JTextPane
                 kit.insertHTML(doc, start, "<font face='" + "kuku" + "'>", 0,
                         0, HTML.Tag.FONT);
                 kit.insertHTML(doc, end, "</font>", 0, 0, HTML.Tag.FONT);
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -446,9 +447,9 @@ public class AgnaTextPane extends JTextPane
                         + newstr.toString() + "</b>", 1, 0, HTML.Tag.P);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -471,9 +472,9 @@ public class AgnaTextPane extends JTextPane
                 kit.insertHTML(doc, doc.getLength(), "<br>", 0, 0, HTML.Tag.BR);
                 this.setChanged(true);
                 this.setCaretPosition(this.getText().length());
-                } catch (Exception e)
-                {
-                }
+                } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
             }
         }
 
@@ -544,9 +545,9 @@ public class AgnaTextPane extends JTextPane
                     + fs
                     + IOUtils.getPathWithoutExtension(MainFrame
                             .getTopFolder(file_name)) + "_img";
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         filename = makeGoodFileName(filename);
         // creating folder if needed:

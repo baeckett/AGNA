@@ -1,5 +1,6 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.MainFrame;
 import java.util.Vector;
@@ -19,7 +20,9 @@ import javax.swing.JLabel;
     public int node_size;
 
     // private ImageIcon face;
-    public Vector emissions;
+    // 2.1.3: emissions stored as a plain float array (was Vector<Float>);
+    // eliminates per-cell boxing and elementAt overhead in every matrix pass
+    public float[] emissions;
 
     private int grid_space, face_width, face_height;
 
@@ -52,11 +55,7 @@ import javax.swing.JLabel;
 face_item = getImageStockInstance().requestImageItem(MainFrame
                 .getDefaultNodeFaceSource());
         setSize();
-        emissions = new Vector(10);
-        for (int i = 0; i < 10; i++)
-            {
-            emissions.addElement(new Float(0f));
-            }
+        emissions = new float[10];
         }
 
     public Actor(String tmp_name)
@@ -66,11 +65,7 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
 face_item = getImageStockInstance().requestImageItem(MainFrame
                 .getDefaultNodeFaceSource());
         setSize();
-        emissions = new Vector(10);
-        for (int i = 0; i < 10; i++)
-            {
-            emissions.addElement(new Float(0f));
-            }
+        emissions = new float[10];
         }
 
     public Actor(String tmp_name, int tmp_net_size)
@@ -86,11 +81,7 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
             face_item = null;
             }
         setSize();
-        emissions = new Vector(tmp_net_size);
-        for (int i = 0; i < tmp_net_size; i++)
-            {
-            emissions.addElement(new Float(0f));
-            }
+        emissions = new float[tmp_net_size];
         }
 
     /*
@@ -105,94 +96,86 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
 
     public void addEmissionsElement()
         {
-        emissions.addElement(new Float(0f));
+        float[] tmp = new float[emissions.length + 1];
+        System.arraycopy(emissions, 0, tmp, 0, emissions.length);
+        emissions = tmp;
         }
 
     public void deleteEmissionsElement(int tmp_i)
         {
-        try
-            {
-            emissions.remove(tmp_i);
-            } catch (Exception e)
-            {
-            }
+        if (tmp_i < 0 || tmp_i >= emissions.length)
+            return;
+        float[] tmp = new float[emissions.length - 1];
+        System.arraycopy(emissions, 0, tmp, 0, tmp_i);
+        System.arraycopy(emissions, tmp_i + 1, tmp, tmp_i, emissions.length
+                - tmp_i - 1);
+        emissions = tmp;
         }
 
     public void setEmissionsValue(float tmp_value, int j)
         {
-        if (j < 0 || j >= emissions.size())
+        if (j < 0 || j >= emissions.length)
             return;
-        this.emissions.setElementAt(new Float(tmp_value), j);
+        emissions[j] = tmp_value;
         }
 
     public void setStringEmissionsValue(String tmp_value, int j)
         {
-        if (j < 0 || j >= emissions.size())
+        if (j < 0 || j >= emissions.length)
             return;
         try
             {
-            this.emissions.setElementAt(new Float(tmp_value), j);
+            emissions[j] = Float.parseFloat(tmp_value);
             } catch (NumberFormatException e1)
             {
+            AgnaLog.warn("invalid cell value: " + tmp_value);
             }
         }
 
     public void setStringEmissionsValue(Object tmp_value, int j)
         {
-        if (j < 0 || j >= emissions.size())
+        if (j < 0 || j >= emissions.length)
             return;
         try
             {
-            this.emissions.setElementAt(new Float((String) tmp_value), j);
-            } catch (NumberFormatException e1)
+            emissions[j] = Float.parseFloat((String) tmp_value);
+            } catch (Exception e1)
             {
+            AgnaLog.warn("invalid cell value: " + tmp_value);
             }
         }
 
     // object here is Float!
     public void setObjectEmissionsValue(Object tmp_value, int j)
         {
-        if (j < 0 || j >= emissions.size())
+        if (j < 0 || j >= emissions.length)
             return;
-        /*
-         * try { new Float((String)tmp_value); } catch(NumberFormatException e1)
-         * {return;}
-         */
-        this.emissions.setElementAt(tmp_value, j);
+        if (tmp_value instanceof Float)
+            {
+            emissions[j] = ((Float) tmp_value).floatValue();
+            }
         }
 
     public float getEmissionsValue(int j)
         {
-        if (j < 0 || j >= emissions.size())
+        if (j < 0 || j >= emissions.length)
             return 0f;
-        float value = 0f;
-        try
-            {
-            value = ((Float) this.emissions.elementAt(j)).floatValue();
-            } catch (Exception e)
-            {
-            // value remains 0f if exception
-            }
-
-        return value;
+        return emissions[j];
         }
 
     // forces value to integer
     public int getIntegerEmissionsValue(int j)
         {
-        if (j < 0 || j >= emissions.size())
+        if (j < 0 || j >= emissions.length)
             return 0;
-        return ((Float) this.emissions.elementAt(j)).intValue();
+        return (int) emissions[j];
         }
 
     public float[] getEmissionsArray(int nn) // nn is the number of nodes
         {
         final float[] emis = new float[nn];
-        emis[1] = this.getEmissionsValue(1);
-        for (int i = 0; i < nn; i++)
-            {
-            emis[i] = this.getEmissionsValue(i);
-            }
+        int count = Math.min(nn, emissions.length);
+        System.arraycopy(emissions, 0, emis, 0, count);
         return emis;
         }
 
@@ -342,9 +325,9 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
         try
             {
             value = MainFrame.getCurrentFullNet().getArea().isSTGEnabled();
-            } catch (Exception e)
-            {
-            }
+            } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
 
         return value;
         }
@@ -393,7 +376,12 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
 
     public void setEmissionsNumber(int tmp_size)
         {
-        emissions.setSize(tmp_size);
+        if (tmp_size == emissions.length)
+            return;
+        float[] tmp = new float[tmp_size];
+        int count = Math.min(tmp_size, emissions.length);
+        System.arraycopy(emissions, 0, tmp, 0, count);
+        emissions = tmp;
         }
 
     public void setSize(int tmp_size)

@@ -1,5 +1,6 @@
 package com.bentza.sna.net;
 
+import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.MainFrame;
 import com.bentza.sna.gui.AgnaTextPane;
@@ -816,58 +817,71 @@ import java.util.Vector;
      * return sp; }
      */
 
+    /**
+     * 2.1.3: true when every ordered pair of distinct nodes is mutually
+     * reachable; uses the geodesics convention (0 = no path).
+     */
+    private boolean isConnected(Network src)
+        {
+        int size = src.getSize();
+        int[][] geod = geodesics(src);
+        for (int i = 0; i < size; i++)
+            {
+            for (int j = 0; j < size; j++)
+                {
+                if (i != j && geod[i][j] == 0)
+                    {
+                    return false;
+                    }
+                }
+            }
+        return true;
+        }
+
     private int[][] geodesics(Network src)
         {
         int size = src.getSize();
-        int i, j, codarc;
-        int[][] ge = new int[size][size]; // final result - geodesics
+        int i, j, k;
+        final int INF = Integer.MAX_VALUE / 2; // sentinel; no overflow on +1
+        int[][] ge = new int[size][size];
         boolean[][] bb = src.getBooleanMatrix();
-        int[][] b = new int[size][size];
-        int[][] mTmp = new int[size][size];
-        final int MAX_INT = Integer.MAX_VALUE;
 
-        // initializing ge, b and mTmp:
+        // distance matrix: 1 hop for direct arcs, INF otherwise, 0 on the
+        // diagonal
         for (i = 0; i < size; i++)
             {
             for (j = 0; j < size; j++)
                 {
-                ge[i][j] = MAX_INT;
-                if (bb[i][j])
-                    {
-                    mTmp[i][j] = 1;
-                    b[i][j] = 1;
-                    } else
-                    {
-                    mTmp[i][j] = 0;
-                    b[i][j] = 0;
-                    }
+                ge[i][j] = (i == j) ? 0 : (bb[i][j] ? 1 : INF);
                 }
             }
 
-        bb = null;
-
-        // succesive matrix multiplication;
-        // codarc is the path length:
-        for (codarc = 1; codarc <= size; codarc++)
+        // 2.1.3: Floyd-Warshall replaces the successive matrix multiplication
+        // (O(n^3) instead of O(n^4), same shortest-hop distances)
+        for (k = 0; k < size; k++)
             {
             for (i = 0; i < size; i++)
                 {
                 for (j = 0; j < size; j++)
                     {
-                    if (ge[i][j] > codarc && b[i][j] != 0)
-                        ge[i][j] = codarc;
+                    if (ge[i][k] + ge[k][j] < ge[i][j])
+                        {
+                        ge[i][j] = ge[i][k] + ge[k][j];
+                        }
                     }
                 }
-            b = multiplyMatrices(mTmp, b);
-            for (i = 0; i < size; i++)
-                b[i][i] = 0;
             }
 
+        // legacy convention: 0 = unreachable (and self); distances stay > 0
         for (i = 0; i < size; i++)
             {
             for (j = 0; j < size; j++)
-                if (ge[i][j] > Integer.MAX_VALUE - 1)
+                {
+                if (ge[i][j] >= INF)
+                    {
                     ge[i][j] = 0;
+                    }
+                }
             }
 
         return ge;
@@ -975,6 +989,15 @@ import java.util.Vector;
 
     public String outEccentricity(Network outsrc)
         {
+        // 2.1.3: refuse disconnected networks (0 = no path
+        // would silently corrupt the result)
+        if (!isConnected(outsrc))
+            {
+            return it
+                    + "WARNING: the network is disconnected; eccentricity cannot be computed\n"
+                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            }
+
         int size = outsrc.getSize();
         int i;
         StringBuffer out = new StringBuffer("");
@@ -1056,8 +1079,7 @@ import java.util.Vector;
         {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
-        float[] outarray = new float[size];
-        outarray = fareness(outsrc);
+        float[] outarray =  fareness(outsrc);
         out.append(it + bold + "Distribution of Fareness Centrality" + unbold
                 + " in " + unit + outsrc.getName());
         out.append(lb + table + tr);
@@ -1090,8 +1112,7 @@ import java.util.Vector;
         {
         int size = src.getSize();
         int i;
-        float[] finarray = new float[size];
-        finarray = fareness(src);
+        float[] finarray =  fareness(src);
         for (i = 0; i < size; i++)
             {
             if (finarray[i] != 0f)
@@ -1102,11 +1123,19 @@ import java.util.Vector;
 
     public String outCloseness(Network outsrc)
         {
+        // 2.1.3: refuse disconnected networks (0 = no path
+        // would silently corrupt the result)
+        if (!isConnected(outsrc))
+            {
+            return it
+                    + "WARNING: the network is disconnected; closeness cannot be computed\n"
+                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            }
+
         int size = outsrc.getSize();
 
         StringBuffer out = new StringBuffer("");
-        float[] outarray = new float[size];
-        outarray = closeness(outsrc);
+        float[] outarray =  closeness(outsrc);
         out.append(it + bold + "Distribution of Closeness Centrality" + unbold
                 + " in " + unit + outsrc.getName());
         out.append(lb + table + tr);
@@ -1137,9 +1166,9 @@ import java.util.Vector;
         try
             {
             Thread.sleep(200);
-            } catch (Exception ee)
-            {
-            }
+            } catch (Exception ee) {
+      AgnaLog.warn("suppressed exception", ee);
+      }
         for (int i = 0; i < size; i++)
             {
             outarray[i] = outarray[i] * (size - 1);
@@ -1451,9 +1480,9 @@ import java.util.Vector;
                                 .append(outsrc.getActor(cursor.getValue())
                                         .getName());
                         out.append(blanc + blanc + blanc);
-                        } catch (Exception e)
-                        {
-                        }
+                        } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                     cursor = cursor.getNext();
                     } // end while
                 } // end if
@@ -1498,9 +1527,9 @@ import java.util.Vector;
                                 .append(outsrc.getActor(cursor.getValue())
                                         .getName());
                         out.append(blanc + blanc + blanc);
-                        } catch (Exception e)
-                        {
-                        }
+                        } catch (Exception e) {
+      AgnaLog.warn("suppressed exception", e);
+      }
                     cursor = cursor.getNext();
                     } // end while
                 } // end if
@@ -1518,6 +1547,15 @@ import java.util.Vector;
 
     public String outBetweenness(Network outsrc)
         {
+        // 2.1.3: refuse disconnected networks (0 = no path
+        // would silently corrupt the result)
+        if (!isConnected(outsrc))
+            {
+            return it
+                    + "WARNING: the network is disconnected; betweenness cannot be computed\n"
+                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            }
+
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outdet = betweenness(outsrc);
@@ -2051,8 +2089,7 @@ import java.util.Vector;
         // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
-        float[] outemis = new float[size];
-        outemis = weightedEmissionDegree(outsrc);
+        float[] outemis =  weightedEmissionDegree(outsrc);
         out.append(it + bold + "Distribution of Emission Degree" + unbold
                 + " in " + unit + outsrc.getName());
         out.append(lb + table + tr);
@@ -2213,8 +2250,7 @@ import java.util.Vector;
         // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
-        float[] outrec = new float[size];
-        outrec = weightedReceptionDegree(outsrc);
+        float[] outrec =  weightedReceptionDegree(outsrc);
         out.append(it + bold + "Distribution of Reception Degree" + unbold
                 + " in " + unit + outsrc.getName());
         out.append(lb + table + tr);
@@ -2621,8 +2657,7 @@ import java.util.Vector;
         {
         int size = src.getSize();
         double dens = 0;
-        float[] outrec = new float[size];
-        outrec = weightedReceptionDegree(src);
+        float[] outrec =  weightedReceptionDegree(src);
         for (int i = 0; i < size; i++)
             {
             dens += (double) outrec[i];
@@ -2635,7 +2670,21 @@ import java.util.Vector;
         {
         String out = new String("");
         out = it + bold + "Density" + unbold + " of " + unit + outsrc.getName();
-        out += lb + it + "Density = " + unit + Float.toString(density(outsrc)); // String.valueOf(density(outsrc));
+        out += lb + it + "Density = " + unit + Float.toString(density(outsrc));
+        out += lb + it
+                + "Density (directed convention; arcs / (n*(n-1))) = " + unit
+                + Float.toString(density(outsrc));
+        if (outsrc.isSymmetric())
+            {
+            out += lb + it
+                    + "Undirected convention (edges / (n*(n-1)/2)): the value is the same for a symmetric matrix."
+                    + unit;
+            } else
+            {
+            out += lb + it
+                    + "Note: the matrix is asymmetric; an undirected density is not defined."
+                    + unit;
+            } // String.valueOf(density(outsrc));
 
         if (MainFrame.getCurrentWeight())
             {
@@ -2676,8 +2725,7 @@ import java.util.Vector;
         // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
-        float[] outdet = new float[size];
-        outdet = determinationDegree(outsrc);
+        float[] outdet =  determinationDegree(outsrc);
         out.append(it + bold + "Distribution of Determination Degree" + unbold
                 + " in " + unit + outsrc.getName());
         out.append(lb + table + tr);
@@ -2723,8 +2771,7 @@ import java.util.Vector;
         // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
-        float[] outss = new float[size];
-        outss = sociometricStatus(outsrc);
+        float[] outss =  sociometricStatus(outsrc);
         out.append(it + bold + "Distribution of Sociometric Status" + unbold
                 + " in " + unit + outsrc.getName());
         out.append(lb + table + tr);
