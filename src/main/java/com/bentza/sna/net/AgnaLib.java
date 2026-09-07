@@ -1589,17 +1589,33 @@ import java.util.Vector;
 
     public float[] prestige(Network src)
         {
-        // nu-i gata!
+        // 2.1.3: implemented as proximity prestige (Lin 1976):
+        //   P(i) = [I_i / (n-1)] * [ sum_{j in I_i} d(j,i) / I_i ]^-1
+        // i.e. (share of nodes that can reach i) x (average closeness of
+        // those nodes). The 2.1.2 body was marked "nu-i gata!" (unfinished)
+        // and returned row-sums of the geodesics matrix (i.e. fareness).
         int size = src.getSize();
-        int i, j;
-        int[][] geomat = geodesics(src);
+        int[][] geod = geodesics(src);
         float[] finarray = new float[size];
-        for (i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             {
-            finarray[i] = 0f;
-            for (j = 0; j < size; j++)
+            int reach = 0;
+            double dist_sum = 0;
+            for (int j = 0; j < size; j++)
                 {
-                finarray[i] += (float) geomat[i][j];
+                if (j != i && geod[j][i] > 0)
+                    {
+                    reach++;
+                    dist_sum += (double) geod[j][i];
+                    }
+                }
+            if (reach == 0 || size < 2)
+                {
+                finarray[i] = 0f; // nobody can reach i: no prestige
+                } else
+                {
+                finarray[i] = (float) (((double) reach / (double) (size - 1)) * ((double) reach
+                        / dist_sum));
                 }
             }
         return finarray;
@@ -1607,7 +1623,26 @@ import java.util.Vector;
 
     public String outPrestige(Network outsrc)
         {
-        return null;
+        // 2.1.3: the 2.1.2 body was an unimplemented stub returning null
+        int size = outsrc.getSize();
+        StringBuffer out = new StringBuffer("");
+        float[] outpr = prestige(outsrc);
+        out.append(it + bold + "Distribution of Proximity Prestige" + unbold
+                + " in " + unit + outsrc.getName());
+        out.append(lb + table + tr);
+        out.append(td + it + "Node" + unit + untd + td + it + "Prestige" + unit
+                + untd + untr);
+        for (int i = 0; i < size; i++)
+            {
+            out.append(tr);
+            out.append(td + it + outsrc.getActor(i).getName() + unit + untd
+                    + td + String.valueOf(outpr[i]) + untd);
+            out.append(untr);
+            }
+        out.append(untable);
+        out.append(outStatistics(outpr, true));
+        out.append("\n");
+        return out.toString();
         }
 
     // binary (boolean) bavelas:
