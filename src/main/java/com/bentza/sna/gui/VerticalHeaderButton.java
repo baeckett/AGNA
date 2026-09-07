@@ -29,14 +29,20 @@ public class VerticalHeaderButton extends JButton
         this.setIcon(tmp_icon);
         }
 
-    /**
+/**
      * Overriding the method to customize the button. Trying to identify the
      * position of this button on the panel in order to infer actor name.
      */
     public String getText()
         {
+        final int index = this.getIndex();
+        // 2.1.3: while the header is being rebuilt (removeAll), Swing may
+        // query the text of a button that no longer has a parent; return a
+        // safe value instead of crashing the EDT
+        if (index < 0)
+            return "";
         final String actor_name = MainFrame.getCurrentNetwork().getActorName(
-                this.getIndex());
+                index);
         this.setToolTipText(actor_name);
         return actor_name;
         }
@@ -46,6 +52,11 @@ public class VerticalHeaderButton extends JButton
      */
     public int getIndex()
         {
+        // 2.1.3: a detached button (parent == null, e.g. in the middle of a
+        // header rebuild) has no meaningful index; checked first because a
+        // detached button also reports height 0
+        if (this.getParent() == null)
+            return -1;
         // assuming this is the height of every
         // button on panel:
         final int h = this.getHeight();
