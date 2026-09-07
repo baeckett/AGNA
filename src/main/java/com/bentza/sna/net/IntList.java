@@ -58,11 +58,12 @@ class IntList // ordered list of integers;
         return true;
         }
 
-    public IntList getClone()
+        public IntList getClone()
         {
         if (this.first == null)
             {
-            return null;
+            // 2.1.3: an empty list clones to an empty list, not null
+            return new IntList();
             }
         IntList clone = new IntList();
         IntListElement cursor = this.first;
@@ -74,7 +75,7 @@ class IntList // ordered list of integers;
         return clone;
         }
 
-    public int[] toArray()
+        public int[] toArray()
         {
         if (first == null)
             return new int[0];
@@ -82,7 +83,8 @@ class IntList // ordered list of integers;
         int[] values = new int[n];
         IntListElement cursor = this.first;
         int i = 0;
-        while (cursor.next != null && i < n)
+        // 2.1.3: the old loop stopped before the last element
+        while (cursor != null && i < n)
             {
             values[i] = cursor.getValue();
             i++;

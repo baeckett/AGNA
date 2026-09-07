@@ -2,18 +2,26 @@ package com.bentza.sna.net;
 
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.MainFrame;
+import com.bentza.sna.gui.AgnaTextPane;
 import java.util.Date;
 import java.util.Vector;
 
-public class AgnaLib
+        public class AgnaLib
     {
     public static String lb, bold, unbold, it, unit, table, untable, tr, untr,
             td, untd, ol, unol, li, unli, blanc;
 
-    public static void initAjna()
+        public static void initAjna()
         {
         // type-dependent text elements:
-        String cont = MainFrame.getCurrentOutputPane().getContentType();
+        // 2.1.3: null-safe (the engine can also be used headless, e.g. in
+        // batch runs or tests, before the output pane exists)
+        String cont = "text/plain";
+        AgnaTextPane pane = MainFrame.getCurrentOutputPane();
+        if (pane != null)
+            {
+            cont = pane.getContentType();
+            }
         if (cont.equals("text/plain") || cont.equals("text"))
             {
 
@@ -622,9 +630,103 @@ public class AgnaLib
      * out of while } } return siruri_bune; }
      */
 
+/**
+     * Enumerates the maximal n-cliques of the network: maximal sets of nodes
+     * whose mutual geodesic distance is at most cdiam.
+     * 
+     * <p>
+     * Implemented in 2.1.3 — the 2.1.2 body was an unimplemented stub
+     * (returning null), which is why the menu entry was disabled.
+     * 
+     * @return a Vector of IntLists, or null for an invalid diameter
+     */
     private Vector cliquesMain(Network src, int cdiam)
         {
-        return null;
+        int size = src.getSize();
+        if (cdiam < 1 || size < 1)
+            return null;
+
+        int[][] geod = geodesics(src);
+        // derived graph: two nodes are "adjacent" when their mutual geodesic
+        // distance is at most cdiam. NB: geodesics() uses 0 for "no path"
+        // (and for the diagonal), so only distances > 0 count as reachable.
+        boolean[][] adjacent = new boolean[size][size];
+        for (int i = 0; i < size; i++)
+            {
+            for (int j = 0; j < size; j++)
+                {
+                if (i != j && geod[i][j] > 0 && geod[j][i] > 0
+                        && geod[i][j] <= cdiam && geod[j][i] <= cdiam)
+                    {
+                    adjacent[i][j] = true;
+                    }
+                }
+            }
+
+        Vector cliques = new Vector();
+        int[] candidates = new int[size];
+        for (int i = 0; i < size; i++)
+            {
+            candidates[i] = i;
+            }
+        bronKerbosch(adjacent, cliques, new IntList(), candidates, size,
+                new int[size], 0);
+        return cliques;
+        }
+
+    /**
+     * Bron-Kerbosch maximal clique enumeration on the derived graph (ordered
+     * variant, so every maximal clique is reported exactly once).
+     */
+    private void bronKerbosch(boolean[][] adjacent, Vector cliques,
+            IntList current, int[] candidates, int candidate_count,
+            int[] excluded, int excluded_count)
+        {
+        if (candidate_count == 0)
+            {
+            if (excluded_count == 0 && current.getSize() >= 2)
+                {
+                // 2.1.3: singletons are trivially "maximal" but meaningless
+                // as reported groups; only keep cliques of two or more nodes
+                cliques.addElement(current.getClone());
+                }
+            return;
+            }
+
+        for (int k = 0; k < candidate_count; k++)
+            {
+            int node = candidates[k];
+            IntList next_current = current.getClone();
+            next_current.appendValue(node);
+
+            // branch candidates: remaining (not yet processed) neighbours
+            int[] next_candidates = new int[candidate_count];
+            int next_count = 0;
+            for (int m = k + 1; m < candidate_count; m++)
+                {
+                if (adjacent[node][candidates[m]])
+                    {
+                    next_candidates[next_count++] = candidates[m];
+                    }
+                }
+
+            // excluded neighbours (for maximality)
+            int[] next_excluded = new int[excluded_count + candidate_count];
+            int next_x_count = 0;
+            for (int m = 0; m < excluded_count; m++)
+                {
+                if (adjacent[node][excluded[m]])
+                    {
+                    next_excluded[next_x_count++] = excluded[m];
+                    }
+                }
+
+            bronKerbosch(adjacent, cliques, next_current, next_candidates,
+                    next_count, next_excluded, next_x_count);
+
+            // move the processed node into the excluded set of this frame
+            excluded[excluded_count++] = node;
+            }
         }
 
     // returns a vector of IntLists, ecah string being

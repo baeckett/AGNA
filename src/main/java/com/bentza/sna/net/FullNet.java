@@ -16,7 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 
-public class FullNet // reuneste NodeArea si Network
+        public class FullNet // reuneste NodeArea si Network
     {
     public Network my_network;
 
@@ -83,25 +83,22 @@ public class FullNet // reuneste NodeArea si Network
 
     public void writeInitialSettings()
         {
-        try
+        try (FileWriter writer = new FileWriter(new File(
+                    "AgnaDefaultSettings.ini")))
             {
-            FileWriter writer = new FileWriter(new File(
-                    "AgnaDefaultSettings.ini"));
             JTextPane tmp_pane = new JTextPane();
             tmp_pane.setText(getAgna2DefaultSettings(getArea()));
             tmp_pane.write(writer);
-            tmp_pane = null;
-            writer = null;
             } catch (Exception e)
             {
+            System.err.println("FullNet.writeInitialSettings failed: " + e);
             }
         }
 
     public void readInitialSettings(NodeArea tmp_area, String file_name)
         {
-        try
+        try (FileReader reader = new FileReader(new File(file_name)))
             {
-            FileReader reader = new FileReader(new File(file_name));
             JTextPane tmp_pane = new JTextPane();
             tmp_pane.read(reader, null);
             if (tmp_area != null)
@@ -111,8 +108,6 @@ public class FullNet // reuneste NodeArea si Network
                 {
                 parseAgnaNonGraphicDefaultSettings(tmp_pane.getText());
                 }
-            tmp_pane = null;
-            reader = null;
             } catch (Exception ex)
             {
             }

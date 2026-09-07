@@ -3,7 +3,7 @@ package com.bentza.sna.net;
 import com.bentza.sna.gui.AgnaTableModel;
 import java.util.Vector;
 
-public class Network
+        public class Network
     {
     private Vector all_nodes;
 
@@ -129,39 +129,42 @@ public class Network
 
     public float getMin() // returneaza cel mai mic element din matrice
         {
-        float min;
-        int i, j, n;
-        n = all_nodes.size();
-        float[][] mat = new float[all_nodes.size()][all_nodes.size()];
-        mat = this.getMatrix();
-        min = Float.POSITIVE_INFINITY;
-        for (i = 0; i < n; i++)
+        int n = all_nodes.size();
+        float min = Float.POSITIVE_INFINITY;
+        // 2.1.3: iterate the nodes directly instead of materializing the full
+        // matrix (avoided allocation per call); an all-zero matrix yields 0f
+        // instead of +Infinity
+        for (int i = 0; i < n; i++)
             {
-            for (j = 0; j < n; j++)
+            for (int j = 0; j < n; j++)
                 {
-                if (min > mat[i][j] && mat[i][j] != 0)
-                    min = mat[i][j];
+                float value = getValue(i, j);
+                if (value != 0f && min > value)
+                    {
+                    min = value;
+                    }
                 }
             }
-        return min;
+        return min == Float.POSITIVE_INFINITY ? 0f : min;
         }
 
     public float getMax() // returneaza cel mai mic element din matrice
         {
-        float max;
-        int i, j, n;
-        n = all_nodes.size();
-        float[][] mat = this.getMatrix();
-        max = Float.NEGATIVE_INFINITY;
-        for (i = 0; i < n; i++)
+        int n = all_nodes.size();
+        float max = Float.NEGATIVE_INFINITY;
+        // 2.1.3: same as getMin (no matrix allocation; all-zero -> 0f)
+        for (int i = 0; i < n; i++)
             {
-            for (j = 0; j < n; j++)
+            for (int j = 0; j < n; j++)
                 {
-                if (max < mat[i][j] && mat[i][j] != 0)
-                    max = mat[i][j];
+                float value = getValue(i, j);
+                if (value != 0f && max < value)
+                    {
+                    max = value;
+                    }
                 }
             }
-        return max;
+        return max == Float.NEGATIVE_INFINITY ? 0f : max;
         }
 
     public boolean getSymmetry()
@@ -202,7 +205,7 @@ public class Network
                                         // din matricea retelei
         {
         int nn = this.getSize();
-        if (i < 0 || j < 0 || i >= nn || j > nn)
+        if (i < 0 || j < 0 || i >= nn || j >= nn)
             {
             return 0f;
             }

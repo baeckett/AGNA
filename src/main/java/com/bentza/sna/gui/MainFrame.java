@@ -40,7 +40,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 import com.l2fprod.gui.plaf.skin.Skin;
 import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
 
-public class MainFrame //
+        public class MainFrame //
     {
 
     private static JFrame my_frame;
@@ -1323,9 +1323,11 @@ public class MainFrame //
                     output_edit.setContentType("text");
                     }
                 output_edit.setText("");
-                FileReader reader = new FileReader(file);
-                tmp_pane = new JTextPane();
-                tmp_pane.read(reader, null);
+                try (FileReader reader = new FileReader(file))
+                    {
+                    tmp_pane = new JTextPane();
+                    tmp_pane.read(reader, null);
+                    }
                 try
                     {
                     output_edit.setFileName(file.getCanonicalPath());
@@ -1658,28 +1660,9 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
             } else
             {
-            if (o_edit.getContentType().indexOf("text/plain") < 0)
-                {
-                /*
-                 * String tmptext = o_edit.getText(); try {
-                 * o_edit.setContentType("text"); kit = ((EditorKit)
-                 * output_edit.getEditorKit()); doc = ((Document)
-                 * output_edit.getDocument()); tmptext =
-                 * parseHTMLToText(tmptext);
-                 * //JOptionPane.showMessageDialog(null, tmptext, "Test",
-                 * JOptionPane.INFORMATION_MESSAGE);
-                 * //o_edit.appendParagraph(tmptext); o_edit.setText(tmptext);
-                 * //kit = o_edit.getEditorKitForContentType("text/plain");
-                 * //doc = o_edit.getDocument(); } catch(Exception e) { return
-                 * false; } tmptext = null;
-                 */
-                kit = o_edit.getEditorKitForContentType("text/plain");
-                doc = o_edit.getDocument();
-                } else
-                {
-                kit = o_edit.getEditorKitForContentType("text/plain");
-                doc = o_edit.getDocument();
-                }
+            // 2.1.3: the two branches were identical; collapsed
+            kit = o_edit.getEditorKitForContentType("text/plain");
+            doc = o_edit.getDocument();
             }
 
         try (OutputStream fileout = new FileOutputStream(file_name))
@@ -1729,15 +1712,12 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     public void readInitialSettings()
         {
-        try
+        try (FileReader reader = new FileReader(new File(
+                    "AgnaDefaultSettings.ini")))
             {
-            FileReader reader = new FileReader(new File(
-                    "AgnaDefaultSettings.ini"));
             JTextPane tmp_pane = new JTextPane();
             tmp_pane.read(reader, null);
             my_full_net.parseAgnaNonGraphicDefaultSettings(tmp_pane.getText());
-            tmp_pane = null;
-            reader = null;
             } catch (Exception ex)
             {
             setInitialSettings();
@@ -3412,14 +3392,14 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         a_geodesics = new JMenuItem("Geodesic Matrix");
         a_shortest_paths = new JMenuItem("Shortest Paths...");
         a_all_shortest_paths = new JMenuItem("All Shortest Paths");
-        // a_cliques = new JMenuItem("N-Cliques");
+        a_cliques = new JMenuItem("N-Cliques");
         a_centrality = new JMenu("Centrality");
         a_bavelas = new JMenuItem("Bavelas-Leavitt");
         a_closeness = new JMenuItem("Closeness");
         a_fareness = new JMenuItem("Fareness");
         a_betweenness = new JMenuItem("Betweenness");
-        // a_prestige = new JMenuItem("Prestige");
-        // a_full_analysis = new JMenuItem("Full Analysis");
+        a_prestige = new JMenuItem("Prestige");
+        a_full_analysis = new JMenuItem("Full Analysis");
 
         a_basic.setToolTipText("Give a short description of current network");
         a_sociometrics.setToolTipText("Sociometric coefficients");
@@ -3551,16 +3531,17 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         a_centrality.add(a_fareness);
         a_centrality.addSeparator();
         a_centrality.add(a_betweenness);
-        // a_centrality.addSeparator();
-        // a_centrality.add(a_prestige);
+        a_centrality.addSeparator();
+        a_centrality.add(a_prestige);
 
         mAnalysis.add(a_basic);
         mAnalysis.addSeparator();
         mAnalysis.add(a_distance);
+        mAnalysis.add(a_cliques);
         mAnalysis.add(a_sociometrics);
         mAnalysis.add(a_centrality);
         // mAnalysis.addSeparator();
-        // mAnalysis.add(a_full_analysis);
+        mAnalysis.add(a_full_analysis);
 
         // Submeniuri din VIEW:
         v_viewer = new JMenuItem("Network Viewer");

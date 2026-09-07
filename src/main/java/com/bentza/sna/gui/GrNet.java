@@ -21,7 +21,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import com.bentza.sna.io.JpegUtils;
 
-public class GrNet
+        public class GrNet
     {
     public static JFrame gr_frame;
 
@@ -742,8 +742,6 @@ public class GrNet
             }
         try
             {
-            final FileOutputStream t_fileout = new FileOutputStream(file
-                    .getCanonicalPath());
             final EditorKit t_kit = kit;
             final Document t_doc = doc;
             final File t_file = file;
@@ -755,13 +753,15 @@ public class GrNet
             gr_output_pane.setCursor(Cursor
                     .getPredefinedCursor(Cursor.WAIT_CURSOR));
             setStatus("Writing output file...");
-            try
+            try (FileOutputStream t_fileout = new FileOutputStream(file
+                    .getCanonicalPath()))
                 {
                 t_kit.write(t_fileout, t_doc, 0, t_doc.getLength());
                 t_fileout.flush();
                 gr_output_pane.setFileName(t_file.getCanonicalPath());
                 } catch (Exception e)
                 {
+                System.err.println("GrNet.saveOutput write failed: " + e);
                 }
             gr_frame.setCursor(Cursor
                     .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -821,12 +821,12 @@ public class GrNet
                 }
 
             String file_content = svg.getSVGContent(my_area, outfile);
-            FileWriter writer = new FileWriter(outfile);
-            JTextPane tmp_pane = new JTextPane();
-            tmp_pane.setText(file_content);
-            tmp_pane.write(writer);
-            tmp_pane = null;
-            writer = null;
+            try (FileWriter writer = new FileWriter(outfile))
+                {
+                JTextPane tmp_pane = new JTextPane();
+                tmp_pane.setText(file_content);
+                tmp_pane.write(writer);
+                }
             } catch (Exception e)
             {
             }

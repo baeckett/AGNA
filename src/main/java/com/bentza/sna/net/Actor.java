@@ -12,7 +12,7 @@ import javax.swing.JLabel;
  * connections with others stored in the Vector emissions; alias: Node;
  */
 
-public class Actor extends Object
+        public class Actor extends Object
     {
     public String name;
 
@@ -317,22 +317,22 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
 
     public void setName(String tmp_name)
         {
-        // checking node name:
-        String tmp_char = null;
-        char bad_guy;
-        char good_guy;
+        if (tmp_name == null)
+            {
+            name = null;
+            return;
+            }
+        // 2.1.3: control characters (e.g. tab, newline, CR) would corrupt the
+        // tab-separated .agn file format when the network is saved; they are
+        // replaced with "_" (the 2.1.2 code computed the replacement but
+        // discarded it, so the raw name was stored unchanged)
+        StringBuffer filtered = new StringBuffer(tmp_name.length());
         for (int in = 0; in < tmp_name.length(); in++)
             {
-            if ((int) tmp_name.charAt(in) < 32)
-                {
-                bad_guy = tmp_name.charAt(in);
-                tmp_char = "_";
-                good_guy = tmp_char.charAt(0);
-                tmp_name.replace(bad_guy, good_guy);
-                }
+            char c = tmp_name.charAt(in);
+            filtered.append(c < 32 ? '_' : c);
             }
-
-        name = tmp_name;
+        name = filtered.toString();
         }
 
     // assumes that this node belongs to currently open network!
