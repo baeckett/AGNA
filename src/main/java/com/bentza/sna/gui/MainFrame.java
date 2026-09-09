@@ -106,6 +106,9 @@ public class MainFrame //
 
     private static GrNet my_grafic;
 
+    // 2.1.3: vectors selected in the Save As format dialog
+    private java.util.Vector saved_pajek_vectors;
+
     private JTextField edit_cell;
 
     private DefaultCellEditor grid_editor;
@@ -684,8 +687,14 @@ public class MainFrame //
             // pajek file
             PajekExporter pajek_exporter = new PajekExporter();
             writestr = pajek_exporter.getPajekNetwork(tmp_full_net);
-            // 2.1.3: user-selectable per-node measure vectors (*Vector blocks)
-            java.util.Vector selected_vectors = askPajekVectors();
+            // 2.1.3: user-selectable per-node measure vectors (*Vector blocks);
+            // the Save As options dialog supplies them when available
+            java.util.Vector selected_vectors = saved_pajek_vectors;
+            saved_pajek_vectors = null;
+            if (selected_vectors == null)
+                {
+                selected_vectors = askPajekVectors();
+                }
             if (selected_vectors != null)
                 {
                 writestr += new AgnaLib().getPajekVectors(tmp_full_net
@@ -785,85 +794,10 @@ public class MainFrame //
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
 
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.addChoosableFileFilter(new TabTextFilesFilter());
-        chooser.addChoosableFileFilter(new PajekFilesFilter());
-        chooser.addChoosableFileFilter(new CommaTextFilesFilter());
-        chooser.addChoosableFileFilter(new ExcelFilesFilter());
-        chooser.addChoosableFileFilter(new AgnaFilesFilter());
-
-        javax.swing.filechooser.FileFilter[] filters_list = chooser
-                .getChoosableFileFilters();
-
-        // setting the appropriate FileFilter according to file extension:
-        if (filters_list.length == 5)
-            try
-                {
-                final String tmp_extension = IOUtils.getExtension(file
-                        .getName());
-
-                if (tmp_extension == null)
-                    chooser.setFileFilter(filters_list[4]); // agna filter
-                else if (tmp_extension.equals(""))
-                    chooser.setFileFilter(filters_list[4]); // agna filter
-                else if (tmp_extension.equals("agn"))
-                    chooser.setFileFilter(filters_list[4]); // agna filter
-                else if (tmp_extension.equals("xls"))
-                    chooser.setFileFilter(filters_list[3]); // excel filter
-                else if (tmp_extension.equals("csv"))
-                    chooser.setFileFilter(filters_list[2]); // comma filter
-                else if (tmp_extension.equals("net"))
-                    chooser.setFileFilter(filters_list[1]); // pajek filter
-                else if (tmp_extension.equals("txt"))
-                    chooser.setFileFilter(filters_list[0]); // tab filter
-                } catch (SecurityException e10)
-                {
-                }
-
-        // 2.1.3: keep the typed file name's extension in sync with the
-        // selected filter (Pajek -> .net, CSV -> .csv, ...) while the
-        // dialog is open
-        chooser.addPropertyChangeListener(
-                new java.beans.PropertyChangeListener()
-                    {
-                        public void propertyChange(
-                                java.beans.PropertyChangeEvent evt)
-                            {
-                            if (!"fileFilterChanged".equals(evt
-                                    .getPropertyName()))
-                                {
-                                return;
-                                }
-                            javax.swing.filechooser.FileFilter f = chooser
-                                    .getFileFilter();
-                            String ext = null;
-                            if (f instanceof PajekFilesFilter)
-                                ext = "net";
-                            else if (f instanceof CommaTextFilesFilter)
-                                ext = "csv";
-                            else if (f instanceof TabTextFilesFilter)
-                                ext = "txt";
-                            else if (f instanceof ExcelFilesFilter)
-                                ext = "xls";
-                            else if (f instanceof AgnaFilesFilter)
-                                ext = "agn";
-                            if (ext != null)
-                                {
-                                java.io.File sel = chooser.getSelectedFile();
-                                // only sync a real file selection, never the
-                                // directory itself (on some platforms the
-                                // current directory is returned at event time)
-                                if (sel != null && !sel.isDirectory()
-                                        && sel.getName().length() > 0)
-                                    {
-                                    chooser.setSelectedFile(new java.io.File(
-                                            IOUtils.setExtension(
-                                                    sel.getAbsolutePath(), ext)));
-                                    }
-                                }
-                            }
-                    });
-
+        chooser.setAcceptAllFileFilterUsed(true);
+        chooser.setDialogTitle("Save Network As...");
+        // 2.1.3: the format is chosen in the options dialog AFTER the name;
+        // the chooser itself takes any name and Agna appends the extension
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             {
             grid_model.setReady(true);
@@ -889,37 +823,21 @@ public class MainFrame //
             return;
             }
 
-        // all files was selected:
-        // if (chooser.getFileFilter() instanceof AgnaFilesFilter)
-        if (chooser.getFileFilter() == chooser.getAcceptAllFileFilter()
-                || chooser.getFileFilter() instanceof AgnaFilesFilter)
+        // 2.1.3: reliable, platform-independent format choice: one options
+        // dialog selects the format (and, for Pajek, the vectors); the
+        // extension is appended here so the saved file always matches the
+        // visible choice
+        int chosen_format = askExportFormatDialog();
+        if (chosen_format < 0)
             {
-            filename = IOUtils.setExtension(filename, "agn");
+            grid_model.setReady(true);
+            my_frame.validate();
+            my_frame.repaint();
+            return;
             }
-
-        // Excel files was selected:
-        else if (chooser.getFileFilter() instanceof ExcelFilesFilter)
-            {
-            filename = IOUtils.setExtension(filename, "xls");
-            }
-
-        // text files was selected:
-        else if (chooser.getFileFilter() instanceof TabTextFilesFilter)
-            {
-            filename = IOUtils.setExtension(filename, "txt");
-            }
-
-        // pajek files was selected:
-        else if (chooser.getFileFilter() instanceof PajekFilesFilter)
-            {
-            filename = IOUtils.setExtension(filename, "net");
-            }
-
-        // csv files was selected:
-        else if (chooser.getFileFilter() instanceof CommaTextFilesFilter)
-            {
-            filename = IOUtils.setExtension(filename, "csv");
-            }
+        final String[] format_extensions = { "agn", "txt", "csv", "net", "xls" };
+        filename = IOUtils.setExtension(filename,
+                format_extensions[chosen_format]);
 
         // warning if file already exists
         if (file.exists())
@@ -2697,6 +2615,77 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             return null;
             }
         return result;
+        }
+
+    private int askExportFormatDialog()
+        {
+        final String[] labels = { "Agna (.agn)", "Tab-separated (.txt)",
+                "Comma-separated (.csv)", "Pajek (.net)", "Excel (.xls)" };
+        final String[] vector_options = { "Emission Degree",
+                "Reception Degree", "Weighted Emission Degree",
+                "Sociometric Status", "Nodal Degree", "Betweenness",
+                "Closeness", "Prestige" };
+        final int[] result = new int[] { -1 };
+        final JDialog d = new JDialog(my_frame, "Export format", true);
+        d.setLayout(new BoxLayout(d.getContentPane(), BoxLayout.Y_AXIS));
+        final JRadioButton[] radios = new JRadioButton[labels.length];
+        ButtonGroup group = new ButtonGroup();
+        for (int i = 0; i < labels.length; i++)
+            {
+            radios[i] = new JRadioButton(labels[i], i == 3); // Pajek default
+            group.add(radios[i]);
+            d.add(radios[i]);
+            }
+        d.add(new JLabel("Pajek: per-node measure vectors to append"));
+        final java.util.Hashtable boxes = new java.util.Hashtable();
+        for (int i = 0; i < vector_options.length; i++)
+            {
+            JCheckBox box = new JCheckBox(vector_options[i], true);
+            boxes.put(vector_options[i], box);
+            d.add(box);
+            }
+        JPanel buttons = new JPanel(new FlowLayout());
+        JButton ok = new JButton("Save");
+        JButton cancel = new JButton("Cancel");
+        buttons.add(ok);
+        buttons.add(cancel);
+        d.add(buttons);
+        ok.addActionListener(new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                    {
+                    for (int i = 0; i < radios.length; i++)
+                        {
+                        if (radios[i].isSelected())
+                            {
+                            result[0] = i;
+                            break;
+                            }
+                        }
+                    saved_pajek_vectors = new java.util.Vector();
+                    for (int i = 0; i < vector_options.length; i++)
+                        {
+                        JCheckBox box = (JCheckBox) boxes
+                                .get(vector_options[i]);
+                        if (box.isSelected())
+                            {
+                            saved_pajek_vectors.addElement(vector_options[i]);
+                            }
+                        }
+                    d.dispose();
+                    }
+            });
+        cancel.addActionListener(new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                    {
+                    d.dispose();
+                    }
+            });
+        d.pack();
+        d.setLocationRelativeTo(my_frame);
+        d.setVisible(true);
+        return result[0];
         }
 
     // template for most analysis methods
