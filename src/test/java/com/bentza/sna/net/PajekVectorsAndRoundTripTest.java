@@ -49,12 +49,12 @@ public class PajekVectorsAndRoundTripTest
                 + "1 2\n";
         FullNet fn = new FullNet();
         fn.readNetwork(pajek, "net");
-        fn.attachArea();
 
         Actor a = fn.getNetwork().getActor(0);
         assertTrue(a.getFaceSource().indexOf("Green Square") >= 0,
                 "face should map to bundled Green Square: " + a.getFaceSource());
-        // coordinates scaled into the viewer area (0..1 -> 0..area)
+        // coordinates are stored on the actor; the viewer's default layout
+        // (attachArea) deliberately overrides them
         int x = a.getX(400);
         assertTrue(x > 0 && x < 320, "coordinate should be applied: " + x);
         }
