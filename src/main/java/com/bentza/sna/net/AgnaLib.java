@@ -1868,21 +1868,102 @@ import java.util.Vector;
         return out.toString();
         }
 
+    // 2.1.3: normalization modes. The diagonal (no self-loops) always
+    // stays zero in every mode.
+    public static final int NORMALIZE_BINARY = 0;
+    public static final int NORMALIZE_MAXIMUM = 1;
+    public static final int NORMALIZE_SUM = 2;
+    public static final int NORMALIZE_ROW_MAXIMUM = 3;
+    public static final int NORMALIZE_COLUMN_MAXIMUM = 4;
+
     public void normalize(Network src)
         {
-        int size = src.getSize();
-        int i, j;
-        float finval = 0f;
-        for (i = 0; i < size; i++)
+        normalize(src, NORMALIZE_BINARY);
+        }
+
+    public void normalize(Network src, int mode)
+        {
+        final int size = src.getSize();
+        if (mode == NORMALIZE_BINARY)
             {
-            for (j = 0; j < size; j++)
+            for (int i = 0; i < size; i++)
                 {
-                if (src.getValue(i, j) != 0)
+                for (int j = 0; j < size; j++)
                     {
-                    finval = 1f;
-                    } else
-                    finval = 0f;
-                src.setValue(finval, i, j);
+                    if (i == j)
+                        {
+                        src.setValue(0f, i, j);
+                        } else if (src.getValue(i, j) != 0f)
+                        {
+                        src.setValue(1f, i, j);
+                        }
+                    }
+                }
+            return;
+            }
+        if (mode == NORMALIZE_MAXIMUM)
+            {
+            float max = 0f;
+            for (int i = 0; i < size; i++)
+                for (int j = 0; j < size; j++)
+                    if (i != j)
+                        max = Math.max(max, src.getValue(i, j));
+            if (max > 0f)
+                {
+                for (int i = 0; i < size; i++)
+                    for (int j = 0; j < size; j++)
+                        if (i != j)
+                            src.setValue(src.getValue(i, j) / max, i, j);
+                }
+            return;
+            }
+        if (mode == NORMALIZE_SUM)
+            {
+            float total = 0f;
+            for (int i = 0; i < size; i++)
+                for (int j = 0; j < size; j++)
+                    if (i != j)
+                        total += src.getValue(i, j);
+            if (total > 0f)
+                {
+                for (int i = 0; i < size; i++)
+                    for (int j = 0; j < size; j++)
+                        if (i != j)
+                            src.setValue(src.getValue(i, j) / total, i, j);
+                }
+            return;
+            }
+        if (mode == NORMALIZE_ROW_MAXIMUM)
+            {
+            for (int i = 0; i < size; i++)
+                {
+                float row_max = 0f;
+                for (int j = 0; j < size; j++)
+                    if (i != j)
+                        row_max = Math.max(row_max, src.getValue(i, j));
+                if (row_max > 0f)
+                    {
+                    for (int j = 0; j < size; j++)
+                        if (i != j)
+                            src.setValue(src.getValue(i, j) / row_max, i, j);
+                    }
+                }
+            return;
+            }
+        if (mode == NORMALIZE_COLUMN_MAXIMUM)
+            {
+            for (int j = 0; j < size; j++)
+                {
+                float col_max = 0f;
+                for (int i = 0; i < size; i++)
+                    if (i != j)
+                        col_max = Math.max(col_max, src.getValue(i, j));
+                if (col_max > 0f)
+                    {
+                    for (int i = 0; i < size; i++)
+                        if (i != j)
+                            src.setValue(src.getValue(i, j) / col_max, i, j);
+                    }
                 }
             }
         }

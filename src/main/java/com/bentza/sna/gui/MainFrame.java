@@ -2451,15 +2451,30 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     private void doNormalize()
         {
-        int confirm = JOptionPane.showOptionDialog(my_frame,
-                "All non-zero values will be replaced by 1!\nContinue?",
-                "Confirm normalize operation", JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if (confirm == 0)
+        // 2.1.3: restore the option choice; the binary (non-zero -> 1)
+        // transform stays as the default
+        Object[] options = { "Binary (non-zero -> 1)", "By maximum value",
+                "By sum of values", "By maximum of rows",
+                "By maximum of columns" };
+        String choice = (String) JOptionPane.showInputDialog(my_frame,
+                "Normalize the sociomatrix by:", "Normalization Options",
+                JOptionPane.QUESTION_MESSAGE, null, options,
+                "Binary (non-zero -> 1)");
+        if (choice == null)
             {
-            doTransform((byte) 4, "Converting sociomatrix to binary data...",
-                    -1, (byte) 0, 0f);
+            return;
             }
+        int mode = AgnaLib.NORMALIZE_BINARY;
+        if ("By maximum value".equals(choice))
+            mode = AgnaLib.NORMALIZE_MAXIMUM;
+        else if ("By sum of values".equals(choice))
+            mode = AgnaLib.NORMALIZE_SUM;
+        else if ("By maximum of rows".equals(choice))
+            mode = AgnaLib.NORMALIZE_ROW_MAXIMUM;
+        else if ("By maximum of columns".equals(choice))
+            mode = AgnaLib.NORMALIZE_COLUMN_MAXIMUM;
+        doTransform((byte) 4, "Normalizing current network's sociomatrix...",
+                mode, (byte) 0, 0f);
         }
 
     private void doRemoveOut()
@@ -3273,7 +3288,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         break;
 
                         case 4:
-                        my_full_net.normalize();
+                        my_full_net.normalize(param_1);
                         break;
 
                         case 5:
@@ -3847,7 +3862,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         d_multiply_scalar = new JMenuItem("Scalar Multiplication...");
         d_transpose = new JMenuItem("Transpose");
         d_symmetrize = new JMenuItem("Symmetrize...");
-        d_normalize = new JMenuItem("Normalize");
+        d_normalize = new JMenuItem("Normalize (Binarize)");
         d_remove_out = new JMenuItem("Remove Outsiders");
         d_renumber_nodes = new JMenuItem("Renumber Nodes...");
         d_multiply_network = new JMenuItem("Square Matrix");
