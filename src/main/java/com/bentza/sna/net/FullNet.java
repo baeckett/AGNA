@@ -1528,7 +1528,9 @@ tmp_node.setFace(tmpname);
             }
 
         tmpname = parseFindNextWord(str, "Background Image File");
-        if (tmpname.length() > 0)
+        // 2.1.3: files without this optional setting (or with an empty one)
+        // must not crash the reader
+        if (tmpname != null && tmpname.length() > 0)
             net_area.setBackgroundImage(tmpname);
         else
             {
