@@ -1276,7 +1276,8 @@ import javax.swing.JTextPane;
             }
         if (nn < 2)
             {
-            errors.append("\nInvalid network size value.");
+            if (parseFindNextWord(str, "network size value") != null)
+                errors.append("\nInvalid network size value.");
             return errors.toString();
             }
 
@@ -1375,7 +1376,8 @@ import javax.swing.JTextPane;
             attachArea();
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid image settings.");
+            if (parseFindNextWord(str, "image settings") != null)
+                errors.append("\nInvalid image settings.");
             return errors.toString();
             }
 
@@ -1427,7 +1429,8 @@ tmp_node.setFace(tmpname);
             net_area.setWidthSimply(tmp_width);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Image Width.");
+            if (parseFindNextWord(str, "Image") != null)
+                errors.append("\nInvalid Image Width.");
             tmp_width = 400;
             net_area.setWidthSimply(tmp_width);
             }
@@ -1485,7 +1488,8 @@ tmp_node.setFace(tmpname);
                     "STG Enabled")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid Snap-To-Grid parameter.");
+            if (parseFindNextWord(str, "Snap-To-Grid") != null)
+                errors.append("\nInvalid Snap-To-Grid parameter.");
             }
 
         try
@@ -1494,7 +1498,8 @@ tmp_node.setFace(tmpname);
                     str, "Title Visible")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid View-Title parameter.");
+            if (parseFindNextWord(str, "View-Title") != null)
+                errors.append("\nInvalid View-Title parameter.");
             }
 
         try
@@ -1504,7 +1509,8 @@ tmp_node.setFace(tmpname);
                             str, "Edge Value Visible")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid Show-Edge-Value parameter.");
+            if (parseFindNextWord(str, "Show-Edge-Value") != null)
+                errors.append("\nInvalid Show-Edge-Value parameter.");
             }
 
         try
@@ -1513,7 +1519,8 @@ tmp_node.setFace(tmpname);
                     "Print Names")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid Show-Names parameter.");
+            if (parseFindNextWord(str, "Show-Names") != null)
+                errors.append("\nInvalid Show-Names parameter.");
             }
 
         try
@@ -1522,7 +1529,8 @@ tmp_node.setFace(tmpname);
                     "Grid Enabled")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid Show-Grid parameter.");
+            if (parseFindNextWord(str, "Show-Grid") != null)
+                errors.append("\nInvalid Show-Grid parameter.");
             }
 
         try
@@ -1531,7 +1539,8 @@ tmp_node.setFace(tmpname);
                     "Allow Edge Selection")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid Allow-Edge-Selection parameter.");
+            if (parseFindNextWord(str, "Allow-Edge-Selection") != null)
+                errors.append("\nInvalid Allow-Edge-Selection parameter.");
             }
 
         try
@@ -1540,7 +1549,8 @@ tmp_node.setFace(tmpname);
                     str, "Color Fidelity")));
             } catch (ParsingError e)
             {
-            errors.append("\nInvalid Edge-Loyalty parameter.");
+            if (parseFindNextWord(str, "Edge-Loyalty") != null)
+                errors.append("\nInvalid Edge-Loyalty parameter.");
             }
 
         tmpname = parseFindNextWord(str, "Background Image File");
@@ -1550,7 +1560,8 @@ tmp_node.setFace(tmpname);
             net_area.setBackgroundImage(tmpname);
         else
             {
-            errors.append("\nInvalid Background Picture path.");
+            if (parseFindNextWord(str, "Background Picture") != null)
+                errors.append("\nInvalid Background Picture path.");
             }
 
         try
@@ -1576,7 +1587,8 @@ tmp_node.setFace(tmpname);
             net_area.setNamesX(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Names-X parameter.");
+            if (parseFindNextWord(str, "Names-X") != null)
+                errors.append("\nInvalid Names-X parameter.");
             }
 
         try
@@ -1585,7 +1597,8 @@ tmp_node.setFace(tmpname);
             net_area.setNamesY(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Names-Y parameter.");
+            if (parseFindNextWord(str, "Names-Y") != null)
+                errors.append("\nInvalid Names-Y parameter.");
             }
 
         try
@@ -1594,7 +1607,8 @@ tmp_node.setFace(tmpname);
             net_area.setTitleX(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Title-X parameter.");
+            if (parseFindNextWord(str, "Title-X") != null)
+                errors.append("\nInvalid Title-X parameter.");
             }
 
         try
@@ -1603,7 +1617,8 @@ tmp_node.setFace(tmpname);
             net_area.setTitleY(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Title-Y parameter.");
+            if (parseFindNextWord(str, "Title-Y") != null)
+                errors.append("\nInvalid Title-Y parameter.");
             }
 
         try
@@ -1612,7 +1627,8 @@ tmp_node.setFace(tmpname);
             net_area.setSeparator(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Edge Separation parameter.");
+            if (parseFindNextWord(str, "Edge Separation") != null)
+                errors.append("\nInvalid Edge Separation parameter.");
             }
 
         try
@@ -1622,7 +1638,8 @@ tmp_node.setFace(tmpname);
             net_area.setEdgeValuePosition(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Edge Value Position parameter.");
+            if (parseFindNextWord(str, "Edge Value Position") != null)
+                errors.append("\nInvalid Edge Value Position parameter.");
             }
 
         try
@@ -1631,7 +1648,8 @@ tmp_node.setFace(tmpname);
             net_area.setGridTransparency(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Grid Transparency parameter.");
+            if (parseFindNextWord(str, "Grid Transparency") != null)
+                errors.append("\nInvalid Grid Transparency parameter.");
             }
 
         try
@@ -1640,7 +1658,8 @@ tmp_node.setFace(tmpname);
             net_area.setMaxTransparency(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Most-Faded-Edge parameter.");
+            if (parseFindNextWord(str, "Most-Faded-Edge") != null)
+                errors.append("\nInvalid Most-Faded-Edge parameter.");
             }
 
         try
@@ -1649,7 +1668,8 @@ tmp_node.setFace(tmpname);
             net_area.setBackgroundImageX(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Background-Image-X parameter.");
+            if (parseFindNextWord(str, "Background-Image-X") != null)
+                errors.append("\nInvalid Background-Image-X parameter.");
             }
 
         try
@@ -1658,7 +1678,8 @@ tmp_node.setFace(tmpname);
             net_area.setBackgroundImageY(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Background-Image-Y parameter.");
+            if (parseFindNextWord(str, "Background-Image-Y") != null)
+                errors.append("\nInvalid Background-Image-Y parameter.");
             }
 
         try
@@ -1667,7 +1688,8 @@ tmp_node.setFace(tmpname);
             net_area.setBackgroundImageWidth(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Background-Image-Width parameter.");
+            if (parseFindNextWord(str, "Background-Image-Width") != null)
+                errors.append("\nInvalid Background-Image-Width parameter.");
             }
 
         try
@@ -1676,7 +1698,8 @@ tmp_node.setFace(tmpname);
             net_area.setBackgroundImageHeight(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Background-Image-Height parameter.");
+            if (parseFindNextWord(str, "Background-Image-Height") != null)
+                errors.append("\nInvalid Background-Image-Height parameter.");
             }
 
         try
@@ -1685,7 +1708,8 @@ tmp_node.setFace(tmpname);
             net_area.setGridSpace(nn);
             } catch (Exception e)
             {
-            errors.append("\nInvalid Grid Space parameter.");
+            if (parseFindNextWord(str, "Grid Space") != null)
+                errors.append("\nInvalid Grid Space parameter.");
             }
 
         try
@@ -1694,7 +1718,8 @@ tmp_node.setFace(tmpname);
                     str, "Edge Value Color")));
             } catch (ParsingError e2)
             {
-            errors.append("\nInvalid Edge Value Color parameter.");
+            if (parseFindNextWord(str, "Edge Value Color") != null)
+                errors.append("\nInvalid Edge Value Color parameter.");
             }
 
         try
@@ -1703,7 +1728,8 @@ tmp_node.setFace(tmpname);
                     "Grid Color")));
             } catch (ParsingError e2)
             {
-            errors.append("\nInvalid Grid Color parameter.");
+            if (parseFindNextWord(str, "Grid Color") != null)
+                errors.append("\nInvalid Grid Color parameter.");
             }
 
         try
@@ -1712,7 +1738,8 @@ tmp_node.setFace(tmpname);
                     "Text Color")));
             } catch (ParsingError e2)
             {
-            errors.append("\nInvalid Text Color parameter.");
+            if (parseFindNextWord(str, "Text Color") != null)
+                errors.append("\nInvalid Text Color parameter.");
             }
 
         try
@@ -1721,7 +1748,8 @@ tmp_node.setFace(tmpname);
                     "Title Color")));
             } catch (ParsingError e2)
             {
-            errors.append("\nInvalid Title Color parameter.");
+            if (parseFindNextWord(str, "Title Color") != null)
+                errors.append("\nInvalid Title Color parameter.");
             }
 
         try
@@ -1730,7 +1758,8 @@ tmp_node.setFace(tmpname);
                     str, "Background Color")));
             } catch (ParsingError e2)
             {
-            errors.append("\nInvalid Background Color parameter.");
+            if (parseFindNextWord(str, "Background Color") != null)
+                errors.append("\nInvalid Background Color parameter.");
             }
 
         try
@@ -1739,7 +1768,8 @@ tmp_node.setFace(tmpname);
                     "Arrow Color")));
             } catch (ParsingError e3)
             {
-            errors.append("\nInvalid Edge Color parameter.");
+            if (parseFindNextWord(str, "Edge Color") != null)
+                errors.append("\nInvalid Edge Color parameter.");
             }
         if (errors.length() < 1)
             return null;

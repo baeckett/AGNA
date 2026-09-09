@@ -17,7 +17,7 @@ import java.util.Vector;
 
     // 2.1.3: safety cap for the clique report; enumeration is exponential in
     // the worst case and a dense network can produce millions of cliques
-    public static final int MAX_REPORTED_CLIQUES = 2000;
+    public static final int MAX_REPORTED_CLIQUES = 1000;
 
         public static void initAjna()
         {
