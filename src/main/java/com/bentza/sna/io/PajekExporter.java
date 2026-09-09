@@ -112,6 +112,8 @@ public class PajekExporter
                     face_description.append("shape box ");
                 else if (face_path.indexOf("Star") > 0)
                     face_description.append("shape cross ");
+                else if (face_path.indexOf("Triangle") > 0)
+                    face_description.append("shape triangle ");
                 else if (face_path.indexOf("Man") > 0
                         || face_path.indexOf("Woman") > 0)
                     face_description.append("shape diamond ");

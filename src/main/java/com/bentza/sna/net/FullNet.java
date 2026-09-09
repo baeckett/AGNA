@@ -580,8 +580,8 @@ import javax.swing.JTextPane;
         for (int li = 0; li < lines.length; li++)
             {
             String line = lines[li].trim();
-            if (line.length() == 0)
-                continue;
+            if (line.length() == 0 || line.startsWith("%"))
+                continue; // blank or Pajek comment
             if (line.startsWith("*Vertices"))
                 {
                 in_vertices = true;
@@ -607,7 +607,11 @@ import javax.swing.JTextPane;
                 }
             else if (in_vertices)
                 {
-                names.addElement(parsePajekName(line));
+                // only index-prefixed vertex lines carry data
+                if (Character.isDigit(line.charAt(0)))
+                    {
+                    names.addElement(parsePajekName(line));
+                    }
                 }
             else if (in_arcs)
                 {
@@ -619,7 +623,7 @@ import javax.swing.JTextPane;
                         int from = Integer.parseInt(tok[0]) - 1;
                         int to = Integer.parseInt(tok[1]) - 1;
                         float value = 1f;
-                        if (tok.length >= 3)
+                        if (tok.length >= 3 && !isPajekLineAttr(tok[2]))
                             {
                             value = Float.parseFloat(tok[2]);
                             }
@@ -659,6 +663,14 @@ import javax.swing.JTextPane;
                 my_network.setValue(arc[2], to, from);
                 }
             }
+        }
+
+    // true when the token starts a Pajek line attribute (color `c`, width
+    // `w`, style `s`, label `l`) - i.e. the arc line carried no value
+    private static boolean isPajekLineAttr(String token)
+        {
+        return token.equals("c") || token.equals("w") || token.equals("s")
+                || token.equals("l");
         }
 
     private String parsePajekName(String line)
