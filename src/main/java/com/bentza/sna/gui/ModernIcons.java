@@ -499,11 +499,13 @@ public class ModernIcons
                         (int) (s * 0.34f), (int) (s * 0.66f));
                 break;
             case HELP:
-                // circled question mark: the universal help metaphor
+                // circled question mark: the universal help metaphor; the
+                // question mark stays readable in the faded state
                 g.setColor(line);
                 g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.16f, s * 0.68f,
                         s * 0.68f));
-                g.setColor(accent);
+                g.setColor(rollover ? accent : new Color(ACCENT.getRed(),
+                        ACCENT.getGreen(), ACCENT.getBlue(), 175));
                 g.setFont(new Font(Font.DIALOG, Font.BOLD,
                         Math.round(s * 0.52f)));
                 String q = "?";
