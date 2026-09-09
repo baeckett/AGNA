@@ -821,6 +821,40 @@ import java.util.Vector;
      * 2.1.3: true when every ordered pair of distinct nodes is mutually
      * reachable; uses the geodesics convention (0 = no path).
      */
+
+    /**
+     * 2.1.3: Pajek *Vector blocks for the per-node measures (appended to an
+     * exported .net file). Connectivity-dependent measures are only included
+     * for connected networks.
+     */
+    public String getPajekVectors(Network src)
+        {
+        StringBuffer out = new StringBuffer("");
+        appendPajekVector(out, "Emission Degree", emissionDegree(src));
+        appendPajekVector(out, "Reception Degree", receptionDegree(src));
+        appendPajekVector(out, "Weighted Emission Degree",
+                weightedEmissionDegree(src));
+        appendPajekVector(out, "Sociometric Status", sociometricStatus(src));
+        appendPajekVector(out, "Nodal Degree", nodalDegree(src));
+        if (isConnected(src))
+            {
+            appendPajekVector(out, "Betweenness", betweenness(src));
+            appendPajekVector(out, "Closeness", closeness(src));
+            appendPajekVector(out, "Prestige", prestige(src));
+            }
+        return out.toString();
+        }
+
+    private void appendPajekVector(StringBuffer out, String label,
+            float[] values)
+        {
+        out.append("% " + label + "\n" + "*Vector " + values.length + "\n");
+        for (int i = 0; i < values.length; i++)
+            {
+            out.append(String.valueOf(values[i]) + "\n");
+            }
+        }
+
     private boolean isConnected(Network src)
         {
         int size = src.getSize();
@@ -1116,7 +1150,7 @@ import java.util.Vector;
 
     // closeness: the inverse of fareness;
     // standard value: closeness multiplied by (size - 1)
-    private float[] closeness(Network src)
+    public float[] closeness(Network src)
         {
         int size = src.getSize();
         int i;
@@ -1216,7 +1250,7 @@ import java.util.Vector;
     // 2.1.3: Brandes' algorithm (O(n*m)) replaces the exhaustive
     // shortest-path enumeration; values are identical raw (unnormalized)
     // directed Freeman betweenness.
-    float[] betweenness(Network src)
+    public float[] betweenness(Network src)
         {
         int n = src.getSize();
         boolean[][] mat = src.getBooleanMatrix();
@@ -1975,7 +2009,7 @@ import java.util.Vector;
         }
 
     // considers network as binary:
-    private float[] emissionDegree(Network src)
+    public float[] emissionDegree(Network src)
         {
         int i, j;
         int size = src.getSize();
@@ -2369,7 +2403,7 @@ import java.util.Vector;
         }
 
     // counts the number of non-directed edges:
-    float[] nodalDegree(Network src)
+    public float[] nodalDegree(Network src)
         {
         // 2.1.3: symmetric networks keep the classic neighbour count;
         // asymmetric networks count each direction separately (out + in)

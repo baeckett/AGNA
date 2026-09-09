@@ -684,6 +684,9 @@ public class MainFrame //
             // pajek file
             PajekExporter pajek_exporter = new PajekExporter();
             writestr = pajek_exporter.getPajekNetwork(tmp_full_net);
+            // 2.1.3: append per-node measure vectors (*Vector blocks)
+            writestr += new AgnaLib().getPajekVectors(tmp_full_net
+                    .getNetwork());
             } else if (filestr.equals("txt") || filestr.equals("text")
                 || filestr.equals("dat"))
             {

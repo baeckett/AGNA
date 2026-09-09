@@ -79,8 +79,9 @@ public class PajekExporter
 
         // first stores vertices info,
         // then receives arcs as well.
-        StringBuffer out = new StringBuffer("*Vertices " + String.valueOf(size)
-                + "\n");
+        StringBuffer out = new StringBuffer("% Agna network: "
+                + tmp_network.getName() + "\n"
+                + "*Vertices " + String.valueOf(size) + "\n");
         StringBuffer arcs = new StringBuffer("*Arcs\n");
         String face_path = null;
 
@@ -125,12 +126,20 @@ public class PajekExporter
                         || face_path.indexOf("Shaddow") > 0)
                     face_description.append("bc Gray ");
 
-                // adding info on actor i:
+                // adding info on actor i (2.1.3: coordinates normalized to
+                // 0..1 against the viewer width; vertex size included)
+                int area_width = tmp_full_net.getArea().getWidth();
+                float coord_scale = area_width > 0 ? (float) area_width
+                        : hundred;
                 out.append(String.valueOf(i + 1) + blanc
                         + cursor_actor.getNameInQuotes() + blanc
-                        + String.valueOf(cursor_actor.getX() / hundred) + blanc
-                        + String.valueOf(cursor_actor.getY() / hundred) + blanc
-                        + face_description + "\n");
+                        + String.valueOf((float) cursor_actor.getX()
+                                / coord_scale)
+                        + blanc
+                        + String.valueOf((float) cursor_actor.getY()
+                                / coord_scale)
+                        + blanc + face_description + blanc + "size "
+                        + String.valueOf(cursor_actor.getSize()) + "\n");
                 } // end for
             } // end if
         else

@@ -571,10 +571,13 @@ import javax.swing.JTextPane;
         {
         int n = -1;
         Vector names = new Vector();
-        Vector arcs = new Vector(); // each element: int[]{from, to, value*1000}
+        Vector coords = new Vector(); // float[]{x, y} per vertex
+        Vector faces = new Vector();  // String face source per vertex
+        Vector arcs = new Vector();   // float[]{from, to, value}
         boolean in_vertices = false;
         boolean in_arcs = false;
         boolean directed = true;
+        boolean list_format = false;
 
         String[] lines = str.replace("\r\n", "\n").split("\n");
         for (int li = 0; li < lines.length; li++)
@@ -586,6 +589,7 @@ import javax.swing.JTextPane;
                 {
                 in_vertices = true;
                 in_arcs = false;
+                list_format = false;
                 try
                     {
                     n = Integer.parseInt(line.substring(9).trim().split(" ")[0]);
@@ -598,12 +602,14 @@ import javax.swing.JTextPane;
                 in_arcs = true;
                 in_vertices = false;
                 directed = true;
+                list_format = line.startsWith("*Arcslist");
                 }
             else if (line.startsWith("*Edges"))
                 {
                 in_arcs = true;
                 in_vertices = false;
                 directed = false;
+                list_format = line.startsWith("*Edgeslist");
                 }
             else if (in_vertices)
                 {
@@ -611,12 +617,31 @@ import javax.swing.JTextPane;
                 if (Character.isDigit(line.charAt(0)))
                     {
                     names.addElement(parsePajekName(line));
+                    float[] pos = parsePajekCoords(line);
+                    coords.addElement(pos);
+                    faces.addElement(parsePajekFace(line));
                     }
                 }
             else if (in_arcs)
                 {
                 String[] tok = line.split("\\s+");
-                if (tok.length >= 2)
+                if (list_format && tok.length >= 3)
+                    {
+                    // "v k s1 s2 ... sk" adjacency list
+                    try
+                        {
+                        int from = Integer.parseInt(tok[0]) - 1;
+                        for (int si = 2; si < tok.length; si++)
+                            {
+                            int to = Integer.parseInt(tok[si]) - 1;
+                            arcs.addElement(new float[] { from, to, 1f });
+                            }
+                        } catch (Exception e)
+                        {
+                        AgnaLog.warn("ignoring malformed Pajek list line: " + line);
+                        }
+                    }
+                else if (tok.length >= 2)
                     {
                     try
                         {
@@ -650,6 +675,9 @@ import javax.swing.JTextPane;
             {
             my_network.setNodeName((String) names.elementAt(i), i);
             }
+        // 2.1.3: apply imported coordinates and face styles when a viewer is
+        // available; otherwise they are kept on the actors' coordinate data
+        applyPajekVertexData(coords, faces);
         for (int a = 0; a < arcs.size(); a++)
             {
             float[] arc = (float[]) arcs.elementAt(a);
@@ -665,7 +693,116 @@ import javax.swing.JTextPane;
             }
         }
 
-    // true when the token starts a Pajek line attribute (color `c`, width
+
+    // stores imported coordinates/faces on the network actors (used when a
+    // viewer/area exists)
+    private void applyPajekVertexData(Vector coords, Vector faces)
+        {
+        if (my_network == null)
+            return;
+        int area_width = 400;
+        if (isArea() && net_area != null)
+            {
+            area_width = net_area.getWidth();
+            }
+        int size = my_network.getSize();
+        for (int i = 0; i < size; i++)
+            {
+            Actor actor = my_network.getActor(i);
+            if (actor == null)
+                continue;
+            if (i < coords.size())
+                {
+                float[] pos = (float[]) coords.elementAt(i);
+                // Pajek coordinates are often 0..1; scale up to the viewer
+                float scale = (pos[0] <= 1.0f && pos[1] <= 1.0f)
+                        ? (float) area_width : 1f;
+                actor.moveActor((int) (pos[0] * scale),
+                        (int) (pos[1] * scale), area_width, false);
+                }
+            if (i < faces.size())
+                {
+                String face = (String) faces.elementAt(i);
+                if (face != null)
+                    {
+                    actor.setFace(face);
+                    }
+                }
+            }
+        }
+
+    // parses "ic Color shape Shape [bc ...]" into a bundled face source, or
+    // null when nothing matches (2.1.3: Pajek -> Agna face round-trip)
+    private String parsePajekFace(String line)
+        {
+        String color = "Red";
+        String shape = "Bullet";
+        boolean shadow = false;
+        String[] tok = line.split("\\s+");
+        for (int i = 2; i < tok.length - 1; i++)
+            {
+            if (tok[i].equals("ic"))
+                {
+                String c = tok[i + 1];
+                if (c.equals("Green") || c.equals("Blue"))
+                    {
+                    color = c;
+                    }
+                }
+            else if (tok[i].equals("shape"))
+                {
+                String s = tok[i + 1];
+                if (s.equals("box"))
+                    shape = "Square";
+                else if (s.equals("cross"))
+                    shape = "Star";
+                else if (s.equals("triangle"))
+                    shape = "Triangle";
+                else if (s.equals("diamond"))
+                    shape = "Man";
+                }
+            else if (tok[i].equals("bc") && tok[i + 1].equals("Gray"))
+                {
+                shadow = true;
+                }
+            }
+        String face_name = color + " " + shape + (shadow ? " Shadow" : "")
+                + ".gif";
+        java.io.File face_file = new java.io.File(
+                com.bentza.sna.Environment.getFacesDirectory()
+                        + java.io.File.separator + "Light Background"
+                        + java.io.File.separator + face_name);
+        if (face_file.exists())
+            {
+            try
+                {
+                return face_file.getCanonicalPath();
+                } catch (Exception e)
+                {
+                }
+            }
+        return null;
+        }
+
+    // parses "idx "name" x y ..." into float[]{x, y}, defaults (0,0)
+    private float[] parsePajekCoords(String line)
+        {
+        float[] pos = new float[] { 0f, 0f };
+        String[] tok = line.split("\\s+");
+        if (tok.length >= 4)
+            {
+            try
+                {
+                pos[0] = Float.parseFloat(tok[2]);
+                pos[1] = Float.parseFloat(tok[3]);
+                } catch (NumberFormatException e)
+                {
+                }
+            }
+        return pos;
+        }
+
+    // true when the token starts a Pajek line attribute (color `c`, width    // true when the token starts a Pajek line attribute (color `c`, width
     // `w`, style `s`, label `l`) - i.e. the arc line carried no value
     private static boolean isPajekLineAttr(String token)
         {
