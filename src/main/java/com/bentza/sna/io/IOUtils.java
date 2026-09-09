@@ -93,17 +93,31 @@ public class IOUtils
             {
             return file_name;
             }
-        int dot = file_name.lastIndexOf('.');
+        // 2.1.3: operate on the basename only - a dot inside a directory
+        // name (e.g. "Agna_2.1.3/...") must not be mistaken for the file
+        // extension separator
+        java.io.File as_file = new java.io.File(file_name);
+        String name = as_file.getName();
+        int dot = name.lastIndexOf('.');
+        String new_name;
         if (dot > 0)
             {
-            String current = file_name.substring(dot + 1).toLowerCase();
+            String current = name.substring(dot + 1).toLowerCase();
             if (current.equals(ex_tension.toLowerCase()))
                 {
                 return file_name;
                 }
-            return file_name.substring(0, dot) + "." + ex_tension;
+            new_name = name.substring(0, dot) + "." + ex_tension;
+            } else
+            {
+            new_name = name + "." + ex_tension;
             }
-        return file_name + "." + ex_tension;
+        String parent = as_file.getParent();
+        if (parent == null)
+            {
+            return new_name;
+            }
+        return parent + java.io.File.separator + new_name;
         }
 
     /**

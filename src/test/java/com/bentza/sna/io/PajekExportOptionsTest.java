@@ -54,4 +54,23 @@ public class PajekExportOptionsTest
         String out = new AgnaLib().getPajekVectors(net, new Vector());
         assertEquals("", out);
         }
+
+    @Test
+    public void setExtensionIgnoresDotsInsideDirectoryNames()
+        {
+        assertEquals("/Volumes/MacAPFS/Agna_2.1.3/Samples/example3.net",
+                IOUtils.setExtension(
+                        "/Volumes/MacAPFS/Agna_2.1.3/Samples/example3", "net"));
+        assertEquals("a.b/name.txt",
+                IOUtils.setExtension("a.b/name", "txt"));
+        }
+
+    @Test
+    public void getExtensionIgnoresDotsInsideDirectoryNames()
+        {
+        assertEquals("net",
+                IOUtils.getExtension("a.b/name.net"));
+        assertEquals(null,
+                IOUtils.getExtension("a.b/name"));
+        }
     }
