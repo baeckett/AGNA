@@ -125,6 +125,20 @@ public class MainFrame //
             remembered_export_format = tmp_format;
             }
         }
+    // 2.1.3: whether Pajek exports append the per-node *Vector blocks;
+    // persisted so a Gephi-compatible (no-vector) choice sticks
+    private static boolean pajek_vectors_enabled = true;
+
+    public static boolean isPajekVectorsEnabled()
+        {
+        return pajek_vectors_enabled;
+        }
+
+    public static void setPajekVectorsEnabled(boolean tmp_enabled)
+        {
+        pajek_vectors_enabled = tmp_enabled;
+        }
+
 
     private JTextField edit_cell;
 
