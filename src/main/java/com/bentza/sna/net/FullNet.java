@@ -1904,12 +1904,18 @@ tmp_node.setFace(tmpname);
                     {
                     try
                         {
-                        tmp_val = Float.parseFloat((String) val.elementAt(i
-                                * (ni + 1) + j));
+                        // 2.1.3: trim first; a stray non-numeric cell (e.g. a
+                        // label leaking into the matrix, like " Node") reads
+                        // as 0 silently instead of spamming the console
+                        String cell = ((String) val.elementAt(i * (ni + 1)
+                                + j)).trim();
+                        tmp_val = cell.length() == 0 ? 0f : Float
+                                .parseFloat(cell);
                         my_network.setValue(tmp_val, i - 1, j - 1);
-                        } catch (Exception e2) {
-      AgnaLog.warn("suppressed exception", e2);
-      }
+                        } catch (NumberFormatException e2)
+                        {
+                        // non-numeric cell: treat as 0 (original behaviour)
+                        }
 
                     }
                 }
