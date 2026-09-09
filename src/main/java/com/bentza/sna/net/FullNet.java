@@ -1416,13 +1416,13 @@ tmp_node.setFace(tmpname);
                 // 2.1.3: the icon-width check was unreliable (an icon may
                 // report -1 before its media loads); "source is '-'" already
                 // means the file could not be resolved
-                if (tmp_node.getFaceSource().equals("-"))
+                if ("-".equals(tmp_node.getFaceSource()))
                     {
                     // switching file separator in file path:
                     tmpname = tmpname.replace(other_char, this_char);
                     tmp_node.setFace(tmpname);
 
-                    if (tmp_node.getFaceSource().equals("-"))
+                    if ("-".equals(tmp_node.getFaceSource()))
                         {
                         // if could by no means read face from file:
                         tmp_node.setFace(MainFrame.getDefaultNodeFaceSource());

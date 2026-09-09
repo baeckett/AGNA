@@ -1840,7 +1840,13 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             {
             File face_file = new File(default_node_face_source);
             if (!(face_file).exists())
-                return "-";
+                {
+                // 2.1.3: the bundled red bullet is the guaranteed default;
+                // ensureAssetsExtracted() materialises it from the jar
+                default_node_face_source = Environment.getFacesDirectory()
+                        + System.getProperty("file.separator")
+                        + "Red Bullet.gif";
+                }
             return default_node_face_source;
             } catch (Exception e)
             {
@@ -3321,10 +3327,10 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     // set look & feel:: *********************
 
     // 2.1.3: preferred look and feel, persisted in the settings:
-    //   flatlaf-dark   FlatLaf dark (default)
+    //   flatlaf-dark   FlatLaf dark
     //   flatlaf        FlatLaf light
-    //   system         native per platform
-    private static String look_and_feel = "flatlaf";
+    //   system         native per platform (default)
+    private static String look_and_feel = "system";
 
     public static String getLookAndFeel()
         {

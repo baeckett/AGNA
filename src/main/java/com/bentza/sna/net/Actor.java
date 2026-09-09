@@ -293,7 +293,15 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
     public void setFace(String tmp_face_source)
         {
         giveUpFace();
-        face_item = getImageStockInstance().requestImageItem(tmp_face_source);
+                // 2.1.3: a missing or unresolvable face ("-", empty, null) falls
+        // back to the application default (the red bullet), so saved
+        // networks never lose their node faces
+        if (tmp_face_source == null || tmp_face_source.length() == 0
+                || tmp_face_source.equals("-"))
+            {
+            tmp_face_source = MainFrame.getDefaultNodeFaceSource();
+            }
+face_item = getImageStockInstance().requestImageItem(tmp_face_source);
         try
             {
             node_size = Math.max(face_item.image_icon.getIconWidth(),
