@@ -1,6 +1,7 @@
 package com.bentza.sna;
 
 import com.bentza.sna.gui.MainFrame;
+import javax.swing.JOptionPane;
 import java.awt.Cursor;
 
 public class AgnaThread // extends Thread
@@ -32,14 +33,30 @@ public class AgnaThread // extends Thread
         }
 
    
-    public void go()
+public void go()
         {
         if (!MainFrame.progress_dialog.getStart())
             return; // most probably there is another thread running
         MainFrame.progress_dialog.startPane(Environment.getApplicationFullName()
                 + " process.", "");
         // this.start();
-        this.run();
+        try
+            {
+            this.run();
+            } catch (Exception thread_failure)
+            {
+            // 2.1.3: an exception inside an operation used to kill the
+            // wait-state silently, leaving "no output" with no message;
+            // surface it and always restore the UI state
+            AgnaLog.error("operation failed", thread_failure);
+            JOptionPane.showMessageDialog(MainFrame.getCurrentFrame(),
+                    "Agna operation failed:\n" + thread_failure
+                            + "\nSee the console for details.", "Agna",
+                    JOptionPane.ERROR_MESSAGE);
+            } finally
+            {
+            this.undecorate();
+            }
         }
 
     public void finish() // called inside thread before the end of run()
