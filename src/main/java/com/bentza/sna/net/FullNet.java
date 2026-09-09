@@ -538,6 +538,8 @@ import javax.swing.JTextPane;
             parsePlainTextFile(str);
         else if (extension.equals("csv")) // csv file
             parseCommaTextFile(str);
+        else if (extension.equals("net")) // Pajek file
+            parsePajekFile(str);
         else if (extension.equals("ana")) // Ana file
             parseAnaTextFile(str);
         else
@@ -557,6 +559,126 @@ import javax.swing.JTextPane;
                         JOptionPane.INFORMATION_MESSAGE);
                 }
             }
+        }
+
+
+    // 2.1.3: minimal Pajek (.net) reader. Supports:
+    //   *Vertices N
+    //   idx "name" x y ...       (quoted or unquoted names)
+    //   *Arcs / *Edges
+    //   from to [value] ...      (extra columns ignored)
+    private void parsePajekFile(String str)
+        {
+        int n = -1;
+        Vector names = new Vector();
+        Vector arcs = new Vector(); // each element: int[]{from, to, value*1000}
+        boolean in_vertices = false;
+        boolean in_arcs = false;
+        boolean directed = true;
+
+        String[] lines = str.replace("\r\n", "\n").split("\n");
+        for (int li = 0; li < lines.length; li++)
+            {
+            String line = lines[li].trim();
+            if (line.length() == 0)
+                continue;
+            if (line.startsWith("*Vertices"))
+                {
+                in_vertices = true;
+                in_arcs = false;
+                try
+                    {
+                    n = Integer.parseInt(line.substring(9).trim().split(" ")[0]);
+                    } catch (Exception e)
+                    {
+                    }
+                }
+            else if (line.startsWith("*Arcs"))
+                {
+                in_arcs = true;
+                in_vertices = false;
+                directed = true;
+                }
+            else if (line.startsWith("*Edges"))
+                {
+                in_arcs = true;
+                in_vertices = false;
+                directed = false;
+                }
+            else if (in_vertices)
+                {
+                names.addElement(parsePajekName(line));
+                }
+            else if (in_arcs)
+                {
+                String[] tok = line.split("\\s+");
+                if (tok.length >= 2)
+                    {
+                    try
+                        {
+                        int from = Integer.parseInt(tok[0]) - 1;
+                        int to = Integer.parseInt(tok[1]) - 1;
+                        float value = 1f;
+                        if (tok.length >= 3)
+                            {
+                            value = Float.parseFloat(tok[2]);
+                            }
+                        arcs.addElement(new float[] { from, to, value });
+                        } catch (Exception e)
+                        {
+                        AgnaLog.warn("ignoring malformed Pajek arc line: " + line);
+                        }
+                    }
+                }
+            }
+
+        if (n < 2)
+            {
+            n = Math.max(n, names.size());
+            }
+        if (n < 2)
+            {
+            AgnaLog.warn("Pajek file contains no usable network.");
+            return;
+            }
+        my_network = new Network(n);
+        for (int i = 0; i < names.size() && i < n; i++)
+            {
+            my_network.setNodeName((String) names.elementAt(i), i);
+            }
+        for (int a = 0; a < arcs.size(); a++)
+            {
+            float[] arc = (float[]) arcs.elementAt(a);
+            int from = (int) arc[0];
+            int to = (int) arc[1];
+            if (from < 0 || from >= n || to < 0 || to >= n)
+                continue;
+            my_network.setValue(arc[2], from, to);
+            if (!directed)
+                {
+                my_network.setValue(arc[2], to, from);
+                }
+            }
+        }
+
+    private String parsePajekName(String line)
+        {
+        // "quoted name" possibly followed by coordinates
+        int q1 = line.indexOf('"');
+        if (q1 >= 0)
+            {
+            int q2 = line.indexOf('"', q1 + 1);
+            if (q2 > q1)
+                {
+                return line.substring(q1 + 1, q2);
+                }
+            }
+        String[] tok = line.split("\\s+");
+        if (tok.length >= 2)
+            {
+            return tok[1];
+            }
+        return "Node " + line;
         }
 
     // parses chain-string and creates a network out of it

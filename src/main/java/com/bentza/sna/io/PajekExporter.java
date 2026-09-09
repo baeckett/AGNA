@@ -27,22 +27,19 @@ public class PajekExporter
         {
         }
 
-    private StringBuffer getArcsDescription(int size, FullNet full_net, int i,
-            Actor cursor_actor, Color arrow_color)
+    private StringBuffer getArcsDescription(int size, int i, Actor cursor_actor)
         {
+        // 2.1.3: canonical Pajek arc lines: "from to [value]"; only
+        // non-zero ties are emitted
         StringBuffer out = new StringBuffer("");
-        String edges_mat_runner = null;
-        final String blanc = " ";
         for (int j = 0; j < size; j++)
             {
-            edges_mat_runner = String.valueOf((byte) full_net.getArea()
-                    .getEdgesMat(i, j));
-            out.append(String.valueOf(i + 1) + blanc + String.valueOf(j + 1)
-                    + blanc + cursor_actor.getEmissionsValue(j) + blanc + "c"
-                    + " rgba(" + String.valueOf(arrow_color.getRed()) + ","
-                    + String.valueOf(arrow_color.getGreen()) + ","
-                    + String.valueOf(arrow_color.getBlue()) + ","
-                    + edges_mat_runner + ")" + "\n");
+            float value = cursor_actor.getEmissionsValue(j);
+            if (value != 0f)
+                {
+                out.append(String.valueOf(i + 1) + " " + String.valueOf(j + 1)
+                        + " " + String.valueOf(value) + "\n");
+                }
             }
         return out;
         }
@@ -85,7 +82,6 @@ public class PajekExporter
         StringBuffer out = new StringBuffer("*Vertices " + String.valueOf(size)
                 + "\n");
         StringBuffer arcs = new StringBuffer("*Arcs\n");
-        StringBuffer face_description = new StringBuffer("");
         String face_path = null;
 
         if (is_area)
@@ -94,6 +90,10 @@ public class PajekExporter
                 {
                 cursor_actor = (Actor) nodes.elementAt(i);
                 face_path = cursor_actor.getFaceSource();
+
+                // 2.1.3: style is per-vertex; the old code kept one shared
+                // buffer that accumulated "ic Red shape ellipse" on every line
+                StringBuffer face_description = new StringBuffer("");
 
                 // finding colour:
                 if (face_path.indexOf("Red") > 0)
@@ -142,6 +142,15 @@ public class PajekExporter
                 } // end for
             }// end else
 
+        // 2.1.3: the arc section was never written before
+        if (is_area)
+            {
+            for (int i = 0; i < size; i++)
+                {
+                cursor_actor = (Actor) nodes.elementAt(i);
+                arcs.append(getArcsDescription(size, i, cursor_actor));
+                }
+            }
         out.append(arcs);
         return out.toString();
         }
