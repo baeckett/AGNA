@@ -455,16 +455,21 @@ public class VerticalToolBar extends JPanel
         top_panel.add(search_field);
 
         // placing search_button:
-        search_button = new JButton(Environment
-                .getButtonImageIcon("SearchNodes.gif"));
+        search_button = new JButton(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("SearchNodes.gif")
+                : ModernIcons.get(ModernIcons.SEARCH, 22));
         // ImageIcon search_button_image =
         // Environment.getButtonImageIcon("SearchNodes.gif");
-        search_button.setRolloverIcon(Environment
-                .getButtonImageIcon("rSearchNodes.gif"));
-        search_button.setSelectedIcon(Environment
-                .getButtonImageIcon("StopSearching.gif"));
-        search_button.setRolloverSelectedIcon(Environment
-                .getButtonImageIcon("StopSearching.gif"));
+        search_button.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rSearchNodes.gif")
+                : ModernIcons.get(ModernIcons.SEARCH, 22, true));
+        search_button.setSelectedIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("StopSearching.gif")
+                : ModernIcons.get(ModernIcons.STOP, 22));
+        search_button.setRolloverSelectedIcon(MainFrame
+                .isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("StopSearching.gif")
+                : ModernIcons.get(ModernIcons.STOP, 22, true));
         // search_button.setPreferredSize(button_dimension);
         // search_button.setMaximumSize(button_dimension);
         search_button.setToolTipText(START_TOOL_TIP);

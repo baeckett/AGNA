@@ -53,8 +53,11 @@ public class ModernIcons
     // spin-arrow buttons (coordinate/value panels)
     public static final int UP_ARROW = 25;
     public static final int DOWN_ARROW = 26;
+    // node-search panel (Network Viewer search area)
+    public static final int SEARCH = 27;
+    public static final int STOP = 28;
 
-    public static final int KIND_COUNT = 27;
+    public static final int KIND_COUNT = 29;
 
     private static final Color ACCENT = new Color(37, 99, 235);
     private static final Color ACCENT_DEEP = new Color(30, 58, 138);
@@ -69,7 +72,7 @@ public class ModernIcons
     // blue rollover version stands out clearly (a truly faded gray)
     private static Color fade(Color c)
         {
-        return new Color(c.getRed(), c.getGreen(), c.getBlue(), 150);
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), 110);
         }
 
     public static ImageIcon get(int kind, int size)
@@ -444,6 +447,26 @@ public class ModernIcons
                 g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s * 0.60f, s * 0.40f, s * 0.20f,
                         s * 0.20f));
+                break;
+            case SEARCH:
+                // magnifying glass: neutral lens + handle, blue focus dot
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.18f, s * 0.18f, s * 0.46f,
+                        s * 0.46f));
+                g.drawLine((int) (s * 0.56f), (int) (s * 0.56f),
+                        (int) (s * 0.80f), (int) (s * 0.80f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.395f, s * 0.395f,
+                        s * 0.09f, s * 0.09f));
+                break;
+            case STOP:
+                // stop sign: neutral frame + blue core (search-in-progress)
+                g.setColor(line);
+                g.drawRoundRect((int) (s * 0.22f), (int) (s * 0.22f),
+                        (int) (s * 0.56f), (int) (s * 0.56f), 4, 4);
+                g.setColor(accent);
+                g.fillRoundRect((int) (s * 0.36f), (int) (s * 0.36f),
+                        (int) (s * 0.28f), (int) (s * 0.28f), 3, 3);
                 break;
             case UP_ARROW:
             case DOWN_ARROW:
