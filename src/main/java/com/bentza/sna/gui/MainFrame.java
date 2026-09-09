@@ -791,13 +791,23 @@ public class MainFrame //
         chooser.setDialogTitle("Save Current Network");
         File file = null;
 
-        // setting name of file (2.1.3: guarded defaults - a failed read
-        // must not leak a directory or an empty name into the dialog)
+        // setting name of file. 2.1.3: self-healing - a missing, directory
+        // like, or orphaned (parent missing) stored name falls back to the
+        // network's own name, so stale junk names cannot stick around
         String network_file_name = my_full_net.getNetworkFileName();
-        if (network_file_name == null || network_file_name.equals(""))
+        boolean stored_name_usable = network_file_name != null
+                && network_file_name.length() > 0
+                && !network_file_name.endsWith(java.io.File.separator)
+                && !(new java.io.File(network_file_name).isDirectory());
+        java.io.File stored_parent = stored_name_usable ? new java.io.File(
+                network_file_name).getParentFile() : null;
+        if (!stored_name_usable
+                || stored_parent == null
+                || !stored_parent.exists())
             {
             String net_name = (my_full_net.getNetwork() != null
-                    && my_full_net.getNetwork().getName() != null) ? my_full_net
+                    && my_full_net.getNetwork().getName() != null
+                    && my_full_net.getNetwork().getName().length() > 0) ? my_full_net
                     .getNetwork().getName() : "network";
             String working_dir = MainFrame.getWorkingDirectory();
             file = new File((working_dir != null ? working_dir : "") + net_name
