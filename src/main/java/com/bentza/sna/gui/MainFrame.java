@@ -3752,6 +3752,8 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         // submeniuri din FILE:
         f_new = new JMenuItem("New Network");
         f_open = new JMenuItem("Open Network");
+        d_merge = new JMenuItem("Merge Network...");
+        // 2.1.3: Merge Network lives in the File menu, after Open
         f_save = new JMenuItem("Save Network As...");
         f_simply_save = new JMenuItem("Save Network");
         f_create = new JMenuItem("New From Chain...");
@@ -3787,6 +3789,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         mFile.add(f_new);
         mFile.add(f_open);
+        mFile.add(d_merge);
         mFile.addSeparator();
         mFile.add(f_create);
         mFile.addSeparator();
@@ -3847,7 +3850,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         d_normalize = new JMenuItem("Normalize");
         d_remove_out = new JMenuItem("Remove Outsiders");
         d_renumber_nodes = new JMenuItem("Renumber Nodes...");
-        d_merge = new JMenuItem("Merge Network...");
         d_multiply_network = new JMenuItem("Square Matrix");
 
         d_title.setToolTipText("Change current network's title");
@@ -3919,7 +3921,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         mData.add(d_symmetrize);
         mData.add(d_normalize);
         mData.addSeparator();
-        // mData.add(d_merge);
         mData.add(d_multiply_network);
 
         // Submeniuri din ANALYSIS:
