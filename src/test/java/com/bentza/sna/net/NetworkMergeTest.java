@@ -88,4 +88,36 @@ public class NetworkMergeTest
         assertEquals(2f, merged.getValue(0, 1), 1e-6f);
         assertTrue(merged.isSymmetric());
         }
+    @Test
+    public void mergedActorsAlwaysHaveCoordinates()
+        {
+        float[][] a = { { 0f, 1f }, { 0f, 0f } };
+        float[][] b = { { 0f, 0f }, { 1f, 0f } };
+        Network merged = named(a, "A", "B").merge(named(b, "B", "C"),
+                Network.MERGE_SUM);
+        for (int i = 0; i < merged.getSize(); i++)
+            {
+            // regression: the viewer calls getX/getY while painting edges
+            assertEquals(true, merged.getActor(i).hasCoordinates());
+            merged.getActor(i).getX(400);
+            merged.getActor(i).getY(400);
+            }
+        }
+
+    @Test
+    public void mergeCarriesTheCurrentLayoutOver()
+        {
+        float[][] a = { { 0f, 1f }, { 0f, 0f } };
+        float[][] b = { { 0f, 0f }, { 1f, 0f } };
+        Network first = named(a, "A", "B");
+        first.getActor(0).setX(0.3f);
+        first.getActor(0).setY(0.7f);
+        first.getActor(1).setX(0.6f);
+        first.getActor(1).setY(0.2f);
+        Network merged = first.merge(named(b, "B", "C"), Network.MERGE_SUM);
+        assertEquals(first.getActor(0).getX(400), merged.getActor(0).getX(400));
+        assertEquals(first.getActor(0).getY(400), merged.getActor(0).getY(400));
+        assertEquals(first.getActor(1).getX(400), merged.getActor(1).getX(400));
+        assertEquals(true, merged.getActor(2).hasCoordinates());
+        }
     }

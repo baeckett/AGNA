@@ -3877,7 +3877,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         d_multiply_scalar = new JMenuItem("Scalar Multiplication...");
         d_transpose = new JMenuItem("Transpose");
         d_symmetrize = new JMenuItem("Symmetrize...");
-        d_normalize = new JMenuItem("Normalize (Binarize)");
+        d_normalize = new JMenuItem("Normalize (Binarize)...");
         d_remove_out = new JMenuItem("Remove Outsiders");
         d_renumber_nodes = new JMenuItem("Renumber Nodes...");
         d_multiply_network = new JMenuItem("Square Matrix");

@@ -94,6 +94,36 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
         xy = new NodeXY();
         }
 
+    // 2.1.3: coordinates may be missing (freshly merged actors, plain
+    // text imports) until the viewer lays the network out; these helpers
+    // make the viewer safe and let a merge carry the previous layout over
+    public boolean hasCoordinates()
+        {
+        return xy != null;
+        }
+
+    public void createCoordinatesIfMissing()
+        {
+        if (xy == null)
+            {
+            xy = new NodeXY();
+            }
+        }
+
+    public void copyCoordinatesFrom(Actor other)
+        {
+        if (other == null || other.xy == null)
+            {
+            return;
+            }
+        if (xy == null)
+            {
+            xy = new NodeXY();
+            }
+        xy.setX(other.xy.getX());
+        xy.setY(other.xy.getY());
+        }
+
     public void addEmissionsElement()
         {
         float[] tmp = new float[emissions.length + 1];
@@ -442,21 +472,29 @@ face_item = getImageStockInstance().requestImageItem(tmp_face_source);
 
     public int getX(int x_max)
         {
+        // 2.1.3: never crash the viewer on a missing position
+        createCoordinatesIfMissing();
         return xy.getX(x_max);
         }
 
     public int getY(int y_max)
         {
+        // 2.1.3: never crash the viewer on a missing position
+        createCoordinatesIfMissing();
         return xy.getY(y_max);
         }
 
     public void setX(float tmp_x)
         {
+        // 2.1.3: guard so dragging works even before the viewer lays out
+        createCoordinatesIfMissing();
         xy.setX(tmp_x);
         }
 
     public void setY(float tmp_y)
         {
+        // 2.1.3: guard so dragging works even before the viewer lays out
+        createCoordinatesIfMissing();
         xy.setY(tmp_y);
         }
 

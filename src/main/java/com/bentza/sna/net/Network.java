@@ -932,6 +932,21 @@ public class Network
             {
             result.getActor(i).setName(names.get(i));
             }
+        // 2.1.3: the viewer must be able to paint merged actors right away:
+        // carry the current layout over, then the second network's, and
+        // default the rest so no actor reaches the viewer without a position
+        for (int i = 0; i < size_a; i++)
+            {
+            result.getActor(i).copyCoordinatesFrom(getActor(i));
+            }
+        for (int k = 0; k < size_b; k++)
+            {
+            result.getActor(map_b[k]).copyCoordinatesFrom(other.getActor(k));
+            }
+        for (int i = 0; i < size_u; i++)
+            {
+            result.getActor(i).createCoordinatesIfMissing();
+            }
         for (int i = 0; i < size_a; i++)
             {
             for (int j = 0; j < size_a; j++)
