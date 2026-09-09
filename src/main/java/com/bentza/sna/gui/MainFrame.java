@@ -1899,11 +1899,12 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         try
             {
-            File face_file = new File(default_node_face_source);
-            if (!(face_file).exists())
+            // 2.1.3: the field may still be null when a settings file
+            // exists without a "Default Node Face" line - re-derive the
+            // bundled red bullet in that case too (null-safe)
+            if (default_node_face_source == null
+                    || !(new File(default_node_face_source)).exists())
                 {
-                // 2.1.3: the bundled red bullet is the guaranteed default;
-                // ensureAssetsExtracted() materialises it from the jar
                 default_node_face_source = Environment.getFacesDirectory()
                         + System.getProperty("file.separator")
                         + "Red Bullet.gif";
@@ -3806,11 +3807,23 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         upleft_button.setPreferredSize(new Dimension((int) (col_width * 2 / 3),
                 my_grid.getRowHeight()));
         // upleft_button.setEnabled(false);
-        lowerleft_button = new JButton(
-                "<html><font size = 1 color='#298C8C' face='Arial,Helvetica,Verdana,sans-serif'>Help</font>");
+        lowerleft_button = new JButton();
+        if (MainFrame.isClassicToolbarIcons())
+            {
+            lowerleft_button
+                    .setText("<html><font size = 1 color='#298C8C' "
+                            + "face='Arial,Helvetica,Verdana,sans-serif'>"
+                            + "Help</font>");
+            lowerleft_button.setBorder(new LineBorder(Color.gray, 1));
+            } else
+            {
+            lowerleft_button.setIcon(ModernIcons.get(ModernIcons.HELP, 20));
+            lowerleft_button.setRolloverIcon(
+                    ModernIcons.get(ModernIcons.HELP, 20, true));
+            lowerleft_button.setBorder(null);
+            }
         lowerleft_button.addActionListener(act_menu);
         lowerleft_button.setToolTipText("Display the Agna Help frame Ctrl+H");
-        lowerleft_button.setBorder(new LineBorder(Color.gray, 1));
         // lowerleft_button.setEnabled(false);
         JButton upright_button = new JButton();
         upright_button.setBorder(new LineBorder(Color.gray, 1));

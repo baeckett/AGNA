@@ -1750,6 +1750,41 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     // 2.1.3: gives a field caption the faded-gray/accent-blue two-state
     // look (hover and field focus activate the blue state)
+    // icon caption variant of the two-state look: swaps between the faded
+    // and the blue icon on hover or field focus
+    private static void styleTwoStateIconLabel(final javax.swing.JLabel label,
+            final javax.swing.JTextField partner, int kind)
+        {
+        final int k = kind;
+        label.setIcon(ModernIcons.get(k, 16));
+        label.addMouseListener(new java.awt.event.MouseAdapter()
+            {
+            public void mouseEntered(java.awt.event.MouseEvent e)
+                {
+                label.setIcon(ModernIcons.get(k, 16, true));
+                }
+            public void mouseExited(java.awt.event.MouseEvent e)
+                {
+                label.setIcon(ModernIcons.get(k, 16, partner != null
+                        && partner.isFocusOwner()));
+                }
+            });
+        if (partner != null)
+            {
+            partner.addFocusListener(new java.awt.event.FocusAdapter()
+                {
+                public void focusGained(java.awt.event.FocusEvent e)
+                    {
+                    label.setIcon(ModernIcons.get(k, 16, true));
+                    }
+                public void focusLost(java.awt.event.FocusEvent e)
+                    {
+                    label.setIcon(ModernIcons.get(k, 16, false));
+                    }
+                });
+            }
+        }
+
     private static void styleTwoStateLabel(final javax.swing.JLabel label,
             final javax.swing.JTextField partner)
         {
@@ -4007,8 +4042,10 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ? Environment.getButtonImageIcon("DeleteNodes.gif")
                 : ModernIcons.get(ModernIcons.DELETE_NODE, 22));
 
-        JLabel glabel_separator = new JLabel(Environment
-                .getButtonImageIcon("Separation.gif"));
+        JLabel glabel_separator = new JLabel(MainFrame
+                .isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("Separation.gif")
+                : ModernIcons.get(ModernIcons.SEPARATION, 16));
         glabel_edge_value = new JLabel("E:");
         gfield_separator = new JTextField(String
                 .valueOf(my_area.getSeparator()));
@@ -4025,6 +4062,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         styleTwoStateLabel(glabel_x, gfield_x);
         styleTwoStateLabel(glabel_y, gfield_y);
         styleTwoStateLabel(glabel_edge_value, gfield_edge_value);
+        styleTwoStateIconLabel(glabel_separator, gfield_separator,
+                ModernIcons.SEPARATION);
         gtool_change_x = new DoubleButton();
         gtool_change_y = new DoubleButton();
 

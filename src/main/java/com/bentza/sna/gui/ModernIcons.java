@@ -58,8 +58,10 @@ public class ModernIcons
     public static final int STOP = 28;
     public static final int MATCH = 29;
     public static final int CLEAR_AREA = 30;
+    public static final int HELP = 31;
+    public static final int SEPARATION = 32;
 
-    public static final int KIND_COUNT = 31;
+    public static final int KIND_COUNT = 33;
 
     public static Color accent()
         {
@@ -491,6 +493,36 @@ public class ModernIcons
                         (int) (s * 0.66f), (int) (s * 0.66f));
                 g.drawLine((int) (s * 0.66f), (int) (s * 0.34f),
                         (int) (s * 0.34f), (int) (s * 0.66f));
+                break;
+            case HELP:
+                // circled question mark: the universal help metaphor
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.16f, s * 0.68f,
+                        s * 0.68f));
+                g.setColor(accent);
+                g.setFont(new Font(Font.DIALOG, Font.BOLD,
+                        Math.round(s * 0.52f)));
+                String q = "?";
+                int qw = g.getFontMetrics().stringWidth(q);
+                g.drawString(q, Math.round((s - qw) / 2f),
+                        Math.round(s * 0.66f));
+                break;
+            case SEPARATION:
+                // two nodes with a distance double-arrow: edge separation
+                g.setColor(line);
+                g.fill(new Ellipse2D.Float(s * 0.14f, s * 0.40f, s * 0.20f,
+                        s * 0.20f));
+                g.fill(new Ellipse2D.Float(s * 0.66f, s * 0.40f, s * 0.20f,
+                        s * 0.20f));
+                g.drawLine((int) (s * 0.36f), (int) (s * 0.50f),
+                        (int) (s * 0.64f), (int) (s * 0.50f));
+                g.drawLine((int) (s * 0.56f), (int) (s * 0.42f),
+                        (int) (s * 0.64f), (int) (s * 0.50f));
+                g.drawLine((int) (s * 0.64f), (int) (s * 0.50f),
+                        (int) (s * 0.56f), (int) (s * 0.58f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.47f, s * 0.46f, s * 0.08f,
+                        s * 0.08f));
                 break;
             case SEARCH:
                 // magnifying glass: neutral lens + handle, blue focus dot
