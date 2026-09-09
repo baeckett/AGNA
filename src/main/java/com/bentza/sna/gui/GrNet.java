@@ -1746,6 +1746,43 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
         }
 
+
+
+    // 2.1.3: gives a field caption the faded-gray/accent-blue two-state
+    // look (hover and field focus activate the blue state)
+    private static void styleTwoStateLabel(final javax.swing.JLabel label,
+            final javax.swing.JTextField partner)
+        {
+        label.setForeground(ModernIcons.restText());
+        label.addMouseListener(new java.awt.event.MouseAdapter()
+            {
+            public void mouseEntered(java.awt.event.MouseEvent e)
+                {
+                label.setForeground(ModernIcons.accent());
+                }
+            public void mouseExited(java.awt.event.MouseEvent e)
+                {
+                label.setForeground(partner != null
+                        && partner.isFocusOwner() ? ModernIcons.accent()
+                        : ModernIcons.restText());
+                }
+            });
+        if (partner != null)
+            {
+            partner.addFocusListener(new java.awt.event.FocusAdapter()
+                {
+                public void focusGained(java.awt.event.FocusEvent e)
+                    {
+                    label.setForeground(ModernIcons.accent());
+                    }
+                public void focusLost(java.awt.event.FocusEvent e)
+                    {
+                    label.setForeground(ModernIcons.restText());
+                    }
+                });
+            }
+        }
+
     private void doAddActor()
         {
         // gr_frame.repaint();
@@ -3982,6 +4019,12 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         glabel_y = new JLabel("y:");
         gfield_x = new JTextField();
         gfield_y = new JTextField();
+
+        // 2.1.3: the field captions follow the two-state convention:
+        // faded gray normally, blue on hover or when their field is edited
+        styleTwoStateLabel(glabel_x, gfield_x);
+        styleTwoStateLabel(glabel_y, gfield_y);
+        styleTwoStateLabel(glabel_edge_value, gfield_edge_value);
         gtool_change_x = new DoubleButton();
         gtool_change_y = new DoubleButton();
 

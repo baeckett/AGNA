@@ -56,8 +56,27 @@ public class ModernIcons
     // node-search panel (Network Viewer search area)
     public static final int SEARCH = 27;
     public static final int STOP = 28;
+    public static final int MATCH = 29;
+    public static final int CLEAR_AREA = 30;
 
-    public static final int KIND_COUNT = 29;
+    public static final int KIND_COUNT = 31;
+
+    public static Color accent()
+        {
+        return ACCENT;
+        }
+
+    // solid muted gray for text controls (labels, toggles): the outline
+    // blended toward the surface, matching the faded icon rest state
+    public static Color restText()
+        {
+        Color fg = outline();
+        float a = 0.34f;
+        int r = Math.round(fg.getRed() * a + 245 * (1 - a));
+        int g = Math.round(fg.getGreen() * a + 245 * (1 - a));
+        int b = Math.round(fg.getBlue() * a + 247 * (1 - a));
+        return new Color(r, g, b);
+        }
 
     private static final Color ACCENT = new Color(37, 99, 235);
     private static final Color ACCENT_DEEP = new Color(30, 58, 138);
@@ -72,7 +91,7 @@ public class ModernIcons
     // blue rollover version stands out clearly (a truly faded gray)
     private static Color fade(Color c)
         {
-        return new Color(c.getRed(), c.getGreen(), c.getBlue(), 110);
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), 80);
         }
 
     public static ImageIcon get(int kind, int size)
@@ -447,6 +466,28 @@ public class ModernIcons
                 g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s * 0.60f, s * 0.40f, s * 0.20f,
                         s * 0.20f));
+                break;
+            case MATCH:
+                // "equals" match: neutral bars + blue dot (exact match)
+                g.setColor(line);
+                g.drawLine((int) (s * 0.26f), (int) (s * 0.42f),
+                        (int) (s * 0.70f), (int) (s * 0.42f));
+                g.drawLine((int) (s * 0.26f), (int) (s * 0.62f),
+                        (int) (s * 0.70f), (int) (s * 0.62f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.74f, s * 0.47f, s * 0.10f,
+                        s * 0.10f));
+                break;
+            case CLEAR_AREA:
+                // circled cross: clear the results area
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.22f, s * 0.22f, s * 0.56f,
+                        s * 0.56f));
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.34f), (int) (s * 0.34f),
+                        (int) (s * 0.66f), (int) (s * 0.66f));
+                g.drawLine((int) (s * 0.66f), (int) (s * 0.34f),
+                        (int) (s * 0.34f), (int) (s * 0.66f));
                 break;
             case SEARCH:
                 // magnifying glass: neutral lens + handle, blue focus dot

@@ -489,10 +489,12 @@ public class VerticalToolBar extends JPanel
         top_panel.add(search_button);
 
         // placing caps_box:
-        caps_box = new JCheckBox(Environment
-                .getButtonImageIcon("CapsSensitive.gif"));
-        caps_box.setSelectedIcon(Environment
-                .getButtonImageIcon("rCapsSensitive.gif"));
+        caps_box = new JCheckBox(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("CapsSensitive.gif")
+                : ModernIcons.get(ModernIcons.VIEW_NAMES, 16));
+        caps_box.setSelectedIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rCapsSensitive.gif")
+                : ModernIcons.get(ModernIcons.VIEW_NAMES, 16, true));
         caps_box.setToolTipText("Case-sensitive");
         caps_box.setSelected(false);
         caps_box.setEnabled(true);
@@ -507,10 +509,12 @@ public class VerticalToolBar extends JPanel
         top_panel.add(caps_box);
 
         // placing clear_before_box:
-        clear_before_box = new JCheckBox(Environment
-                .getButtonImageIcon("ClearBefore.gif"));
-        clear_before_box.setSelectedIcon(Environment
-                .getButtonImageIcon("rClearBefore.gif"));
+        clear_before_box = new JCheckBox(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("ClearBefore.gif")
+                : ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 16));
+        clear_before_box.setSelectedIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rClearBefore.gif")
+                : ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 16, true));
         clear_before_box.setToolTipText("Clear old results on search");
         clear_before_box.setSelected(false);
         clear_before_box.setEnabled(true);
@@ -524,10 +528,12 @@ public class VerticalToolBar extends JPanel
         top_panel.add(clear_before_box);
 
         // placing match_name_box:
-        match_name_box = new JCheckBox(Environment
-                .getButtonImageIcon("MatchName.gif"));
-        match_name_box.setSelectedIcon(Environment
-                .getButtonImageIcon("rMatchName.gif"));
+        match_name_box = new JCheckBox(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("MatchName.gif")
+                : ModernIcons.get(ModernIcons.MATCH, 16));
+        match_name_box.setSelectedIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rMatchName.gif")
+                : ModernIcons.get(ModernIcons.MATCH, 16, true));
         match_name_box.setToolTipText("Match exact node name");
         match_name_box.setSelected(false);
         match_name_box.setEnabled(true);
@@ -541,10 +547,12 @@ public class VerticalToolBar extends JPanel
         top_panel.add(match_name_box);
 
         // placing clear_all_button:
-        clear_all_button = new JButton(Environment
-                .getButtonImageIcon("ClearAllResults.gif"));
-        clear_all_button.setRolloverIcon(Environment
-                .getButtonImageIcon("rClearAllResults.gif"));
+        clear_all_button = new JButton(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("ClearAllResults.gif")
+                : ModernIcons.get(ModernIcons.CLEAR_AREA, 16));
+        clear_all_button.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rClearAllResults.gif")
+                : ModernIcons.get(ModernIcons.CLEAR_AREA, 16, true));
         clear_all_button.setBorder(null);
         clear_all_button.setToolTipText("Clear results area");
         clear_all_button.addActionListener(act_vertical_toolbar);
