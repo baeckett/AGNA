@@ -2384,12 +2384,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         if (output_edit == null)
             return;
+        // 2.1.3: the Output pane is an HTML document - setText() would put
+        // the line outside its structure where it is never rendered; the
+        // pane's own append API (used by the analyses) inserts at the end
         String time = java.time.LocalTime.now().withNano(0).toString();
-        String current = output_edit.getText();
-        String line = "> [" + time + "] " + message;
-        if (current.length() > 0 && !current.endsWith("\n"))
-            current += "\n";
-        output_edit.setText(current + line + "\n");
+        output_edit.appendString("> [" + time + "] " + message + "\n");
         }
 
     private static String currentNetworkLabel()
