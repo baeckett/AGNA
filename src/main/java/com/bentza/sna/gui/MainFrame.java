@@ -79,7 +79,7 @@ public class MainFrame //
             e_paste, e_delete, e_select_all, d_title, d_add_nodes,
             d_delete_nodes, d_add_scalar, d_multiply_scalar, d_transpose,
             d_symmetrize, d_normalize, d_remove_out, d_renumber_nodes, d_merge,
-            d_multiply_network, d_boolean_multiplication, a_basic,
+            d_multiply_network, a_basic,
             a_nodal_degree, a_indegree, a_outdegree, a_density, a_cohesion,
             a_emissions, a_receptions, a_determinations, a_sociostatus,
             a_eccentricity, a_diameter, a_geodesics, a_shortest_paths,
@@ -2453,7 +2453,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         int confirm = JOptionPane.showOptionDialog(my_frame,
                 "All non-zero values will be replaced by 1!\nContinue?",
-                "Confirm binarize operation", JOptionPane.OK_CANCEL_OPTION,
+                "Confirm normalize operation", JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if (confirm == 0)
             {
@@ -2496,6 +2496,74 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             updateNetwork();
         else
             return;
+
+        // 2.1.3: pick the second network file, then the conflict policy
+        final javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+        chooser.setDialogTitle("Merge With Network File");
+        chooser.setCurrentDirectory(new File(MainFrame.getWorkingDirectory()));
+        chooser.addChoosableFileFilter(new CommaTextFilesFilter());
+        chooser.addChoosableFileFilter(new TabTextFilesFilter());
+        chooser.addChoosableFileFilter(new AgnaFilesFilter());
+        chooser.addChoosableFileFilter(new ExcelFilesFilter());
+        chooser.addChoosableFileFilter(new PajekFilesFilter());
+        if (chooser.showOpenDialog(my_frame) != javax.swing.JFileChooser.APPROVE_OPTION)
+            {
+            return;
+            }
+        final File merge_file = chooser.getSelectedFile();
+
+        Object[] policies = { "Sum", "Maximum", "Keep current value" };
+        String choice = (String) JOptionPane.showInputDialog(my_frame,
+                "When a tie exists in both networks, combine it by:",
+                "Merge Option", JOptionPane.QUESTION_MESSAGE, null, policies,
+                "Sum");
+        if (choice == null)
+            {
+            return;
+            }
+        final int policy = "Maximum".equals(choice) ? Network.MERGE_MAX
+                : "Keep current value".equals(choice) ? Network.MERGE_KEEP_FIRST
+                        : Network.MERGE_SUM;
+
+        // read the second network
+        FullNet other_full_net = new FullNet();
+        final String ext = IOUtils.getExtension(merge_file.getName());
+        String read_error = null;
+        try
+            {
+            if ("xls".equals(ext) || "xlsx".equals(ext))
+                {
+                read_error = other_full_net.readExcelFile(merge_file, ext);
+                } else
+                {
+                try (Reader reader = IOUtils.reader(merge_file))
+                    {
+                    JTextPane tmp_pane = new JTextPane();
+                    tmp_pane.read(reader, null);
+                    other_full_net.readNetwork(tmp_pane.getText(), ext);
+                    }
+                }
+            } catch (Exception e2)
+            {
+            read_error = "Could not read " + merge_file.getName() + ": " + e2;
+            }
+        if (read_error != null || other_full_net.getNetwork() == null)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Merge failed:\n" + (read_error == null ? "No network read."
+                            : read_error),
+                    "Merge Error", JOptionPane.ERROR_MESSAGE);
+            return;
+            }
+
+        final FullNet other_net = other_full_net;
+        grid_model.setReady(false);
+        my_full_net.mergeWith(other_net.getNetwork(), policy);
+        updateMatrix();
+        grid_model.setReady(true);
+        setCurrentStatus("Merged " + other_net.getNetwork().getSize()
+                + " actors into the current network (policy: " + choice
+                + ").");
         }
 
     private void doMultiplyNetwork()
@@ -3776,12 +3844,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         d_multiply_scalar = new JMenuItem("Scalar Multiplication...");
         d_transpose = new JMenuItem("Transpose");
         d_symmetrize = new JMenuItem("Symmetrize...");
-        d_normalize = new JMenuItem("Binarize");
+        d_normalize = new JMenuItem("Normalize");
         d_remove_out = new JMenuItem("Remove Outsiders");
         d_renumber_nodes = new JMenuItem("Renumber Nodes...");
         d_merge = new JMenuItem("Merge Network...");
         d_multiply_network = new JMenuItem("Square Matrix");
-        d_boolean_multiplication = new JMenuItem("Boolean Multiplication...");
 
         d_title.setToolTipText("Change current network's title");
         d_add_nodes.setToolTipText("Add new nodes to current network");
@@ -3811,7 +3878,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         d_remove_out.addActionListener(act_menu);
         d_merge.addActionListener(act_menu);
         d_multiply_network.addActionListener(act_menu);
-        d_boolean_multiplication.addActionListener(act_menu);
 
         d_title.setMnemonic('n');
         d_add_scalar.setMnemonic('l');
@@ -3825,7 +3891,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         d_renumber_nodes.setMnemonic('o');
         d_merge.setMnemonic('e');
         d_multiply_network.setMnemonic('u');
-        d_boolean_multiplication.setMnemonic('q');
         d_add_nodes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
                 ActionEvent.CTRL_MASK));
         d_add_scalar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
@@ -3856,7 +3921,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         mData.addSeparator();
         // mData.add(d_merge);
         mData.add(d_multiply_network);
-        // mData.add(d_boolean_multiplication);
 
         // Submeniuri din ANALYSIS:
         a_basic = new JMenuItem("Basic Description");

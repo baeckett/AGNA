@@ -888,6 +888,85 @@ public class Network
         return finval;
         }
 
+    // 2.1.3: merges another network into this one and returns the union.
+    // Actors are joined by exact name: names present in both networks keep
+    // one position and their overlapping tie values are combined by the
+    // chosen policy; names only present in the other network are appended.
+    // The diagonal (self-loops) always stays zero. Policies:
+    //   MERGE_SUM (default) / MERGE_MAX / MERGE_KEEP_FIRST
+    public static final int MERGE_SUM = 0;
+    public static final int MERGE_MAX = 1;
+    public static final int MERGE_KEEP_FIRST = 2;
+
+    public Network merge(Network other, int policy)
+        {
+        final int size_a = getSize();
+        final int size_b = other.getSize();
+        java.util.List<String> names = new java.util.ArrayList<>();
+        java.util.Map<String, Integer> index = new java.util.HashMap<>();
+        for (int i = 0; i < size_a; i++)
+            {
+            String actor_name = getActorName(i);
+            index.put(actor_name, names.size());
+            names.add(actor_name);
+            }
+        int[] map_b = new int[size_b];
+        for (int k = 0; k < size_b; k++)
+            {
+            String actor_name = other.getActorName(k);
+            Integer existing = index.get(actor_name);
+            if (existing == null)
+                {
+                index.put(actor_name, names.size());
+                map_b[k] = names.size();
+                names.add(actor_name);
+                } else
+                {
+                map_b[k] = existing.intValue();
+                }
+            }
+        final int size_u = names.size();
+        Network result = new Network(size_u);
+        result.setName(getName());
+        for (int i = 0; i < size_u; i++)
+            {
+            result.getActor(i).setName(names.get(i));
+            }
+        for (int i = 0; i < size_a; i++)
+            {
+            for (int j = 0; j < size_a; j++)
+                {
+                result.setValue(getValue(i, j), i, j);
+                }
+            }
+        for (int k = 0; k < size_b; k++)
+            {
+            final int ik = map_b[k];
+            for (int l = 0; l < size_b; l++)
+                {
+                final int jl = map_b[l];
+                if (ik == jl)
+                    continue; // no self-loops in the merged matrix
+                float v2 = other.getValue(k, l);
+                if (v2 == 0f)
+                    continue;
+                float combined = result.getValue(ik, jl);
+                if (policy == MERGE_MAX)
+                    {
+                    combined = Math.max(combined, v2);
+                    } else if (policy == MERGE_KEEP_FIRST)
+                    {
+                    // keep the current value
+                    } else
+                    {
+                    combined = combined + v2; // sum (default)
+                    }
+                result.setValue(combined, ik, jl);
+                }
+            }
+        return result;
+        }
+
     public void removeOutsiders(AgnaTableModel tmp_model)
         {
         int i = 0;

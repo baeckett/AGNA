@@ -166,7 +166,7 @@ public class AgnaLibTransformTest
         agna.addScalar(add, 2f);
         assertValue(3f, add, 0, 1);
         assertValue(6f, add, 1, 2);
-        assertValue(2f, add, 1, 1); // the diagonal is offset too
+        assertValue(0f, add, 1, 1); // the diagonal stays zero (no self-loops)
 
         Network mul = netOf(M);
         agna.multiplyByScalar(mul, 2f);

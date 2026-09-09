@@ -465,6 +465,9 @@ import java.util.Vector;
             {
             for (j = 0; j < size; j++)
                 {
+                // 2.1.3: the diagonal (no self-loops) stays zero
+                if (i == j)
+                    continue;
                 finval = (double) src.getValue(i, j) + (double) scal;
                 src.setValue((float) finval, i, j);
                 }
@@ -480,6 +483,9 @@ import java.util.Vector;
             {
             for (j = 0; j < size; j++)
                 {
+                // 2.1.3: the diagonal (no self-loops) stays zero
+                if (i == j)
+                    continue;
                 finval = (double) src.getValue(i, j) * (double) scal;
                 src.setValue((float) finval, i, j);
                 }

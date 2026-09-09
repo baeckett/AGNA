@@ -2358,6 +2358,23 @@ tmp_node.setFace(tmpname);
         setChanged(true);
         }
 
+    // 2.1.3: adopts the merge of the current network with another one
+    public String mergeWith(Network other_network, int policy)
+        {
+        if (other_network == null)
+            {
+            return "No network to merge.";
+            }
+        my_network = my_network.merge(other_network, policy);
+        if (isArea())
+            {
+            net_area.updateArea(my_network);
+            net_area.setSelectedActor(my_network.getSize() - 1);
+            }
+        setChanged(true);
+        return null;
+        }
+
     public void removeOutsidersInNetwork(AgnaTableModel tmp_model)
         {
         my_network.removeOutsiders(tmp_model);
