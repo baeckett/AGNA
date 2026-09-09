@@ -324,6 +324,9 @@ import javax.swing.JTextPane;
 
         if (MainFrame.getDefaultNodeFaceSource() != null
                 || !(MainFrame.getDefaultNodeFaceSource()).equals("-"))
+            filestr.append("Pajek Vectors Enabled\t"
+                    + (MainFrame.isPajekVectorsEnabled() ? "yes"
+                            : "no") + lb);
             filestr.append("Default Export Format\t"
                     + String.valueOf(MainFrame.getRememberedExportFormat())
                     + lb);
@@ -920,6 +923,11 @@ import javax.swing.JTextPane;
         tmp_val = parseFindNextWord(str, "Working Directory");
         if (tmp_val != null && !tmp_val.equals("-"))
             MainFrame.setWorkingDirectory(tmp_val);
+        tmp_val = parseFindNextWord(str, "Pajek Vectors Enabled");
+        if (tmp_val != null)
+            {
+            MainFrame.setPajekVectorsEnabled(tmp_val.equals("yes"));
+            }
         tmp_val = parseFindNextWord(str, "Default Export Format");
         if (tmp_val != null && !tmp_val.equals("-"))
             {
