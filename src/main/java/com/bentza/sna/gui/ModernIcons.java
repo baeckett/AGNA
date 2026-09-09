@@ -121,13 +121,13 @@ public class ModernIcons
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
                 RenderingHints.VALUE_STROKE_PURE);
-        glyph(g, kind, size, line, accent);
+        glyph(g, kind, size, line, accent, rollover);
         g.dispose();
         return new ImageIcon(img);
         }
 
     private static void glyph(Graphics2D g, int kind, int s,
-            Color line, Color accent)
+            Color line, Color accent, boolean rollover)
         {
         float m = s * 0.20f;
         float w = s - 2 * m;
@@ -512,20 +512,23 @@ public class ModernIcons
                         Math.round(s * 0.66f));
                 break;
             case SEPARATION:
-                // two nodes with a distance double-arrow: edge separation
+                // two parallel yet opposite arrows with a small gap:
+                // the distance separating two symmetrical edges
                 g.setColor(line);
-                g.fill(new Ellipse2D.Float(s * 0.14f, s * 0.40f, s * 0.20f,
-                        s * 0.20f));
-                g.fill(new Ellipse2D.Float(s * 0.66f, s * 0.40f, s * 0.20f,
-                        s * 0.20f));
-                g.drawLine((int) (s * 0.36f), (int) (s * 0.50f),
-                        (int) (s * 0.64f), (int) (s * 0.50f));
-                g.drawLine((int) (s * 0.56f), (int) (s * 0.42f),
-                        (int) (s * 0.64f), (int) (s * 0.50f));
-                g.drawLine((int) (s * 0.64f), (int) (s * 0.50f),
-                        (int) (s * 0.56f), (int) (s * 0.58f));
+                g.drawLine((int) (s * 0.20f), (int) (s * 0.36f),
+                        (int) (s * 0.68f), (int) (s * 0.36f));
+                g.drawLine((int) (s * 0.68f), (int) (s * 0.36f),
+                        (int) (s * 0.58f), (int) (s * 0.26f));
+                g.drawLine((int) (s * 0.68f), (int) (s * 0.36f),
+                        (int) (s * 0.58f), (int) (s * 0.46f));
+                g.drawLine((int) (s * 0.80f), (int) (s * 0.64f),
+                        (int) (s * 0.32f), (int) (s * 0.64f));
+                g.drawLine((int) (s * 0.32f), (int) (s * 0.64f),
+                        (int) (s * 0.42f), (int) (s * 0.54f));
+                g.drawLine((int) (s * 0.32f), (int) (s * 0.64f),
+                        (int) (s * 0.42f), (int) (s * 0.74f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.47f, s * 0.46f, s * 0.08f,
+                g.fill(new Ellipse2D.Float(s * 0.46f, s * 0.47f, s * 0.08f,
                         s * 0.08f));
                 break;
             case X_COORD:
@@ -569,7 +572,10 @@ public class ModernIcons
                         s * 0.20f));
                 g.drawLine((int) (s * 0.34f), (int) (s * 0.58f),
                         (int) (s * 0.66f), (int) (s * 0.58f));
-                g.setColor(accent);
+                // the digit stays readable in the faded state: a stronger
+                // alpha at rest, the full blue on hover
+                g.setColor(rollover ? accent : new Color(ACCENT.getRed(),
+                        ACCENT.getGreen(), ACCENT.getBlue(), 175));
                 g.setFont(new Font(Font.DIALOG, Font.BOLD,
                         Math.round(s * 0.34f)));
                 String one = "1";
