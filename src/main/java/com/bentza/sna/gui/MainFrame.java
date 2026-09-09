@@ -38,8 +38,6 @@ import javax.swing.KeyStroke;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.rtf.RTFEditorKit;
-import com.l2fprod.gui.plaf.skin.Skin;
-import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
 
 public class MainFrame //
     {
@@ -89,7 +87,7 @@ public class MainFrame //
             a_fareness, a_betweenness, a_prestige, a_full_analysis, v_viewer,
             v_close, v_hide_output, v_view_output, p_working_directory,
             p_save_as_default, p_laf_native, p_laf_flatlaf,
-            p_laf_flatlaf_dark, p_laf_skins, h_contents, h_about_agna;
+            p_laf_flatlaf_dark, h_contents, h_about_agna;
 
     private static JMenuBar mb;
 
@@ -542,9 +540,6 @@ public class MainFrame //
                     } else if (e.getSource() == p_laf_flatlaf_dark)
                     {
                     chooseLookAndFeel("flatlaf-dark");
-                    } else if (e.getSource() == p_laf_skins)
-                    {
-                    chooseLookAndFeel("skins");
                     }
 
                 if (e.getSource() == p_working_directory)
@@ -2853,7 +2848,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         p_laf_native.setSelected("system".equals(choice));
         p_laf_flatlaf.setSelected("flatlaf".equals(choice));
         p_laf_flatlaf_dark.setSelected("flatlaf-dark".equals(choice));
-        p_laf_skins.setSelected("skins".equals(choice));
         }
 
     private void persistLookAndFeelPreference()
@@ -3330,7 +3324,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     //   flatlaf-dark   FlatLaf dark (default)
     //   flatlaf        FlatLaf light
     //   system         native per platform
-    //   skins          classic l2fprod theme packs
     private static String look_and_feel = "flatlaf";
 
     public static String getLookAndFeel()
@@ -3365,15 +3358,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 com.formdev.flatlaf.FlatLaf.setGlobalExtraDefaults(
                         gridLineDefaults());
                 com.formdev.flatlaf.FlatDarkLaf.setup();
-                }
-            else if ("skins".equals(choice))
-                {
-                // theme packs ship on the classpath, so they resolve from
-                // the jar too
-                Skin theSkinToUse = SkinLookAndFeel.loadThemePack(Agna.class
-                        .getResourceAsStream("/themepacks/aquathemepack.zip"));
-                SkinLookAndFeel.setSkin(theSkinToUse);
-                UIManager.setLookAndFeel(new SkinLookAndFeel());
                 }
             else
                 {
@@ -4046,21 +4030,17 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         p_laf_native = new JRadioButtonMenuItem("Native (system)");
         p_laf_flatlaf = new JRadioButtonMenuItem("FlatLaf (light)");
         p_laf_flatlaf_dark = new JRadioButtonMenuItem("FlatLaf (dark)");
-        p_laf_skins = new JRadioButtonMenuItem("Classic skin packs");
         ButtonGroup laf_group = new ButtonGroup();
         laf_group.add(p_laf_native);
         laf_group.add(p_laf_flatlaf);
         laf_group.add(p_laf_flatlaf_dark);
-        laf_group.add(p_laf_skins);
         p_laf_native.addActionListener(act_menu);
         p_laf_flatlaf.addActionListener(act_menu);
         p_laf_flatlaf_dark.addActionListener(act_menu);
-        p_laf_skins.addActionListener(act_menu);
         selectLookAndFeelMenuItems(getLookAndFeel());
         mPreferences.add(p_laf_native);
         mPreferences.add(p_laf_flatlaf);
         mPreferences.add(p_laf_flatlaf_dark);
-        mPreferences.add(p_laf_skins);
         p_working_directory.setMnemonic('w');
         p_save_as_default.addActionListener(act_menu);
         mPreferences.add(p_working_directory);

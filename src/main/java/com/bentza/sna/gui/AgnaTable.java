@@ -50,6 +50,61 @@ class AgnaTable extends JTable
         // UIManager keys are set at look-and-feel install time)
         setShowGrid(true);
         // setSelectionForeground(Color.red);
+        } // AgnaTable constructor
+
+
+    // 2.1.3: some native look and feels (Aqua on macOS) never paint the
+    // grid even when showGrid is on; draw the lines ourselves, on top of
+    // whatever the look and feel painted, so the sociomatrix grid is
+    // visible everywhere.
+    protected void paintComponent(java.awt.Graphics g)
+        {
+        super.paintComponent(g);
+        if (!getShowHorizontalLines() && !getShowVerticalLines())
+            {
+            return;
+            }
+        java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+        try
+            {
+            java.awt.Rectangle clip = g.getClipBounds();
+            g2.setColor(getGridColor());
+            int firstRow = Math.max(0, rowAtPoint(clip.getLocation()));
+            int lastRow = Math.min(getRowCount() - 1,
+                    rowAtPoint(new java.awt.Point(clip.x,
+                            clip.y + clip.height)));
+            if (lastRow < firstRow)
+                {
+                lastRow = getRowCount() - 1;
+                }
+            int firstCol = Math.max(0, columnAtPoint(clip.getLocation()));
+            int lastCol = Math.min(getColumnCount() - 1,
+                    columnAtPoint(new java.awt.Point(clip.x + clip.width,
+                            clip.y)));
+            if (lastCol < firstCol)
+                {
+                lastCol = getColumnCount() - 1;
+                }
+            for (int r = firstRow; r <= lastRow; r++)
+                {
+                if (getShowHorizontalLines())
+                    {
+                    int y = getCellRect(r, 0, true).y;
+                    g2.drawLine(clip.x, y, clip.x + clip.width, y);
+                    }
+                }
+            for (int c = firstCol; c <= lastCol; c++)
+                {
+                if (getShowVerticalLines())
+                    {
+                    int x = getCellRect(0, c, true).x;
+                    g2.drawLine(x, clip.y, x, clip.y + clip.height);
+                    }
+                }
+            } finally
+            {
+            g2.dispose();
+            }
         }
 
     public TableCellRenderer getCellRenderer(int row, int col)

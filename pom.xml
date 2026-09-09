@@ -33,15 +33,7 @@
       <version>2.6.12</version>
     </dependency>
 
-    <!-- Vendored: l2fprod Skin Look and Feel (LGPL), the skinnable-theme
-         engine of Agna. Only binaries were shipped in the original 2.1.2
-         archive; see THIRD-PARTY.md for attribution. The jar is installed
-         into the local Maven repository during the build (see below). -->
-    <dependency>
-      <groupId>com.l2fprod</groupId>
-      <artifactId>l2fprod-skin</artifactId>
-      <version>1.0</version>
-    </dependency>
+    
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -52,12 +44,7 @@
   </dependencies>
 
   <repositories>
-    <!-- Project-local repository hosting the vendored l2fprod skin jar
-         (lib/repo/), so a fresh checkout builds without extra steps. -->
-    <repository>
-      <id>vendored-lib</id>
-      <url>file://${project.basedir}/lib/repo</url>
-    </repository>
+    
   </repositories>
 
   <build>
