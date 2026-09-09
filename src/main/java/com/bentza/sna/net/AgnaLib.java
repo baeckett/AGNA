@@ -12,6 +12,9 @@ import java.util.Vector;
     public static String lb, bold, unbold, it, unit, table, untable, tr, untr,
             td, untd, ol, unol, li, unli, blanc;
 
+    // 2.1.3: set by the UI to abort an in-flight clique enumeration
+    public static volatile boolean clique_search_cancelled;
+
         public static void initAjna()
         {
         // type-dependent text elements:
@@ -679,39 +682,90 @@ import java.util.Vector;
      * Bron-Kerbosch maximal clique enumeration on the derived graph (ordered
      * variant, so every maximal clique is reported exactly once).
      */
+    /**
+     * 2.1.3: pivot-based (Tomita) Bron-Kerbosch - substantially faster than
+     * the ordered variant on mid-density graphs, checks the cancellation flag
+     * so the UI can abort long enumerations.
+     */
     private void bronKerbosch(boolean[][] adjacent, Vector cliques,
             IntList current, int[] candidates, int candidate_count,
             int[] excluded, int excluded_count)
         {
+        if (clique_search_cancelled)
+            {
+            return; // aborted by the user
+            }
         if (candidate_count == 0)
             {
             if (excluded_count == 0 && current.getSize() >= 2)
                 {
-                // 2.1.3: singletons are trivially "maximal" but meaningless
-                // as reported groups; only keep cliques of two or more nodes
                 cliques.addElement(current.getClone());
                 }
             return;
             }
 
+        // pivot u in P union X with maximum |P intersect N(u)|
+        int pivot = -1;
+        int pivot_neighbours = -1;
+        for (int pi = 0; pi < candidate_count; pi++)
+            {
+            int u = candidates[pi];
+            int cnt = 0;
+            for (int qi = 0; qi < candidate_count; qi++)
+                {
+                if (adjacent[u][candidates[qi]])
+                    {
+                    cnt++;
+                    }
+                }
+            if (cnt > pivot_neighbours)
+                {
+                pivot_neighbours = cnt;
+                pivot = u;
+                }
+            }
+        for (int ei = 0; ei < excluded_count; ei++)
+            {
+            int u = excluded[ei];
+            int cnt = 0;
+            for (int qi = 0; qi < candidate_count; qi++)
+                {
+                if (adjacent[u][candidates[qi]])
+                    {
+                    cnt++;
+                    }
+                }
+            if (cnt > pivot_neighbours)
+                {
+                pivot_neighbours = cnt;
+                pivot = u;
+                }
+            }
+
+        // iterate over P minus N(pivot)
         for (int k = 0; k < candidate_count; k++)
             {
             int node = candidates[k];
+            if (pivot >= 0 && adjacent[pivot][node])
+                {
+                continue; // skipped by the pivot
+                }
+            if (clique_search_cancelled)
+                {
+                return;
+                }
             IntList next_current = current.getClone();
             next_current.appendValue(node);
 
-            // branch candidates: remaining (not yet processed) neighbours
             int[] next_candidates = new int[candidate_count];
             int next_count = 0;
-            for (int m = k + 1; m < candidate_count; m++)
+            for (int m = 0; m < candidate_count; m++)
                 {
-                if (adjacent[node][candidates[m]])
+                if (m != k && adjacent[node][candidates[m]])
                     {
                     next_candidates[next_count++] = candidates[m];
                     }
                 }
-
-            // excluded neighbours (for maximality)
             int[] next_excluded = new int[excluded_count + candidate_count];
             int next_x_count = 0;
             for (int m = 0; m < excluded_count; m++)
@@ -721,7 +775,6 @@ import java.util.Vector;
                     next_excluded[next_x_count++] = excluded[m];
                     }
                 }
-
             bronKerbosch(adjacent, cliques, next_current, next_candidates,
                     next_count, next_excluded, next_x_count);
 

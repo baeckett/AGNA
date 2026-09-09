@@ -2496,13 +2496,13 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         // finding clique diameter. 2.1.3: bounded - maximal-clique
         // enumeration is exponential in the worst case, so only useful
         // diameters are offered and large networks get a warning
-        int max_number = Math.min(my_full_net.getNetwork().getSize() - 1, 3);
+        int max_number = Math.min(my_full_net.getNetwork().getSize() - 1, 6);
         if (my_full_net.getNetwork().getSize() > 80)
             {
             JOptionPane.showMessageDialog(my_frame,
-                    "Large network: clique diameters are limited to 1-3 for "
-                            + "performance.", "N-Cliques",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Large network: wide diameters may be slow - "
+                            + "press Cancel in the progress dialog if needed.",
+                    "N-Cliques", JOptionPane.INFORMATION_MESSAGE);
             }
         String tmp_str = "";
         Object[] values = new Object[max_number];
@@ -2817,29 +2817,29 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         final byte analysis_type = tmp_analysis_type;
         final int init = param_1;
         final int end = param_2;
-        AgnaThread runner = new AgnaThread()
+
+        // 2.1.3: analyses run on a background thread; the UI shows a
+        // cancellable progress dialog and stays responsive
+        if (analysis_type == 21)
             {
-                public void run()
+            AgnaLib.clique_search_cancelled = false;
+            }
+        final java.util.concurrent.Callable<String> task = new java.util.concurrent.Callable<String>()
+            {
+                public String call()
                     {
-                    this.decorate(null);
-                    AgnaLib agna_lib = new AgnaLib();
+                    return buildAnalysisOutput(analysis_type, init, end);
+                    }
+            };
+        runAnalysisInBackground(decoration, task);
+        }
 
-                    progress_dialog.setPercent(1);
-
-                    this.nap(); // allow cancel button to be pressed
-                    if (progress_dialog.getStop())
-                        {
-                        this.undecorate();
-                        return; // exit without reading network
-                        }
-                    progress_dialog.setPercent(40);
-
-                    String tmp_str = new String("");
-                    tmp_str += agna_lib.getAgnaSignature();
-
-                    // deciding the type of analysis:
-
-                    switch (analysis_type)
+    private String buildAnalysisOutput(byte analysis_type, int init, int end)
+        {
+        AgnaLib agna_lib = new AgnaLib();
+        String tmp_str = new String("");
+        tmp_str += agna_lib.getAgnaSignature();
+        switch (analysis_type)
                         {
 
                         case 1:
@@ -2930,21 +2930,75 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         break;
 
                         }
+        return tmp_str;
+        }
 
-                    this.nap(); // allow cancel button to be pressed
-                    if (progress_dialog.getStop())
+    // 2.1.3: runs an analysis on a SwingWorker with a cancellable progress
+    // dialog; the output is appended on the EDT when done
+    private void runAnalysisInBackground(final String decoration,
+            final java.util.concurrent.Callable<String> task)
+        {
+        final JDialog box = new JDialog(my_frame, "Agna - analysis", false);
+        box.setLayout(new BoxLayout(box.getContentPane(), BoxLayout.Y_AXIS));
+        box.add(new JLabel(decoration != null ? decoration : "Computing..."));
+        final JProgressBar bar = new JProgressBar(0, 100);
+        bar.setStringPainted(true);
+        bar.setIndeterminate(true);
+        box.add(bar);
+        final JButton cancel_button = new JButton("Cancel");
+        box.add(cancel_button);
+        box.pack();
+        box.setLocationRelativeTo(my_frame);
+
+        final SwingWorker<String, Void> worker = new SwingWorker<String, Void>()
+            {
+                protected String doInBackground()
+                    {
+                    try
                         {
-                        this.undecorate();
-                        return; // exit without reading network
+                        return task.call();
+                        } catch (Exception e)
+                        {
+                        AgnaLog.error("analysis failed", e);
+                        return null;
                         }
-                    progress_dialog.setPercent(90);
+                    }
 
-                    output_edit.appendBlock(tmp_str);
-
-                    this.finish();
+                protected void done()
+                    {
+                    try
+                        {
+                        String out = get();
+                        if (out != null)
+                            {
+                            output_edit.appendBlock(out);
+                            }
+                        } catch (java.util.concurrent.CancellationException ce)
+                        {
+                        output_edit
+                                .appendBlock("\n*** Analysis cancelled by user. ***");
+                        } catch (Exception e)
+                        {
+                        AgnaLog.error("analysis output failed", e);
+                        }
+                    box.dispose();
+                    MainFrame.setCurrentStatus(MainFrame.default_status);
+                    my_frame.setCursor(Cursor
+                            .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    grid_model.setReady(true);
+                    my_frame.repaint();
                     }
             };
-        runner.go();
+        cancel_button.addActionListener(new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                    {
+                    AgnaLib.clique_search_cancelled = true;
+                    worker.cancel(true);
+                    }
+            });
+        box.setVisible(true);
+        worker.execute();
         }
 
     // template for most analysis methods
