@@ -691,6 +691,7 @@ public class MainFrame //
 
     public void saveNetwork(FullNet tmp_full_net, String tmp_file_name)
         {
+        AgnaLog.info("saveNetwork: writing '" + tmp_file_name + "'");
         String file_name = tmp_file_name;
         String filestr = IOUtils.getExtension(file_name);
         String writestr = null;
@@ -954,6 +955,7 @@ public class MainFrame //
             }
 
         final String thread_filename = filename;
+        AgnaLog.info("Save As: thread target = " + thread_filename);
 
         AgnaThread runner = new AgnaThread()
             {
