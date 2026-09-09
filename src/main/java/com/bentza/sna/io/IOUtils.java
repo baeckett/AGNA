@@ -82,6 +82,31 @@ public class IOUtils
         }
 
     /**
+     * 2.1.3: returns the file name with its extension replaced by ex_tension
+     * (appended when the name has no extension). Unlike addExtension, an
+     * existing different extension is replaced, not doubled (e.g.
+     * "example3.agn" + "net" -> "example3.net").
+     */
+    public static String setExtension(String file_name, String ex_tension)
+        {
+        if (ex_tension == null || ex_tension.length() == 0)
+            {
+            return file_name;
+            }
+        int dot = file_name.lastIndexOf('.');
+        if (dot > 0)
+            {
+            String current = file_name.substring(dot + 1).toLowerCase();
+            if (current.equals(ex_tension.toLowerCase()))
+                {
+                return file_name;
+                }
+            return file_name.substring(0, dot) + "." + ex_tension;
+            }
+        return file_name + "." + ex_tension;
+        }
+
+    /**
      * Returns the extension (as a String) of a file name given as a parameter.
      */
     public static String getExtension(String filename)

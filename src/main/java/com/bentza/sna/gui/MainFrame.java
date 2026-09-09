@@ -684,9 +684,13 @@ public class MainFrame //
             // pajek file
             PajekExporter pajek_exporter = new PajekExporter();
             writestr = pajek_exporter.getPajekNetwork(tmp_full_net);
-            // 2.1.3: append per-node measure vectors (*Vector blocks)
-            writestr += new AgnaLib().getPajekVectors(tmp_full_net
-                    .getNetwork());
+            // 2.1.3: user-selectable per-node measure vectors (*Vector blocks)
+            java.util.Vector selected_vectors = askPajekVectors();
+            if (selected_vectors != null)
+                {
+                writestr += new AgnaLib().getPajekVectors(tmp_full_net
+                        .getNetwork(), selected_vectors);
+                }
             } else if (filestr.equals("txt") || filestr.equals("text")
                 || filestr.equals("dat"))
             {
@@ -816,6 +820,46 @@ public class MainFrame //
                 {
                 }
 
+        // 2.1.3: keep the typed file name's extension in sync with the
+        // selected filter (Pajek -> .net, CSV -> .csv, ...) while the
+        // dialog is open
+        chooser.addPropertyChangeListener(
+                new java.beans.PropertyChangeListener()
+                    {
+                        public void propertyChange(
+                                java.beans.PropertyChangeEvent evt)
+                            {
+                            if (!"fileFilterChanged".equals(evt
+                                    .getPropertyName()))
+                                {
+                                return;
+                                }
+                            javax.swing.filechooser.FileFilter f = chooser
+                                    .getFileFilter();
+                            String ext = null;
+                            if (f instanceof PajekFilesFilter)
+                                ext = "net";
+                            else if (f instanceof CommaTextFilesFilter)
+                                ext = "csv";
+                            else if (f instanceof TabTextFilesFilter)
+                                ext = "txt";
+                            else if (f instanceof ExcelFilesFilter)
+                                ext = "xls";
+                            else if (f instanceof AgnaFilesFilter)
+                                ext = "agn";
+                            if (ext != null)
+                                {
+                                java.io.File sel = chooser.getSelectedFile();
+                                if (sel != null && sel.getName().length() > 0)
+                                    {
+                                    chooser.setSelectedFile(new java.io.File(
+                                            IOUtils.setExtension(
+                                                    sel.getAbsolutePath(), ext)));
+                                    }
+                                }
+                            }
+                    });
+
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             {
             grid_model.setReady(true);
@@ -846,31 +890,31 @@ public class MainFrame //
         if (chooser.getFileFilter() == chooser.getAcceptAllFileFilter()
                 || chooser.getFileFilter() instanceof AgnaFilesFilter)
             {
-            filename = IOUtils.addExtension(filename, "agn");
+            filename = IOUtils.setExtension(filename, "agn");
             }
 
         // Excel files was selected:
         else if (chooser.getFileFilter() instanceof ExcelFilesFilter)
             {
-            filename = IOUtils.addExtension(filename, "xls");
+            filename = IOUtils.setExtension(filename, "xls");
             }
 
         // text files was selected:
         else if (chooser.getFileFilter() instanceof TabTextFilesFilter)
             {
-            filename = IOUtils.addExtension(filename, "txt");
+            filename = IOUtils.setExtension(filename, "txt");
             }
 
         // pajek files was selected:
         else if (chooser.getFileFilter() instanceof PajekFilesFilter)
             {
-            filename = IOUtils.addExtension(filename, "net");
+            filename = IOUtils.setExtension(filename, "net");
             }
 
         // csv files was selected:
         else if (chooser.getFileFilter() instanceof CommaTextFilesFilter)
             {
-            filename = IOUtils.addExtension(filename, "csv");
+            filename = IOUtils.setExtension(filename, "csv");
             }
 
         // warning if file already exists
@@ -2591,6 +2635,64 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         doAnalysis((byte) 17,
                 "Computing Prestige coefficients for current network...", -1,
                 -1);
+        }
+
+    private java.util.Vector askPajekVectors()
+        {
+        final String[] options = { "Emission Degree", "Reception Degree",
+                "Weighted Emission Degree", "Sociometric Status",
+                "Nodal Degree", "Betweenness", "Closeness", "Prestige" };
+        final JDialog d = new JDialog(my_frame, "Pajek export - vectors",
+                true);
+        d.setLayout(new BoxLayout(d.getContentPane(), BoxLayout.Y_AXIS));
+        final java.util.Hashtable boxes = new java.util.Hashtable();
+        final java.util.Vector cancelled = new java.util.Vector();
+        cancelled.addElement("__CANCEL__");
+        for (int i = 0; i < options.length; i++)
+            {
+            JCheckBox box = new JCheckBox(options[i], true);
+            boxes.put(options[i], box);
+            d.add(box);
+            }
+        JPanel buttons = new JPanel(new FlowLayout());
+        JButton ok = new JButton("Export");
+        JButton cancel = new JButton("Cancel");
+        buttons.add(ok);
+        buttons.add(cancel);
+        d.add(buttons);
+        final java.util.Vector result = new java.util.Vector();
+        ok.addActionListener(new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                    {
+                    for (int i = 0; i < options.length; i++)
+                        {
+                        JCheckBox box = (JCheckBox) boxes.get(options[i]);
+                        if (box.isSelected())
+                            {
+                            result.addElement(options[i]);
+                            }
+                        }
+                    d.dispose();
+                    }
+            });
+        cancel.addActionListener(new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                    {
+                    result.removeAllElements();
+                    result.addElement("__CANCEL__");
+                    d.dispose();
+                    }
+            });
+        d.pack();
+        d.setLocationRelativeTo(my_frame);
+        d.setVisible(true);
+        if (result.size() > 0 && result.elementAt(0).equals("__CANCEL__"))
+            {
+            return null;
+            }
+        return result;
         }
 
     // template for most analysis methods

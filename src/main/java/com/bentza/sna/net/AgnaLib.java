@@ -829,20 +829,49 @@ import java.util.Vector;
      */
     public String getPajekVectors(Network src)
         {
+        return getPajekVectors(src, null);
+        }
+
+    /**
+     * 2.1.3: Pajek *Vector export limited to the labels listed in
+     * selected (null = all available).
+     */
+    public String getPajekVectors(Network src, java.util.Vector selected)
+        {
         StringBuffer out = new StringBuffer("");
-        appendPajekVector(out, "Emission Degree", emissionDegree(src));
-        appendPajekVector(out, "Reception Degree", receptionDegree(src));
-        appendPajekVector(out, "Weighted Emission Degree",
+        addPajekVectorIfSelected(out, selected, "Emission Degree",
+                emissionDegree(src));
+        addPajekVectorIfSelected(out, selected, "Reception Degree",
+                receptionDegree(src));
+        addPajekVectorIfSelected(out, selected, "Weighted Emission Degree",
                 weightedEmissionDegree(src));
-        appendPajekVector(out, "Sociometric Status", sociometricStatus(src));
-        appendPajekVector(out, "Nodal Degree", nodalDegree(src));
+        addPajekVectorIfSelected(out, selected, "Sociometric Status",
+                sociometricStatus(src));
+        addPajekVectorIfSelected(out, selected, "Nodal Degree",
+                nodalDegree(src));
         if (isConnected(src))
             {
-            appendPajekVector(out, "Betweenness", betweenness(src));
-            appendPajekVector(out, "Closeness", closeness(src));
-            appendPajekVector(out, "Prestige", prestige(src));
+            addPajekVectorIfSelected(out, selected, "Betweenness",
+                    betweenness(src));
+            addPajekVectorIfSelected(out, selected, "Closeness",
+                    closeness(src));
+            addPajekVectorIfSelected(out, selected, "Prestige",
+                    prestige(src));
             }
         return out.toString();
+        }
+
+    private void addPajekVectorIfSelected(StringBuffer out,
+            java.util.Vector selected, String label, float[] values)
+        {
+        if (values == null)
+            {
+            return;
+            }
+        if (selected == null || selected.contains(label))
+            {
+            appendPajekVector(out, label, values);
+            }
         }
 
     private void appendPajekVector(StringBuffer out, String label,
