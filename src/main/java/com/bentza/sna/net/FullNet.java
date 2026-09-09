@@ -638,6 +638,10 @@ import javax.swing.JTextPane;
             parsePajekFile(str);
         else if (extension.equals("graphml")) // GraphML file
             parseGraphMLFile(str);
+        else if (extension.equals("gml")) // GML file
+            parseGMLFile(str);
+        else if (extension.equals("graphson") || extension.equals("json")) // GraphSON
+            parseGraphSONFile(str);
         else if (extension.equals("ana")) // Ana file
             parseAnaTextFile(str);
         else
@@ -750,6 +754,267 @@ import javax.swing.JTextPane;
             } catch (Exception e)
             {
             AgnaLog.warn("GraphML import failed: " + e);
+            }
+        }
+
+
+    // 2.1.3: GML (Graph Modelling Language) reader - the classic text
+    // format of igraph/NetworkX/Gephi. Nodes are taken in file order, the
+    // name from "label" (or "name"); edge weights from "value" (or
+    // "weight", default 1). Self-loops are ignored.
+    public void parseGMLFile(String str)
+        {
+        try
+            {
+            java.util.List<String> tokens = gmlTokens(str);
+            int p = 0;
+            java.util.List<String> node_ids = new java.util.ArrayList<>();
+            java.util.List<String> node_labels = new java.util.ArrayList<>();
+            java.util.List<String[]> edges = new java.util.ArrayList<>();
+            boolean inside_graph = false;
+            while (p < tokens.size())
+                {
+                String tok = tokens.get(p);
+                if (tok.equals("["))
+                    {
+                    p++;
+                    inside_graph = true;
+                    continue;
+                    }
+                if (tok.equals("]"))
+                    {
+                    p++;
+                    inside_graph = false;
+                    continue;
+                    }
+                String attr = tok;
+                p++;
+                if (p >= tokens.size())
+                    break;
+                String value_tok = tokens.get(p);
+                if (value_tok.equals("["))
+                    {
+                    // nested block (graph / node / edge)
+                    p++;
+                    if (attr.equals("graph"))
+                        {
+                        inside_graph = true;
+                        continue;
+                        }
+                    java.util.Map<String, String> attrs = new java.util.HashMap<>();
+                    while (p < tokens.size() && !tokens.get(p).equals("]"))
+                        {
+                        String a = tokens.get(p);
+                        p++;
+                        if (p >= tokens.size() || tokens.get(p).equals("]"))
+                            break;
+                        attrs.put(a, tokens.get(p));
+                        p++;
+                        }
+                    if (p < tokens.size() && tokens.get(p).equals("]"))
+                        p++;
+                    if (attr.equals("node"))
+                        {
+                        node_ids.add(attrs.getOrDefault("id", String
+                                .valueOf(node_ids.size())));
+                        String label = attrs.getOrDefault("label",
+                                attrs.get("name"));
+                        node_labels.add(label == null ? "Node " + node_ids
+                                .size() : label);
+                        } else if (attr.equals("edge"))
+                        {
+                        String source = attrs.get("source");
+                        String target = attrs.get("target");
+                        if (source != null && target != null)
+                            {
+                            String value = attrs.get("value");
+                            if (value == null)
+                                value = attrs.get("weight");
+                            edges.add(new String[] { source, target, value });
+                            }
+                        }
+                    continue;
+                    }
+                // plain key value at this level (e.g. directed 1)
+                p++;
+                }
+            final int n = node_ids.size();
+            my_network = new Network(n);
+            java.util.Map<String, Integer> ids = new java.util.HashMap<>();
+            for (int i = 0; i < n; i++)
+                {
+                ids.put(node_ids.get(i), i);
+                String label = node_labels.get(i);
+                if (label.startsWith("\"") && label.endsWith("\""))
+                    label = label.substring(1, label.length() - 1);
+                my_network.getActor(i).setName(unescapeGML(label));
+                }
+            for (int e = 0; e < edges.size(); e++)
+                {
+                String[] edge = edges.get(e);
+                Integer src = ids.get(edge[0]);
+                Integer tgt = ids.get(edge[1]);
+                if (src == null || tgt == null || src == tgt)
+                    continue;
+                float weight = 1f;
+                if (edge[2] != null)
+                    {
+                    try
+                        {
+                        weight = Float.parseFloat(edge[2]);
+                        } catch (NumberFormatException e1)
+                        {
+                        }
+                    }
+                my_network.setValue(weight, src.intValue(), tgt.intValue());
+                }
+            } catch (Exception e)
+            {
+            AgnaLog.warn("GML import failed: " + e);
+            }
+        }
+
+    private static java.util.List<String> gmlTokens(String str)
+        {
+        java.util.List<String> tokens = new java.util.ArrayList<>();
+        int i = 0;
+        int n = str.length();
+        while (i < n)
+            {
+            char c = str.charAt(i);
+            if (Character.isWhitespace(c))
+                {
+                i++;
+                continue;
+                }
+            if (c == '[' || c == ']')
+                {
+                tokens.add(String.valueOf(c));
+                i++;
+                continue;
+                }
+            if (c == '"')
+                {
+                StringBuilder sb = new StringBuilder();
+                i++;
+                while (i < n && str.charAt(i) != '"')
+                    {
+                    char cc = str.charAt(i);
+                    if (cc == '\\' && i + 1 < n)
+                        {
+                        sb.append(str.charAt(i + 1));
+                        i += 2;
+                        } else
+                        {
+                        sb.append(cc);
+                        i++;
+                        }
+                    }
+                if (i < n)
+                    i++;
+                tokens.add("\"" + sb.toString() + "\"");
+                continue;
+                }
+            StringBuilder sb = new StringBuilder();
+            while (i < n && !Character.isWhitespace(str.charAt(i))
+                    && str.charAt(i) != '[' && str.charAt(i) != ']')
+                {
+                sb.append(str.charAt(i));
+                i++;
+                }
+            tokens.add(sb.toString());
+            }
+        return tokens;
+        }
+
+    private static String unescapeGML(String s)
+        {
+        if (s == null)
+            return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++)
+            {
+            char c = s.charAt(i);
+            if (c == '\\' && i + 1 < s.length())
+                {
+                sb.append(s.charAt(i + 1));
+                i++;
+                } else
+                {
+                sb.append(c);
+                }
+            }
+        return sb.toString();
+        }
+
+    // 2.1.3: GraphSON (JSON) reader - vertices in file order, name from
+    // "label", weight from "value"/"weight" (default 1). Self-loops are
+    // ignored. Accepts both the {"graph":{...}} wrapper and a bare
+    // {"vertices":[...],"edges":[...]} document.
+    public void parseGraphSONFile(String str)
+        {
+        try
+            {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode root = mapper
+                    .readTree(str);
+            com.fasterxml.jackson.databind.JsonNode graph = root.get("graph");
+            if (graph == null)
+                graph = root;
+            com.fasterxml.jackson.databind.JsonNode vertices = graph
+                    .get("vertices");
+            com.fasterxml.jackson.databind.JsonNode edges = graph.get("edges");
+            java.util.List<String> ids = new java.util.ArrayList<>();
+            java.util.List<String> labels = new java.util.ArrayList<>();
+            if (vertices != null)
+                {
+                for (com.fasterxml.jackson.databind.JsonNode vertex : vertices)
+                    {
+                    ids.add(vertex.get("id") == null ? String.valueOf(ids
+                            .size()) : vertex.get("id").asText());
+                    labels.add(vertex.get("label") == null ? "Node "
+                            + ids.size() : vertex.get("label").asText());
+                    }
+                }
+            final int n = ids.size();
+            my_network = new Network(n);
+            java.util.Map<String, Integer> index = new java.util.HashMap<>();
+            for (int i = 0; i < n; i++)
+                {
+                index.put(ids.get(i), i);
+                my_network.getActor(i).setName(labels.get(i));
+                }
+            if (edges != null)
+                {
+                for (com.fasterxml.jackson.databind.JsonNode edge : edges)
+                    {
+                    Integer src = index.get(edge.get("source") == null
+                            ? null : edge.get("source").asText());
+                    Integer tgt = index.get(edge.get("target") == null
+                            ? null : edge.get("target").asText());
+                    if (src == null || tgt == null || src == tgt)
+                        continue;
+                    float weight = 1f;
+                    com.fasterxml.jackson.databind.JsonNode value = edge
+                            .get("value");
+                    if (value == null)
+                        value = edge.get("weight");
+                    if (value != null)
+                        {
+                        try
+                            {
+                            weight = (float) value.asDouble();
+                            } catch (Exception e1)
+                            {
+                            }
+                        }
+                    my_network.setValue(weight, src.intValue(),
+                            tgt.intValue());
+                    }
+                }
+            } catch (Exception e)
+            {
+            AgnaLog.warn("GraphSON import failed: " + e);
             }
         }
 

@@ -35,3 +35,4 @@ distribution by Marius Benta and are carried over unchanged.
 
 No other runtime dependencies. JUnit 5 (test scope only) is resolved from
 Maven Central under the Eclipse Public Licence 2.0.
+- Jackson (Apache-2.0) - JSON handling for GraphSON import/export.

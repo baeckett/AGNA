@@ -4,7 +4,9 @@ import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.HTMLParser;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.io.ExcelExporter;
+import com.bentza.sna.io.GMLExporter;
 import com.bentza.sna.io.GraphMLExporter;
+import com.bentza.sna.io.GraphSONExporter;
 import com.bentza.sna.io.PajekExporter;
 import com.bentza.sna.net.*;
 import com.bentza.sna.Agna;
@@ -786,6 +788,16 @@ public class MainFrame //
             String errors = excel_exporter.saveExcelNetwork(tmp_full_net,
                     file_name);
             return;
+            } else if (filestr.equals("gml"))
+            {
+            // GML: the classic igraph/NetworkX/Gephi text format
+            GMLExporter gml_exporter = new GMLExporter();
+            writestr = gml_exporter.getGML(tmp_full_net);
+            } else if (filestr.equals("graphson"))
+            {
+            // GraphSON: the JSON graph format (Jackson, Apache-2.0)
+            GraphSONExporter graphson_exporter = new GraphSONExporter();
+            writestr = graphson_exporter.getGraphSON(tmp_full_net);
             } else if (filestr.equals("graphml"))
             {
             // GraphML: the standard SNA exchange format (Gephi, NetworkX,
@@ -963,7 +975,7 @@ public class MainFrame //
         javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
         int chosen_format = -1;
         final String[] format_extensions = { "agn", "txt", "csv", "net",
-                "xls", "graphml" };
+                "xls", "graphml", "gml", "graphson" };
         if (ff instanceof AgnaFilesFilter)
             chosen_format = 0;
         else if (ff instanceof TabTextFilesFilter)
@@ -2990,7 +3002,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         final String[] labels = { "Agna (.agn)", "Tab-separated (.txt)",
                 "Comma-separated (.csv)", "Pajek (.net)", "Excel (.xls)",
-                "GraphML (.graphml)" };
+                "GraphML (.graphml)", "GML (.gml)", "GraphSON (.json)" };
         final String[] vector_options = { "Emission Degree",
                 "Reception Degree", "Weighted Emission Degree",
                 "Sociometric Status", "Nodal Degree", "Betweenness",
