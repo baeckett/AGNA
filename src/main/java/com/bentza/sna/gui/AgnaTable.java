@@ -60,15 +60,19 @@ class AgnaTable extends JTable
     protected void paintComponent(java.awt.Graphics g)
         {
         super.paintComponent(g);
-        if (!getShowHorizontalLines() && !getShowVerticalLines())
-            {
-            return;
-            }
+        // 2.1.3: the sociomatrix grid is drawn here, on top of whatever the
+        // look and feel painted: native look and feels (Aqua on macOS)
+        // force their own "off" grid defaults and never paint table grid
+        // lines, so the drawing is unconditional.
         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
         try
             {
             java.awt.Rectangle clip = g.getClipBounds();
-            g2.setColor(getGridColor());
+            java.awt.Color bg = getBackground();
+            float[] hsb = java.awt.Color.RGBtoHSB(bg.getRed(), bg.getGreen(),
+                    bg.getBlue(), null);
+            g2.setColor(hsb[2] > 0.75f ? new java.awt.Color(200, 205, 210)
+                    : new java.awt.Color(92, 96, 102));
             int firstRow = Math.max(0, rowAtPoint(clip.getLocation()));
             int lastRow = Math.min(getRowCount() - 1,
                     rowAtPoint(new java.awt.Point(clip.x,
@@ -87,19 +91,13 @@ class AgnaTable extends JTable
                 }
             for (int r = firstRow; r <= lastRow; r++)
                 {
-                if (getShowHorizontalLines())
-                    {
-                    int y = getCellRect(r, 0, true).y;
-                    g2.drawLine(clip.x, y, clip.x + clip.width, y);
-                    }
+                int y = getCellRect(r, 0, true).y;
+                g2.drawLine(clip.x, y, clip.x + clip.width, y);
                 }
             for (int c = firstCol; c <= lastCol; c++)
                 {
-                if (getShowVerticalLines())
-                    {
-                    int x = getCellRect(0, c, true).x;
-                    g2.drawLine(x, clip.y, x, clip.y + clip.height);
-                    }
+                int x = getCellRect(0, c, true).x;
+                g2.drawLine(x, clip.y, x, clip.y + clip.height);
                 }
             } finally
             {
