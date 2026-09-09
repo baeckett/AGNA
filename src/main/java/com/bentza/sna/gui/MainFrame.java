@@ -530,6 +530,31 @@ public class MainFrame //
                         }
                     }
 
+                // 2.1.3: toggles the visibility of the analysis output
+                if (e.getSource() == v_hide_output)
+                    {
+                    if (output_edit != null)
+                        {
+                        output_edit.setVisible(false);
+                        }
+                    my_frame.validate();
+                    my_frame.repaint();
+                    }
+                if (e.getSource() == v_view_output)
+                    {
+                    if (output_edit != null)
+                        {
+                        output_edit.setVisible(true);
+                        }
+                    my_frame.validate();
+                    my_frame.repaint();
+                    }
+
+                if (e.getSource() == p_save_as_default)
+                    {
+                    doSaveAsDefaultSettings();
+                    }
+
                 // sets working directory preference:
                 if (e.getSource() == p_laf_native)
                     {
@@ -3420,6 +3445,15 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         UIManager.put("Table.showVerticalLines", Boolean.TRUE);
         }
 
+    private void doSaveAsDefaultSettings()
+        {
+        if (my_full_net != null)
+            {
+            my_full_net.writeInitialSettings();
+            }
+        setCurrentStatus("Settings saved as default.");
+        }
+
     private static java.util.Map<String, String> gridLineDefaults()
         {
         java.util.Map<String, String> lafProps = new java.util.HashMap<>();
@@ -4080,7 +4114,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         p_working_directory.setMnemonic('w');
         p_save_as_default.addActionListener(act_menu);
         mPreferences.add(p_working_directory);
-        // mPreferences.add(p_save_as_default);
+        mPreferences.add(p_save_as_default);
 
         // submeniuri din HELP:
         h_contents = new JMenuItem("Contents...");

@@ -444,8 +444,12 @@ import java.util.Vector;
             {
             for (j = i + 1; j < size; j++)
                 {
-                finval = Math.sqrt((double) src.getValue(i, j)
-                        * (double) src.getValue(j, i));
+                // 2.1.3: the geometric mean is defined for non-negative
+                // pairs; guard the product so opposite signs cannot
+                // produce NaN cells
+                finval = Math.sqrt(Math.max(0d,
+                        (double) src.getValue(i, j)
+                                * (double) src.getValue(j, i)));
                 src.setValue((float) finval, i, j);
                 src.setValue((float) finval, j, i);
                 }
