@@ -794,10 +794,17 @@ public class MainFrame //
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
 
-        chooser.setAcceptAllFileFilterUsed(true);
         chooser.setDialogTitle("Save Network As...");
-        // 2.1.3: the format is chosen in the options dialog AFTER the name;
-        // the chooser itself takes any name and Agna appends the extension
+        // 2.1.3: the format filters stay available in the chooser (Files of
+        // Type); the definitive format + Pajek vectors are picked in the
+        // options dialog shown after the name, which also guarantees the
+        // extension on every platform
+        chooser.setAcceptAllFileFilterUsed(true);
+        chooser.addChoosableFileFilter(new TabTextFilesFilter());
+        chooser.addChoosableFileFilter(new PajekFilesFilter());
+        chooser.addChoosableFileFilter(new CommaTextFilesFilter());
+        chooser.addChoosableFileFilter(new ExcelFilesFilter());
+        chooser.addChoosableFileFilter(new AgnaFilesFilter());
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             {
             grid_model.setReady(true);
@@ -827,7 +834,18 @@ public class MainFrame //
         // dialog selects the format (and, for Pajek, the vectors); the
         // extension is appended here so the saved file always matches the
         // visible choice
-        int chosen_format = askExportFormatDialog();
+        // pre-select the format radio from the chooser's filter (if any)
+        int default_format = 3; // Pajek
+        javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
+        if (ff instanceof AgnaFilesFilter)
+            default_format = 0;
+        else if (ff instanceof TabTextFilesFilter)
+            default_format = 1;
+        else if (ff instanceof CommaTextFilesFilter)
+            default_format = 2;
+        else if (ff instanceof ExcelFilesFilter)
+            default_format = 4;
+        int chosen_format = askExportFormatDialog(default_format);
         if (chosen_format < 0)
             {
             grid_model.setReady(true);
@@ -2619,7 +2637,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         return result;
         }
 
-    private int askExportFormatDialog()
+    private int askExportFormatDialog(int default_format)
         {
         final String[] labels = { "Agna (.agn)", "Tab-separated (.txt)",
                 "Comma-separated (.csv)", "Pajek (.net)", "Excel (.xls)" };
@@ -2634,7 +2652,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < labels.length; i++)
             {
-            radios[i] = new JRadioButton(labels[i], i == 3); // Pajek default
+            radios[i] = new JRadioButton(labels[i], i == default_format);
             group.add(radios[i]);
             d.add(radios[i]);
             }
