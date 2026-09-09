@@ -864,6 +864,24 @@ import javax.swing.JTextPane;
         }
 
     // returns the next word as a substring string of str
+
+    // 2.1.3: parses an optional integer setting; absent or malformed values
+    // yield the default instead of throwing/logging
+    private static int parseNextInt(String str, String key, int default_value)
+        {
+        String v = parseFindNextWord(str, key);
+        if (v == null)
+            {
+            return default_value;
+            }
+        try
+            {
+            return Integer.parseInt(v);
+            } catch (NumberFormatException e)
+            {
+            return default_value;
+            }
+        }
     private static String parseFindNextWord(String str, String value_name)
         {
         int out = 0;
@@ -931,7 +949,7 @@ import javax.swing.JTextPane;
         // finding area width:
         try
             {
-            tmp_width = Integer.parseInt(parseFindNextWord(str, "Area Width"));
+            tmp_width = parseNextInt(str, "Area Width");
             if (tmp_width > 10)
                 area.setWidth(tmp_width);
             } catch (Exception e) {
@@ -1027,7 +1045,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Names X"));
+            nn = parseNextInt(str, "Names X");
             area.setNamesX(nn);
             } catch (Exception e)
             {
@@ -1036,7 +1054,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Names Y"));
+            nn = parseNextInt(str, "Names Y");
             area.setNamesY(nn);
             } catch (Exception e)
             {
@@ -1045,7 +1063,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Title X"));
+            nn = parseNextInt(str, "Title X");
             area.setTitleX(nn);
             } catch (Exception e) {
       AgnaLog.warn("suppressed exception", e);
@@ -1053,7 +1071,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Title y"));
+            nn = parseNextInt(str, "Title y");
             area.setTitleY(nn);
             } catch (Exception e)
             {
@@ -1062,7 +1080,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Separator"));
+            nn = parseNextInt(str, "Separator");
             area.setSeparator(nn);
             } catch (Exception e)
             {
@@ -1081,7 +1099,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Grid Transparency"));
+            nn = parseNextInt(str, "Grid Transparency");
             area.setGridTransparency(nn);
             } catch (Exception e)
             {
@@ -1090,7 +1108,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Max Transparency"));
+            nn = parseNextInt(str, "Max Transparency");
             area.setMaxTransparency(nn);
             } catch (Exception e)
             {
@@ -1099,7 +1117,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Background Image X"));
+            nn = parseNextInt(str, "Background Image X");
             area.setBackgroundImageX(nn);
             } catch (Exception e)
             {
@@ -1108,7 +1126,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Background Image Y"));
+            nn = parseNextInt(str, "Background Image Y");
             area.setBackgroundImageY(nn);
             } catch (Exception e)
             {
@@ -1117,8 +1135,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str,
-                    "Background Image Width"));
+            nn = parseNextInt(str, "Background Image Width");
             area.setBackgroundImageWidth(nn);
             } catch (Exception e)
             {
@@ -1127,8 +1144,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str,
-                    "Background Image Height"));
+            nn = parseNextInt(str, "Background Image Height");
             area.setBackgroundImageHeight(nn);
             } catch (Exception e)
             {
@@ -1137,7 +1153,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Grid Space"));
+            nn = parseNextInt(str, "Grid Space");
             area.setGridSpace(nn);
             } catch (Exception e)
             {
@@ -1252,7 +1268,7 @@ import javax.swing.JTextPane;
         // finding size of network:
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Network Size"));
+            nn = parseNextInt(str, "Network Size");
             } catch (Exception e)
             {
             errors.append("\nNetwork size not found.");
@@ -1407,7 +1423,7 @@ tmp_node.setFace(tmpname);
         // finding area width:
         try
             {
-            tmp_width = Integer.parseInt(parseFindNextWord(str, "Area Width"));
+            tmp_width = parseNextInt(str, "Area Width");
             net_area.setWidthSimply(tmp_width);
             } catch (Exception e)
             {
@@ -1539,7 +1555,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Selected Node"));
+            nn = parseNextInt(str, "Selected Node");
             net_area.setSelectedActor(nn);
             } catch (Exception e) {
       AgnaLog.warn("suppressed exception", e);
@@ -1547,7 +1563,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Second Selected"));
+            nn = parseNextInt(str, "Second Selected");
             if (net_area.getAllowES())
                 net_area.setSecondSelected(nn);
             } catch (Exception e) {
@@ -1556,7 +1572,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Names X"));
+            nn = parseNextInt(str, "Names X");
             net_area.setNamesX(nn);
             } catch (Exception e)
             {
@@ -1565,7 +1581,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Names Y"));
+            nn = parseNextInt(str, "Names Y");
             net_area.setNamesY(nn);
             } catch (Exception e)
             {
@@ -1574,7 +1590,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Title X"));
+            nn = parseNextInt(str, "Title X");
             net_area.setTitleX(nn);
             } catch (Exception e)
             {
@@ -1583,7 +1599,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Title Y"));
+            nn = parseNextInt(str, "Title Y");
             net_area.setTitleY(nn);
             } catch (Exception e)
             {
@@ -1592,7 +1608,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Separator"));
+            nn = parseNextInt(str, "Separator");
             net_area.setSeparator(nn);
             } catch (Exception e)
             {
@@ -1611,7 +1627,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Grid Transparency"));
+            nn = parseNextInt(str, "Grid Transparency");
             net_area.setGridTransparency(nn);
             } catch (Exception e)
             {
@@ -1620,7 +1636,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Max Transparency"));
+            nn = parseNextInt(str, "Max Transparency");
             net_area.setMaxTransparency(nn);
             } catch (Exception e)
             {
@@ -1629,7 +1645,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Background Image X"));
+            nn = parseNextInt(str, "Background Image X");
             net_area.setBackgroundImageX(nn);
             } catch (Exception e)
             {
@@ -1638,7 +1654,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Background Image Y"));
+            nn = parseNextInt(str, "Background Image Y");
             net_area.setBackgroundImageY(nn);
             } catch (Exception e)
             {
@@ -1647,8 +1663,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str,
-                    "Background Image Width"));
+            nn = parseNextInt(str, "Background Image Width");
             net_area.setBackgroundImageWidth(nn);
             } catch (Exception e)
             {
@@ -1657,8 +1672,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str,
-                    "Background Image Height"));
+            nn = parseNextInt(str, "Background Image Height");
             net_area.setBackgroundImageHeight(nn);
             } catch (Exception e)
             {
@@ -1667,7 +1681,7 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = Integer.parseInt(parseFindNextWord(str, "Grid Space"));
+            nn = parseNextInt(str, "Grid Space");
             net_area.setGridSpace(nn);
             } catch (Exception e)
             {

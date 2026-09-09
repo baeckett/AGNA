@@ -15,6 +15,10 @@ import java.util.Vector;
     // 2.1.3: set by the UI to abort an in-flight clique enumeration
     public static volatile boolean clique_search_cancelled;
 
+    // 2.1.3: safety cap for the clique report; enumeration is exponential in
+    // the worst case and a dense network can produce millions of cliques
+    public static final int MAX_REPORTED_CLIQUES = 2000;
+
         public static void initAjna()
         {
         // type-dependent text elements:
@@ -699,6 +703,11 @@ import java.util.Vector;
             {
             if (excluded_count == 0 && current.getSize() >= 2)
                 {
+                if (cliques.size() >= MAX_REPORTED_CLIQUES)
+                    {
+                    clique_search_cancelled = true; // stop the search
+                    return;
+                    }
                 cliques.addElement(current.getClone());
                 }
             return;
@@ -1496,6 +1505,11 @@ import java.util.Vector;
             // out += unli;
             } // end for i
         // out += unol;
+        if (final_cliques.size() >= MAX_REPORTED_CLIQUES)
+            {
+            out.append(lb + "*** Result truncated at " + MAX_REPORTED_CLIQUES
+                    + " cliques (the network is too dense). ***");
+            }
         out.append(lb);
         return out.toString();
         }

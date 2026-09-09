@@ -2957,7 +2957,13 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     try
                         {
                         return task.call();
-                        } catch (Exception e)
+                        } catch (OutOfMemoryError oom)
+                        {
+                        // 2.1.3: never let an over-eager analysis kill the app
+                        AgnaLog.error("analysis ran out of memory", oom);
+                        return "\n*** Analysis stopped: ran out of memory "
+                                + "(too many results). Try a smaller diameter. ***";
+                        } catch (Throwable e)
                         {
                         AgnaLog.error("analysis failed", e);
                         return null;
