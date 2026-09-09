@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Contents - Agna Help</title>
+<html><head><meta charset="utf-8"><title>4. File formats - Agna Help</title>
 <style>/* Agna help stylesheet (2.1.3) - clean, modern, printable */
 body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
        font-size: 14px; line-height: 1.55; color: #222; background: #fff;
@@ -18,16 +18,13 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 .warning { border-left: 4px solid #c0392b; background: #fdf3f2; padding: 6px 12px; }
 </style></head>
 <body>
-<h1>Agna Help</h1>
-<p>Contents of the Agna 2.1.3 manual. Choose a section:</p>
-<ul>
-<li><a href="1quickstart.htm">1. Quick start</a></li>
-<li><a href="2conceptsashortsnaglossary.htm">2. Concepts — a short SNA glossary</a></li>
-<li><a href="3methodologywhatexactlyiscomputedreadbeforepublishingresults.htm">3. Methodology — what exactly is computed (read before publishing results)</a></li>
-<li><a href="4fileformats.htm">4. File formats</a></li>
-<li><a href="5menureference.htm">5. Menu reference</a></li>
-<li><a href="6keyboardshortcuts.htm">6. Keyboard shortcuts</a></li>
-<li><a href="7faqtroubleshooting.htm">7. FAQ / Troubleshooting</a></li>
-<li><a href="8versionhistory.htm">8. Version history</a></li>
-</ul>
+<h1>4. File formats</h1>
+<ul><li><code>.agn</code> — Agna format (version 2.1); note the settings sections</li></ul>
+<p>  (viewer settings, node faces, node coordinates).</p>
+<ul><li><code>.net</code> — Pajek export.</li></ul>
+<ul><li><code>.txt</code> / <code>.csv</code> — tab- or comma-separated matrices; CSV supports</li></ul>
+<p>  quoted node names; empty cells read as 0.</p>
+<ul><li><code>.xls</code> — Excel export (JExcelAPI).</li></ul>
+<ul><li>Legacy files: old files store face paths with platform-specific</li></ul>
+<p>  separators; Agna 2.1.3 resolves such references transparently.</p>
 </body></html>

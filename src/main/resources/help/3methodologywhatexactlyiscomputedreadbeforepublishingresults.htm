@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>3. Methodology — what exactly is computed (read before publishing results) - Agna Help</title>
+<style>/* Agna help stylesheet (2.1.3) - clean, modern, printable */
+body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+       font-size: 14px; line-height: 1.55; color: #222; background: #fff;
+       max-width: 820px; margin: 24px auto; padding: 0 20px; }
+h1 { font-size: 22px; border-bottom: 2px solid #298C8C; padding-bottom: 6px; }
+h2 { font-size: 17px; margin-top: 28px; color: #123; }
+h3 { font-size: 15px; }
+code, pre { background: #f4f6f6; border-radius: 4px; font-size: 13px; }
+pre { padding: 10px; overflow-x: auto; }
+table { border-collapse: collapse; margin: 12px 0; }
+th, td { border: 1px solid #c8d2d2; padding: 6px 10px; text-align: left; }
+th { background: #e8f0f0; }
+a { color: #1b6a6a; }
+blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
+             color: #345; background: #f7fbfb; }
+.warning { border-left: 4px solid #c0392b; background: #fdf3f2; padding: 6px 12px; }
+</style></head>
+<body>
+<h1>3. Methodology — what exactly is computed (read before publishing results)</h1>
+<ul><li><b>Density</b> uses the directed convention: arcs / (n * (n-1)). For a</li></ul>
+<p>  symmetric matrix the undirected reading (edges / (n * (n-1)/2)) yields</p>
+<p>  the same value; Agna prints both labels explicitly, and warns when the</p>
+<p>  matrix is asymmetric so no undirected density exists.</p>
+<ul><li><b>Geodesics matrix</b>: entries are shortest-path hop counts. A 0 entry</li></ul>
+<p>  means &quot;no path&quot; (and the diagonal). **Eccentricity, Closeness and</p>
+<p>  Betweenness refuse to compute on disconnected networks** and print a</p>
+<p>  warning instead of silently treating unreachable pairs as distance 0.</p>
+<ul><li><b>Betweenness</b> is raw (unnormalised) Freeman betweenness, summed over</li></ul>
+<p>  ordered pairs.</p>
+<ul><li><b>Prestige</b> = proximity prestige: (share of nodes that can reach i)</li></ul>
+<p>  x (average closeness of those nodes); 0 when nobody can reach i.</p>
+<ul><li><b>Cohesion</b> = density of mutual (two-way) dyads.</li></ul>
+<ul><li><b>Determination</b> = (in-strength - out-strength) / (n-1);</li></ul>
+<p>  <b>Sociometric Status</b> = (in-strength + out-strength) / (n-1).</p>
+<p>  These are Agna&#x27;s own coefficients; verify they match the convention in</p>
+<p>  your field before citing them.</p>
+<ul><li>Analyses that depend on distances assume unweighted (graph) distances;</li></ul>
+<p>  edge <i>values</i> are used by the degree/status/density statistics, not by</p>
+<p>  the path-based measures.</p>
+</body></html>

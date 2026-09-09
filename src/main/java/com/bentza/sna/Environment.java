@@ -36,7 +36,8 @@ public class Environment
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
      */
-    private final static String application_url = "http://www.geocities.com/imbenta/agna";
+    // 2.1.3: no live project page yet; the About dialog hides the URL
+    private final static String application_url = "";
 
     private final static String application_email = "imbenta@yahoo.co.uk";
 

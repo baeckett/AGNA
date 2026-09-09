@@ -68,7 +68,7 @@ class AboutBox
         // face='Arial,Helvetica,Verdana,sans-serif'><a href='" +
         // MainFrame.getApplicationUrl() +"'>" + MainFrame.getApplicationUrl() +
         // "</a>");
-        url_button = new UrlLabel(Environment.getApplicationUrl());
+        url_button = new UrlLabel(" ".trim());
         // url_button.setBorder(null);
         url_button.setBackground(background_color);
         // url_button.addActionListener(act_dialog);
