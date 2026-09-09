@@ -105,8 +105,9 @@ public class ModernIcons
             {
             kind = NEW_NETWORK;
             }
+        // rest state: both hues faded, so hover (full blue) contrasts hard
         Color line = rollover ? ACCENT : fade(outline());
-        Color accent = rollover ? ACCENT_DEEP : ACCENT;
+        Color accent = rollover ? ACCENT_DEEP : fade(ACCENT);
         BufferedImage img = new BufferedImage(size, size,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();

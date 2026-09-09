@@ -495,6 +495,12 @@ public class VerticalToolBar extends JPanel
         caps_box.setSelectedIcon(MainFrame.isClassicToolbarIcons()
                 ? Environment.getButtonImageIcon("rCapsSensitive.gif")
                 : ModernIcons.get(ModernIcons.VIEW_NAMES, 16, true));
+        caps_box.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rCapsSensitive.gif")
+                : ModernIcons.get(ModernIcons.VIEW_NAMES, 16, true));
+        caps_box.setRolloverSelectedIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rCapsSensitive.gif")
+                : ModernIcons.get(ModernIcons.VIEW_NAMES, 16, true));
         caps_box.setToolTipText("Case-sensitive");
         caps_box.setSelected(false);
         caps_box.setEnabled(true);
@@ -515,6 +521,13 @@ public class VerticalToolBar extends JPanel
         clear_before_box.setSelectedIcon(MainFrame.isClassicToolbarIcons()
                 ? Environment.getButtonImageIcon("rClearBefore.gif")
                 : ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 16, true));
+        clear_before_box.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rClearBefore.gif")
+                : ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 16, true));
+        clear_before_box.setRolloverSelectedIcon(
+                MainFrame.isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("rClearBefore.gif")
+                : ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 16, true));
         clear_before_box.setToolTipText("Clear old results on search");
         clear_before_box.setSelected(false);
         clear_before_box.setEnabled(true);
@@ -533,6 +546,13 @@ public class VerticalToolBar extends JPanel
                 : ModernIcons.get(ModernIcons.MATCH, 16));
         match_name_box.setSelectedIcon(MainFrame.isClassicToolbarIcons()
                 ? Environment.getButtonImageIcon("rMatchName.gif")
+                : ModernIcons.get(ModernIcons.MATCH, 16, true));
+        match_name_box.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rMatchName.gif")
+                : ModernIcons.get(ModernIcons.MATCH, 16, true));
+        match_name_box.setRolloverSelectedIcon(
+                MainFrame.isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("rMatchName.gif")
                 : ModernIcons.get(ModernIcons.MATCH, 16, true));
         match_name_box.setToolTipText("Match exact node name");
         match_name_box.setSelected(false);
