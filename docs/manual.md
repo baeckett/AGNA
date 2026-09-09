@@ -23,7 +23,9 @@ from the Quick Start section.
   tie from i to j. Agna networks are directed by default.
 - *Degree measures*: Nodal Degree (neighbours of a node, symmetric
   networks), Emission/Reception Degree (outgoing/incoming tie counts),
-  weighted variants (sums of tie values).
+  weighted variants (sums of tie values). Indegree/Outdegree are BINARY
+  counts (only presence matters): changing a tie's value does not move
+  them - add/remove ties or use the weighted variants instead.
 - *Centrality*: Betweenness (Freeman), Closeness (Freeman; inverse of
   the distance sum), Fareness, Eccentricity (maximum distance),
   Bavelas-Leavitt index.

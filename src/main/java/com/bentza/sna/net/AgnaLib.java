@@ -2065,7 +2065,7 @@ import java.util.Vector;
                 + "* relative to number of all other nodes (self excluded)"
                 + unit);
         out.append(lb + blanc + blanc + blanc + blanc + blanc + it
-                + "** relative to number of all nodes (slef included)" + unit);
+                + "** relative to number of all nodes (self included)" + unit);
         out.append(lb + table + tr);
 
         if (!MainFrame.getCurrentWeight())
@@ -2226,7 +2226,7 @@ import java.util.Vector;
                 + "* relative to number of all other nodes (self excluded)"
                 + unit);
         out.append(lb + blanc + blanc + blanc + blanc + blanc + it
-                + "** relative to number of all nodes (slef included)" + unit);
+                + "** relative to number of all nodes (self included)" + unit);
         out.append(lb + table + tr);
 
         if (!MainFrame.getCurrentWeight())
@@ -2443,7 +2443,7 @@ import java.util.Vector;
                 + "* relative to number of all other nodes (self excluded)"
                 + unit);
         out.append(lb + blanc + blanc + blanc + blanc + blanc + it
-                + "** relative to number of all nodes (slef included)" + unit);
+                + "** relative to number of all nodes (self included)" + unit);
         out.append(lb + it + "(The network is now considered as non-directed.)"
                 + unit);
 
