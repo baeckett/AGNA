@@ -324,6 +324,8 @@ import javax.swing.JTextPane;
 
         if (MainFrame.getDefaultNodeFaceSource() != null
                 || !(MainFrame.getDefaultNodeFaceSource()).equals("-"))
+            filestr.append("Look And Feel\t"
+                    + MainFrame.getLookAndFeel() + lb);
             filestr.append("Pajek Vectors Enabled\t"
                     + (MainFrame.isPajekVectorsEnabled() ? "yes"
                             : "no") + lb);
@@ -923,6 +925,11 @@ import javax.swing.JTextPane;
         tmp_val = parseFindNextWord(str, "Working Directory");
         if (tmp_val != null && !tmp_val.equals("-"))
             MainFrame.setWorkingDirectory(tmp_val);
+        tmp_val = parseFindNextWord(str, "Look And Feel");
+        if (tmp_val != null)
+            {
+            MainFrame.setLookAndFeel(tmp_val);
+            }
         tmp_val = parseFindNextWord(str, "Pajek Vectors Enabled");
         if (tmp_val != null)
             {

@@ -3246,24 +3246,65 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         return confirm;
         };
 
-    // set native look & feel:: *********************
+    // set look & feel:: *********************
+
+    // 2.1.3: preferred look and feel, persisted in the settings:
+    //   flatlaf-dark   FlatLaf dark (default)
+    //   flatlaf        FlatLaf light
+    //   system         native per platform
+    //   skins          classic l2fprod theme packs
+    private static String look_and_feel = "flatlaf-dark";
+
+    public static String getLookAndFeel()
+        {
+        return look_and_feel;
+        }
+
+    public static void setLookAndFeel(String tmp_laf)
+        {
+        if (tmp_laf != null)
+            {
+            look_and_feel = tmp_laf;
+            }
+        }
 
     public static void setNativeLookAndFeel()
         {
+        String choice = getLookAndFeel();
         try
             {
-            // 2.1.3: theme packs ship on the classpath instead of the working
-            // directory, so they resolve from the jar too
-            Skin theSkinToUse = SkinLookAndFeel.loadThemePack(Agna.class
-                    .getResourceAsStream("/themepacks/aquathemepack.zip"));
-            SkinLookAndFeel.setSkin(theSkinToUse);
-            // finally set the Skin Look And Feel
-            UIManager.setLookAndFeel(new SkinLookAndFeel());
-
-            // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            if ("flatlaf".equals(choice))
+                {
+                com.formdev.flatlaf.FlatLightLaf.setup();
+                }
+            else if ("flatlaf-dark".equals(choice))
+                {
+                com.formdev.flatlaf.FlatDarkLaf.setup();
+                }
+            else if ("skins".equals(choice))
+                {
+                // theme packs ship on the classpath, so they resolve from
+                // the jar too
+                Skin theSkinToUse = SkinLookAndFeel.loadThemePack(Agna.class
+                        .getResourceAsStream("/themepacks/aquathemepack.zip"));
+                SkinLookAndFeel.setSkin(theSkinToUse);
+                UIManager.setLookAndFeel(new SkinLookAndFeel());
+                }
+            else
+                {
+                UIManager.setLookAndFeel(UIManager
+                        .getSystemLookAndFeelClassName());
+                }
             } catch (Exception e)
             {
             System.out.println(e.toString());
+            try
+                {
+                UIManager.setLookAndFeel(UIManager
+                        .getSystemLookAndFeelClassName());
+                } catch (Exception e2)
+                {
+                }
             }
         }
 

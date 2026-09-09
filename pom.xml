@@ -19,6 +19,13 @@
   </properties>
 
   <dependencies>
+    <!-- Modern cross-platform look & feel (MIT) -->
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+
     <!-- Excel export: JExcelAPI (LGPL), same library family as the bundled jxl.jar of 2.1.2 -->
     <dependency>
       <groupId>net.sourceforge.jexcelapi</groupId>
