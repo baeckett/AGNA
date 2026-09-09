@@ -806,8 +806,14 @@ public class MainFrame //
             file = new File(my_full_net.getNetworkFileName());
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setSelectedFile(file);
-        chooser.setCurrentDirectory(file);
+        // 2.1.3: the Save As name is shown WITHOUT an extension; the chosen
+        // format (dialog or remembered setting) appends it afterwards, so
+        // the user never fights a stale extension in the name field
+        chooser.setSelectedFile(new File(IOUtils.getNameWithoutExtension(file
+                .getAbsolutePath())));
+        java.io.File chooser_dir = file.isDirectory() ? file : file
+                .getParentFile();
+        chooser.setCurrentDirectory(chooser_dir != null ? chooser_dir : file);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
 
