@@ -814,6 +814,8 @@ public class MainFrame //
                     + ".agn");
             } else
             file = new File(network_file_name);
+        AgnaLog.info("Save As: stored name '" + network_file_name
+                + "' -> using '" + file.getAbsolutePath() + "'");
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         // 2.1.3: the Save As name is shown WITHOUT an extension; the chosen
