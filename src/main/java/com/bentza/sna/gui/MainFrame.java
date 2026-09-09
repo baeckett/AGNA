@@ -876,6 +876,24 @@ public class MainFrame //
             return;
             }
 
+        // 2.1.3: on some platforms the approved selection can come back as a
+        // stale absolute path (e.g. from a previous session's file); keep the
+        // name inside the chooser's current directory
+        java.io.File approved_dir = chooser.getCurrentDirectory();
+        java.io.File approved_file = new java.io.File(filename);
+        if (approved_dir != null && approved_file.isAbsolute()
+                && approved_file.getParentFile() != null
+                && !approved_file.getParentFile().equals(approved_dir))
+            {
+            AgnaLog.warn("Save As: approved path outside current directory ("
+                    + filename + "); rebuilding inside " + approved_dir);
+            filename = new java.io.File(approved_dir,
+                    approved_file.getName()).getCanonicalPath();
+            }
+        AgnaLog.info("Save As approved: directory="
+                + (approved_dir != null ? approved_dir.getAbsolutePath()
+                        : "null") + " file=" + filename);
+
         // 2.1.3: reliable, platform-independent format choice: one options
         // dialog selects the format (and, for Pajek, the vectors); the
         // extension is appended here so the saved file always matches the
