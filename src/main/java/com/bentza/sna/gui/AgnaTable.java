@@ -46,6 +46,9 @@ class AgnaTable extends JTable
         setSelectionMode(1);
         setSelectionBackground(selection_background_color);
         setSelectionForeground(Color.black);
+        // 2.1.3: grid lines stay on under every look and feel (the
+        // UIManager keys are set at look-and-feel install time)
+        setShowGrid(true);
         // setSelectionForeground(Color.red);
         }
 

@@ -3353,10 +3353,17 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             {
             if ("flatlaf".equals(choice))
                 {
+                // 2.1.3: the grid-line keys travel as theme setup
+                // properties because FlatLaf's theme defaults shadow
+                // plain UIManager.put values
+                com.formdev.flatlaf.FlatLaf.setGlobalExtraDefaults(
+                        gridLineDefaults());
                 com.formdev.flatlaf.FlatLightLaf.setup();
                 }
             else if ("flatlaf-dark".equals(choice))
                 {
+                com.formdev.flatlaf.FlatLaf.setGlobalExtraDefaults(
+                        gridLineDefaults());
                 com.formdev.flatlaf.FlatDarkLaf.setup();
                 }
             else if ("skins".equals(choice))
@@ -3384,6 +3391,21 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 {
                 }
             }
+
+        // 2.1.3: the sociomatrix grid lines must stay visible under every
+        // look and feel. These puts cover LAFs (Aqua, Metal) that read the
+        // keys when the table UI is installed; FlatLaf gets them via the
+        // theme setup properties above.
+        UIManager.put("Table.showHorizontalLines", Boolean.TRUE);
+        UIManager.put("Table.showVerticalLines", Boolean.TRUE);
+        }
+
+    private static java.util.Map<String, String> gridLineDefaults()
+        {
+        java.util.Map<String, String> lafProps = new java.util.HashMap<>();
+        lafProps.put("Table.showHorizontalLines", "true");
+        lafProps.put("Table.showVerticalLines", "true");
+        return lafProps;
         }
 
     // focus listener of the table:
