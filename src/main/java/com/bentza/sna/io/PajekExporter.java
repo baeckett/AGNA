@@ -79,9 +79,10 @@ public class PajekExporter
 
         // first stores vertices info,
         // then receives arcs as well.
-        StringBuffer out = new StringBuffer("% Agna network: "
-                + tmp_network.getName() + "\n"
-                + "*Vertices " + String.valueOf(size) + "\n");
+        // 2.1.3: no '%' comment header - Gephi's Pajek importer rejects
+        // comment lines; Pajek proper reads the name from the labels anyway
+        StringBuffer out = new StringBuffer("*Vertices " + String.valueOf(size)
+                + "\n");
         StringBuffer arcs = new StringBuffer("*Arcs\n");
         String face_path = null;
 
