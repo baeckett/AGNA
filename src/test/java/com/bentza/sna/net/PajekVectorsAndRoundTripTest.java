@@ -34,7 +34,9 @@ public class PajekVectorsAndRoundTripTest
         fn.createDefaultNetwork(3);
         fn.attachArea();
         String out = new PajekExporter().getPajekNetwork(fn);
-        assertTrue(out.startsWith("% Agna network:"));
+        // Gephi compatibility: the export must start directly with *Vertices
+        // (no '%' comment header), yet still carry the vertex size
+        assertTrue(out.startsWith("*Vertices 3"));
         assertTrue(out.contains("size "), "vertex size expected: " + out);
         }
 
