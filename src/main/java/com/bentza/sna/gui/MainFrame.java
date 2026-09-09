@@ -2675,6 +2675,8 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         final int[] result = new int[] { -1 };
         final JDialog d = new JDialog(my_frame, "Export format", true);
         d.setLayout(new BoxLayout(d.getContentPane(), BoxLayout.Y_AXIS));
+        final JPanel vector_panel = new JPanel();
+        vector_panel.setLayout(new BoxLayout(vector_panel, BoxLayout.Y_AXIS));
         final JRadioButton[] radios = new JRadioButton[labels.length];
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < labels.length; i++)
@@ -2691,8 +2693,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             group.add(radios[i]);
             d.add(radios[i]);
             }
-        final JPanel vector_panel = new JPanel();
-        vector_panel.setLayout(new BoxLayout(vector_panel, BoxLayout.Y_AXIS));
         vector_panel.add(new JLabel(
                 "Pajek: per-node measure vectors to append"));
         final java.util.Hashtable boxes = new java.util.Hashtable();
