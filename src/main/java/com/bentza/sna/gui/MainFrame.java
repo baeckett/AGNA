@@ -922,6 +922,9 @@ public class MainFrame //
         chooser.addChoosableFileFilter(new PajekFilesFilter());
         chooser.addChoosableFileFilter(new CommaTextFilesFilter());
         chooser.addChoosableFileFilter(new ExcelFilesFilter());
+        chooser.addChoosableFileFilter(new GraphMLFilesFilter());
+        chooser.addChoosableFileFilter(new GMLFilesFilter());
+        chooser.addChoosableFileFilter(new GraphSONFilesFilter());
         chooser.addChoosableFileFilter(new AgnaFilesFilter());
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             {
@@ -984,6 +987,12 @@ public class MainFrame //
             chosen_format = 2;
         else if (ff instanceof ExcelFilesFilter)
             chosen_format = 4;
+        else if (ff instanceof GraphMLFilesFilter)
+            chosen_format = 5;
+        else if (ff instanceof GMLFilesFilter)
+            chosen_format = 6;
+        else if (ff instanceof GraphSONFilesFilter)
+            chosen_format = 7;
         if (chosen_format < 0)
             {
             int default_format = getRememberedExportFormat();
@@ -1274,6 +1283,9 @@ public class MainFrame //
         chooser.addChoosableFileFilter(new TabTextFilesFilter());
         chooser.addChoosableFileFilter(new AgnaFilesFilter());
         chooser.addChoosableFileFilter(new ExcelFilesFilter());
+        chooser.addChoosableFileFilter(new GraphMLFilesFilter());
+        chooser.addChoosableFileFilter(new GMLFilesFilter());
+        chooser.addChoosableFileFilter(new GraphSONFilesFilter());
 
         int return_val = chooser.showOpenDialog(my_frame);
         my_frame.repaint();
@@ -2624,6 +2636,9 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         chooser.addChoosableFileFilter(new AgnaFilesFilter());
         chooser.addChoosableFileFilter(new ExcelFilesFilter());
         chooser.addChoosableFileFilter(new PajekFilesFilter());
+        chooser.addChoosableFileFilter(new GraphMLFilesFilter());
+        chooser.addChoosableFileFilter(new GMLFilesFilter());
+        chooser.addChoosableFileFilter(new GraphSONFilesFilter());
         if (chooser.showOpenDialog(my_frame) != javax.swing.JFileChooser.APPROVE_OPTION)
             {
             return;
