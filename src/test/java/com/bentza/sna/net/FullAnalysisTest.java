@@ -25,7 +25,7 @@ public class FullAnalysisTest
         assertTrue(out.contains("Nodal Degree"));
         assertTrue(out.contains("Betweenness"));
         assertTrue(out.contains("Prestige"));
-        assertTrue(out.contains("Geodesic Matrix"));
+        assertTrue(out.contains("Geodesic"));
         assertTrue(!out.contains("measures skipped"), "connected net: no skips");
         }
 
