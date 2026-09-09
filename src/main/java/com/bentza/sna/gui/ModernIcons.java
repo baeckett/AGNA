@@ -60,8 +60,10 @@ public class ModernIcons
     public static final int CLEAR_AREA = 30;
     public static final int HELP = 31;
     public static final int SEPARATION = 32;
+    public static final int X_COORD = 33;
+    public static final int Y_COORD = 34;
 
-    public static final int KIND_COUNT = 33;
+    public static final int KIND_COUNT = 35;
 
     public static Color accent()
         {
@@ -80,8 +82,9 @@ public class ModernIcons
         return new Color(r, g, b);
         }
 
-    private static final Color ACCENT = new Color(37, 99, 235);
-    private static final Color ACCENT_DEEP = new Color(30, 58, 138);
+    // 2.1.3: vivid saturated blue (was a muted medium blue)
+    private static final Color ACCENT = new Color(0, 102, 255);
+    private static final Color ACCENT_DEEP = new Color(10, 60, 210);
 
     private static Color outline()
         {
@@ -522,6 +525,36 @@ public class ModernIcons
                         (int) (s * 0.56f), (int) (s * 0.58f));
                 g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s * 0.47f, s * 0.46f, s * 0.08f,
+                        s * 0.08f));
+                break;
+            case X_COORD:
+                // x-axis arrow: the x coordinate caption
+                g.setColor(line);
+                g.drawLine((int) (s * 0.16f), (int) (s * 0.62f),
+                        (int) (s * 0.78f), (int) (s * 0.62f));
+                g.drawLine((int) (s * 0.78f), (int) (s * 0.62f),
+                        (int) (s * 0.68f), (int) (s * 0.52f));
+                g.drawLine((int) (s * 0.78f), (int) (s * 0.62f),
+                        (int) (s * 0.68f), (int) (s * 0.72f));
+                g.drawLine((int) (s * 0.16f), (int) (s * 0.50f),
+                        (int) (s * 0.16f), (int) (s * 0.74f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.13f, s * 0.40f, s * 0.08f,
+                        s * 0.08f));
+                break;
+            case Y_COORD:
+                // y-axis arrow: the y coordinate caption
+                g.setColor(line);
+                g.drawLine((int) (s * 0.44f), (int) (s * 0.72f),
+                        (int) (s * 0.44f), (int) (s * 0.20f));
+                g.drawLine((int) (s * 0.44f), (int) (s * 0.20f),
+                        (int) (s * 0.34f), (int) (s * 0.30f));
+                g.drawLine((int) (s * 0.44f), (int) (s * 0.20f),
+                        (int) (s * 0.54f), (int) (s * 0.30f));
+                g.drawLine((int) (s * 0.30f), (int) (s * 0.72f),
+                        (int) (s * 0.58f), (int) (s * 0.72f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.40f, s * 0.76f, s * 0.08f,
                         s * 0.08f));
                 break;
             case SEARCH:

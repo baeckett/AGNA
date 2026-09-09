@@ -1756,6 +1756,10 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             final javax.swing.JTextField partner, int kind)
         {
         final int k = kind;
+        if (MainFrame.isClassicToolbarIcons())
+            {
+            return; // classic mode keeps the plain text label
+            }
         label.setIcon(ModernIcons.get(k, 16));
         label.addMouseListener(new java.awt.event.MouseAdapter()
             {
@@ -4046,22 +4050,45 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 .isClassicToolbarIcons() ? Environment
                         .getButtonImageIcon("Separation.gif")
                 : ModernIcons.get(ModernIcons.SEPARATION, 16));
-        glabel_edge_value = new JLabel("E:");
+        glabel_edge_value = new JLabel();
+        if (MainFrame.isClassicToolbarIcons())
+            {
+            glabel_edge_value.setText("E:");
+            } else
+            {
+            glabel_edge_value.setIcon(ModernIcons.get(
+                    ModernIcons.SHOW_CONNECTION_VALUE, 16));
+            }
         gfield_separator = new JTextField(String
                 .valueOf(my_area.getSeparator()));
         gfield_edge_value = new JTextField();
         gtool_separator = new DoubleButton();
         gtool_edge_value = new DoubleButton();
-        glabel_x = new JLabel("x:");
-        glabel_y = new JLabel("y:");
+        glabel_x = new JLabel();
+        if (MainFrame.isClassicToolbarIcons())
+            {
+            glabel_x.setText("x:");
+            } else
+            {
+            glabel_x.setIcon(ModernIcons.get(ModernIcons.X_COORD, 16));
+            }
+        glabel_y = new JLabel();
+        if (MainFrame.isClassicToolbarIcons())
+            {
+            glabel_y.setText("y:");
+            } else
+            {
+            glabel_y.setIcon(ModernIcons.get(ModernIcons.Y_COORD, 16));
+            }
         gfield_x = new JTextField();
         gfield_y = new JTextField();
 
         // 2.1.3: the field captions follow the two-state convention:
         // faded gray normally, blue on hover or when their field is edited
-        styleTwoStateLabel(glabel_x, gfield_x);
-        styleTwoStateLabel(glabel_y, gfield_y);
-        styleTwoStateLabel(glabel_edge_value, gfield_edge_value);
+        styleTwoStateIconLabel(glabel_edge_value, gfield_edge_value,
+                ModernIcons.SHOW_CONNECTION_VALUE);
+        styleTwoStateIconLabel(glabel_x, gfield_x, ModernIcons.X_COORD);
+        styleTwoStateIconLabel(glabel_y, gfield_y, ModernIcons.Y_COORD);
         styleTwoStateIconLabel(glabel_separator, gfield_separator,
                 ModernIcons.SEPARATION);
         gtool_change_x = new DoubleButton();
