@@ -839,14 +839,16 @@ public class MainFrame //
         filename = IOUtils.setExtension(filename,
                 format_extensions[chosen_format]);
 
-        // warning if file already exists
-        if (file.exists())
+        // warning if file already exists - checked on the FINAL name, after
+        // the chosen format's extension was applied (2.1.3 fix)
+        java.io.File final_file = new java.io.File(filename);
+        if (final_file.exists())
             {
             int confirm = JOptionPane
                     .showOptionDialog(
                             my_frame,
                             "File "
-                                    + file.getName()
+                                    + final_file.getName()
                                     + " already exists.\nDo you want to replace existing file?",
                             "Agna Output Message", JOptionPane.YES_NO_OPTION,
                             JOptionPane.WARNING_MESSAGE, null, null, null);
