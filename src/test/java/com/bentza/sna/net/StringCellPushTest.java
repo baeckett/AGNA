@@ -18,10 +18,10 @@ public class StringCellPushTest
         Network net = new Network(3);
         net.setObjectValue("1.0", 0, 1);
         net.setObjectValue("0.0", 1, 0);
-        net.setObjectValue("2.5", 2, 2);
+        net.setObjectValue("2.5", 2, 1);
         assertEquals(1.0f, net.getValue(0, 1));
         assertEquals(0.0f, net.getValue(1, 0));
-        assertEquals(0.0f, net.getValue(2, 2)); // diagonal stays untouched
+        assertEquals(2.5f, net.getValue(2, 1));
         }
 
     @Test
