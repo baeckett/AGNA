@@ -88,7 +88,8 @@ public class MainFrame //
             a_all_shortest_paths, a_cliques, a_bavelas, a_closeness,
             a_fareness, a_betweenness, a_prestige, a_full_analysis, v_viewer,
             v_close, v_hide_output, v_view_output, p_working_directory,
-            p_save_as_default, h_contents, h_about_agna;
+            p_save_as_default, p_laf_native, p_laf_flatlaf,
+            p_laf_flatlaf_dark, p_laf_skins, h_contents, h_about_agna;
 
     private static JMenuBar mb;
 
@@ -532,6 +533,20 @@ public class MainFrame //
                     }
 
                 // sets working directory preference:
+                if (e.getSource() == p_laf_native)
+                    {
+                    chooseLookAndFeel("system");
+                    } else if (e.getSource() == p_laf_flatlaf)
+                    {
+                    chooseLookAndFeel("flatlaf");
+                    } else if (e.getSource() == p_laf_flatlaf_dark)
+                    {
+                    chooseLookAndFeel("flatlaf-dark");
+                    } else if (e.getSource() == p_laf_skins)
+                    {
+                    chooseLookAndFeel("skins");
+                    }
+
                 if (e.getSource() == p_working_directory)
                     {
                     doWorkingDirectory();
@@ -2817,6 +2832,69 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         return result[0];
         }
 
+    // 2.1.3: applies a chosen look and feel immediately, persists it and
+    // re-skins every open window
+    private void chooseLookAndFeel(String tmp_choice)
+        {
+        setLookAndFeel(tmp_choice);
+        setNativeLookAndFeel();
+        persistLookAndFeelPreference();
+        javax.swing.SwingUtilities.updateComponentTreeUI(my_frame);
+        if (my_grafic != null && my_grafic.gr_frame != null)
+            {
+            javax.swing.SwingUtilities.updateComponentTreeUI(my_grafic.gr_frame);
+            }
+        my_frame.repaint();
+        selectLookAndFeelMenuItems(tmp_choice);
+        }
+
+    private void selectLookAndFeelMenuItems(String choice)
+        {
+        p_laf_native.setSelected("system".equals(choice));
+        p_laf_flatlaf.setSelected("flatlaf".equals(choice));
+        p_laf_flatlaf_dark.setSelected("flatlaf-dark".equals(choice));
+        p_laf_skins.setSelected("skins".equals(choice));
+        }
+
+    private void persistLookAndFeelPreference()
+        {
+        try
+            {
+            java.io.File ini = new java.io.File("AgnaDefaultSettings.ini");
+            String content = "";
+            if (ini.exists())
+                {
+                content = new String(java.nio.file.Files.readAllBytes(ini
+                        .toPath()),
+                        java.nio.charset.StandardCharsets.ISO_8859_1);
+                }
+            String line = "Look And Feel\t" + getLookAndFeel();
+            String[] lines = content.replace("\r\n", "\n").split("\n");
+            StringBuffer sb = new StringBuffer();
+            boolean replaced = false;
+            for (int i = 0; i < lines.length; i++)
+                {
+                if (lines[i].startsWith("Look And Feel\t"))
+                    {
+                    sb.append(line).append("\n");
+                    replaced = true;
+                    } else if (lines[i].length() > 0)
+                    {
+                    sb.append(lines[i]).append("\n");
+                    }
+                }
+            if (!replaced)
+                {
+                sb.append(line).append("\n");
+                }
+            java.nio.file.Files.write(ini.toPath(), sb.toString().getBytes(
+                    java.nio.charset.StandardCharsets.ISO_8859_1));
+            } catch (Exception e)
+            {
+            AgnaLog.warn("could not persist look and feel preference", e);
+            }
+        }
+
     // template for most analysis methods
     private void doAnalysis(byte tmp_analysis_type, String decoration,
             int param_1, int param_2)
@@ -3253,7 +3331,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     //   flatlaf        FlatLaf light
     //   system         native per platform
     //   skins          classic l2fprod theme packs
-    private static String look_and_feel = "flatlaf-dark";
+    private static String look_and_feel = "flatlaf";
 
     public static String getLookAndFeel()
         {
@@ -3941,6 +4019,26 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         p_working_directory.setToolTipText("Choose default working directory");
 
         p_working_directory.addActionListener(act_menu);
+
+        // 2.1.3: look and feel picker
+        p_laf_native = new JRadioButtonMenuItem("Native (system)");
+        p_laf_flatlaf = new JRadioButtonMenuItem("FlatLaf (light)");
+        p_laf_flatlaf_dark = new JRadioButtonMenuItem("FlatLaf (dark)");
+        p_laf_skins = new JRadioButtonMenuItem("Classic skin packs");
+        ButtonGroup laf_group = new ButtonGroup();
+        laf_group.add(p_laf_native);
+        laf_group.add(p_laf_flatlaf);
+        laf_group.add(p_laf_flatlaf_dark);
+        laf_group.add(p_laf_skins);
+        p_laf_native.addActionListener(act_menu);
+        p_laf_flatlaf.addActionListener(act_menu);
+        p_laf_flatlaf_dark.addActionListener(act_menu);
+        p_laf_skins.addActionListener(act_menu);
+        selectLookAndFeelMenuItems(getLookAndFeel());
+        mPreferences.add(p_laf_native);
+        mPreferences.add(p_laf_flatlaf);
+        mPreferences.add(p_laf_flatlaf_dark);
+        mPreferences.add(p_laf_skins);
         p_working_directory.setMnemonic('w');
         p_save_as_default.addActionListener(act_menu);
         mPreferences.add(p_working_directory);
