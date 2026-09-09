@@ -324,6 +324,9 @@ import javax.swing.JTextPane;
 
         if (MainFrame.getDefaultNodeFaceSource() != null
                 || !(MainFrame.getDefaultNodeFaceSource()).equals("-"))
+            filestr.append("Default Export Format\t"
+                    + String.valueOf(MainFrame.getRememberedExportFormat())
+                    + lb);
             filestr.append("Default Node Face\t"
                     + MainFrame.getDefaultNodeFaceSource() + lb);
 
@@ -893,6 +896,17 @@ import javax.swing.JTextPane;
         tmp_val = parseFindNextWord(str, "Working Directory");
         if (tmp_val != null && !tmp_val.equals("-"))
             MainFrame.setWorkingDirectory(tmp_val);
+        tmp_val = parseFindNextWord(str, "Default Export Format");
+        if (tmp_val != null && !tmp_val.equals("-"))
+            {
+            try
+                {
+                MainFrame.setRememberedExportFormat(Integer.parseInt(tmp_val));
+                } catch (NumberFormatException e)
+                {
+                AgnaLog.warn("invalid Default Export Format value: " + tmp_val);
+                }
+            }
         }
 
     // parses nodearea data from a string:

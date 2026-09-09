@@ -109,6 +109,23 @@ public class MainFrame //
     // 2.1.3: vectors selected in the Save As format dialog
     private java.util.Vector saved_pajek_vectors;
 
+    // 2.1.3: last used export format (0 agn, 1 txt, 2 csv, 3 net, 4 xls),
+    // persisted in AgnaDefaultSettings.ini
+    private static int remembered_export_format = 3;
+
+    public static int getRememberedExportFormat()
+        {
+        return remembered_export_format;
+        }
+
+    public static void setRememberedExportFormat(int tmp_format)
+        {
+        if (tmp_format >= 0 && tmp_format <= 4)
+            {
+            remembered_export_format = tmp_format;
+            }
+        }
+
     private JTextField edit_cell;
 
     private DefaultCellEditor grid_editor;
@@ -834,26 +851,36 @@ public class MainFrame //
         // dialog selects the format (and, for Pajek, the vectors); the
         // extension is appended here so the saved file always matches the
         // visible choice
-        // pre-select the format radio from the chooser's filter (if any)
-        int default_format = 3; // Pajek
+        // 2.1.3: an explicit non-Pajek format filter saves directly, with no
+        // options dialog; Pajek and "All Files" open the format dialog
         javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
+        int chosen_format = -1;
+        final String[] format_extensions = { "agn", "txt", "csv", "net", "xls" };
         if (ff instanceof AgnaFilesFilter)
-            default_format = 0;
+            chosen_format = 0;
         else if (ff instanceof TabTextFilesFilter)
-            default_format = 1;
+            chosen_format = 1;
         else if (ff instanceof CommaTextFilesFilter)
-            default_format = 2;
+            chosen_format = 2;
         else if (ff instanceof ExcelFilesFilter)
-            default_format = 4;
-        int chosen_format = askExportFormatDialog(default_format);
+            chosen_format = 4;
         if (chosen_format < 0)
             {
-            grid_model.setReady(true);
-            my_frame.validate();
-            my_frame.repaint();
-            return;
+            int default_format = getRememberedExportFormat();
+            if (ff instanceof PajekFilesFilter)
+                {
+                default_format = 3;
+                }
+            chosen_format = askExportFormatDialog(default_format);
+            if (chosen_format < 0)
+                {
+                grid_model.setReady(true);
+                my_frame.validate();
+                my_frame.repaint();
+                return;
+                }
             }
-        final String[] format_extensions = { "agn", "txt", "csv", "net", "xls" };
+        setRememberedExportFormat(chosen_format);
         filename = IOUtils.setExtension(filename,
                 format_extensions[chosen_format]);
 
@@ -2653,17 +2680,30 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         for (int i = 0; i < labels.length; i++)
             {
             radios[i] = new JRadioButton(labels[i], i == default_format);
+            final int radio_index = i;
+            radios[i].addItemListener(new java.awt.event.ItemListener()
+                {
+                    public void itemStateChanged(java.awt.event.ItemEvent e)
+                        {
+                        vector_panel.setVisible(radio_index == 3);
+                        }
+                });
             group.add(radios[i]);
             d.add(radios[i]);
             }
-        d.add(new JLabel("Pajek: per-node measure vectors to append"));
+        final JPanel vector_panel = new JPanel();
+        vector_panel.setLayout(new BoxLayout(vector_panel, BoxLayout.Y_AXIS));
+        vector_panel.add(new JLabel(
+                "Pajek: per-node measure vectors to append"));
         final java.util.Hashtable boxes = new java.util.Hashtable();
         for (int i = 0; i < vector_options.length; i++)
             {
             JCheckBox box = new JCheckBox(vector_options[i], true);
             boxes.put(vector_options[i], box);
-            d.add(box);
+            vector_panel.add(box);
             }
+        vector_panel.setVisible(default_format == 3);
+        d.add(vector_panel);
         JPanel buttons = new JPanel(new FlowLayout());
         JButton ok = new JButton("Save");
         JButton cancel = new JButton("Cancel");
