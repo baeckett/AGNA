@@ -4,7 +4,7 @@ import com.bentza.sna.gui.MainFrame;
 import javax.swing.JOptionPane;
 import java.awt.Cursor;
 
-public class AgnaThread // extends Thread
+        public class AgnaThread // extends Thread
 // Thread object to be used in thread-specific methods
 // used in conjunction with MainFrame and ProgressDialog
 // Subsequently modified because of thread-unsafe risk!
@@ -33,7 +33,7 @@ public class AgnaThread // extends Thread
         }
 
    
-public void go()
+        public void go()
         {
         if (!MainFrame.progress_dialog.getStart())
             return; // most probably there is another thread running

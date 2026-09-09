@@ -13,7 +13,7 @@ import javax.swing.JLabel;
  * connections with others stored in the Vector emissions; alias: Node;
  */
 
-        public class Actor extends Object
+public class Actor extends Object
     {
     public String name;
 
@@ -150,9 +150,20 @@ face_item = getImageStockInstance().requestImageItem(MainFrame
         {
         if (j < 0 || j >= emissions.length)
             return;
-        if (tmp_value instanceof Float)
+        // 2.1.3: tolerate Number and String sources (the grid passes
+        // raw Strings; parsing them was previously lost to a ClassCast)
+        if (tmp_value instanceof Number)
             {
-            emissions[j] = ((Float) tmp_value).floatValue();
+            emissions[j] = ((Number) tmp_value).floatValue();
+            } else if (tmp_value instanceof String)
+            {
+            try
+                {
+                emissions[j] = Float.parseFloat((String) tmp_value);
+                } catch (NumberFormatException e1)
+                {
+                AgnaLog.warn("invalid cell value: " + tmp_value);
+                }
             }
         }
 

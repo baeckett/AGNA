@@ -41,7 +41,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 import com.l2fprod.gui.plaf.skin.Skin;
 import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
 
-        public class MainFrame //
+public class MainFrame //
     {
 
     private static JFrame my_frame;
@@ -2875,7 +2875,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
      */
     public static void updateNetwork()
         {
-        System.out.println("Updating Network\n");
         int nu = my_grid.getModel().getColumnCount();
         grid_model.deleteDiagonal();
         // XXupdateNodeNames();
@@ -2890,9 +2889,6 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 // tmp_network.setObjectValue(new
                 // Float((String)tmp_model.getValueAt(i,j)), i, j);
                 tmp_network.setObjectValue(my_grid.getValueAt(i, j), i, j);
-                System.out.println("i=" + String.valueOf(i) + " j="
-                        + String.valueOf(j) + " mat="
-                        + String.valueOf(tmp_network.getValue(i, j)));
                 }
             }
         if (my_full_net.isArea())
@@ -3452,12 +3448,13 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         a_geodesics.addActionListener(act_menu);
         a_shortest_paths.addActionListener(act_menu);
         a_all_shortest_paths.addActionListener(act_menu);
-        // a_cliques.addActionListener(act_menu);
+        a_cliques.addActionListener(act_menu);
         a_bavelas.addActionListener(act_menu);
         a_closeness.addActionListener(act_menu);
         a_fareness.addActionListener(act_menu);
         a_betweenness.addActionListener(act_menu);
-        // a_prestige.addActionListener(act_menu);
+        a_prestige.addActionListener(act_menu);
+        a_full_analysis.addActionListener(act_menu);
 
         a_basic.setMnemonic('b');
         a_distance.setMnemonic('d');

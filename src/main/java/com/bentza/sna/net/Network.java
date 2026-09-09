@@ -4,7 +4,7 @@ import com.bentza.sna.AgnaLog;
 import com.bentza.sna.gui.AgnaTableModel;
 import java.util.Vector;
 
-        public class Network
+public class Network
     {
     private Vector all_nodes;
 
@@ -261,7 +261,7 @@ import java.util.Vector;
             }
         try
             {
-            tmp_node.setObjectEmissionsValue((Float) tmp_value, j);
+            tmp_node.setObjectEmissionsValue(tmp_value, j);
             } catch (Exception e) {
       AgnaLog.warn("suppressed exception", e);
       }
