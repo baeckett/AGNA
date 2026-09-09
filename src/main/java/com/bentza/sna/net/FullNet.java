@@ -2488,15 +2488,14 @@ tmp_node.setFace(tmpname);
 
     public void normalize()
         {
-        normalize(AgnaLib.NORMALIZE_BINARY);
+        normalize(AgnaLib.NORMALIZE_BINARY, 0f);
         }
 
-    // 2.1.3: normalization with an explicit mode (binary / max / sum /
-    // row max / column max)
-    public void normalize(int mode)
+    // 2.1.3: normalization with an explicit mode and optional threshold
+    public void normalize(int mode, float threshold)
         {
         AgnaLib agna_lib = new AgnaLib();
-        agna_lib.normalize(my_network, mode);
+        agna_lib.normalize(my_network, mode, threshold);
         if (isArea())
             net_area.updateArea(my_network);
         setChanged(true);

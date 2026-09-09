@@ -2451,11 +2451,9 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     private void doNormalize()
         {
-        // 2.1.3: restore the option choice; the binary (non-zero -> 1)
-        // transform stays as the default
-        Object[] options = { "Binary (non-zero -> 1)", "By maximum value",
-                "By sum of values", "By maximum of rows",
-                "By maximum of columns" };
+        // 2.1.3: two options only - plain binary, or dichotomize by a
+        // user-supplied threshold (x > threshold -> 1)
+        Object[] options = { "Binary (non-zero -> 1)", "By threshold..." };
         String choice = (String) JOptionPane.showInputDialog(my_frame,
                 "Normalize the sociomatrix by:", "Normalization Options",
                 JOptionPane.QUESTION_MESSAGE, null, options,
@@ -2464,17 +2462,34 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             {
             return;
             }
-        int mode = AgnaLib.NORMALIZE_BINARY;
-        if ("By maximum value".equals(choice))
-            mode = AgnaLib.NORMALIZE_MAXIMUM;
-        else if ("By sum of values".equals(choice))
-            mode = AgnaLib.NORMALIZE_SUM;
-        else if ("By maximum of rows".equals(choice))
-            mode = AgnaLib.NORMALIZE_ROW_MAXIMUM;
-        else if ("By maximum of columns".equals(choice))
-            mode = AgnaLib.NORMALIZE_COLUMN_MAXIMUM;
-        doTransform((byte) 4, "Normalizing current network's sociomatrix...",
-                mode, (byte) 0, 0f);
+        if ("By threshold...".equals(choice))
+            {
+            String tmp_str = (String) JOptionPane.showInputDialog(my_frame,
+                    "Threshold value (values above it become 1):",
+                    "Normalization Options", JOptionPane.QUESTION_MESSAGE,
+                    null, null, "1.0");
+            if (tmp_str == null)
+                {
+                return;
+                }
+            float threshold = 0f;
+            try
+                {
+                threshold = Float.parseFloat(tmp_str);
+                } catch (Exception e)
+                {
+                JOptionPane.showMessageDialog(my_frame,
+                        "Error reading threshold value.", "Parsing error",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+                }
+            doTransform((byte) 4, "Dichotomizing sociomatrix by threshold...",
+                    AgnaLib.NORMALIZE_THRESHOLD, (byte) 0, threshold);
+            } else
+            {
+            doTransform((byte) 4, "Converting sociomatrix to binary data...",
+                    AgnaLib.NORMALIZE_BINARY, (byte) 0, 0f);
+            }
         }
 
     private void doRemoveOut()
@@ -3288,7 +3303,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         break;
 
                         case 4:
-                        my_full_net.normalize(param_1);
+                        my_full_net.normalize(param_1, param_3);
                         break;
 
                         case 5:

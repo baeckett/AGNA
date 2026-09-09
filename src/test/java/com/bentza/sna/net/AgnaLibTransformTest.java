@@ -216,46 +216,27 @@ public class AgnaLibTransformTest
         }
 
     @Test
-    public void normalizeByMaximumDividesByTheLargestValue()
+    public void normalizeByThresholdDichotomises()
         {
         float[][] w = { { 0f, 2f, 4f }, { 1f, 0f, 3f }, { 0f, 0f, 0f } };
         Network net = netOf(w);
-        agna.normalize(net, AgnaLib.NORMALIZE_MAXIMUM);
-        assertEquals(0.5f, net.getValue(0, 1), 1e-6f);
-        assertEquals(1f, net.getValue(0, 2), 1e-6f);
-        assertEquals(0.25f, net.getValue(1, 0), 1e-6f);
-        assertEquals(0.75f, net.getValue(1, 2), 1e-6f);
+        agna.normalize(net, AgnaLib.NORMALIZE_THRESHOLD, 2f);
+        assertEquals(0f, net.getValue(0, 1), 1e-6f); // 2 is not above 2
+        assertEquals(1f, net.getValue(0, 2), 1e-6f); // 4 > 2
+        assertEquals(0f, net.getValue(1, 0), 1e-6f); // 1 below
+        assertEquals(1f, net.getValue(1, 2), 1e-6f); // 3 > 2
         assertEquals(0f, net.getValue(0, 0), 1e-6f); // diagonal stays zero
         }
 
     @Test
-    public void normalizeBySumReadsAsProportions()
+    public void normalizeByThresholdWithZeroKeepsNonZeroValues()
         {
         float[][] w = { { 0f, 2f, 4f }, { 1f, 0f, 3f }, { 0f, 0f, 0f } };
         Network net = netOf(w);
-        agna.normalize(net, AgnaLib.NORMALIZE_SUM);
-        assertEquals(0.2f, net.getValue(0, 1), 1e-6f);
-        assertEquals(0.4f, net.getValue(0, 2), 1e-6f);
-        assertEquals(0.1f, net.getValue(1, 0), 1e-6f);
-        assertEquals(0.3f, net.getValue(1, 2), 1e-6f);
-        }
-
-    @Test
-    public void normalizeByRowAndColumnMaximum()
-        {
-        float[][] w = { { 0f, 2f, 4f }, { 1f, 0f, 3f }, { 0f, 0f, 0f } };
-        Network rows = netOf(w);
-        agna.normalize(rows, AgnaLib.NORMALIZE_ROW_MAXIMUM);
-        assertEquals(0.5f, rows.getValue(0, 1), 1e-6f);
-        assertEquals(1f / 3f, rows.getValue(1, 0), 1e-6f);
-        assertEquals(1f, rows.getValue(1, 2), 1e-6f);
-
-        Network cols = netOf(w);
-        agna.normalize(cols, AgnaLib.NORMALIZE_COLUMN_MAXIMUM);
-        assertEquals(1f, cols.getValue(0, 1), 1e-6f);
-        assertEquals(1f, cols.getValue(0, 2), 1e-6f);
-        assertEquals(0.75f, cols.getValue(1, 2), 1e-6f);
-        assertEquals(0f, cols.getValue(2, 2), 1e-6f);
+        agna.normalize(net, AgnaLib.NORMALIZE_THRESHOLD, 0f);
+        assertEquals(1f, net.getValue(0, 1), 1e-6f);
+        assertEquals(1f, net.getValue(0, 2), 1e-6f);
+        assertEquals(0f, net.getValue(2, 0), 1e-6f);
         }
 
     @Test

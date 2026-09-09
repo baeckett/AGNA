@@ -1870,22 +1870,28 @@ import java.util.Vector;
 
     // 2.1.3: normalization modes. The diagonal (no self-loops) always
     // stays zero in every mode.
+    // 2.1.3: normalization modes. The diagonal (no self-loops) always
+    // stays zero in every mode.
     public static final int NORMALIZE_BINARY = 0;
-    public static final int NORMALIZE_MAXIMUM = 1;
-    public static final int NORMALIZE_SUM = 2;
-    public static final int NORMALIZE_ROW_MAXIMUM = 3;
-    public static final int NORMALIZE_COLUMN_MAXIMUM = 4;
+    public static final int NORMALIZE_THRESHOLD = 1;
 
     public void normalize(Network src)
         {
-        normalize(src, NORMALIZE_BINARY);
+        normalize(src, NORMALIZE_BINARY, 0f);
         }
 
     public void normalize(Network src, int mode)
         {
+        normalize(src, mode, 0f);
+        }
+
+    public void normalize(Network src, int mode, float threshold)
+        {
         final int size = src.getSize();
-        if (mode == NORMALIZE_BINARY)
+        if (mode == NORMALIZE_THRESHOLD)
             {
+            // 2.1.3: strictly-above dichotomization: x > threshold -> 1,
+            // x <= threshold (including equal) -> 0
             for (int i = 0; i < size; i++)
                 {
                 for (int j = 0; j < size; j++)
@@ -1893,80 +1899,42 @@ import java.util.Vector;
                     if (i == j)
                         {
                         src.setValue(0f, i, j);
-                        } else if (src.getValue(i, j) != 0f)
+                        } else if (src.getValue(i, j) > threshold)
                         {
                         src.setValue(1f, i, j);
+                        } else
+                        {
+                        src.setValue(0f, i, j);
                         }
                     }
                 }
             return;
             }
-        if (mode == NORMALIZE_MAXIMUM)
-            {
-            float max = 0f;
-            for (int i = 0; i < size; i++)
-                for (int j = 0; j < size; j++)
-                    if (i != j)
-                        max = Math.max(max, src.getValue(i, j));
-            if (max > 0f)
-                {
-                for (int i = 0; i < size; i++)
-                    for (int j = 0; j < size; j++)
-                        if (i != j)
-                            src.setValue(src.getValue(i, j) / max, i, j);
-                }
-            return;
-            }
-        if (mode == NORMALIZE_SUM)
-            {
-            float total = 0f;
-            for (int i = 0; i < size; i++)
-                for (int j = 0; j < size; j++)
-                    if (i != j)
-                        total += src.getValue(i, j);
-            if (total > 0f)
-                {
-                for (int i = 0; i < size; i++)
-                    for (int j = 0; j < size; j++)
-                        if (i != j)
-                            src.setValue(src.getValue(i, j) / total, i, j);
-                }
-            return;
-            }
-        if (mode == NORMALIZE_ROW_MAXIMUM)
-            {
-            for (int i = 0; i < size; i++)
-                {
-                float row_max = 0f;
-                for (int j = 0; j < size; j++)
-                    if (i != j)
-                        row_max = Math.max(row_max, src.getValue(i, j));
-                if (row_max > 0f)
-                    {
-                    for (int j = 0; j < size; j++)
-                        if (i != j)
-                            src.setValue(src.getValue(i, j) / row_max, i, j);
-                    }
-                }
-            return;
-            }
-        if (mode == NORMALIZE_COLUMN_MAXIMUM)
+        // binary (default): every non-zero value becomes 1
+        for (int i = 0; i < size; i++)
             {
             for (int j = 0; j < size; j++)
                 {
-                float col_max = 0f;
-                for (int i = 0; i < size; i++)
-                    if (i != j)
-                        col_max = Math.max(col_max, src.getValue(i, j));
-                if (col_max > 0f)
+                if (i == j)
                     {
-                    for (int i = 0; i < size; i++)
-                        if (i != j)
-                            src.setValue(src.getValue(i, j) / col_max, i, j);
+                    src.setValue(0f, i, j);
+                    } else if (src.getValue(i, j) != 0f)
+                    {
+                    src.setValue(1f, i, j);
+                    } else
+                    {
+                    src.setValue(0f, i, j);
                     }
                 }
             }
         }
+
+    public static final int NORMALIZE_MAXIMUM = 1;
+    public static final int NORMALIZE_SUM = 2;
+    public static final int NORMALIZE_ROW_MAXIMUM = 3;
+    public static final int NORMALIZE_COLUMN_MAXIMUM = 4;
+
+
 
     private int getOusidersNumber(Network src)
         {
