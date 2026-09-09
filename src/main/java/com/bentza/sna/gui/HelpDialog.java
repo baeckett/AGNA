@@ -163,6 +163,9 @@ class HelpDialog
         content.setLayout(new BorderLayout());
 
         JPanel control = new JPanel();
+        // 2.1.3: BorderLayout is required for the NORTH/CENTER constraints
+        // below and so the content stretches when the window is resized
+        control.setLayout(new BorderLayout());
         // control.setBorder(BorderFactory.createRaisedBevelBorder());
         control.setPreferredSize(frame_dim);
         // text editor:
@@ -172,6 +175,7 @@ class HelpDialog
         editor_pane.setPreferredSize(frame_dim);
         JScrollPane scroll_pane = new JScrollPane(editor_pane);
         scroll_pane.setPreferredSize(frame_dim);
+        scroll_pane.setMinimumSize(new Dimension(240, 160));
         try
             {
             editor_pane.setPage(HelpDialog.class
