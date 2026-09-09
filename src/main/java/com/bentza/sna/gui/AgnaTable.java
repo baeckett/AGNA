@@ -21,9 +21,17 @@ class AgnaTable extends JTable
 
     private Color getSelectionBackgroundColor()
         {
+        // 2.1.3: under a light look and feel the button background is nearly
+        // white, and the old translucent derivation made the selection
+        // invisible. Light themes get a discreet light blue; darker themes
+        // keep the tinted translucent look.
         Color sbc = (new JButton()).getBackground();
-        if (sbc == Color.white)
-            return new Color(170, 201, 213, 100);
+        float[] hsb = Color.RGBtoHSB(sbc.getRed(), sbc.getGreen(),
+                sbc.getBlue(), null);
+        if (hsb[2] > 0.75f)
+            {
+            return new Color(204, 224, 244);
+            }
         return new Color(sbc.getRed(), sbc.getGreen(), sbc.getBlue(), 100);
         }
 
