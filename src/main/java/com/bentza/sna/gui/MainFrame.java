@@ -2544,7 +2544,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         Object[] policies = { "Sum", "Maximum", "Keep current value" };
         String choice = (String) JOptionPane.showInputDialog(my_frame,
-                "When a tie exists in both networks, combine it by:",
+                "<html>Actors are joined by name - actors present in both "
+                        + "networks are merged into one, actors found only "
+                        + "in the second file are appended.<br><br>"
+                        + "When a tie exists in both networks, combine it "
+                        + "by:</html>",
                 "Merge Option", JOptionPane.QUESTION_MESSAGE, null, policies,
                 "Sum");
         if (choice == null)
