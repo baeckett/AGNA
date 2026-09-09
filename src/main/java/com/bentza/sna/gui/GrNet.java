@@ -4057,7 +4057,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             } else
             {
             glabel_edge_value.setIcon(ModernIcons.get(
-                    ModernIcons.SHOW_CONNECTION_VALUE, 16));
+                    ModernIcons.EDGE_VALUE, 16));
             }
         gfield_separator = new JTextField(String
                 .valueOf(my_area.getSeparator()));
@@ -4086,7 +4086,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         // 2.1.3: the field captions follow the two-state convention:
         // faded gray normally, blue on hover or when their field is edited
         styleTwoStateIconLabel(glabel_edge_value, gfield_edge_value,
-                ModernIcons.SHOW_CONNECTION_VALUE);
+                ModernIcons.EDGE_VALUE);
         styleTwoStateIconLabel(glabel_x, gfield_x, ModernIcons.X_COORD);
         styleTwoStateIconLabel(glabel_y, gfield_y, ModernIcons.Y_COORD);
         styleTwoStateIconLabel(glabel_separator, gfield_separator,

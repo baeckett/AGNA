@@ -62,8 +62,9 @@ public class ModernIcons
     public static final int SEPARATION = 32;
     public static final int X_COORD = 33;
     public static final int Y_COORD = 34;
+    public static final int EDGE_VALUE = 35;
 
-    public static final int KIND_COUNT = 35;
+    public static final int KIND_COUNT = 36;
 
     public static Color accent()
         {
@@ -556,6 +557,26 @@ public class ModernIcons
                 g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s * 0.40f, s * 0.76f, s * 0.08f,
                         s * 0.08f));
+                break;
+            case EDGE_VALUE:
+                // two nodes joined by a tie with the digit "1" above it:
+                // an edge carrying a value (distinct from the "show
+                // connection value" toggle next to it)
+                g.setColor(line);
+                g.fill(new Ellipse2D.Float(s * 0.14f, s * 0.48f, s * 0.20f,
+                        s * 0.20f));
+                g.fill(new Ellipse2D.Float(s * 0.66f, s * 0.48f, s * 0.20f,
+                        s * 0.20f));
+                g.drawLine((int) (s * 0.34f), (int) (s * 0.58f),
+                        (int) (s * 0.66f), (int) (s * 0.58f));
+                g.setColor(accent);
+                g.setFont(new Font(Font.DIALOG, Font.BOLD,
+                        Math.round(s * 0.34f)));
+                String one = "1";
+                java.awt.FontMetrics fm = g.getFontMetrics();
+                int ow = fm.stringWidth(one);
+                g.drawString(one, Math.round((s - ow) / 2f),
+                        Math.round(s * 0.42f));
                 break;
             case SEARCH:
                 // magnifying glass: neutral lens + handle, blue focus dot
