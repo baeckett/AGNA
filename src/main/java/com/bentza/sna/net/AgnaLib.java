@@ -1027,6 +1027,50 @@ import java.util.Vector;
      * (ge[i][j]>Integer.MAX_VALUE - 1) ge[i][j]=0; } return ge; }
      */
 
+
+    /**
+     * 2.1.3: Full Analysis - the complete standard battery in one report,
+     * reusing the per-measure outputs and their conventions. Distance-based
+     * measures are only included for connected networks.
+     */
+    public String outFullAnalysis(Network outsrc)
+        {
+        StringBuffer out = new StringBuffer("");
+        out.append(it + bold + "FULL ANALYSIS" + unbold + " of " + unit
+                + outsrc.getName() + lb);
+        out.append(outBasic(outsrc));
+        out.append(outDensity(outsrc));
+        out.append(outCohesion(outsrc));
+        out.append(outNodalDegree(outsrc));
+        out.append(outEmissionDegree(outsrc));
+        out.append(outReceptionDegree(outsrc));
+        out.append(outInDegree(outsrc));
+        out.append(outOutDegree(outsrc));
+        out.append(outSociometricStatus(outsrc));
+        out.append(outDeterminationDegree(outsrc));
+        out.append(outPrestige(outsrc));
+        out.append(outDiameter(outsrc));
+        if (isConnected(outsrc))
+            {
+            out.append(outBavelas(outsrc));
+            out.append(outFareness(outsrc));
+            out.append(outCloseness(outsrc));
+            out.append(outBetweenness(outsrc));
+            out.append(outEccentricity(outsrc));
+            out.append(outGeodesics(outsrc));
+            } else
+            {
+            out.append(lb
+                    + it
+                    + "Centrality and geodesic measures skipped: the network "
+                    + "is disconnected (run each measure separately for "
+                    + "details)." + unit + lb);
+            }
+        out.append(lb + it + "Cliques: use Analysis > N-Cliques for the "
+                + "clique report." + unit + lb);
+        return out.toString();
+        }
+
     public String outGeodesics(Network outsrc)
         {
         AgnaLib.initAjna();

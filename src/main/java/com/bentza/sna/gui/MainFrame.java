@@ -2607,12 +2607,9 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         runner.go();
         }
 
-    private void doFullAnalysis()
+        private void doFullAnalysis()
         {
-        if (checkAllValues())
-            updateNetwork();
-        else
-            return;
+        doAnalysis((byte) 22, "Running Full Analysis...", -1, -1);
         }
 
     private void doEmissions()
@@ -2927,6 +2924,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         case 21:
                         tmp_str += agna_lib.outCliques(my_full_net.getNetwork(),
                                 init);
+                        break;
+
+                        case 22:
+                        tmp_str += agna_lib.outFullAnalysis(my_full_net
+                                .getNetwork());
                         break;
 
                         }
