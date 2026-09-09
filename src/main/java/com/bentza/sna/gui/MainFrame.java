@@ -850,7 +850,11 @@ public class MainFrame //
                             if (ext != null)
                                 {
                                 java.io.File sel = chooser.getSelectedFile();
-                                if (sel != null && sel.getName().length() > 0)
+                                // only sync a real file selection, never the
+                                // directory itself (on some platforms the
+                                // current directory is returned at event time)
+                                if (sel != null && !sel.isDirectory()
+                                        && sel.getName().length() > 0)
                                     {
                                     chooser.setSelectedFile(new java.io.File(
                                             IOUtils.setExtension(
