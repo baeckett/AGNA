@@ -888,7 +888,7 @@ public class MainFrame //
             AgnaLog.warn("Save As: approved path outside current directory ("
                     + filename + "); rebuilding inside " + approved_dir);
             filename = new java.io.File(approved_dir,
-                    approved_file.getName()).getCanonicalPath();
+                    approved_file.getName()).getAbsolutePath();
             }
         AgnaLog.info("Save As approved: directory="
                 + (approved_dir != null ? approved_dir.getAbsolutePath()
