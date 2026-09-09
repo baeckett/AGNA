@@ -3759,7 +3759,8 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         my_frame.setSize(max_dim);
         my_frame.setLocation(0, 0);
         // old location:
-        main_icon = Environment.getButtonImageIcon("Agna_icon.gif");
+        // 2.1.3: the new black logo doubles as the window/dock icon
+        main_icon = new ImageIcon(Agna.class.getResource("/agna_logo.png"));
 
         // read icon from current jar archive:
         // main_icon = new ImageIcon(Agna.class.getResource("Agna_icon.gif"));
