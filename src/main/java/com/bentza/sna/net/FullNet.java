@@ -5,7 +5,6 @@ import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.AgnaTableModel;
 import com.bentza.sna.gui.MainFrame;
-import com.bentza.sna.gui.ModernIcons;
 import com.bentza.sna.gui.GrNet;
 import java.awt.Color;
 import java.io.File;
@@ -325,8 +324,6 @@ import javax.swing.JTextPane;
 
         if (MainFrame.getDefaultNodeFaceSource() != null
                 || !(MainFrame.getDefaultNodeFaceSource()).equals("-"))
-            filestr.append("Sharp Icons\t"
-                    + (ModernIcons.isSharp() ? "yes" : "no") + lb);
             filestr.append("Classic Toolbar Icons\t"
                     + (MainFrame.isClassicToolbarIcons() ? "yes" : "no")
                     + lb);
@@ -1013,11 +1010,6 @@ import javax.swing.JTextPane;
         tmp_val = parseFindNextWord(str, "Working Directory");
         if (tmp_val != null && !tmp_val.equals("-"))
             MainFrame.setWorkingDirectory(tmp_val);
-        tmp_val = parseFindNextWord(str, "Sharp Icons");
-        if (tmp_val != null)
-            {
-            ModernIcons.setSharp(tmp_val.equals("yes"));
-            }
         tmp_val = parseFindNextWord(str, "Classic Toolbar Icons");
         if (tmp_val != null)
             {

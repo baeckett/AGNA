@@ -87,22 +87,6 @@ public class ModernIcons
     private static final Color ACCENT = new Color(0, 102, 255);
     private static final Color ACCENT_DEEP = new Color(10, 60, 210);
 
-    // 2.1.3: sharp rendering mode - anti-aliasing off and pixel-aligned
-    // lines for clearly defined edges. Settable through the settings file
-    // ("Sharp Icons" yes/no) so the previous smooth look stays one line
-    // away as a roll-back.
-    private static boolean sharp = true;
-
-    public static boolean isSharp()
-        {
-        return sharp;
-        }
-
-    public static void setSharp(boolean tmp_value)
-        {
-        sharp = tmp_value;
-        }
-
     private static Color outline()
         {
         Color c = UIManager.getColor("Button.foreground");
@@ -133,22 +117,10 @@ public class ModernIcons
         BufferedImage img = new BufferedImage(size, size,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
-        if (sharp)
-            {
-            // 2.1.3: crisp, clearly defined lines (no anti-aliasing blur)
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_OFF);
-            g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-                    RenderingHints.VALUE_STROKE_DEFAULT);
-            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-            } else
-            {
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-                    RenderingHints.VALUE_STROKE_PURE);
-            }
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                RenderingHints.VALUE_STROKE_PURE);
         glyph(g, kind, size, line, accent, rollover);
         g.dispose();
         return new ImageIcon(img);

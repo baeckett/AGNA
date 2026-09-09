@@ -62,13 +62,4 @@ public class LookAndFeelTest
         int center = img.getRGB(5, grid.getCellRect(0, 0, true).y + 5);
         assertNotEquals(center, boundary);
         }
-    @Test
-    public void sharpIconsPreferenceRoundTrips()
-        {
-        String settings = "Sharp Icons\tno\n"
-                + "Classic Toolbar Icons\tno\n";
-        FullNet.parseAgnaNonGraphicDefaultSettings(settings);
-        assertEquals(false, ModernIcons.isSharp());
-        ModernIcons.setSharp(true);
-        }
     }
