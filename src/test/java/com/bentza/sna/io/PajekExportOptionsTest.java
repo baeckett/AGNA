@@ -24,7 +24,7 @@ public class PajekExportOptionsTest
         assertEquals("example3.net", IOUtils.setExtension("example3.csv", "net"));
         assertEquals("example3.net", IOUtils.setExtension("example3", "net"));
         assertEquals("example3.net", IOUtils.setExtension("example3.net", "NET"));
-        assertEquals("example3.net.xls", IOUtils.setExtension("example3.net", "xls"));
+        assertEquals("example3.xls", IOUtils.setExtension("example3.net", "xls"));
         }
 
     @Test
