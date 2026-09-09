@@ -867,19 +867,19 @@ import javax.swing.JTextPane;
 
     // 2.1.3: parses an optional integer setting; absent or malformed values
     // yield the default instead of throwing/logging
-    private static int parseNextInt(String str, String key, int default_value)
+    private static int parseNextInt(String str, String key)
         {
         String v = parseFindNextWord(str, key);
         if (v == null)
             {
-            return default_value;
+            return 0; // absent optional setting
             }
         try
             {
             return Integer.parseInt(v);
             } catch (NumberFormatException e)
             {
-            return default_value;
+            return 0;
             }
         }
     private static String parseFindNextWord(String str, String value_name)
