@@ -2493,8 +2493,17 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     private void doCliques()
         {
         my_frame.repaint();
-        // finding clique diameter
-        int max_number = my_full_net.getNetwork().getSize() - 1;
+        // finding clique diameter. 2.1.3: bounded - maximal-clique
+        // enumeration is exponential in the worst case, so only useful
+        // diameters are offered and large networks get a warning
+        int max_number = Math.min(my_full_net.getNetwork().getSize() - 1, 3);
+        if (my_full_net.getNetwork().getSize() > 80)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Large network: clique diameters are limited to 1-3 for "
+                            + "performance.", "N-Cliques",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
         String tmp_str = "";
         Object[] values = new Object[max_number];
         for (int i = 0; i < max_number; i++)
