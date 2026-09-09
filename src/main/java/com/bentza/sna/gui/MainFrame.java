@@ -791,29 +791,40 @@ public class MainFrame //
         chooser.setDialogTitle("Save Current Network");
         File file = null;
 
-        // setting name of file:
-        if (my_full_net.getNetworkFileName().equals(""))
+        // setting name of file (2.1.3: guarded defaults - a failed read
+        // must not leak a directory or an empty name into the dialog)
+        String network_file_name = my_full_net.getNetworkFileName();
+        if (network_file_name == null || network_file_name.equals(""))
             {
-            try
-                {
-                file = new File(MainFrame.getWorkingDirectory()
-                        + my_full_net.getNetwork().getName() + ".agn");
-                } catch (Exception e1)
-                {
-                file = new File(my_full_net.getNetwork().getName() + ".agn");
-                }
+            String net_name = (my_full_net.getNetwork() != null
+                    && my_full_net.getNetwork().getName() != null) ? my_full_net
+                    .getNetwork().getName() : "network";
+            String working_dir = MainFrame.getWorkingDirectory();
+            file = new File((working_dir != null ? working_dir : "") + net_name
+                    + ".agn");
             } else
-            file = new File(my_full_net.getNetworkFileName());
+            file = new File(network_file_name);
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         // 2.1.3: the Save As name is shown WITHOUT an extension; the chosen
         // format (dialog or remembered setting) appends it afterwards, so
         // the user never fights a stale extension in the name field
-        chooser.setSelectedFile(new File(IOUtils.getNameWithoutExtension(file
-                .getAbsolutePath())));
+        String stripped_name = IOUtils.getNameWithoutExtension(file
+                .getAbsolutePath());
+        if (stripped_name == null || stripped_name.length() == 0)
+            {
+            stripped_name = "network";
+            }
+        java.io.File selection = new File(stripped_name);
+        if (selection.isDirectory())
+            {
+            selection = new File("network");
+            }
+        chooser.setSelectedFile(selection);
         java.io.File chooser_dir = file.isDirectory() ? file : file
                 .getParentFile();
-        chooser.setCurrentDirectory(chooser_dir != null ? chooser_dir : file);
+        chooser.setCurrentDirectory(chooser_dir != null ? chooser_dir
+                : new java.io.File(System.getProperty("user.dir")));
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
 

@@ -842,6 +842,12 @@ import javax.swing.JTextPane;
     private static boolean parseStringToBoolean(String word)
             throws ParsingError
         {
+        // 2.1.3: an absent optional setting (parseFindNextWord -> null) is
+        // 'no', not a crash
+        if (word == null)
+            {
+            return false;
+            }
         if (word.equals("yes"))
             return true;
         else if (word.equals("no"))
