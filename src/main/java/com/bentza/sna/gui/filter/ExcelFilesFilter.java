@@ -6,6 +6,7 @@ import javax.swing.filechooser.FileFilter;
 public class ExcelFilesFilter extends javax.swing.filechooser.FileFilter
     {
     final static String xls = "xls";
+    final static String xlsx = "xlsx";
 
     public boolean accept(File tmp_file)
         {
@@ -20,7 +21,7 @@ public class ExcelFilesFilter extends javax.swing.filechooser.FileFilter
         if (i > 0 && i < str.length() - 1)
             {
             String extension = str.substring(i + 1).toLowerCase();
-            if (xls.equals(extension))
+            if (xls.equals(extension) || xlsx.equals(extension))
                 {
                 return true;
                 } else

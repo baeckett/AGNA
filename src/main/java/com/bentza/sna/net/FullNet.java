@@ -531,6 +531,88 @@ import javax.swing.JTextPane;
         }
 
     // parses file-string given by MainFrame's openNetwork()
+    // 2.1.3: opens an Excel workbook in the layout Agna writes on export:
+    // row 0 = actor names, column 0 = actor names, inner cells = matrix.
+    // Legacy .xls is read with JExcelAPI (bundled), .xlsx with the bundled
+    // OOXML reader. Returns null on success or a user-readable error string.
+    public String readExcelFile(java.io.File file, String extension)
+        {
+        try
+            {
+            String[][] grid = null;
+            String sheet_name = "";
+            if ("xlsx".equals(extension))
+                {
+                grid = com.bentza.sna.io.XlsxReader.readFirstSheet(file);
+                sheet_name = com.bentza.sna.io.XlsxReader
+                        .readFirstSheetName(file);
+                } else
+                {
+                jxl.Workbook wb = jxl.Workbook.getWorkbook(file);
+                try
+                    {
+                    jxl.Sheet sheet = wb.getSheet(0);
+                    sheet_name = sheet.getName();
+                    int rows = sheet.getRows();
+                    int cols = sheet.getColumns();
+                    grid = new String[rows][cols];
+                    for (int i = 0; i < rows; i++)
+                        for (int j = 0; j < cols; j++)
+                            grid[i][j] = sheet.getCell(j, i).getContents();
+                    } finally
+                    {
+                    wb.close();
+                    }
+                }
+            if (grid == null || grid.length < 2 || grid[0].length < 2)
+                {
+                return "The file does not contain a sociomatrix "
+                        + "(at least one node expected).";
+                }
+            int names_in_row = 0;
+            int names_in_col = 0;
+            for (int j = 1; j < grid[0].length; j++)
+                if (grid[0][j].trim().length() > 0)
+                    names_in_row++;
+            for (int i = 1; i < grid.length; i++)
+                if (grid[i][0].trim().length() > 0)
+                    names_in_col++;
+            if (names_in_row < 1 || names_in_col < 1)
+                {
+                return "No node names found in the header row or column.";
+                }
+            final int n = Math.min(names_in_row, names_in_col);
+            my_network = new Network(n);
+            my_network.setName(sheet_name == null || sheet_name.length() == 0
+                    ? "Excel " + file.getName() : sheet_name);
+            for (int i = 0; i < n; i++)
+                {
+                my_network.getActor(i).setName(grid[i + 1][0].trim());
+                for (int j = 0; j < n; j++)
+                    {
+                    String value = grid[i + 1][j + 1].trim();
+                    float v = 0f;
+                    if (value.length() > 0)
+                        {
+                        try
+                            {
+                            v = Float.parseFloat(value);
+                            } catch (NumberFormatException e)
+                            {
+                            v = 0f;
+                            }
+                        }
+                    my_network.setValue(v, i, j);
+                    }
+                }
+            return null;
+            } catch (Exception e)
+            {
+            AgnaLog.warn("Excel import failed: " + file + ": " + e);
+            return "Could not read the Excel file: " + e.getMessage();
+            }
+        }
+
     public void readNetwork(String str, String extension)
         {
         String error_list = null;

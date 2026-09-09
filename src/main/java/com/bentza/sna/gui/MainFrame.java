@@ -1081,9 +1081,38 @@ public class MainFrame //
                             }
                         progress_dialog.setPercent(40);
 
-                        t_new_full_net.readNetwork(tmp_pane == null ? ""
-                                : tmp_pane.getText(), IOUtils.getExtension(t_file
-                                .getName()));
+                        String file_ext = IOUtils.getExtension(t_file
+                                .getName());
+                        String excel_error = null;
+                        if ("xls".equals(file_ext) || "xlsx".equals(file_ext))
+                            {
+                            // 2.1.3: binary Excel needs the file itself
+                            excel_error = t_new_full_net.readExcelFile(t_file,
+                                    file_ext);
+                            tmp_pane = null;
+                            } else
+                            {
+                            t_new_full_net.readNetwork(
+                                    tmp_pane == null ? ""
+                                            : tmp_pane.getText(), file_ext);
+                            }
+                        if (excel_error != null)
+                            {
+                            String report = "Open Network File report:\n"
+                                    + excel_error;
+                            if (MainFrame.getCurrentFrame() == null
+                                    || java.awt.GraphicsEnvironment
+                                            .isHeadless())
+                                {
+                                AgnaLog.warn(report);
+                                } else
+                                {
+                                JOptionPane.showMessageDialog(
+                                        MainFrame.getCurrentFrame(), report,
+                                        "Error List",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
                         tmp_pane = null;
                         } catch (Exception e)
                         {
@@ -1193,6 +1222,7 @@ public class MainFrame //
         chooser.addChoosableFileFilter(new CommaTextFilesFilter());
         chooser.addChoosableFileFilter(new TabTextFilesFilter());
         chooser.addChoosableFileFilter(new AgnaFilesFilter());
+        chooser.addChoosableFileFilter(new ExcelFilesFilter());
 
         int return_val = chooser.showOpenDialog(my_frame);
         my_frame.repaint();
