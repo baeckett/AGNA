@@ -732,6 +732,8 @@ public class MainFrame //
                     .getNetworkFileName())
                     + " - " + Environment.getApplicationFullName());
 
+        appendOutputLog("Created a new network with " + t_nnodes
+                + " nodes.");
         my_full_net.setChanged(false);
         my_frame.validate();
         my_frame.repaint();
@@ -810,6 +812,7 @@ public class MainFrame //
             {
             AgnaLog.warn("saveNetwork failed for " + file_name + ": " + e);
             }
+        appendOutputLog("Saved network to '" + tmp_file_name + "'.");
         }
 
     // saves when network has a name
@@ -1173,6 +1176,9 @@ public class MainFrame //
                             t_new_full_net.setNetworkFileName("");
                             }
                         t_new_full_net.setChanged(false);
+                        appendOutputLog("Opened " + t_file.getName() + " ("
+                                + t_new_full_net.getNetwork().getSize()
+                                + " nodes).");
                         my_full_net.cleaning();
                         my_full_net = t_new_full_net;
                         updateMatrix();
@@ -2371,6 +2377,61 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
+    // 2.1.3: the Output pane doubles as a session log; every operation
+    // appends a timestamped line so non-expert users can follow what
+    // happened and in which order
+    private static void appendOutputLog(String message)
+        {
+        if (output_edit == null)
+            return;
+        String time = java.time.LocalTime.now().withNano(0).toString();
+        String current = output_edit.getText();
+        String line = "> [" + time + "] " + message;
+        if (current.length() > 0 && !current.endsWith("\n"))
+            current += "\n";
+        output_edit.setText(current + line + "\n");
+        }
+
+    private static String currentNetworkLabel()
+        {
+        try
+            {
+            Network net = MainFrame.getCurrentNetwork();
+            if (net == null)
+                return "the current network";
+            String name = net.getName();
+            if (name == null || name.trim().length() == 0)
+                return "the current network (" + net.getSize() + " nodes)";
+            return "'" + name + "' (" + net.getSize() + " nodes)";
+            } catch (Exception e)
+            {
+            return "the current network";
+            }
+        }
+
+    private static void appendTransformLog(int type, int mode, float value)
+        {
+        String message = null;
+        if (type == 1)
+            message = "Added scalar " + value
+                    + " to all off-diagonal values";
+        else if (type == 2)
+            message = "Multiplied all off-diagonal values by " + value;
+        else if (type == 3)
+            message = "Squared the sociomatrix (multiplied it by itself)";
+        else if (type == 4)
+            message = mode == AgnaLib.NORMALIZE_THRESHOLD
+                    ? "Normalized by threshold " + value
+                            + " (values above it became 1)"
+                    : "Normalized to binary (all non-zero values became 1)";
+        else if (type == 5)
+            message = "Removed isolated nodes (outsiders)";
+        else if (type == 6)
+            message = "Transposed the sociomatrix";
+        if (message != null)
+            appendOutputLog(message + " in " + currentNetworkLabel() + ".");
+        }
+
     private void doAddScalar()
         {
         my_frame.repaint();
@@ -2439,7 +2500,12 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             return;
             }
         grid_model.setReady(false);
-        my_full_net.symmetrize(my_frame);
+        String sym_choice = my_full_net.symmetrize(my_frame);
+        if (sym_choice != null)
+            {
+            appendOutputLog("Symmetrized " + currentNetworkLabel() + " by "
+                    + sym_choice + ".");
+            }
         updateMatrix();
         grid_model.setReady(true);
         setCurrentStatus(default_status);
@@ -2513,6 +2579,8 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             {
             tmp_network.getActor(i).setName(String.valueOf(i + 1));
             }
+        appendOutputLog("Replaced node names with 1.." + n + " in "
+                + currentNetworkLabel() + ".");
         updateMatrix();
         my_full_net.setChanged(true);
         setCurrentStatus(default_status);
@@ -2593,6 +2661,10 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         final FullNet other_net = other_full_net;
         grid_model.setReady(false);
         my_full_net.mergeWith(other_net.getNetwork(), policy);
+        appendOutputLog("Merged '" + other_net.getNetwork().getName()
+                + "' (" + other_net.getNetwork().getSize()
+                + " actors) into " + currentNetworkLabel() + " by " + choice
+                + ".");
         updateMatrix();
         grid_model.setReady(true);
         setCurrentStatus("Merged " + other_net.getNetwork().getSize()
@@ -3296,26 +3368,32 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
                         case 1:
                         my_full_net.addScalar(param_3);
+                        appendTransformLog(1, param_1, param_3);
                         break;
 
                         case 2:
                         my_full_net.multiplyByScalar(param_3);
+                        appendTransformLog(2, param_1, param_3);
                         break;
 
                         case 3:
                         my_full_net.square();
+                        appendTransformLog(3, param_1, param_3);
                         break;
 
                         case 4:
                         my_full_net.normalize(param_1, param_3);
+                        appendTransformLog(4, param_1, param_3);
                         break;
 
                         case 5:
                         my_full_net.removeOutsidersInNetwork(grid_model);
+                        appendTransformLog(5, param_1, param_3);
                         break;
 
                         case 6:
                         my_full_net.transpose();
+                        appendTransformLog(6, param_1, param_3);
                         break;
 
                         }

@@ -2416,7 +2416,7 @@ tmp_node.setFace(tmpname);
         agna_lib = null;
         }
 
-    public void symmetrize(JFrame tmp_frame)
+    public String symmetrize(JFrame tmp_frame)
         {
         // AgnaLib.AgnaLib();
         AgnaLib agna_lib = new AgnaLib();
@@ -2429,7 +2429,7 @@ tmp_node.setFace(tmpname);
                 "Symmetrize network by:", "Symmetrization Options",
                 JOptionPane.QUESTION_MESSAGE, null, values, "Maximum");
         if (tmp_str == null)
-            return;
+            return null;
 
         else if (tmp_str.equals("Maximum"))
             agna_lib.symmetrizeMaximum(my_network);
@@ -2474,6 +2474,7 @@ tmp_node.setFace(tmpname);
             net_area.updateArea(my_network);
         setChanged(true);
         agna_lib = null;
+        return tmp_str;
         }
 
     public void transpose()
