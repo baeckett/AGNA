@@ -33,7 +33,8 @@ public class ExcelExporter
         try
             {
             Thread.sleep(500);
-            MainFrame.progress_dialog.setPercent(60);
+            if (MainFrame.progress_dialog != null)
+                MainFrame.progress_dialog.setPercent(60);
             } catch (Exception e1) {
       AgnaLog.warn("suppressed exception", e1);
       }
@@ -57,7 +58,8 @@ public class ExcelExporter
             jxl.write.Number cell_value = null;
             jxl.write.Label cell_name = null;
 
-            MainFrame.progress_dialog.setPercent(75);
+            if (MainFrame.progress_dialog != null)
+                MainFrame.progress_dialog.setPercent(75);
 
             for (int i = 0; i < nn; i++)
                 {
@@ -78,7 +80,8 @@ public class ExcelExporter
                     }
                 }
 
-            MainFrame.progress_dialog.setPercent(85);
+            if (MainFrame.progress_dialog != null)
+                MainFrame.progress_dialog.setPercent(85);
 
             // cell values are now added to sheet.
             // write the file:
