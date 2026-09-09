@@ -1472,11 +1472,17 @@ tmp_node.setFace(tmpname);
                     tmp_node = null;
                     } else
                     {
+                    if (str.indexOf("Has Viewer") >= 0
+                        && str.indexOf("Has Viewer\tno") < 0
+                        && str.indexOf("Has Viewer no") < 0)
                     errors.append("\nNode Coordinates not found.");
                     }
                 } else
                 {
-                errors.append("\nNode Coordinates not found.");
+                if (str.indexOf("Has Viewer") >= 0
+                        && str.indexOf("Has Viewer\tno") < 0
+                        && str.indexOf("Has Viewer no") < 0)
+                    errors.append("\nNode Coordinates not found.");
                 }
             }
 
