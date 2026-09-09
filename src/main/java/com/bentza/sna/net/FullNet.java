@@ -5,6 +5,9 @@ import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.gui.AgnaTableModel;
 import com.bentza.sna.gui.MainFrame;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import com.bentza.sna.gui.GrNet;
 import java.awt.Color;
 import java.io.File;
@@ -633,6 +636,8 @@ import javax.swing.JTextPane;
             parseCommaTextFile(str);
         else if (extension.equals("net")) // Pajek file
             parsePajekFile(str);
+        else if (extension.equals("graphml")) // GraphML file
+            parseGraphMLFile(str);
         else if (extension.equals("ana")) // Ana file
             parseAnaTextFile(str);
         else
@@ -654,6 +659,99 @@ import javax.swing.JTextPane;
             }
         }
 
+
+    // 2.1.3: GraphML reader - the standard SNA exchange format. Nodes are
+    // taken in document order, their name from the "d0"/"name" data, edge
+    // weights from the "d1"/"weight" data (missing weight = 1). Self-loops
+    // are ignored so the sociomatrix diagonal stays zero.
+    public void parseGraphMLFile(String str)
+        {
+        try
+            {
+            javax.xml.parsers.DocumentBuilderFactory factory = javax.xml.parsers.DocumentBuilderFactory
+                    .newInstance();
+            factory.setNamespaceAware(true);
+            Document doc = factory.newDocumentBuilder().parse(
+                    new java.io.ByteArrayInputStream(str.getBytes(
+                            java.nio.charset.StandardCharsets.UTF_8)));
+
+            java.util.List<Element> nodes = new java.util.ArrayList<>();
+            java.util.Map<String, Integer> ids = new java.util.HashMap<>();
+            NodeList node_list = doc.getElementsByTagNameNS("*", "node");
+            for (int i = 0; i < node_list.getLength(); i++)
+                {
+                Element node = (Element) node_list.item(i);
+                String id = node.getAttribute("id");
+                if (id == null || id.length() == 0)
+                    continue;
+                ids.put(id, nodes.size());
+                nodes.add(node);
+                }
+            final int n = nodes.size();
+            my_network = new Network(n);
+
+            NodeList graph_list = doc.getElementsByTagNameNS("*", "graph");
+            if (graph_list.getLength() > 0)
+                {
+                String gid = ((Element) graph_list.item(0))
+                        .getAttribute("id");
+                if (gid != null && gid.length() > 0)
+                    {
+                    my_network.setName(gid);
+                    }
+                }
+
+            for (int i = 0; i < n; i++)
+                {
+                NodeList datas = nodes.get(i)
+                        .getElementsByTagNameNS("*", "data");
+                for (int k = 0; k < datas.getLength(); k++)
+                    {
+                    Element data = (Element) datas.item(k);
+                    String key = data.getAttribute("key");
+                    if ("d0".equals(key) || "name".equals(key))
+                        {
+                        String name = data.getTextContent();
+                        if (name != null && name.length() > 0)
+                            {
+                            my_network.getActor(i).setName(name);
+                            }
+                        }
+                    }
+                }
+
+            NodeList edge_list = doc.getElementsByTagNameNS("*", "edge");
+            for (int e = 0; e < edge_list.getLength(); e++)
+                {
+                Element edge = (Element) edge_list.item(e);
+                Integer src = ids.get(edge.getAttribute("source"));
+                Integer tgt = ids.get(edge.getAttribute("target"));
+                if (src == null || tgt == null || src == tgt)
+                    continue;
+                float weight = 1f;
+                NodeList datas = edge.getElementsByTagNameNS("*", "data");
+                for (int k = 0; k < datas.getLength(); k++)
+                    {
+                    Element data = (Element) datas.item(k);
+                    String key = data.getAttribute("key");
+                    if ("d1".equals(key) || "weight".equals(key))
+                        {
+                        try
+                            {
+                            weight = Float.parseFloat(data.getTextContent()
+                                    .trim());
+                            } catch (NumberFormatException e1)
+                            {
+                            }
+                        }
+                    }
+                my_network.setValue(weight, src.intValue(), tgt.intValue());
+                }
+            } catch (Exception e)
+            {
+            AgnaLog.warn("GraphML import failed: " + e);
+            }
+        }
 
     // 2.1.3: minimal Pajek (.net) reader. Supports:
     //   *Vertices N

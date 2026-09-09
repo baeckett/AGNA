@@ -4,6 +4,7 @@ import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.HTMLParser;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.io.ExcelExporter;
+import com.bentza.sna.io.GraphMLExporter;
 import com.bentza.sna.io.PajekExporter;
 import com.bentza.sna.net.*;
 import com.bentza.sna.Agna;
@@ -785,6 +786,12 @@ public class MainFrame //
             String errors = excel_exporter.saveExcelNetwork(tmp_full_net,
                     file_name);
             return;
+            } else if (filestr.equals("graphml"))
+            {
+            // GraphML: the standard SNA exchange format (Gephi, NetworkX,
+            // igraph, R SNA packages)
+            GraphMLExporter graphml_exporter = new GraphMLExporter();
+            writestr = graphml_exporter.getGraphML(tmp_full_net);
             } else
             {
             // agn file
@@ -955,7 +962,8 @@ public class MainFrame //
         // options dialog; Pajek and "All Files" open the format dialog
         javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
         int chosen_format = -1;
-        final String[] format_extensions = { "agn", "txt", "csv", "net", "xls" };
+        final String[] format_extensions = { "agn", "txt", "csv", "net",
+                "xls", "graphml" };
         if (ff instanceof AgnaFilesFilter)
             chosen_format = 0;
         else if (ff instanceof TabTextFilesFilter)
@@ -2981,7 +2989,8 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     private int askExportFormatDialog(int default_format)
         {
         final String[] labels = { "Agna (.agn)", "Tab-separated (.txt)",
-                "Comma-separated (.csv)", "Pajek (.net)", "Excel (.xls)" };
+                "Comma-separated (.csv)", "Pajek (.net)", "Excel (.xls)",
+                "GraphML (.graphml)" };
         final String[] vector_options = { "Emission Degree",
                 "Reception Degree", "Weighted Emission Degree",
                 "Sociometric Status", "Nodal Degree", "Betweenness",
