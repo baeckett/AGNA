@@ -84,3 +84,6 @@ Analysis entries.)
   guards, explicit density conventions, proximity prestige, N-Cliques
   implemented, logging, charset policy, 35+ automated tests.
 - 2.1.2: last closed-source release (2005).
+
+
+Copyright (C) 2002-2026 Marius Ion Bența. Website (provisional): https://www.netanalysis.co.uk

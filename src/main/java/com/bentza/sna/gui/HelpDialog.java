@@ -155,7 +155,8 @@ class HelpDialog
         // Dimension panel_dim = new Dimension(150, 70);
         n_frame = new AgnaDialog(where, "Agna Help", false);
         n_frame.setTitle("Agna Help");
-        n_frame.setResizable(false);
+        // 2.1.3: the help window is resizable
+        n_frame.setResizable(true);
         n_frame.setModal(false);
 
         Container content = n_frame.getContentPane();

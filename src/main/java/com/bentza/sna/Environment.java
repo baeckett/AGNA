@@ -36,8 +36,8 @@ public class Environment
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
      */
-    // 2.1.3: no live project page yet; the About dialog hides the URL
-    private final static String application_url = "";
+    // 2.1.3: provisional project page (final domain to be confirmed)
+    private final static String application_url = "https://www.netanalysis.co.uk";
 
     private final static String application_email = "imbenta@yahoo.co.uk";
 
@@ -45,7 +45,9 @@ public class Environment
      * Historic copyright line. The licence of the 2.1.3 open-source release is
      * still being decided; see README.
      */
-    private final static String application_copyright = "Copyright (C) 2002-2005: Marius Benta";
+    // 2.1.3: copyright holder's full name with the Romanian diacritic
+    // (\u021B = t with comma below); source stays ASCII-safe
+    private final static String application_copyright = "Copyright (C) 2002-2026: Marius Ion Ben\u021Ba";
 
     public static final String fs = System.getProperty("file.separator");
 
