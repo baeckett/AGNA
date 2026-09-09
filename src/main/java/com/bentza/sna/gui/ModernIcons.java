@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
@@ -72,21 +73,21 @@ public class ModernIcons
         switch (kind)
             {
             case NEW_NETWORK:
-                float r = s * 0.13f;
-                Ellipse2D n0 = new Ellipse2D.Float(m + s * 0.03f, m + s * 0.14f,
-                        r, r);
-                Ellipse2D n1 = new Ellipse2D.Float(s / 2 - r / 2, m, r, r);
-                Ellipse2D n2 = new Ellipse2D.Float(s - m - r - s * 0.03f,
-                        m + s * 0.14f, r, r);
-                g.drawLine((int) (m + s * 0.10f), (int) (m + s * 0.20f),
-                        (int) (s / 2), (int) (m + r / 2));
-                g.drawLine((int) (s / 2), (int) (m + r / 2),
-                        (int) (s - m - s * 0.10f), (int) (m + s * 0.20f));
-                g.draw(n0);
-                g.draw(n1);
-                g.draw(n2);
-                g.setColor(ACCENT);
-                g.fill(n1);
+                // a small sociomatrix grid, like the classic icon
+                int cg = Math.max(2, Math.round(s * 0.13f));
+                int co = Math.round(s * 0.24f);
+                int cs = cg + Math.round(s * 0.10f);
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        {
+                        g.setColor(gray);
+                        g.drawRect(co + i * cs, co + j * cs, cg, cg);
+                        if (i == 1 && j == 1)
+                            {
+                            g.setColor(ACCENT);
+                            g.fillRect(co + i * cs, co + j * cs, cg, cg);
+                            }
+                        }
                 break;
             case OPEN_NETWORK:
                 Path2D f = new Path2D.Float();
@@ -136,17 +137,29 @@ public class ModernIcons
                         s * 0.09f));
                 break;
             case OPEN_OUTPUT:
-                doc(g, s);
+                // a document page with content lines, like the classic icon
+                g.setColor(gray);
+                g.drawRoundRect((int) (s * 0.20f), (int) (s * 0.16f),
+                        (int) (s * 0.60f), (int) (s * 0.68f), 3, 3);
+                g.drawLine((int) (s * 0.28f), (int) (s * 0.34f),
+                        (int) (s * 0.72f), (int) (s * 0.34f));
+                g.drawLine((int) (s * 0.28f), (int) (s * 0.46f),
+                        (int) (s * 0.64f), (int) (s * 0.46f));
+                g.drawLine((int) (s * 0.28f), (int) (s * 0.58f),
+                        (int) (s * 0.72f), (int) (s * 0.58f));
                 g.setColor(ACCENT);
-                g.drawLine((int) (s / 2), (int) (m + s * 0.16f),
-                        (int) (s / 2), (int) (m + s * 0.50f));
-                g.drawLine((int) (s / 2), (int) (m + s * 0.50f),
-                        (int) (s * 0.35f), (int) (m + s * 0.36f));
-                g.drawLine((int) (s / 2), (int) (m + s * 0.50f),
-                        (int) (s * 0.65f), (int) (m + s * 0.36f));
+                g.drawLine((int) (s * 0.20f), (int) (s * 0.16f),
+                        (int) (s * 0.20f), (int) (s * 0.84f));
                 break;
             case CLEAR_OUTPUT:
-                doc(g, s);
+                // a document page struck through: clear the output
+                g.setColor(gray);
+                g.drawRoundRect((int) (s * 0.20f), (int) (s * 0.16f),
+                        (int) (s * 0.60f), (int) (s * 0.68f), 3, 3);
+                g.drawLine((int) (s * 0.28f), (int) (s * 0.34f),
+                        (int) (s * 0.72f), (int) (s * 0.34f));
+                g.drawLine((int) (s * 0.28f), (int) (s * 0.58f),
+                        (int) (s * 0.72f), (int) (s * 0.58f));
                 g.setColor(ACCENT);
                 g.drawLine((int) (s * 0.35f), (int) (s * 0.30f),
                         (int) (s * 0.65f), (int) (s * 0.60f));
@@ -154,77 +167,83 @@ public class ModernIcons
                         (int) (s * 0.35f), (int) (s * 0.60f));
                 break;
             case SAVE_OUTPUT:
-                doc(g, s);
+                // a document page above a floppy: save the document
+                g.setColor(gray);
+                g.drawRoundRect((int) (s * 0.26f), (int) (s * 0.14f),
+                        (int) (s * 0.48f), (int) (s * 0.28f), 3, 3);
+                g.drawLine((int) (s * 0.34f), (int) (s * 0.24f),
+                        (int) (s * 0.66f), (int) (s * 0.24f));
                 g.setColor(ACCENT);
-                g.fillRoundRect((int) (s * 0.40f), (int) (s * 0.42f),
-                        (int) (s * 0.20f), (int) (s * 0.20f), 4, 4);
+                g.drawRoundRect((int) (s * 0.26f), (int) (s * 0.52f),
+                        (int) (s * 0.48f), (int) (s * 0.34f), 3, 3);
+                g.drawRect((int) (s * 0.34f), (int) (s * 0.52f),
+                        (int) (s * 0.14f), (int) (s * 0.16f));
                 break;
             case TRANSPOSE:
-                int gs = (int) (s * 0.10f);
-                int off = (int) (m + s * 0.05f);
-                int step = gs + (int) (s * 0.05f);
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                        {
-                        g.setColor(gray);
-                        g.drawRect(off + i * step, off + j * step, gs, gs);
-                        if (i == 1 && j == 1)
-                            {
-                            g.setColor(ACCENT);
-                            g.fillRect(off + i * step, off + j * step, gs, gs);
-                            }
-                        }
+                // a clockwise rotation arrow: rotating the matrix idea
+                // (mirrors the classic curved-arrow glyph)
+                double cx = s * 0.50d;
+                double cy = s * 0.52d;
+                double r2 = s * 0.30d;
+                g.setColor(gray);
+                g.draw(new Arc2D.Float((float) (cx - r2), (float) (cy - r2),
+                        (float) (2 * r2), (float) (2 * r2), 45f, 250f,
+                        Arc2D.OPEN));
+                g.fill(new Ellipse2D.Float((float) (cx - s * 0.045f),
+                        (float) (cy - s * 0.045f), s * 0.09f, s * 0.09f));
+                double end = Math.toRadians(45d + 250d);
+                double tipX = cx + r2 * Math.cos(end);
+                double tipY = cy + r2 * Math.sin(end);
+                double a1 = Math.toRadians(45d + 250d - 22d);
+                double a2 = Math.toRadians(45d + 250d + 22d);
+                g.setColor(ACCENT);
+                g.drawLine((int) Math.round(tipX), (int) Math.round(tipY),
+                        (int) Math.round(cx + r2 * Math.cos(a1)),
+                        (int) Math.round(cy + r2 * Math.sin(a1)));
+                g.drawLine((int) Math.round(tipX), (int) Math.round(tipY),
+                        (int) Math.round(cx + r2 * Math.cos(a2)),
+                        (int) Math.round(cy + r2 * Math.sin(a2)));
                 break;
             case SYMMETRIZE:
-                // top double-arrow in the neutral outline, mirrored one
-                // below in the accent (mirroring reads as "symmetrize")
+                // two arrows pushing toward a center mirror axis: making
+                // the two sides equal (the symmetrization idea)
+                float sy = s * 0.55f;
                 g.setColor(gray);
-                g.drawLine((int) (s * 0.16f), (int) (s * 0.40f),
-                        (int) (s * 0.84f), (int) (s * 0.40f));
-                g.drawLine((int) (s * 0.70f), (int) (s * 0.30f),
-                        (int) (s * 0.84f), (int) (s * 0.40f));
-                g.drawLine((int) (s * 0.84f), (int) (s * 0.40f),
-                        (int) (s * 0.70f), (int) (s * 0.50f));
-                g.drawLine((int) (s * 0.30f), (int) (s * 0.32f),
-                        (int) (s * 0.16f), (int) (s * 0.40f));
-                g.drawLine((int) (s * 0.16f), (int) (s * 0.40f),
-                        (int) (s * 0.30f), (int) (s * 0.48f));
+                g.drawLine((int) (s * 0.14f), Math.round(sy),
+                        (int) (s * 0.38f), Math.round(sy));
+                g.drawLine((int) (s * 0.38f), Math.round(sy),
+                        (int) (s * 0.30f), Math.round(sy - s * 0.11f));
+                g.drawLine((int) (s * 0.38f), Math.round(sy),
+                        (int) (s * 0.30f), Math.round(sy + s * 0.11f));
+                g.drawLine((int) (s * 0.50f), (int) (s * 0.24f),
+                        (int) (s * 0.50f), (int) (s * 0.40f));
+                g.drawLine((int) (s * 0.50f), (int) (s * 0.68f),
+                        (int) (s * 0.50f), (int) (s * 0.84f));
                 g.setColor(ACCENT);
-                g.drawLine((int) (s * 0.16f), (int) (s * 0.62f),
-                        (int) (s * 0.84f), (int) (s * 0.62f));
-                g.drawLine((int) (s * 0.30f), (int) (s * 0.54f),
-                        (int) (s * 0.16f), (int) (s * 0.62f));
-                g.drawLine((int) (s * 0.16f), (int) (s * 0.62f),
-                        (int) (s * 0.30f), (int) (s * 0.70f));
-                g.drawLine((int) (s * 0.70f), (int) (s * 0.54f),
-                        (int) (s * 0.84f), (int) (s * 0.62f));
-                g.drawLine((int) (s * 0.84f), (int) (s * 0.62f),
-                        (int) (s * 0.70f), (int) (s * 0.70f));
+                g.drawLine((int) (s * 0.86f), Math.round(sy),
+                        (int) (s * 0.62f), Math.round(sy));
+                g.drawLine((int) (s * 0.62f), Math.round(sy),
+                        (int) (s * 0.70f), Math.round(sy - s * 0.11f));
+                g.drawLine((int) (s * 0.62f), Math.round(sy),
+                        (int) (s * 0.70f), Math.round(sy + s * 0.11f));
                 break;
             case RENUMBER:
-                for (int i = 0; i < 3; i++)
-                    {
-                    float y = s * 0.26f + i * s * 0.24f;
-                    g.setColor(gray);
-                    g.drawLine((int) (s * 0.34f), Math.round(y),
-                            (int) (s * 0.80f), Math.round(y));
-                    g.setColor(ACCENT);
-                    g.fill(new Ellipse2D.Float(s * 0.19f, y - s * 0.05f,
-                            s * 0.13f, s * 0.13f));
-                    }
+                // literal "123" digits, like the classic icon
+                g.setColor(gray);
+                g.setFont(new java.awt.Font(java.awt.Font.DIALOG,
+                        java.awt.Font.BOLD, Math.round(s * 0.52f)));
+                String digits = "123";
+                int tw = g.getFontMetrics().stringWidth(digits);
+                g.drawString(digits,
+                        Math.round((s - tw) / 2f), Math.round(s * 0.70f));
+                g.setColor(ACCENT);
+                g.drawLine((int) (s * 0.24f), (int) (s * 0.76f),
+                        (int) (s * 0.76f), (int) (s * 0.76f));
                 break;
             default:
                 break;
             }
         }
 
-    private static void doc(Graphics2D g, int s)
-        {
-        float m = s * 0.20f;
-        g.setColor(outline());
-        g.drawRoundRect((int) (m + s * 0.05f), (int) (m + s * 0.05f),
-                (int) (s * 0.55f), (int) (s * 0.70f), 5, 5);
-        g.drawLine((int) (m + s * 0.15f), (int) (s - m - s * 0.05f),
-                (int) (m + s * 0.15f), (int) (s * 0.15f));
-        }
+    
     }
