@@ -132,20 +132,22 @@ public class ModernIcons
         switch (kind)
             {
             case NEW_NETWORK:
-                int cg = Math.max(2, Math.round(s * 0.13f));
-                int co = Math.round(s * 0.24f);
-                int cs = cg + Math.round(s * 0.10f);
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                        {
-                        g.setColor(line);
-                        g.drawRect(co + i * cs, co + j * cs, cg, cg);
-                        if (i == 1 && j == 1)
-                            {
-                            g.setColor(accent);
-                            g.fillRect(co + i * cs, co + j * cs, cg, cg);
-                            }
-                        }
+                // airy diagonal of three squares (a matrix) with a small
+                // plus: "create a new network" - much less clutter than a
+                // full 3x3 grid at toolbar size
+                int dq = Math.max(3, Math.round(s * 0.17f));
+                g.setColor(line);
+                g.fillRoundRect(Math.round(s * 0.26f), Math.round(s * 0.22f),
+                        dq, dq, 3, 3);
+                g.fillRoundRect(Math.round(s * 0.44f), Math.round(s * 0.40f),
+                        dq, dq, 3, 3);
+                g.fillRoundRect(Math.round(s * 0.62f), Math.round(s * 0.58f),
+                        dq, dq, 3, 3);
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.74f), (int) (s * 0.15f),
+                        (int) (s * 0.74f), (int) (s * 0.31f));
+                g.drawLine((int) (s * 0.66f), (int) (s * 0.23f),
+                        (int) (s * 0.82f), (int) (s * 0.23f));
                 break;
             case OPEN_NETWORK:
                 Path2D f = new Path2D.Float();
