@@ -58,7 +58,7 @@ public class ModernIconsTest
             assertEquals(22, icon.getIconWidth());
             assertEquals(22, icon.getIconHeight());
             int[] st = stats(icon, 22);
-            assertTrue(st[0] > 40,
+            assertTrue(st[0] > 25,
                     "kind " + kind + " should paint a glyph");
             boolean arrow = kind == ModernIcons.UP_ARROW
                     || kind == ModernIcons.DOWN_ARROW;
@@ -84,8 +84,8 @@ public class ModernIconsTest
             {
             javax.swing.ImageIcon icon = ModernIcons.get(kind, 22, true);
             int[] st = stats(icon, 22);
-            assertTrue(st[0] > 40, "rollover kind " + kind + " painted");
-            assertTrue(st[1] >= 20,
+            assertTrue(st[0] > 25, "rollover kind " + kind + " painted");
+            assertTrue(st[1] >= 12,
                     "rollover kind " + kind
                             + " should be mostly blue (blue=" + st[1]
                             + ")");

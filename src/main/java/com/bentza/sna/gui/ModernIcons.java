@@ -87,6 +87,22 @@ public class ModernIcons
     private static final Color ACCENT = new Color(0, 102, 255);
     private static final Color ACCENT_DEEP = new Color(10, 60, 210);
 
+    // 2.1.3: sharp rendering mode - anti-aliasing off and pixel-aligned
+    // lines for clearly defined edges. Settable through the settings file
+    // ("Sharp Icons" yes/no) so the previous smooth look stays one line
+    // away as a roll-back.
+    private static boolean sharp = true;
+
+    public static boolean isSharp()
+        {
+        return sharp;
+        }
+
+    public static void setSharp(boolean tmp_value)
+        {
+        sharp = tmp_value;
+        }
+
     private static Color outline()
         {
         Color c = UIManager.getColor("Button.foreground");
@@ -117,10 +133,22 @@ public class ModernIcons
         BufferedImage img = new BufferedImage(size, size,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-                RenderingHints.VALUE_STROKE_PURE);
+        if (sharp)
+            {
+            // 2.1.3: crisp, clearly defined lines (no anti-aliasing blur)
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_OFF);
+            g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                    RenderingHints.VALUE_STROKE_DEFAULT);
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+            } else
+            {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                    RenderingHints.VALUE_STROKE_PURE);
+            }
         glyph(g, kind, size, line, accent, rollover);
         g.dispose();
         return new ImageIcon(img);
@@ -200,8 +228,8 @@ public class ModernIcons
                 g.draw(new Ellipse2D.Float(s * 0.26f, s * 0.32f, s * 0.48f,
                         s * 0.24f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.455f, s * 0.40f, s * 0.09f,
-                        s * 0.09f));
+                g.fill(new Ellipse2D.Float(s * 0.43f, s * 0.385f,
+                        s * 0.14f, s * 0.14f));
                 break;
             case OPEN_OUTPUT:
                 g.setColor(line);
@@ -251,8 +279,8 @@ public class ModernIcons
                 g.draw(new Arc2D.Float((float) (cx - r2), (float) (cy - r2),
                         (float) (2 * r2), (float) (2 * r2), 45f, 250f,
                         Arc2D.OPEN));
-                g.fill(new Ellipse2D.Float((float) (cx - s * 0.045f),
-                        (float) (cy - s * 0.045f), s * 0.09f, s * 0.09f));
+                g.fill(new Ellipse2D.Float((float) (cx - s * 0.06f),
+                        (float) (cy - s * 0.06f), s * 0.12f, s * 0.12f));
                 double end = Math.toRadians(45d + 250d);
                 double tipX = cx + r2 * Math.cos(end);
                 double tipY = cy + r2 * Math.sin(end);
@@ -328,8 +356,9 @@ public class ModernIcons
                 g.drawString(aa, Math.round((s - aw) / 2f),
                         Math.round(s * 0.64f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.66f, s * 0.28f, s * 0.08f,
-                        s * 0.08f));
+                int nd = Math.max(3, Math.round(s * 0.14f));
+                g.fillRect(Math.round(s * 0.60f), Math.round(s * 0.24f),
+                        nd, nd);
                 break;
             case NAMES_COLOR:
                 g.setColor(line);
@@ -368,8 +397,9 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.70f), (int) (s * 0.50f),
                         (int) (s * 0.58f), (int) (s * 0.58f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.46f, s * 0.46f, s * 0.08f,
-                        s * 0.08f));
+                int iw = Math.max(3, Math.round(s * 0.17f));
+                g.fillRect(Math.round(s * 0.415f), Math.round(s * 0.415f),
+                        iw, iw);
                 break;
             case CIRCULAR_LAYOUT:
                 g.setColor(line);
@@ -380,10 +410,10 @@ public class ModernIcons
                 for (int i = 0; i < 4; i++)
                     {
                     g.setColor(i == 0 ? accent : line);
-                    g.fill(new Ellipse2D.Float(
-                            circDots[i][0] * s - s * 0.035f,
-                            circDots[i][1] * s - s * 0.035f, s * 0.07f,
-                            s * 0.07f));
+                    int cd = Math.max(3, Math.round(s * 0.14f));
+                    g.fillRect(Math.round(circDots[i][0] * s - s * 0.07f),
+                            Math.round(circDots[i][1] * s - s * 0.07f), cd,
+                            cd);
                     }
                 break;
             case RANDOM_LAYOUT:
@@ -393,9 +423,9 @@ public class ModernIcons
                     {
                     g.setColor(i == 1 ? accent : line);
                     g.fill(new Ellipse2D.Float(
-                            dots[i][0] * s - s * 0.06f,
-                            dots[i][1] * s - s * 0.06f, s * 0.12f,
-                            s * 0.12f));
+                            dots[i][0] * s - s * 0.08f,
+                            dots[i][1] * s - s * 0.08f, s * 0.16f,
+                            s * 0.16f));
                     }
                 break;
             case SELECT_NEXT:
@@ -415,8 +445,9 @@ public class ModernIcons
                 g.drawRoundRect((int) (s * 0.22f), (int) (s * 0.18f),
                         (int) (s * 0.56f), (int) (s * 0.40f), 3, 3);
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.60f, s * 0.24f, s * 0.08f,
-                        s * 0.08f));
+                int sd = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.56f), Math.round(s * 0.20f),
+                        sd, sd);
                 g.setColor(line);
                 g.drawLine((int) (s * 0.50f), (int) (s * 0.62f),
                         (int) (s * 0.50f), (int) (s * 0.72f));
@@ -465,8 +496,10 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.28f), (int) (s * 0.51f),
                         (int) (s * 0.72f), (int) (s * 0.51f));
                 g.setColor(accent);
-                g.fillRect((int) (s * 0.46f), (int) (s * 0.44f),
-                        (int) (s * 0.11f), (int) (s * 0.14f));
+                int vm = Math.max(2, Math.round(s * 0.13f));
+                int vh = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.44f), Math.round(s * 0.42f),
+                        vm, vh);
                 break;
             case EDGE_COLOR:
                 g.setColor(line);
@@ -484,8 +517,9 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.26f), (int) (s * 0.62f),
                         (int) (s * 0.70f), (int) (s * 0.62f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.74f, s * 0.47f, s * 0.10f,
-                        s * 0.10f));
+                int md = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.70f), Math.round(s * 0.44f),
+                        md, md);
                 break;
             case CLEAR_AREA:
                 // circled cross: clear the results area
@@ -530,8 +564,9 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.32f), (int) (s * 0.64f),
                         (int) (s * 0.42f), (int) (s * 0.74f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.46f, s * 0.47f, s * 0.08f,
-                        s * 0.08f));
+                int spd = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.42f), Math.round(s * 0.43f),
+                        spd, spd);
                 break;
             case X_COORD:
                 // x-axis arrow: the x coordinate caption
@@ -545,8 +580,9 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.16f), (int) (s * 0.50f),
                         (int) (s * 0.16f), (int) (s * 0.74f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.13f, s * 0.40f, s * 0.08f,
-                        s * 0.08f));
+                int xd = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.10f), Math.round(s * 0.36f),
+                        xd, xd);
                 break;
             case Y_COORD:
                 // y-axis arrow: the y coordinate caption
@@ -560,8 +596,9 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.30f), (int) (s * 0.72f),
                         (int) (s * 0.58f), (int) (s * 0.72f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.40f, s * 0.76f, s * 0.08f,
-                        s * 0.08f));
+                int yd = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.37f), Math.round(s * 0.72f),
+                        yd, yd);
                 break;
             case EDGE_VALUE:
                 // two nodes joined by a tie with the digit "1" above it:
@@ -594,8 +631,8 @@ public class ModernIcons
                 g.drawLine((int) (s * 0.56f), (int) (s * 0.56f),
                         (int) (s * 0.80f), (int) (s * 0.80f));
                 g.setColor(accent);
-                g.fill(new Ellipse2D.Float(s * 0.395f, s * 0.395f,
-                        s * 0.09f, s * 0.09f));
+                g.fill(new Ellipse2D.Float(s * 0.38f, s * 0.38f, s * 0.13f,
+                        s * 0.13f));
                 break;
             case STOP:
                 // stop sign: neutral frame + blue core (search-in-progress)
