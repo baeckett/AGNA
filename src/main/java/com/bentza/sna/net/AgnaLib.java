@@ -1505,10 +1505,12 @@ import java.util.Vector;
             // out += unli;
             } // end for i
         // out += unol;
-        if (final_cliques.size() >= MAX_REPORTED_CLIQUES)
+        if (clique_search_cancelled)
             {
-            out.append(lb + "*** Result truncated at " + MAX_REPORTED_CLIQUES
-                    + " cliques (the network is too dense). ***");
+            out.append(lb + "*** Clique list incomplete (cancelled or the "
+                    + MAX_REPORTED_CLIQUES
+                    + "-clique cap was reached); showing what was found so "
+                    + "far. ***");
             }
         out.append(lb);
         return out.toString();
