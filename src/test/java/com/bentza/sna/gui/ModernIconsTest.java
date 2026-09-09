@@ -60,10 +60,20 @@ public class ModernIconsTest
             int[] st = stats(icon, 22);
             assertTrue(st[0] > 40,
                     "kind " + kind + " should paint a glyph");
-            assertTrue(st[1] >= 4,
-                    "kind " + kind + " needs a blue accent element");
-            assertTrue(st[2] >= 4,
-                    "kind " + kind + " needs a neutral outline");
+            boolean arrow = kind == ModernIcons.UP_ARROW
+                    || kind == ModernIcons.DOWN_ARROW;
+            if (arrow)
+                {
+                // spin arrows are deliberately monochrome at rest
+                assertTrue(st[2] >= 4,
+                        "kind " + kind + " needs a neutral outline");
+                } else
+                {
+                assertTrue(st[1] >= 4,
+                        "kind " + kind + " needs a blue accent element");
+                assertTrue(st[2] >= 4,
+                        "kind " + kind + " needs a neutral outline");
+                }
             }
         }
 

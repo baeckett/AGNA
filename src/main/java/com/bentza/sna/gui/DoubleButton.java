@@ -20,10 +20,20 @@ class DoubleButton extends JPanel
         {
         dim = new Dimension(23, 23);
         half = new Dimension(16, 11);
-        up_icon = Environment.getButtonImageIcon("upArrow.gif");
-        down_icon = Environment.getButtonImageIcon("downArrow.gif");
-        gray_up_icon = Environment.getButtonImageIcon("grayUpArrow.gif");
-        gray_down_icon = Environment.getButtonImageIcon("grayDownArrow.gif");
+        if (MainFrame.isClassicToolbarIcons())
+            {
+            up_icon = Environment.getButtonImageIcon("upArrow.gif");
+            down_icon = Environment.getButtonImageIcon("downArrow.gif");
+            gray_up_icon = Environment.getButtonImageIcon("grayUpArrow.gif");
+            gray_down_icon = Environment.getButtonImageIcon("grayDownArrow.gif");
+            } else
+            {
+            // 2.1.3: drawn arrows - faded gray at rest, blue on rollover
+            up_icon = ModernIcons.get(ModernIcons.UP_ARROW, 11, true);
+            down_icon = ModernIcons.get(ModernIcons.DOWN_ARROW, 11, true);
+            gray_up_icon = ModernIcons.get(ModernIcons.UP_ARROW, 11);
+            gray_down_icon = ModernIcons.get(ModernIcons.DOWN_ARROW, 11);
+            }
         up_button = new JButton(gray_up_icon);
         down_button = new JButton(gray_down_icon);
         up_button.setRolloverIcon(up_icon);

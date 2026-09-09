@@ -3794,10 +3794,12 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         updateMatrix();
         grid_model.setReady(true);
 
-        upleft_button = new JButton(Environment
-                .getButtonImageIcon("AddNodes.gif"));
-        upleft_button.setRolloverIcon(Environment
-                .getButtonImageIcon("rAddNodes.gif"));
+        upleft_button = new JButton(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("AddNodes.gif")
+                : ModernIcons.get(ModernIcons.ADD_NODE, 22));
+        upleft_button.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rAddNodes.gif")
+                : ModernIcons.get(ModernIcons.ADD_NODE, 22, true));
         upleft_button.setToolTipText("Add new nodes to current network Ctrl+P");
         upleft_button.addActionListener(act_menu);
         upleft_button.setBorder(new LineBorder(Color.gray, 1));

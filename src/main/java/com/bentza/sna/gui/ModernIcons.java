@@ -50,8 +50,11 @@ public class ModernIcons
     public static final int ALLOW_EDGE_SELECTION = 22;
     public static final int SHOW_CONNECTION_VALUE = 23;
     public static final int EDGE_COLOR = 24;
+    // spin-arrow buttons (coordinate/value panels)
+    public static final int UP_ARROW = 25;
+    public static final int DOWN_ARROW = 26;
 
-    public static final int KIND_COUNT = 25;
+    public static final int KIND_COUNT = 27;
 
     private static final Color ACCENT = new Color(37, 99, 235);
     private static final Color ACCENT_DEEP = new Color(30, 58, 138);
@@ -60,6 +63,13 @@ public class ModernIcons
         {
         Color c = UIManager.getColor("Button.foreground");
         return c != null ? c : new Color(72, 80, 92);
+        }
+
+    // 2.1.3: the rest state uses the outline at reduced opacity so the
+    // blue rollover version stands out clearly (a truly faded gray)
+    private static Color fade(Color c)
+        {
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), 150);
         }
 
     public static ImageIcon get(int kind, int size)
@@ -73,7 +83,7 @@ public class ModernIcons
             {
             kind = NEW_NETWORK;
             }
-        Color line = rollover ? ACCENT : outline();
+        Color line = rollover ? ACCENT : fade(outline());
         Color accent = rollover ? ACCENT_DEEP : ACCENT;
         BufferedImage img = new BufferedImage(size, size,
                 BufferedImage.TYPE_INT_ARGB);
@@ -434,6 +444,26 @@ public class ModernIcons
                 g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s * 0.60f, s * 0.40f, s * 0.20f,
                         s * 0.20f));
+                break;
+            case UP_ARROW:
+            case DOWN_ARROW:
+                // monochrome filled spin arrows (faded at rest, blue on
+                // rollover - exactly the two-state convention)
+                Path2D arrow = new Path2D.Float();
+                if (kind == UP_ARROW)
+                    {
+                    arrow.moveTo(s * 0.5f, s * 0.22f);
+                    arrow.lineTo(s * 0.80f, s * 0.74f);
+                    arrow.lineTo(s * 0.20f, s * 0.74f);
+                    } else
+                    {
+                    arrow.moveTo(s * 0.5f, s * 0.78f);
+                    arrow.lineTo(s * 0.80f, s * 0.26f);
+                    arrow.lineTo(s * 0.20f, s * 0.26f);
+                    }
+                arrow.closePath();
+                g.setColor(line);
+                g.fill(arrow);
                 break;
             default:
                 break;
