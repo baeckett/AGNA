@@ -4324,46 +4324,36 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tools = new JToolBar();
         tools.setFloatable(false);
         dim_tool = new Dimension(23, 23);
-        ImageIcon i_new_network = Environment
-                .getButtonImageIcon("NewNetwork.gif");
-        i_open_network = Environment.getButtonImageIcon("OpenNetwork.gif");
-        ImageIcon i_save_network = Environment
-                .getButtonImageIcon("SaveNetwork.gif");
-        i_network_viewer = Environment.getButtonImageIcon("NetworkViewer.gif");
-        ImageIcon i_open_output = Environment
-                .getButtonImageIcon("OpenOutput.gif");
-        ImageIcon i_clear_output = Environment
-                .getButtonImageIcon("ClearOutput.gif");
-        ImageIcon i_save_output = Environment
-                .getButtonImageIcon("SaveOutput.gif");
-        ImageIcon i_transpose = Environment.getButtonImageIcon("Transpose.gif");
-        ImageIcon i_symmetrize = Environment
-                .getButtonImageIcon("Symmetrize.gif");
+        // 2.1.3: modern duotone toolbar icons (drawn, LAF-aware)
+        ImageIcon i_new_network = ModernIcons.get(ModernIcons.NEW_NETWORK, 22);
+        i_open_network = ModernIcons.get(ModernIcons.OPEN_NETWORK, 22);
+        ImageIcon i_save_network = ModernIcons.get(ModernIcons.SAVE_NETWORK, 22);
+        i_network_viewer = ModernIcons.get(ModernIcons.VIEWER, 22);
+        ImageIcon i_open_output = ModernIcons.get(ModernIcons.OPEN_OUTPUT, 22);
+        ImageIcon i_clear_output = ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 22);
+        ImageIcon i_save_output = ModernIcons.get(ModernIcons.SAVE_OUTPUT, 22);
+        ImageIcon i_transpose = ModernIcons.get(ModernIcons.TRANSPOSE, 22);
+        ImageIcon i_symmetrize = ModernIcons.get(ModernIcons.SYMMETRIZE, 22);
+        ImageIcon i_new_from_chain = ModernIcons.get(
+                ModernIcons.NEW_FROM_CHAIN, 22);
+        ImageIcon i_renumber_nodes = ModernIcons.get(ModernIcons.RENUMBER, 22);
 
-        ImageIcon ir_new_network = Environment
-                .getButtonImageIcon("rNewNetwork.gif");
-        ImageIcon ir_open_network = Environment
-                .getButtonImageIcon("rOpenNetwork.gif");
-        ir_save_network = Environment.getButtonImageIcon("rSaveNetwork.gif");
-        ir_network_viewer = Environment
-                .getButtonImageIcon("rNetworkViewer.gif");
-        ImageIcon ir_open_output = Environment
-                .getButtonImageIcon("rOpenOutput.gif");
-        ImageIcon ir_clear_output = Environment
-                .getButtonImageIcon("rClearOutput.gif");
-        ImageIcon ir_save_output = Environment
-                .getButtonImageIcon("rSaveOutput.gif");
-        ImageIcon ir_transpose = Environment
-                .getButtonImageIcon("rTranspose.gif");
-        ImageIcon ir_symmetrize = Environment
-                .getButtonImageIcon("rSymmetrize.gif");
+        ImageIcon ir_new_network = i_new_network;
+        ImageIcon ir_open_network = i_open_network;
+        ImageIcon ir_new_from_chain = i_new_from_chain;
+        ir_save_network = i_save_network;
+        ir_network_viewer = i_network_viewer;
+        ImageIcon ir_open_output = i_open_output;
+        ImageIcon ir_clear_output = i_clear_output;
+        ImageIcon ir_save_output = i_save_output;
+        ImageIcon ir_transpose = i_transpose;
+        ImageIcon ir_symmetrize = i_symmetrize;
+        ImageIcon ir_renumber_nodes = i_renumber_nodes;
 
-        tool_new_network = new JButton(Environment
-                .getButtonImageIcon("NewNetwork.gif"));
+        tool_new_network = new JButton(i_new_network);
         tool_open_network = new JButton(Environment
                 .getButtonImageIcon("OpenNetwork.gif"));
-        tool_new_from_chain = new JButton(Environment
-                .getButtonImageIcon("NewFromChain.gif"));
+        tool_new_from_chain = new JButton(i_new_from_chain);
         tool_save_network = new JButton(Environment
                 .getButtonImageIcon("SaveNetwork.gif"));
         tool_viewer = new JButton(Environment
@@ -4374,14 +4364,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tool_save_output = new JButton(i_save_output);
         tool_transpose = new JButton(i_transpose);
         tool_symmetrize = new JButton(i_symmetrize);
-        tool_renumber_nodes = new JButton(Environment
-                .getButtonImageIcon("RenumberNodes.gif"));
+        tool_renumber_nodes = new JButton(i_renumber_nodes);
 
-        tool_new_network.setRolloverIcon(Environment
-                .getButtonImageIcon("rNewNetwork.gif"));
+        tool_new_network.setRolloverIcon(ir_new_network);
         tool_open_network.setRolloverIcon(ir_open_network);
-        tool_new_from_chain.setRolloverIcon(Environment
-                .getButtonImageIcon("rNewFromChain.gif"));
+        tool_new_from_chain.setRolloverIcon(ir_new_from_chain);
         tool_save_network.setRolloverIcon(ir_save_network);
         tool_viewer.setRolloverIcon(ir_network_viewer);
         tool_open_output.setRolloverIcon(ir_open_output);
@@ -4389,8 +4376,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tool_save_output.setRolloverIcon(ir_save_output);
         tool_transpose.setRolloverIcon(ir_transpose);
         tool_symmetrize.setRolloverIcon(ir_symmetrize);
-        tool_renumber_nodes.setRolloverIcon(Environment
-                .getButtonImageIcon("rRenumberNodes.gif"));
+        tool_renumber_nodes.setRolloverIcon(ir_renumber_nodes);
 
         tool_new_network.setBorder(null);
         tool_save_network.setBorder(null);
