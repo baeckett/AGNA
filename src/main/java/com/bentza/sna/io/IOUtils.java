@@ -125,18 +125,18 @@ public class IOUtils
      */
     public static String getExtension(String filename)
         {
-        int i = filename.lastIndexOf('.');
-        if (i > 0 && i < filename.length() - 1)
+        // 2.1.3: basename-aware (a dot inside a directory name is not the
+        // extension separator)
+        String name = new java.io.File(filename).getName();
+        int i = name.lastIndexOf('.');
+        if (i > 0 && i < name.length() - 1)
             {
-            return filename.substring(i + 1).toLowerCase();
-            } else if (i == filename.length() - 1)
+            return name.substring(i + 1).toLowerCase();
+            } else if (i == name.length() - 1)
             {
             return "";
-            } else if (i == -1)
-            {
-            return null;
             }
-        return "";
+        return null;
         }
 
     /**
