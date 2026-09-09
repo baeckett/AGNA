@@ -2,7 +2,8 @@ package com.bentza.sna.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.GradientPaint;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
@@ -14,10 +15,12 @@ import javax.swing.UIManager;
 
 /**
  * 2.1.3: modern duotone toolbar icons, drawn in code (no image assets).
- * Each glyph is a neutral outline taken from the current look-and-feel
- * foreground, with one accent element in the brand blue. Renders crisply
- * at any size and adapts to dark themes. The icon meanings mirror the
- * classic GIFs they replace: network, open, save, viewer, output, etc.
+ * Rest version: a neutral outline taken from the look-and-feel foreground
+ * with one brand-blue accent element. Rollover version: the whole glyph in
+ * the brand blue (clearly more colorful on hover). The icon meanings
+ * mirror the classic GIFs they replace - matrices, rotation, mirroring,
+ * documents, "123", nodes, layouts, etc. Renders crisply at any size and
+ * adapts to dark themes.
  */
 public class ModernIcons
     {
@@ -32,8 +35,26 @@ public class ModernIcons
     public static final int TRANSPOSE = 8;
     public static final int SYMMETRIZE = 9;
     public static final int RENUMBER = 10;
+    // Network Viewer toolbar:
+    public static final int ADD_NODE = 11;
+    public static final int DELETE_NODE = 12;
+    public static final int VIEW_NAMES = 13;
+    public static final int NAMES_COLOR = 14;
+    public static final int LOYALTY = 15;
+    public static final int IMAGE_WIDTH = 16;
+    public static final int CIRCULAR_LAYOUT = 17;
+    public static final int RANDOM_LAYOUT = 18;
+    public static final int SELECT_NEXT = 19;
+    public static final int EXPORT_IMAGE = 20;
+    public static final int INSERT_IN_OUTPUT = 21;
+    public static final int ALLOW_EDGE_SELECTION = 22;
+    public static final int SHOW_CONNECTION_VALUE = 23;
+    public static final int EDGE_COLOR = 24;
 
-    private static final int KIND_COUNT = 11;
+    public static final int KIND_COUNT = 25;
+
+    private static final Color ACCENT = new Color(37, 99, 235);
+    private static final Color ACCENT_DEEP = new Color(30, 58, 138);
 
     private static Color outline()
         {
@@ -41,14 +62,19 @@ public class ModernIcons
         return c != null ? c : new Color(72, 80, 92);
         }
 
-    private static final Color ACCENT = new Color(37, 99, 235);
-
     public static ImageIcon get(int kind, int size)
+        {
+        return get(kind, size, false);
+        }
+
+    public static ImageIcon get(int kind, int size, boolean rollover)
         {
         if (kind < 0 || kind >= KIND_COUNT)
             {
             kind = NEW_NETWORK;
             }
+        Color line = rollover ? ACCENT : outline();
+        Color accent = rollover ? ACCENT_DEEP : ACCENT;
         BufferedImage img = new BufferedImage(size, size,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
@@ -56,35 +82,34 @@ public class ModernIcons
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
                 RenderingHints.VALUE_STROKE_PURE);
-        glyph(g, kind, size);
+        glyph(g, kind, size, line, accent);
         g.dispose();
         return new ImageIcon(img);
         }
 
-    private static void glyph(Graphics2D g, int kind, int s)
+    private static void glyph(Graphics2D g, int kind, int s,
+            Color line, Color accent)
         {
         float m = s * 0.20f;
         float w = s - 2 * m;
-        Color gray = outline();
-        g.setColor(gray);
+        g.setColor(line);
         g.setStroke(new BasicStroke(Math.max(2.2f, s / 14f),
                 BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         switch (kind)
             {
             case NEW_NETWORK:
-                // a small sociomatrix grid, like the classic icon
                 int cg = Math.max(2, Math.round(s * 0.13f));
                 int co = Math.round(s * 0.24f);
                 int cs = cg + Math.round(s * 0.10f);
                 for (int i = 0; i < 3; i++)
                     for (int j = 0; j < 3; j++)
                         {
-                        g.setColor(gray);
+                        g.setColor(line);
                         g.drawRect(co + i * cs, co + j * cs, cg, cg);
                         if (i == 1 && j == 1)
                             {
-                            g.setColor(ACCENT);
+                            g.setColor(accent);
                             g.fillRect(co + i * cs, co + j * cs, cg, cg);
                             }
                         }
@@ -100,45 +125,45 @@ public class ModernIcons
                 f.lineTo(s - m - s * 0.11f, s - m);
                 f.lineTo(m + s * 0.09f, s - m);
                 f.closePath();
+                g.setColor(line);
                 g.draw(f);
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.fill(f);
                 break;
             case NEW_FROM_CHAIN:
-                g.setColor(gray);
+                g.setColor(line);
                 g.draw(new Ellipse2D.Float(m, m + s * 0.10f, w * 0.55f,
                         w * 0.55f));
                 g.draw(new Ellipse2D.Float(s - m - w * 0.55f, m + s * 0.10f,
                         w * 0.55f, w * 0.55f));
                 g.drawLine((int) (m + w * 0.55f), (int) (m + s * 0.37f),
                         (int) (s - m - w * 0.55f), (int) (m + s * 0.37f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s / 2 - s * 0.07f,
                         m + s * 0.30f, s * 0.14f, s * 0.14f));
                 break;
             case SAVE_NETWORK:
-                g.setColor(gray);
+                g.setColor(line);
                 g.drawRoundRect((int) m, (int) m, (int) w, (int) w, 6, 6);
                 g.drawRect((int) (m + s * 0.11f), (int) (m + s * 0.09f),
                         (int) (w - s * 0.22f), (int) (w - s * 0.46f));
                 g.drawRect((int) (m + s * 0.11f), (int) (s - m - s * 0.13f),
                         (int) (w - s * 0.22f), (int) (s * 0.11f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.fillRect((int) (m + s * 0.11f), (int) (m + s * 0.09f),
                         (int) (w - s * 0.22f), (int) (w - s * 0.46f));
                 break;
             case VIEWER:
-                g.setColor(gray);
+                g.setColor(line);
                 g.drawRoundRect((int) m, (int) m, (int) w, (int) w, 6, 6);
                 g.draw(new Ellipse2D.Float(s * 0.26f, s * 0.32f, s * 0.48f,
                         s * 0.24f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.fill(new Ellipse2D.Float(s * 0.455f, s * 0.40f, s * 0.09f,
                         s * 0.09f));
                 break;
             case OPEN_OUTPUT:
-                // a document page with content lines, like the classic icon
-                g.setColor(gray);
+                g.setColor(line);
                 g.drawRoundRect((int) (s * 0.20f), (int) (s * 0.16f),
                         (int) (s * 0.60f), (int) (s * 0.68f), 3, 3);
                 g.drawLine((int) (s * 0.28f), (int) (s * 0.34f),
@@ -147,45 +172,41 @@ public class ModernIcons
                         (int) (s * 0.64f), (int) (s * 0.46f));
                 g.drawLine((int) (s * 0.28f), (int) (s * 0.58f),
                         (int) (s * 0.72f), (int) (s * 0.58f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.drawLine((int) (s * 0.20f), (int) (s * 0.16f),
                         (int) (s * 0.20f), (int) (s * 0.84f));
                 break;
             case CLEAR_OUTPUT:
-                // a document page struck through: clear the output
-                g.setColor(gray);
+                g.setColor(line);
                 g.drawRoundRect((int) (s * 0.20f), (int) (s * 0.16f),
                         (int) (s * 0.60f), (int) (s * 0.68f), 3, 3);
                 g.drawLine((int) (s * 0.28f), (int) (s * 0.34f),
                         (int) (s * 0.72f), (int) (s * 0.34f));
                 g.drawLine((int) (s * 0.28f), (int) (s * 0.58f),
                         (int) (s * 0.72f), (int) (s * 0.58f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.drawLine((int) (s * 0.35f), (int) (s * 0.30f),
                         (int) (s * 0.65f), (int) (s * 0.60f));
                 g.drawLine((int) (s * 0.65f), (int) (s * 0.30f),
                         (int) (s * 0.35f), (int) (s * 0.60f));
                 break;
             case SAVE_OUTPUT:
-                // a document page above a floppy: save the document
-                g.setColor(gray);
+                g.setColor(line);
                 g.drawRoundRect((int) (s * 0.26f), (int) (s * 0.14f),
                         (int) (s * 0.48f), (int) (s * 0.28f), 3, 3);
                 g.drawLine((int) (s * 0.34f), (int) (s * 0.24f),
                         (int) (s * 0.66f), (int) (s * 0.24f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.drawRoundRect((int) (s * 0.26f), (int) (s * 0.52f),
                         (int) (s * 0.48f), (int) (s * 0.34f), 3, 3);
                 g.drawRect((int) (s * 0.34f), (int) (s * 0.52f),
                         (int) (s * 0.14f), (int) (s * 0.16f));
                 break;
             case TRANSPOSE:
-                // a clockwise rotation arrow: rotating the matrix idea
-                // (mirrors the classic curved-arrow glyph)
                 double cx = s * 0.50d;
                 double cy = s * 0.52d;
                 double r2 = s * 0.30d;
-                g.setColor(gray);
+                g.setColor(line);
                 g.draw(new Arc2D.Float((float) (cx - r2), (float) (cy - r2),
                         (float) (2 * r2), (float) (2 * r2), 45f, 250f,
                         Arc2D.OPEN));
@@ -196,7 +217,7 @@ public class ModernIcons
                 double tipY = cy + r2 * Math.sin(end);
                 double a1 = Math.toRadians(45d + 250d - 22d);
                 double a2 = Math.toRadians(45d + 250d + 22d);
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.drawLine((int) Math.round(tipX), (int) Math.round(tipY),
                         (int) Math.round(cx + r2 * Math.cos(a1)),
                         (int) Math.round(cy + r2 * Math.sin(a1)));
@@ -205,10 +226,8 @@ public class ModernIcons
                         (int) Math.round(cy + r2 * Math.sin(a2)));
                 break;
             case SYMMETRIZE:
-                // two arrows pushing toward a center mirror axis: making
-                // the two sides equal (the symmetrization idea)
                 float sy = s * 0.55f;
-                g.setColor(gray);
+                g.setColor(line);
                 g.drawLine((int) (s * 0.14f), Math.round(sy),
                         (int) (s * 0.38f), Math.round(sy));
                 g.drawLine((int) (s * 0.38f), Math.round(sy),
@@ -219,7 +238,7 @@ public class ModernIcons
                         (int) (s * 0.50f), (int) (s * 0.40f));
                 g.drawLine((int) (s * 0.50f), (int) (s * 0.68f),
                         (int) (s * 0.50f), (int) (s * 0.84f));
-                g.setColor(ACCENT);
+                g.setColor(accent);
                 g.drawLine((int) (s * 0.86f), Math.round(sy),
                         (int) (s * 0.62f), Math.round(sy));
                 g.drawLine((int) (s * 0.62f), Math.round(sy),
@@ -228,22 +247,196 @@ public class ModernIcons
                         (int) (s * 0.70f), Math.round(sy + s * 0.11f));
                 break;
             case RENUMBER:
-                // literal "123" digits, like the classic icon
-                g.setColor(gray);
-                g.setFont(new java.awt.Font(java.awt.Font.DIALOG,
-                        java.awt.Font.BOLD, Math.round(s * 0.52f)));
+                g.setColor(line);
+                g.setFont(new Font(Font.DIALOG, Font.BOLD,
+                        Math.round(s * 0.52f)));
                 String digits = "123";
                 int tw = g.getFontMetrics().stringWidth(digits);
-                g.drawString(digits,
-                        Math.round((s - tw) / 2f), Math.round(s * 0.70f));
-                g.setColor(ACCENT);
+                g.drawString(digits, Math.round((s - tw) / 2f),
+                        Math.round(s * 0.70f));
+                g.setColor(accent);
                 g.drawLine((int) (s * 0.24f), (int) (s * 0.76f),
                         (int) (s * 0.76f), (int) (s * 0.76f));
+                break;
+            case ADD_NODE:
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.36f, s * 0.30f,
+                        s * 0.30f));
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.66f), (int) (s * 0.24f),
+                        (int) (s * 0.66f), (int) (s * 0.40f));
+                g.drawLine((int) (s * 0.58f), (int) (s * 0.32f),
+                        (int) (s * 0.74f), (int) (s * 0.32f));
+                break;
+            case DELETE_NODE:
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.36f, s * 0.30f,
+                        s * 0.30f));
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.58f), (int) (s * 0.24f),
+                        (int) (s * 0.74f), (int) (s * 0.40f));
+                g.drawLine((int) (s * 0.74f), (int) (s * 0.24f),
+                        (int) (s * 0.58f), (int) (s * 0.40f));
+                break;
+            case VIEW_NAMES:
+                g.setColor(line);
+                g.setFont(new Font(Font.DIALOG, Font.BOLD,
+                        Math.round(s * 0.46f)));
+                String aa = "Aa";
+                int aw = g.getFontMetrics().stringWidth(aa);
+                g.drawString(aa, Math.round((s - aw) / 2f),
+                        Math.round(s * 0.64f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.66f, s * 0.28f, s * 0.08f,
+                        s * 0.08f));
+                break;
+            case NAMES_COLOR:
+                g.setColor(line);
+                g.setFont(new Font(Font.DIALOG, Font.BOLD,
+                        Math.round(s * 0.46f)));
+                String ab = "Aa";
+                int bw = g.getFontMetrics().stringWidth(ab);
+                g.drawString(ab, Math.round((s - bw) / 2f),
+                        Math.round(s * 0.66f));
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.24f), (int) (s * 0.76f),
+                        (int) (s * 0.76f), (int) (s * 0.76f));
+                break;
+            case LOYALTY:
+                Path2D heart = new Path2D.Float();
+                heart.moveTo(s * 0.50f, s * 0.70f);
+                heart.curveTo(s * 0.18f, s * 0.46f, s * 0.28f, s * 0.18f,
+                        s * 0.50f, s * 0.36f);
+                heart.curveTo(s * 0.72f, s * 0.18f, s * 0.82f, s * 0.46f,
+                        s * 0.50f, s * 0.70f);
+                g.setColor(line);
+                g.draw(heart);
+                g.setColor(accent);
+                g.fill(heart);
+                break;
+            case IMAGE_WIDTH:
+                g.setColor(line);
+                g.drawLine((int) (s * 0.16f), (int) (s * 0.30f),
+                        (int) (s * 0.16f), (int) (s * 0.70f));
+                g.drawLine((int) (s * 0.84f), (int) (s * 0.30f),
+                        (int) (s * 0.84f), (int) (s * 0.70f));
+                g.drawLine((int) (s * 0.30f), (int) (s * 0.50f),
+                        (int) (s * 0.70f), (int) (s * 0.50f));
+                g.drawLine((int) (s * 0.58f), (int) (s * 0.42f),
+                        (int) (s * 0.70f), (int) (s * 0.50f));
+                g.drawLine((int) (s * 0.70f), (int) (s * 0.50f),
+                        (int) (s * 0.58f), (int) (s * 0.58f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.46f, s * 0.46f, s * 0.08f,
+                        s * 0.08f));
+                break;
+            case CIRCULAR_LAYOUT:
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.22f, s * 0.22f, s * 0.56f,
+                        s * 0.56f));
+                float[][] circDots = { { 0.50f, 0.20f }, { 0.80f, 0.50f },
+                        { 0.50f, 0.80f }, { 0.20f, 0.50f } };
+                for (int i = 0; i < 4; i++)
+                    {
+                    g.setColor(i == 0 ? accent : line);
+                    g.fill(new Ellipse2D.Float(
+                            circDots[i][0] * s - s * 0.035f,
+                            circDots[i][1] * s - s * 0.035f, s * 0.07f,
+                            s * 0.07f));
+                    }
+                break;
+            case RANDOM_LAYOUT:
+                float[][] dots = { { 0.30f, 0.30f }, { 0.72f, 0.28f },
+                        { 0.56f, 0.68f }, { 0.30f, 0.68f }, { 0.74f, 0.70f } };
+                for (int i = 0; i < 5; i++)
+                    {
+                    g.setColor(i == 1 ? accent : line);
+                    g.fill(new Ellipse2D.Float(
+                            dots[i][0] * s - s * 0.06f,
+                            dots[i][1] * s - s * 0.06f, s * 0.12f,
+                            s * 0.12f));
+                    }
+                break;
+            case SELECT_NEXT:
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.42f, s * 0.20f,
+                        s * 0.20f));
+                g.drawLine((int) (s * 0.42f), (int) (s * 0.52f),
+                        (int) (s * 0.70f), (int) (s * 0.52f));
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.70f), (int) (s * 0.52f),
+                        (int) (s * 0.60f), (int) (s * 0.44f));
+                g.drawLine((int) (s * 0.70f), (int) (s * 0.52f),
+                        (int) (s * 0.60f), (int) (s * 0.60f));
+                break;
+            case EXPORT_IMAGE:
+                g.setColor(line);
+                g.drawRoundRect((int) (s * 0.22f), (int) (s * 0.18f),
+                        (int) (s * 0.56f), (int) (s * 0.40f), 3, 3);
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.60f, s * 0.24f, s * 0.08f,
+                        s * 0.08f));
+                g.setColor(line);
+                g.drawLine((int) (s * 0.50f), (int) (s * 0.62f),
+                        (int) (s * 0.50f), (int) (s * 0.72f));
+                g.drawLine((int) (s * 0.42f), (int) (s * 0.66f),
+                        (int) (s * 0.50f), (int) (s * 0.72f));
+                g.drawLine((int) (s * 0.58f), (int) (s * 0.66f),
+                        (int) (s * 0.50f), (int) (s * 0.72f));
+                g.drawLine((int) (s * 0.24f), (int) (s * 0.76f),
+                        (int) (s * 0.76f), (int) (s * 0.76f));
+                break;
+            case INSERT_IN_OUTPUT:
+                g.setColor(line);
+                g.drawRoundRect((int) (s * 0.26f), (int) (s * 0.14f),
+                        (int) (s * 0.48f), (int) (s * 0.34f), 3, 3);
+                g.drawLine((int) (s * 0.30f), (int) (s * 0.52f),
+                        (int) (s * 0.70f), (int) (s * 0.52f));
+                g.setColor(accent);
+                g.drawLine((int) (s * 0.50f), (int) (s * 0.56f),
+                        (int) (s * 0.50f), (int) (s * 0.70f));
+                g.drawLine((int) (s * 0.42f), (int) (s * 0.64f),
+                        (int) (s * 0.50f), (int) (s * 0.70f));
+                g.drawLine((int) (s * 0.58f), (int) (s * 0.64f),
+                        (int) (s * 0.50f), (int) (s * 0.70f));
+                break;
+            case ALLOW_EDGE_SELECTION:
+                Path2D cursor = new Path2D.Float();
+                cursor.moveTo(s * 0.32f, s * 0.22f);
+                cursor.lineTo(s * 0.36f, s * 0.62f);
+                cursor.lineTo(s * 0.44f, s * 0.56f);
+                cursor.lineTo(s * 0.50f, s * 0.68f);
+                cursor.lineTo(s * 0.58f, s * 0.64f);
+                cursor.lineTo(s * 0.52f, s * 0.52f);
+                cursor.lineTo(s * 0.62f, s * 0.50f);
+                cursor.closePath();
+                g.setColor(line);
+                g.draw(cursor);
+                g.setColor(accent);
+                g.fill(cursor);
+                break;
+            case SHOW_CONNECTION_VALUE:
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.14f, s * 0.44f, s * 0.14f,
+                        s * 0.14f));
+                g.draw(new Ellipse2D.Float(s * 0.72f, s * 0.44f, s * 0.14f,
+                        s * 0.14f));
+                g.drawLine((int) (s * 0.28f), (int) (s * 0.51f),
+                        (int) (s * 0.72f), (int) (s * 0.51f));
+                g.setColor(accent);
+                g.fillRect((int) (s * 0.46f), (int) (s * 0.44f),
+                        (int) (s * 0.11f), (int) (s * 0.14f));
+                break;
+            case EDGE_COLOR:
+                g.setColor(line);
+                g.drawLine((int) (s * 0.16f), (int) (s * 0.50f),
+                        (int) (s * 0.78f), (int) (s * 0.50f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.60f, s * 0.40f, s * 0.20f,
+                        s * 0.20f));
                 break;
             default:
                 break;
             }
         }
-
-    
     }

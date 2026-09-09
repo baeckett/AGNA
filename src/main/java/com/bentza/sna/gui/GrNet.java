@@ -3909,24 +3909,66 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         ImageIcon gir_show_connection_value = Environment
                 .getButtonImageIcon("rShowConnectionValue.gif");
 
+        // 2.1.3: modern duotone icons for the viewer toolbar (unless the
+        // classic preference is set); rollovers become blue-colored
+        if (!MainFrame.isClassicToolbarIcons())
+            {
+            gi_edge_color = ModernIcons.get(ModernIcons.EDGE_COLOR, 22);
+            gi_view_names = ModernIcons.get(ModernIcons.VIEW_NAMES, 22);
+            gi_names_color = ModernIcons.get(ModernIcons.NAMES_COLOR, 22);
+            gi_loyalty = ModernIcons.get(ModernIcons.LOYALTY, 22);
+            gi_image_width = ModernIcons.get(ModernIcons.IMAGE_WIDTH, 22);
+            gi_select_next = ModernIcons.get(ModernIcons.SELECT_NEXT, 22);
+            gi_export_image = ModernIcons.get(ModernIcons.EXPORT_IMAGE, 22);
+            gi_insert_in_output = ModernIcons.get(ModernIcons.INSERT_IN_OUTPUT,
+                    22);
+            gi_allow_edge_selection = ModernIcons.get(
+                    ModernIcons.ALLOW_EDGE_SELECTION, 22);
+            gi_show_connection_value = ModernIcons.get(
+                    ModernIcons.SHOW_CONNECTION_VALUE, 22);
+            gir_edge_color = ModernIcons.get(ModernIcons.EDGE_COLOR, 22, true);
+            gir_view_names = ModernIcons.get(ModernIcons.VIEW_NAMES, 22, true);
+            gir_names_color = ModernIcons.get(ModernIcons.NAMES_COLOR, 22,
+                    true);
+            gir_loyalty = ModernIcons.get(ModernIcons.LOYALTY, 22, true);
+            gir_image_width = ModernIcons.get(ModernIcons.IMAGE_WIDTH, 22,
+                    true);
+            gir_select_next = ModernIcons.get(ModernIcons.SELECT_NEXT, 22,
+                    true);
+            gir_export_image = ModernIcons.get(ModernIcons.EXPORT_IMAGE, 22,
+                    true);
+            gir_insert_in_output = ModernIcons.get(
+                    ModernIcons.INSERT_IN_OUTPUT, 22, true);
+            gir_allow_edge_selection = ModernIcons.get(
+                    ModernIcons.ALLOW_EDGE_SELECTION, 22, true);
+            gir_show_connection_value = ModernIcons.get(
+                    ModernIcons.SHOW_CONNECTION_VALUE, 22, true);
+            }
+
         gtool_edge_color = new JButton(gi_edge_color);
         gtool_view_names = new JButton(gi_view_names);
         gtool_names_color = new JButton(gi_names_color);
         gtool_loyalty = new JButton(gi_loyalty);
         gtool_image_width = new JButton(gi_image_width);
-        gtool_circular_layout = new JButton(Environment
-                .getButtonImageIcon("CircularLayout.gif"));
-        gtool_random_layout = new JButton(Environment
-                .getButtonImageIcon("RandomLayout.gif"));
+        gtool_circular_layout = new JButton(MainFrame
+                .isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("CircularLayout.gif")
+                : ModernIcons.get(ModernIcons.CIRCULAR_LAYOUT, 22));
+        gtool_random_layout = new JButton(MainFrame
+                .isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("RandomLayout.gif")
+                : ModernIcons.get(ModernIcons.RANDOM_LAYOUT, 22));
         gtool_select_next = new JButton(gi_select_next);
         gtool_export_image = new JButton(gi_export_image);
         gtool_insert_in_output = new JButton(gi_insert_in_output);
         gtool_allow_edge_selection = new JButton(gi_allow_edge_selection);
         gtool_show_connection_value = new JButton(gi_show_connection_value);
-        gtool_add_nodes = new JButton(Environment
-                .getButtonImageIcon("AddNodes.gif"));
-        gtool_delete_nodes = new JButton(Environment
-                .getButtonImageIcon("DeleteNodes.gif"));
+        gtool_add_nodes = new JButton(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("AddNodes.gif")
+                : ModernIcons.get(ModernIcons.ADD_NODE, 22));
+        gtool_delete_nodes = new JButton(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("DeleteNodes.gif")
+                : ModernIcons.get(ModernIcons.DELETE_NODE, 22));
 
         JLabel glabel_separator = new JLabel(Environment
                 .getButtonImageIcon("Separation.gif"));
@@ -3948,19 +3990,26 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_names_color.setRolloverIcon(gir_names_color);
         gtool_loyalty.setRolloverIcon(gir_loyalty);
         gtool_image_width.setRolloverIcon(gir_image_width);
-        gtool_circular_layout.setRolloverIcon(Environment
-                .getButtonImageIcon("rCircularLayout.gif"));
-        gtool_random_layout.setRolloverIcon(Environment
-                .getButtonImageIcon("rRandomLayout.gif"));
+        gtool_circular_layout.setRolloverIcon(
+                MainFrame.isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("rCircularLayout.gif")
+                : ModernIcons.get(ModernIcons.CIRCULAR_LAYOUT, 22, true));
+        gtool_random_layout.setRolloverIcon(MainFrame
+                .isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("rRandomLayout.gif")
+                : ModernIcons.get(ModernIcons.RANDOM_LAYOUT, 22, true));
         gtool_select_next.setRolloverIcon(gir_select_next);
         gtool_export_image.setRolloverIcon(gir_export_image);
         gtool_insert_in_output.setRolloverIcon(gir_insert_in_output);
         gtool_allow_edge_selection.setRolloverIcon(gir_allow_edge_selection);
         gtool_show_connection_value.setRolloverIcon(gir_show_connection_value);
-        gtool_add_nodes.setRolloverIcon(Environment
-                .getButtonImageIcon("rAddNodes.gif"));
-        gtool_delete_nodes.setRolloverIcon(Environment
-                .getButtonImageIcon("rDeleteNodes.gif"));
+        gtool_add_nodes.setRolloverIcon(MainFrame.isClassicToolbarIcons()
+                ? Environment.getButtonImageIcon("rAddNodes.gif")
+                : ModernIcons.get(ModernIcons.ADD_NODE, 22, true));
+        gtool_delete_nodes.setRolloverIcon(MainFrame
+                .isClassicToolbarIcons() ? Environment
+                        .getButtonImageIcon("rDeleteNodes.gif")
+                : ModernIcons.get(ModernIcons.DELETE_NODE, 22, true));
 
         gtool_edge_color.setBorder(null);
         gtool_view_names.setBorder(null);

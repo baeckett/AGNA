@@ -3579,6 +3579,20 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
         }
 
+    // 2.1.3: easy revert - the classic GIF icons stay available behind
+    // this preference ("Classic Toolbar Icons" in the settings file)
+    private static boolean classic_toolbar_icons = false;
+
+    public static boolean isClassicToolbarIcons()
+        {
+        return classic_toolbar_icons;
+        }
+
+    public static void setClassicToolbarIcons(boolean tmp_value)
+        {
+        classic_toolbar_icons = tmp_value;
+        }
+
     public static void setNativeLookAndFeel()
         {
         String choice = getLookAndFeel();
@@ -4338,28 +4352,97 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ModernIcons.NEW_FROM_CHAIN, 22);
         ImageIcon i_renumber_nodes = ModernIcons.get(ModernIcons.RENUMBER, 22);
 
-        ImageIcon ir_new_network = i_new_network;
-        ImageIcon ir_open_network = i_open_network;
-        ImageIcon ir_new_from_chain = i_new_from_chain;
-        ir_save_network = i_save_network;
-        ir_network_viewer = i_network_viewer;
-        ImageIcon ir_open_output = i_open_output;
-        ImageIcon ir_clear_output = i_clear_output;
-        ImageIcon ir_save_output = i_save_output;
-        ImageIcon ir_transpose = i_transpose;
-        ImageIcon ir_symmetrize = i_symmetrize;
-        ImageIcon ir_renumber_nodes = i_renumber_nodes;
+        // 2.1.3: with the classic preference, the old GIFs take over the
+        // rest state too (easy revert path)
+        if (MainFrame.classic_toolbar_icons)
+            {
+            i_new_network = Environment.getButtonImageIcon("NewNetwork.gif");
+            i_open_network = Environment.getButtonImageIcon("OpenNetwork.gif");
+            i_save_network = Environment.getButtonImageIcon("SaveNetwork.gif");
+            i_network_viewer = Environment
+                    .getButtonImageIcon("NetworkViewer.gif");
+            i_open_output = Environment.getButtonImageIcon("OpenOutput.gif");
+            i_clear_output = Environment.getButtonImageIcon("ClearOutput.gif");
+            i_save_output = Environment.getButtonImageIcon("SaveOutput.gif");
+            i_transpose = Environment.getButtonImageIcon("Transpose.gif");
+            i_symmetrize = Environment.getButtonImageIcon("Symmetrize.gif");
+            i_new_from_chain = Environment
+                    .getButtonImageIcon("NewFromChain.gif");
+            i_renumber_nodes = Environment
+                    .getButtonImageIcon("RenumberNodes.gif");
+            }
+
+        // 2.1.3: rollover = a clearly more colorful variant; the classic
+        // GIF rollovers are used when the preference is set
+        ImageIcon ir_new_network;
+        ImageIcon ir_open_network;
+        ImageIcon ir_new_from_chain;
+        ImageIcon ir_open_output;
+        ImageIcon ir_clear_output;
+        ImageIcon ir_save_output;
+        ImageIcon ir_transpose;
+        ImageIcon ir_symmetrize;
+        ImageIcon ir_renumber_nodes;
+        if (MainFrame.classic_toolbar_icons)
+            {
+            ir_new_network = Environment
+                    .getButtonImageIcon("rNewNetwork.gif");
+            ir_open_network = Environment
+                    .getButtonImageIcon("rOpenNetwork.gif");
+            ImageIcon ir_new_from_chain_cl = Environment
+                    .getButtonImageIcon("rNewFromChain.gif");
+            ir_new_from_chain = ir_new_from_chain_cl;
+            ir_save_network = Environment
+                    .getButtonImageIcon("rSaveNetwork.gif");
+            ir_network_viewer = Environment
+                    .getButtonImageIcon("rNetworkViewer.gif");
+            ImageIcon ir_open_output_cl = Environment
+                    .getButtonImageIcon("rOpenOutput.gif");
+            ir_open_output = ir_open_output_cl;
+            ImageIcon ir_clear_output_cl = Environment
+                    .getButtonImageIcon("rClearOutput.gif");
+            ir_clear_output = ir_clear_output_cl;
+            ImageIcon ir_save_output_cl = Environment
+                    .getButtonImageIcon("rSaveOutput.gif");
+            ir_save_output = ir_save_output_cl;
+            ImageIcon ir_transpose_cl = Environment
+                    .getButtonImageIcon("rTranspose.gif");
+            ir_transpose = ir_transpose_cl;
+            ImageIcon ir_symmetrize_cl = Environment
+                    .getButtonImageIcon("rSymmetrize.gif");
+            ir_symmetrize = ir_symmetrize_cl;
+            ImageIcon ir_renumber_nodes_cl = Environment
+                    .getButtonImageIcon("rRenumberNodes.gif");
+            ir_renumber_nodes = ir_renumber_nodes_cl;
+            } else
+            {
+            ir_new_network = ModernIcons.get(ModernIcons.NEW_NETWORK, 22,
+                    true);
+            ir_open_network = ModernIcons.get(ModernIcons.OPEN_NETWORK, 22,
+                    true);
+            ir_new_from_chain = ModernIcons.get(ModernIcons.NEW_FROM_CHAIN,
+                    22, true);
+            ir_save_network = ModernIcons.get(ModernIcons.SAVE_NETWORK, 22,
+                    true);
+            ir_network_viewer = ModernIcons.get(ModernIcons.VIEWER, 22, true);
+            ir_open_output = ModernIcons.get(ModernIcons.OPEN_OUTPUT, 22,
+                    true);
+            ir_clear_output = ModernIcons.get(ModernIcons.CLEAR_OUTPUT, 22,
+                    true);
+            ir_save_output = ModernIcons.get(ModernIcons.SAVE_OUTPUT, 22,
+                    true);
+            ir_transpose = ModernIcons.get(ModernIcons.TRANSPOSE, 22, true);
+            ir_symmetrize = ModernIcons.get(ModernIcons.SYMMETRIZE, 22, true);
+            ir_renumber_nodes = ModernIcons.get(ModernIcons.RENUMBER, 22,
+                    true);
+            }
 
         tool_new_network = new JButton(i_new_network);
-        tool_open_network = new JButton(Environment
-                .getButtonImageIcon("OpenNetwork.gif"));
+        tool_open_network = new JButton(i_open_network);
         tool_new_from_chain = new JButton(i_new_from_chain);
-        tool_save_network = new JButton(Environment
-                .getButtonImageIcon("SaveNetwork.gif"));
-        tool_viewer = new JButton(Environment
-                .getButtonImageIcon("NetworkViewer.gif"));
-        tool_open_output = new JButton(Environment
-                .getButtonImageIcon("OpenOutput.gif"));
+        tool_save_network = new JButton(i_save_network);
+        tool_viewer = new JButton(i_network_viewer);
+        tool_open_output = new JButton(i_open_output);
         tool_clear_output = new JButton(i_clear_output);
         tool_save_output = new JButton(i_save_output);
         tool_transpose = new JButton(i_transpose);

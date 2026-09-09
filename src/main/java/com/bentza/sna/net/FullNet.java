@@ -324,6 +324,9 @@ import javax.swing.JTextPane;
 
         if (MainFrame.getDefaultNodeFaceSource() != null
                 || !(MainFrame.getDefaultNodeFaceSource()).equals("-"))
+            filestr.append("Classic Toolbar Icons\t"
+                    + (MainFrame.isClassicToolbarIcons() ? "yes" : "no")
+                    + lb);
             filestr.append("Look And Feel\t"
                     + MainFrame.getLookAndFeel() + lb);
             filestr.append("Pajek Vectors Enabled\t"
@@ -1007,6 +1010,11 @@ import javax.swing.JTextPane;
         tmp_val = parseFindNextWord(str, "Working Directory");
         if (tmp_val != null && !tmp_val.equals("-"))
             MainFrame.setWorkingDirectory(tmp_val);
+        tmp_val = parseFindNextWord(str, "Classic Toolbar Icons");
+        if (tmp_val != null)
+            {
+            MainFrame.setClassicToolbarIcons(tmp_val.equals("yes"));
+            }
         tmp_val = parseFindNextWord(str, "Look And Feel");
         if (tmp_val != null)
             {
