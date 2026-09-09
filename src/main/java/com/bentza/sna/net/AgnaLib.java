@@ -1077,6 +1077,14 @@ import java.util.Vector;
 
     public String outFareness(Network outsrc)
         {
+        // 2.1.3: refuse disconnected networks (0 = no path)
+        if (!isConnected(outsrc))
+            {
+            return it
+                    + "WARNING: the network is disconnected; fareness cannot be computed\n"
+                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            }
+
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outarray =  fareness(outsrc);
@@ -1199,209 +1207,92 @@ import java.util.Vector;
 
     // returns a matrix whose elements represent the number
     // of geodesics from i to j
-    private float[][] multipleGeodesics(Network src)
-        {
-        // nu-i gata!
-        int size = src.getSize();
-        int i, j, codarc; // codarc = length of a geodesic path
-        i = 0;
-        j = 0;
-        codarc = 0;
-        int[][] geomat = geodesics(src); // matrix of geodesics
-        float[][] srcmat = src.getMatrix();// matrix of src
-        float[][] powermat = new float[size][size]; // src successively
-                                                    // multiplied by itself
-        float[][] athens = new float[size][size]; // athens[i][j] = number of
-                                                    // geodesics between i and j
-        // ie, the matrix of multiple geodesics; to be returned
-        for (i = 0; i < size; i++)
-            {
-            for (j = 0; j < size; j++)
-                {
-                athens[i][j] = 0;
-                }
-            }
-        // initializations end here
-        powermat = srcmat; // first step: power = 1
-        for (codarc = 1; codarc <= size; codarc++)
-            {
-            for (i = 0; i < size; i++)
-                {
-                for (j = 0; j < size; j++)
-                    {
-                    if (geomat[i][j] == codarc)
-                        {
-                        athens[i][j] = powermat[i][j];
-                        }
-                    }
-                }
-            powermat = multiplyMatrices(powermat, srcmat); // next step
-            }
-        geomat = null;
-        srcmat = null;
-        powermat = null;
-        
-        return athens;
-        }
+
 
     // betweenness of node k:
     // sum of the ratios of the number of geodesic paths between (any pair) i
     // and j
     // involving node k to the number of all geodesic paths between i and j.
-    private float[] betweenness(Network src)
+    // 2.1.3: Brandes' algorithm (O(n*m)) replaces the exhaustive
+    // shortest-path enumeration; values are identical raw (unnormalized)
+    // directed Freeman betweenness.
+    float[] betweenness(Network src)
         {
-        int n = src.getSize(); // size of network/matrix
-        int init = 0;
-        int end = 0;
-        int k = 0;
-        int int_tmp = 0;
-        int[][][] athens = new int[n][n][n];
-        int[][] mult_geom = new int[n][n]; // multiple geodesics (no. of
-                                            // geopaths between i and j)
-        Vector siruri_actuale, siruri_noi;
-        int nr_siruri, ind;
-        final boolean[][] mat = src.getBooleanMatrix(); // network's boolean
-                                                        // matrix
-        IntList tmpstr; // lista de lucru
-        IntList drum;
-        IntListElement cursor;
-        boolean gasit;
+        int n = src.getSize();
+        boolean[][] mat = src.getBooleanMatrix();
+        float[] cb = new float[n];
+        IntList[] pred = new IntList[n];
+        double[] dep = new double[n];
+        IntList stack = new IntList();
+        IntList queue = new IntList();
 
-        // initialization:
-        for (init = 0; init < n; init++)
+        for (int s = 0; s < n; s++)
             {
-            for (k = 0; k < n; k++)
+            int[] sigma = new int[n];
+            int[] dist = new int[n];
+            for (int v = 0; v < n; v++)
                 {
-                mult_geom[init][k] = 0;
-                for (end = 0; end < n; end++)
-                    athens[init][k][end] = 0;
+                pred[v] = new IntList();
+                dist[v] = -1;
+                }
+            sigma[s] = 1;
+            dist[s] = 0;
+            queue.deleteAll();
+            stack.deleteAll();
+            queue.appendValue(s);
+
+            int q = 0;
+            while (q < queue.getSize())
+                {
+                int v = queue.getElementAt(q++).getValue();
+                stack.appendValue(v);
+                for (int w = 0; w < n; w++)
+                    {
+                    if (!mat[v][w])
+                        {
+                        continue;
+                        }
+                    if (dist[w] < 0)
+                        {
+                        dist[w] = dist[v] + 1;
+                        queue.appendValue(w);
+                        }
+                    if (dist[w] == dist[v] + 1)
+                        {
+                        sigma[w] += sigma[v];
+                        pred[w].appendValue(v);
+                        }
+                    }
+                }
+
+            for (int v = 0; v < n; v++)
+                {
+                dep[v] = 0;
+                }
+            while (stack.getSize() > 1)
+                {
+                int w = stack.getLastElement().getValue();
+                IntListElement pre = pred[w].getFirstElement();
+                while (pre != null)
+                    {
+                    int v = pre.getValue();
+                    dep[v] += ((double) sigma[v] / (double) sigma[w])
+                            * (1.0 + dep[w]);
+                    pre = pre.getNext();
+                    }
+                stack.deleteElementAt(stack.getSize() - 1);
+                }
+            for (int v = 0; v < n; v++)
+                {
+                if (v != s)
+                    {
+                    cb[v] += (float) dep[v];
+                    }
                 }
             }
-
-        for (init = 0; init < n; init++)
-            {
-            if (src.hasNoEmission(init))
-                continue;
-            for (end = 0; end < n; end++)
-                {
-                if (end == init)
-                    continue;
-                if (src.hasNoReception(end))
-                    {
-                    continue;
-                    }
-                siruri_actuale = new Vector(1, 1); // contains only one element
-                siruri_noi = new Vector(1, 1);
-                siruri_actuale.removeAllElements();
-                siruri_noi.removeAllElements();
-
-                // initialization:
-                nr_siruri = 1; // number of elements in siruri_acuale
-                ind = 0;
-
-                tmpstr = new IntList();
-                tmpstr.appendValue(init);
-                siruri_actuale.addElement(tmpstr);
-                gasit = false;
-
-                while (gasit == false)
-                    {
-                    for (int i = 0; i < siruri_actuale.size(); i++)
-                        {
-                        tmpstr = (IntList) siruri_actuale.elementAt(i);
-                        ind = tmpstr.getLastElement().getValue();
-                        for (k = 0; k < n; k++)
-                            {
-                            if (mat[ind][k])
-                                {
-                                if (tmpstr.getIndexOf(k) < 0)
-                                    {
-                                    drum = null;
-                                    drum = tmpstr.getClone();
-                                    drum.appendValue(k);
-                                    // athens[init][k][end]++;
-                                    siruri_noi.addElement(drum);
-                                    if (k == end) // good path found
-                                        {
-                                        gasit = true;
-                                        mult_geom[init][end]++;
-                                        cursor = drum.getFirstElement();
-                                        while (cursor != null) // so long list
-                                                                // end is not
-                                                                // reached
-                                            {
-                                            int_tmp = cursor.getValue();
-                                            if (int_tmp != init
-                                                    && int_tmp != end)
-                                                athens[init][int_tmp][end]++;
-                                            cursor = cursor.getNext();
-                                            }
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    siruri_actuale.removeAllElements();
-
-                    // echivalentul atribuirii: siruri_actuale = siruri_noi
-                    if (siruri_noi.size() > 0)
-                        {
-                        for (k = 0; k < siruri_noi.size(); k++)
-                            {
-                            siruri_actuale.addElement((IntList) siruri_noi
-                                    .elementAt(k));
-                            }
-                        }
-
-                    siruri_noi.removeAllElements();
-                    if (siruri_actuale.size() == 0)
-                        {
-                        break; // out of while
-                        }
-
-                    }
-                // erasing:
-                siruri_actuale = null;
-                siruri_noi = null;
-                tmpstr = null;
-                drum = null;
-                cursor = null;
-
-                } // end end
-            } // end init
-
-        float[] finarray = new float[n];
-        int tmp = 0;
-        double tmpdouble = 0;
-
-        for (k = 0; k < n; k++)
-            {
-            // finarray[k] = 0f;
-            tmpdouble = 0;
-            for (init = 0; init < n; init++)
-                {
-                if (init != k)
-                    for (end = 0; end < n; end++)
-                        {
-                        if (end != init && end != k)
-                            {
-                            tmp = mult_geom[init][end];
-                            if (tmp != 0)
-                                tmpdouble += (double) athens[init][k][end]
-                                        / (double) tmp;
-                            // finarray[k] += (float)athens[init][k][end] /
-                            // (float)tmp;
-                            }
-                        }
-                }
-            finarray[k] = (float) tmpdouble;
-            }
-        mult_geom = null;
-        athens = null;
-
-        return finarray;
+        return cb;
         }
+
 
     /*
      * public static String outDetailedGeodesics(Network outsrc) { AgnaLib();
@@ -1716,6 +1607,14 @@ import java.util.Vector;
 
     public String outBavelas(Network outsrc)
         {
+        // 2.1.3: refuse disconnected networks (0 = no path)
+        if (!isConnected(outsrc))
+            {
+            return it
+                    + "WARNING: the network is disconnected; bavelas cannot be computed\n"
+                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            }
+
         int size = outsrc.getSize();
         float[] outarray = new float[size];
         if (outarray == null)
@@ -2470,55 +2369,55 @@ import java.util.Vector;
         }
 
     // counts the number of non-directed edges:
-    private float[] nodalDegree(Network src)
+    float[] nodalDegree(Network src)
         {
+        // 2.1.3: symmetric networks keep the classic neighbour count;
+        // asymmetric networks count each direction separately (out + in)
         int size = src.getSize();
-        int i, j;
-        float temp = 0f;
+        boolean symmetric = src.isSymmetric();
         float[] finarray = new float[size];
-        float[][] mat = src.getMatrix();
-        for (i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             {
             finarray[i] = 0f;
-            for (j = 0; j < size; j++)
+            for (int j = 0; j < size; j++)
                 {
-                if (mat[i][j] != mat[j][i])
-                    return null;
-                if (mat[i][j] != 0f)
+                if (src.getValue(i, j) != 0f)
+                    {
                     finarray[i]++;
+                    }
+                if (!symmetric && j != i && src.getValue(j, i) != 0f)
+                    {
+                    finarray[i]++;
+                    }
                 }
             }
-
-        mat = null;
         return finarray;
         }
 
     public float[] weightedNodalDegree(Network src)
         {
+        // 2.1.3: same convention as nodalDegree (per direction when asymmetric)
         int size = src.getSize();
-        int i, j;
-        float temp = 0f;
-        double good_one = 0;
+        boolean symmetric = src.isSymmetric();
         float[] finarray = new float[size];
-        // float[][] mat = src.getMatrix();
-        for (i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             {
-            good_one = 0;
-            for (j = 0; j < size; j++)
+            double good_one = 0;
+            for (int j = 0; j < size; j++)
                 {
-                // temp = mat[i][j];
-                temp = src.getValue(i, j);
-                // if (temp != mat[j][i])
-                if (temp != src.getValue(j, i))
-                    return null;
-                good_one += (double) temp;
+                good_one += (double) src.getValue(i, j);
+                if (!symmetric && j != i)
+                    {
+                    good_one += (double) src.getValue(j, i);
+                    }
                 }
             finarray[i] = (float) good_one;
             }
-
-        // mat = null;
         return finarray;
         }
+
+
+
 
     // makes sense for non-directed networks only!
     public String outNodalDegree(Network outsrc)
