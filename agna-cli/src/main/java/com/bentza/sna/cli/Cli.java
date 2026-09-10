@@ -99,6 +99,18 @@ public final class Cli
                 + "  distance FILE --from A --to B   shortest path between "
                 + "two nodes\n"
                 + "  diff A B [--out FILE.csv]       structural comparison\n"
+                + "network commands (each saves a new file via --out):\n"
+                + "  add-scalar FILE V --out OUT     add V to every cell\n"
+                + "  multiply-scalar FILE V --out OUT\n"
+                + "  transpose FILE --out OUT        transpose the matrix\n"
+                + "  symmetrize FILE [--mode M] --out OUT   M = below|sum|max\n"
+                + "  normalize FILE [--binary|--threshold V] --out OUT\n"
+                + "  square FILE --out OUT           matrix square\n"
+                + "  merge-networks A B [--mode M] --out OUT  M = sum|max|keep\n"
+                + "  remove-outsiders FILE --out OUT\n"
+                + "  delete-nodes FILE N1,N2 --out OUT\n"
+                + "  add-nodes FILE --count N --out OUT\n"
+                + "  renumber FILE --out OUT         name nodes 1..n\n"
                 + "  --help                          this text\n"
                 + "use '-' as IN/OUT for stdin/stdout (stdin defaults to "
                 + "agn text)\n";
@@ -250,6 +262,50 @@ public final class Cli
         if ("diff".equals(cmd))
             {
             return diff(args);
+            }
+        if ("add-scalar".equals(cmd))
+            {
+            return scalarNetOp(args, "add-scalar");
+            }
+        if ("multiply-scalar".equals(cmd))
+            {
+            return scalarNetOp(args, "multiply-scalar");
+            }
+        if ("transpose".equals(cmd))
+            {
+            return simpleNetOp(args, "transpose");
+            }
+        if ("symmetrize".equals(cmd))
+            {
+            return symmetrize(args);
+            }
+        if ("normalize".equals(cmd))
+            {
+            return normalize(args);
+            }
+        if ("square".equals(cmd))
+            {
+            return simpleNetOp(args, "square");
+            }
+        if ("merge-networks".equals(cmd))
+            {
+            return mergeNetworks(args);
+            }
+        if ("remove-outsiders".equals(cmd))
+            {
+            return simpleNetOp(args, "remove-outsiders");
+            }
+        if ("delete-nodes".equals(cmd))
+            {
+            return deleteNodesCommand(args);
+            }
+        if ("add-nodes".equals(cmd))
+            {
+            return addNodes(args);
+            }
+        if ("renumber".equals(cmd))
+            {
+            return simpleNetOp(args, "renumber");
             }
         out.println("unknown command: " + cmd);
         out.print(help());
@@ -437,6 +493,19 @@ public final class Cli
             return 1;
             }
         FullNet full = open(args[1]);
+        if (!applyOp(full, op))
+            {
+            return 1;
+            }
+        write(full, args[2]);
+        out.println("transformed -> " + args[2]);
+        return 0;
+        }
+
+    // shared engine-op runner: transform and the dedicated network
+    // commands (add-scalar, transpose, ...) all go through here
+    private boolean applyOp(FullNet full, String op) throws Exception
+        {
         Network net = full.getNetwork();
         AgnaLib lib = new AgnaLib();
         if ("transpose".equals(op))
@@ -475,7 +544,7 @@ public final class Cli
             if (parts.length < 2)
                 {
                 out.println("merge requires FILE:POLICY");
-                return 1;
+                return false;
                 }
             int policy = "max".equals(parts[1]) ? Network.MERGE_MAX
                     : "keep".equals(parts[1]) ? Network.MERGE_KEEP_FIRST
@@ -495,7 +564,7 @@ public final class Cli
                 {
                 out.println("no such node: " + op.substring(op.indexOf(':')
                         + 1));
-                return 1;
+                return false;
                 }
             for (int j = 0; j < net.getSize(); j++)
                 {
@@ -514,14 +583,22 @@ public final class Cli
                     net.deleteActor(i);
                     }
                 }
+            } else if ("renumber".equals(op))
+            {
+            for (int i = 0; i < net.getSize(); i++)
+                {
+                net.getActor(i).setName(String.valueOf(i + 1));
+                }
+            } else if (op.startsWith("add-nodes:"))
+            {
+            net.addActors(Integer.parseInt(op.substring(op.indexOf(':')
+                    + 1)), false);
             } else
             {
             out.println("unknown op: " + op);
-            return 1;
+            return false;
             }
-        write(full, args[2]);
-        out.println("transformed -> " + args[2]);
-        return 0;
+        return true;
         }
 
     private static void deleteNodes(Network net, String list)
@@ -1187,6 +1264,274 @@ public final class Cli
             return '"' + s.replace("\"", "\"\"") + '"';
             }
         return s;
+        }
+
+    // ---- dedicated network-operation commands (mirror the desktop's
+    // Network menu); every op ends up in the shared applyOp runner ----
+
+    private int simpleNetOp(String[] args, String op) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        stdoutFormat = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || outFile == null)
+            {
+            out.println("usage: agna " + args[0] + " FILE --out OUT "
+                    + "[--out-format F]");
+            return 1;
+            }
+        FullNet full = open(file);
+        if (!applyOp(full, op))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println(args[0] + " -> " + outFile);
+        return 0;
+        }
+
+    private int scalarNetOp(String[] args, String op) throws Exception
+        {
+        if (args.length < 4)
+            {
+            out.println("usage: agna " + args[0] + " FILE VALUE --out OUT");
+            return 1;
+            }
+        stdoutFormat = null;
+        float v;
+        try
+            {
+            v = Float.parseFloat(args[2]);
+            } catch (NumberFormatException e)
+            {
+            out.println("invalid number: " + args[2]);
+            return 1;
+            }
+        String outFile = scanOut(args, 3);
+        if (outFile == null)
+            {
+            out.println("usage: agna " + args[0] + " FILE VALUE --out OUT");
+            return 1;
+            }
+        FullNet full = open(args[1]);
+        if (!applyOp(full, op + ":" + v))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println(args[0] + " -> " + outFile);
+        return 0;
+        }
+
+    private int symmetrize(String[] args) throws Exception
+        {
+        String mode = "below";
+        String file = null;
+        String outFile = null;
+        stdoutFormat = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--mode".equals(args[i]) && i + 1 < args.length)
+                {
+                mode = args[++i];
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || outFile == null)
+            {
+            out.println("usage: agna symmetrize FILE [--mode below|sum|max] "
+                    + "--out OUT");
+            return 1;
+            }
+        FullNet full = open(file);
+        if (!applyOp(full, "symmetrize-" + mode))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println("symmetrize -> " + outFile);
+        return 0;
+        }
+
+    private int normalize(String[] args) throws Exception
+        {
+        String op = "normalize-binary";
+        String file = null;
+        String outFile = null;
+        stdoutFormat = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--threshold".equals(args[i]) && i + 1 < args.length)
+                {
+                op = "normalize-threshold:" + args[++i];
+                } else if ("--binary".equals(args[i]))
+                {
+                op = "normalize-binary";
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || outFile == null)
+            {
+            out.println("usage: agna normalize FILE [--binary | "
+                    + "--threshold V] --out OUT");
+            return 1;
+            }
+        FullNet full = open(file);
+        if (!applyOp(full, op))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println("normalize -> " + outFile);
+        return 0;
+        }
+
+    private int mergeNetworks(String[] args) throws Exception
+        {
+        if (args.length < 3)
+            {
+            out.println("usage: agna merge-networks A B [--mode sum|max|keep] "
+                    + "--out OUT");
+            return 1;
+            }
+        String mode = "sum";
+        String outFile = null;
+        stdoutFormat = null;
+        for (int i = 3; i < args.length; i++)
+            {
+            if ("--mode".equals(args[i]) && i + 1 < args.length)
+                {
+                mode = args[++i];
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                }
+            }
+        if (outFile == null)
+            {
+            out.println("usage: agna merge-networks A B [--mode sum|max|keep] "
+                    + "--out OUT");
+            return 1;
+            }
+        FullNet full = open(args[1]);
+        if (!applyOp(full, "merge:" + args[2] + ":" + mode))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println("merge-networks -> " + outFile);
+        return 0;
+        }
+
+    private int deleteNodesCommand(String[] args) throws Exception
+        {
+        if (args.length < 3)
+            {
+            out.println("usage: agna delete-nodes FILE N1,N2,... --out OUT");
+            return 1;
+            }
+        stdoutFormat = null;
+        String outFile = scanOut(args, 3);
+        if (outFile == null)
+            {
+            out.println("usage: agna delete-nodes FILE N1,N2,... --out OUT");
+            return 1;
+            }
+        FullNet full = open(args[1]);
+        if (!applyOp(full, "delete-nodes:" + args[2]))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println("delete-nodes -> " + outFile);
+        return 0;
+        }
+
+    private int addNodes(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        int count = 0;
+        boolean hasCount = false;
+        stdoutFormat = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--count".equals(args[i]) && i + 1 < args.length)
+                {
+                count = Integer.parseInt(args[++i]);
+                hasCount = true;
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || outFile == null || !hasCount)
+            {
+            out.println("usage: agna add-nodes FILE --count N --out OUT");
+            return 1;
+            }
+        FullNet full = open(file);
+        if (!applyOp(full, "add-nodes:" + count))
+            {
+            return 1;
+            }
+        write(full, outFile);
+        out.println("add-nodes -> " + outFile);
+        return 0;
+        }
+
+    private String scanOut(String[] args, int from)
+        {
+        for (int i = from; i < args.length; i++)
+            {
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                return args[i + 1];
+                }
+            if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[i + 1];
+                }
+            }
+        return null;
         }
 
     // compact number formatting: 1.0 -> 1, 0.25 -> 0.25

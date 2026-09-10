@@ -395,4 +395,105 @@ public class CliTest
         assertEquals(1, code);
         assertTrue(buf.toString().contains("unknown metric"), buf.toString());
         }
+
+    @Test
+    public void networkCommandAddScalar() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_scalar", ".agn");
+        out.deleteOnExit();
+        run("add-scalar", "samples/example2.agn", "5", "--out",
+                out.getAbsolutePath());
+        // a former 1 becomes 6; assert via the matrix output
+        String matrix = run("matrix", out.getAbsolutePath());
+        assertTrue(matrix.contains("\t6\t") || matrix.contains("\t6\n")
+                || matrix.contains("6\t"), "1 + 5 = 6 present: " + matrix
+                        .substring(0, Math.min(80, matrix.length())));
+        }
+
+    @Test
+    public void networkCommandSymmetrizeMakesItSymmetric() throws Exception
+        {
+        File rnd = File.createTempFile("agna_cli_sym_in", ".agn");
+        File out = File.createTempFile("agna_cli_sym_out", ".agn");
+        rnd.deleteOnExit();
+        out.deleteOnExit();
+        run("generate", "--nodes", "8", "--type", "random", "--seed", "5",
+                "--out", rnd.getAbsolutePath());
+        run("symmetrize", rnd.getAbsolutePath(), "--mode", "max", "--out",
+                out.getAbsolutePath());
+        String[] rows = run("matrix", out.getAbsolutePath()).split("\n");
+        for (int i = 0; i < 8; i++)
+            {
+            for (int j = 0; j < 8; j++)
+                {
+                double a = Float.parseFloat(rows[i + 1].split("\t")[j + 1]);
+                double b = Float.parseFloat(rows[j + 1].split("\t")[i + 1]);
+                assertTrue(a == b, "symmetric at " + i + "," + j);
+                }
+            }
+        }
+
+    @Test
+    public void networkCommandMergeNetworks() throws Exception
+        {
+        File a = File.createTempFile("agna_cli_mg_a", ".agn");
+        File b = File.createTempFile("agna_cli_mg_b", ".agn");
+        File out = File.createTempFile("agna_cli_mg_out", ".agn");
+        a.deleteOnExit();
+        b.deleteOnExit();
+        out.deleteOnExit();
+        run("generate", "--nodes", "8", "--type", "star", "--out",
+                a.getAbsolutePath());
+        run("generate", "--nodes", "8", "--type", "star", "--out",
+                b.getAbsolutePath());
+        run("merge-networks", a.getAbsolutePath(), b.getAbsolutePath(),
+                "--mode", "sum", "--out", out.getAbsolutePath());
+        String info = run("info", out.getAbsolutePath());
+        // sum policy doubles tie VALUES; the nonzero pattern is unchanged
+        assertTrue(info.contains("nodes:  8"), info);
+        assertTrue(info.contains("edges:  14"), info);
+        assertTrue(run("matrix", out.getAbsolutePath()).contains("\t2\t"),
+                "arcs doubled to 2");
+        }
+
+    @Test
+    public void networkCommandTransposeRoundTrips() throws Exception
+        {
+        File once = File.createTempFile("agna_cli_tr_1", ".agn");
+        File twice = File.createTempFile("agna_cli_tr_2", ".agn");
+        once.deleteOnExit();
+        twice.deleteOnExit();
+        run("transpose", "samples/example2.agn", "--out",
+                once.getAbsolutePath());
+        run("transpose", once.getAbsolutePath(), "--out",
+                twice.getAbsolutePath());
+        assertEquals(run("matrix", "samples/example2.agn"),
+                run("matrix", twice.getAbsolutePath()),
+                "transpose twice = identity");
+        }
+
+    @Test
+    public void networkCommandRenumberAndAddNodes() throws Exception
+        {
+        File star = File.createTempFile("agna_cli_rn", ".agn");
+        File out = File.createTempFile("agna_cli_rn_out", ".agn");
+        star.deleteOnExit();
+        out.deleteOnExit();
+        run("generate", "--nodes", "8", "--type", "star", "--out",
+                star.getAbsolutePath());
+        run("renumber", star.getAbsolutePath(), "--out",
+                out.getAbsolutePath());
+        String[] rows = run("nodes", out.getAbsolutePath()).split("\n");
+        for (int i = 1; i < rows.length; i++)
+            {
+            assertEquals(String.valueOf(i), rows[i].split("\t")[1],
+                    "node names renumbered");
+            }
+        File more = File.createTempFile("agna_cli_addn", ".agn");
+        more.deleteOnExit();
+        run("add-nodes", out.getAbsolutePath(), "--count", "3", "--out",
+                more.getAbsolutePath());
+        assertTrue(parseNodes(run("info", more.getAbsolutePath())) == 11,
+                "three nodes added");
+        }
     }
