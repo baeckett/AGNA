@@ -22,7 +22,7 @@ Command summary:
 | `analyse FILE [--all\|NAME...\|cliques:N] [--out FILE]` | the full analysis battery |
 | `convert IN OUT [--in-format F] [--out-format F]` | format conversion |
 | `transform IN OUT --op OP` | network operations (see below) |
-| `draw IN --out PNG [--layout L] [--size WxH] [--labels]` | headless visualisation |
+| `draw IN --out PNG [--layout L] [--size WxH] [--labels] [--background #rrggbb] [--no-faces] [--edge-values]` | headless visualisation |
 | `generate --nodes N --out FILE [--type ...] [--seed S] [--degree D]` | seeded synthetic networks |
 | `matrix FILE [--format csv\|tsv] [--out FILE]` | raw matrix table |
 | `nodes FILE [--out FILE]` | node table (degrees + coordinates) |
@@ -31,6 +31,10 @@ Command summary:
 | `metrics FILE [METRIC...] [--all] [--format csv\|json] [--out FILE]` | structured metrics (below) |
 | `distance FILE --from A --to B` | shortest path between two nodes |
 | `diff A B [--out FILE.csv]` | structural comparison |
+| `add-scalar FILE V --out OUT` … `renumber FILE --out OUT` | desktop Network-menu commands (see below) |
+| `from-chain FILE --out OUT` | create a network from a chain file |
+| `layout FILE --layout L --out OUT` | apply coordinates without rendering |
+| `set FILE --out OUT [--flag VALUE ...]` | edit viewer attributes |
 | `--help` | this text |
 
 ## Command details
@@ -127,26 +131,44 @@ never modified, so "save as a new network" is inherent to every op.
 | `isolate:N` | remove all ties of one node (it stays) |
 | `merge-nodes:N1,N2,..` | fold the listed nodes into the first: ties summed, the rest removed |
 | `remove-outsiders` | delete every node with no ties |
+| `renumber` | name the nodes 1..n |
+| `add-nodes:N` | append N new nodes |
+| `clone-node:N` | copy a node with its ties (named "Clone of N") |
 
 ```
 $ agna transform in.agn out.agn --op merge-nodes:Alice,Bob
 $ agna transform in.agn - --op remove-outsiders --out-format graphml
+$ agna transform in.agn out.agn --op clone-node:Eve
 ```
 
 ### draw
 
 ```
 agna draw IN --out PNG [--layout L] [--size WxH] [--labels]
+                   [--background #rrggbb] [--no-faces] [--edge-values]
 ```
 
 Renders the network headlessly with the same visual language as the
-desktop viewer (node faces, tie colours and transparency, labels, grid),
+desktop viewer (node faces, tie colours and transparency, grid),
 deterministically. Layouts: `circular` (default), `random`, `spring`,
-`grid`, `concentric`. Default canvas 1200x900; `--size 700x500` sets it;
-`--labels` draws node names.
+`grid`, `concentric`. Default canvas 1200x900 (any `--size WxH` works; a
+rectangular canvas is scaled from the viewer's internal square).
+
+- `--labels` draws node names
+- `--background #rrggbb` sets the canvas colour (also removes the
+  default background picture)
+- `--no-faces` hides node faces
+- `--edge-values` draws the tie values on the edges
+- after rendering, the command prints the layout used and the
+  coordinates it assigned, one row per node (`index name x y`,
+  percent coordinates), ready for scripts to reuse
 
 ```
-$ agna draw in.agn --out net.png --layout spring --labels
+$ agna draw in.agn --out net.png --layout spring --labels --background '#1a2332'
+drew net.png (layout spring, 1200x900)
+index	name	x	y
+0	Alice	42.5	37.2
+...
 ```
 
 ### generate
@@ -261,6 +283,121 @@ $ agna diff a.agn b.agn
 kind,node1,node2,valueA,valueB
 edge-diff,1,2,1.0000,0.0000
 ...
+```
+
+### Network-menu commands
+
+The dedicated network-operation commands mirror the desktop's Network
+menu; each applies an operation and saves a new file via `--out` (the
+input is never modified, so every op is a "save as a new network"). They
+share the exact op semantics with `transform`.
+
+```
+agna add-scalar FILE V --out OUT        add V to every cell
+agna multiply-scalar FILE V --out OUT   multiply every cell by V
+agna transpose FILE --out OUT           transpose the sociomatrix
+agna symmetrize FILE [--mode below|sum|max] --out OUT
+agna normalize FILE [--binary | --threshold V] --out OUT
+agna square FILE --out OUT              matrix square (walks of length 2)
+agna merge-networks A B [--mode sum|max|keep] --out OUT
+agna remove-outsiders FILE --out OUT    delete every node with no ties
+agna delete-nodes FILE N1,N2,... --out OUT
+agna add-nodes FILE --count N --out OUT
+agna renumber FILE --out OUT            name the nodes 1..n
+```
+
+Examples:
+
+```
+$ agna symmetrize net.agn --mode max --out net-sym.agn
+$ agna merge-networks a.agn b.agn --mode sum --out merged.agn
+$ agna add-scalar net.agn 5 --out net5.agn
+```
+
+### from-chain
+
+```
+agna from-chain FILE --out OUT
+```
+
+Creates a network from a chain file (whitespace-separated sequences;
+arcs follow the transitions between consecutive tokens), using the
+engine's own `readNetworkFromChain` — the routine behind the desktop's
+"Create a network from a chain file".
+
+```
+$ agna from-chain sequences.txt --out chain.agn
+created network from chain -> chain.agn
+```
+
+### layout
+
+```
+agna layout FILE --layout L --out OUT [--size WxH]
+```
+
+Applies a layout to an existing network and saves the **new
+coordinates** to a new file — no image is rendered. Layouts:
+`circular`, `random`, `spring`, `grid`, `concentric`, `star`. The
+coordinates are stored in the agn file, so the laid-out network opens in
+the desktop viewer exactly as positioned. Same seed, same layout —
+output is byte-deterministic.
+
+```
+$ agna layout net.agn --layout spring --out laid.agn
+layout (spring) -> laid.agn
+$ agna draw laid.agn --out laid.png --layout spring   # identical picture
+```
+
+### set
+
+```
+agna set FILE --out OUT [--flag VALUE ...]
+```
+
+Edits the Network Viewer's Image and Edge menu properties of an existing
+network file and saves a new file. The attributes are persisted **in the
+agn file itself**, so opening the result in the desktop restores them.
+Unset properties keep the file's current values.
+
+```
+--name T                        network name
+--names-visible on|off          node names shown
+--names-x N  --names-y N        name offset
+--title-visible on|off          title shown
+--title-x N  --title-y N        title offset
+--grid-visible on|off           grid shown
+--grid-step N                   grid spacing (viewer units)
+--separator N                   edge separator step
+--grid-transparency N           0..255
+--max-transparency N            0..255 (Most Faded Edge)
+--edge-value-visible on|off     tie values shown
+--edge-value-position N
+--edge-value-color #rrggbb
+--edge-color #rrggbb            edge/arrow colour
+--names-color #rrggbb
+--grid-color #rrggbb
+--title-color #rrggbb
+--background-color #rrggbb
+--background-image FILE         background picture
+--background-image-x N  --background-image-y N
+--background-image-width N  --background-image-height N
+--faces-visible on|off
+--allow-edge-selection on|off
+--color-fidelity on|off
+--snap-to-grid on|off
+--default-face FILE             apply one face to every node
+```
+
+Colours are `#rrggbb` (quote them in the shell — an unquoted `#` starts
+a comment); booleans accept `on`/`off`. Running `agna set` with no flags
+prints this list.
+
+```
+$ agna set net.agn --out styled.agn \
+    --names-visible on --background-color '#201a30' \
+    --edge-color '#e0b0ff' --max-transparency 120
+attributes set -> styled.agn
 ```
 
 ## The `metrics` command
