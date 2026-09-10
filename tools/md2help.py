@@ -30,6 +30,8 @@ def inline(text):
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
     text = re.sub(r"\*(.+?)\*", r"<i>\1</i>", text)
     text = re.sub(r"`([^`]+?)`", r"<code>\1</code>", text)
+    text = re.sub(r"\[([^\]]+?)\]\(([a-z0-9]+\.htm(?:#[a-z0-9]+)?)\)",
+            r'<a href="\2">\1</a>', text)
     return text
 
 
@@ -104,7 +106,9 @@ def main():
             if not line.strip():
                 continue
             if line.startswith("### "):
-                body.append("<h2>%s</h2>" % html.escape(line[4:].strip()))
+                sub = line[4:].strip()
+                body.append('<h2 id="%s">%s</h2>' % (slug(sub),
+                        html.escape(sub)))
                 continue
             body.append(render_block([line]))
         (OUT / (slug(title) + ".htm")).write_text(PAGE_THEME.format(

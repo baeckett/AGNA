@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * 2.1.3: the in-app help pages must be generated and consistent - every
- * TOC link resolves to a real page, and the documentation of the new
- * features (formats, merge, session log) is present.
+ * TOC link resolves to a real page, the menu reference links to the
+ * methodology/operations pages, and the new features are documented.
  */
 public class HelpContentTest
     {
@@ -49,19 +49,47 @@ public class HelpContentTest
         }
 
     @Test
+    public void menuReferenceLinksResolveAndReachTheMath() throws Exception
+        {
+        File dir = helpDir();
+        String menu = read(new File(dir, "3menureference.htm"));
+        Pattern link = Pattern.compile("href=\"([a-z0-9]+\\.htm(?:#[a-z0-9]+)?)\"");
+        Matcher m = link.matcher(menu);
+        int links = 0;
+        int to_math = 0;
+        while (m.find())
+            {
+            String href = m.group(1);
+            links++;
+            String page = href.split("#")[0];
+            assertTrue(new File(dir, page).exists(),
+                    "menu link target missing: " + href);
+            if (href.startsWith("4methodology") || href.startsWith("5matrix"))
+                {
+                to_math++;
+                }
+            }
+        assertTrue(links >= 15,
+                "the menu reference should be link-rich, found " + links);
+        assertTrue(to_math >= 15,
+                "most menu items should explain their math, found " + to_math);
+        }
+
+    @Test
     public void newFeaturesAreDocumented() throws Exception
         {
-        String formats = read(new File(helpDir(), "5fileformats.htm"));
+        String formats = read(new File(helpDir(), "6fileformats.htm"));
         assertTrue(formats.contains("GraphML"));
         assertTrue(formats.contains("GML"));
         assertTrue(formats.contains("GraphSON"));
 
-        String ops = read(new File(helpDir(), "4matrixoperationsformulas.htm"));
+        String ops = read(new File(helpDir(),
+                "5matrixoperationsformulas.htm"));
         assertTrue(ops.contains("Merge Network"));
         assertTrue(ops.contains("Symmetrize"));
         assertTrue(ops.contains("√"));
 
-        String news = read(new File(helpDir(), "6newin213.htm"));
+        String news = read(new File(helpDir(), "7newin213.htm"));
         assertTrue(news.contains("Session log"));
         }
     }
