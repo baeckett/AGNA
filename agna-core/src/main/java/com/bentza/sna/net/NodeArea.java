@@ -434,6 +434,15 @@ public class NodeArea extends JButton implements MouseListener,
         repaint();
         }
 
+    public void setSpringLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.SPRING, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
     public String getTitle()
         {
         return this.title;

@@ -136,7 +136,8 @@ public class NetworkLayoutsTest
     public void layoutsAreDeterministic() throws Exception
         {
         for (int layout : new int[] { NetworkLayouts.RANDOM,
-                NetworkLayouts.GRID, NetworkLayouts.CONCENTRIC })
+                NetworkLayouts.GRID, NetworkLayouts.CONCENTRIC,
+                NetworkLayouts.SPRING })
             {
             Network a = sample();
             Network b = sample();
@@ -150,6 +151,65 @@ public class NetworkLayoutsTest
                                 + "actor " + i);
                 }
             }
+        }
+
+    @Test
+    public void springClustersConnectedActors() throws Exception
+        {
+        // two cliques joined by one bridge: the spring embedder must pull
+        // nodes inside each clique closer than nodes across the bridge
+        Network net = new Network(8);
+        int[][] cliqueA = { { 0, 1 }, { 0, 2 }, { 0, 3 }, { 1, 2 },
+                { 1, 3 }, { 2, 3 } };
+        int[][] cliqueB = { { 4, 5 }, { 4, 6 }, { 4, 7 }, { 5, 6 },
+                { 5, 7 }, { 6, 7 } };
+        for (int[] e : cliqueA)
+            {
+            net.setValue(1f, e[0], e[1]);
+            net.setValue(1f, e[1], e[0]);
+            }
+        for (int[] e : cliqueB)
+            {
+            net.setValue(1f, e[0], e[1]);
+            net.setValue(1f, e[1], e[0]);
+            }
+        net.setValue(1f, 3, 4); // the single bridge
+        net.setValue(1f, 4, 3);
+        for (int i = 0; i < 8; i++)
+            {
+            net.getActor(i).createCoordinates();
+            }
+
+        NetworkLayouts.apply(net, NetworkLayouts.SPRING, 800, 600);
+        double intra = 0.0;
+        int intraCount = 0;
+        double inter = 0.0;
+        int interCount = 0;
+        for (int i = 0; i < 8; i++)
+            {
+            for (int j = i + 1; j < 8; j++)
+                {
+                double d = Math.hypot(px(net.getActor(i), 800)
+                        - px(net.getActor(j), 800),
+                        py(net.getActor(i), 600)
+                                - py(net.getActor(j), 600));
+                boolean sameClique = (i < 4 && j < 4) || (i >= 4 && j >= 4);
+                if (sameClique)
+                    {
+                    intra += d;
+                    intraCount++;
+                    } else
+                    {
+                    inter += d;
+                    interCount++;
+                    }
+                }
+            }
+        double meanIntra = intra / intraCount;
+        double meanInter = inter / interCount;
+        assertTrue(meanIntra < meanInter,
+                "spring separates cliques: intra=" + meanIntra
+                        + " inter=" + meanInter);
         }
 
     private static int degree(Network net, int i)

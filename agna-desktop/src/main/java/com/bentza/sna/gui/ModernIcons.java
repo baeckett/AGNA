@@ -65,8 +65,9 @@ public class ModernIcons
     public static final int EDGE_VALUE = 35;
     public static final int GRID_LAYOUT = 36;
     public static final int CONCENTRIC_LAYOUT = 37;
+    public static final int SPRING_LAYOUT = 38;
 
-    public static final int KIND_COUNT = 38;
+    public static final int KIND_COUNT = 39;
 
     public static Color accent()
         {
@@ -437,6 +438,27 @@ public class ModernIcons
                 float cd = s * 0.16f;
                 g.fill(new Ellipse2D.Float(s * 0.50f - cd / 2,
                         s * 0.50f - cd / 2, cd, cd));
+                break;
+            case SPRING_LAYOUT:
+                g.setColor(line);
+                float[][] sNodes = { { 0.26f, 0.30f }, { 0.74f, 0.28f },
+                        { 0.50f, 0.78f } };
+                for (int e = 0; e < 3; e++)
+                    {
+                    int n0 = e;
+                    int n1 = (e + 1) % 3;
+                    g.drawLine(Math.round(sNodes[n0][0] * s),
+                            Math.round(sNodes[n0][1] * s),
+                            Math.round(sNodes[n1][0] * s),
+                            Math.round(sNodes[n1][1] * s));
+                    }
+                for (int i = 0; i < 3; i++)
+                    {
+                    g.setColor(i == 2 ? accent : line);
+                    float snd = s * 0.20f;
+                    g.fill(new Ellipse2D.Float(sNodes[i][0] * s - snd / 2,
+                            sNodes[i][1] * s - snd / 2, snd, snd));
+                    }
                 break;
             case SELECT_NEXT:
                 g.setColor(line);

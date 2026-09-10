@@ -79,9 +79,9 @@ public class CliTest
         }
 
     @Test
-    public void drawSupportsGridAndConcentric() throws Exception
+    public void drawSupportsEveryNamedLayout() throws Exception
         {
-        for (String layout : new String[] { "grid", "concentric" })
+        for (String layout : new String[] { "grid", "concentric", "spring" })
             {
             File png = File.createTempFile("agna_cli_draw_" + layout,
                     ".png");

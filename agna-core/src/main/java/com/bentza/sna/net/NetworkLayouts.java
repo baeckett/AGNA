@@ -78,6 +78,9 @@ public class NetworkLayouts
             {
             float[] fx = new float[n];
             float[] fy = new float[n];
+            // classic Fruchterman-Reingold cooling: large moves early,
+            // gentle settling later
+            float temp = 1f - (float) iter / 60;
             for (int i = 0; i < n; i++)
                 {
                 for (int j = i + 1; j < n; j++)
@@ -114,8 +117,11 @@ public class NetworkLayouts
                 }
             for (int i = 0; i < n; i++)
                 {
-                px[i] = Math.max(10, Math.min(width - 10, px[i] + fx[i] * 0.2f));
-                py[i] = Math.max(10, Math.min(height - 10, py[i] + fy[i] * 0.2f));
+                float maxDisp = (float) (temp * k);
+                float dx = Math.max(-maxDisp, Math.min(maxDisp, fx[i]));
+                float dy = Math.max(-maxDisp, Math.min(maxDisp, fy[i]));
+                px[i] = Math.max(10, Math.min(width - 10, px[i] + dx));
+                py[i] = Math.max(10, Math.min(height - 10, py[i] + dy));
                 }
             }
         for (int i = 0; i < n; i++)
