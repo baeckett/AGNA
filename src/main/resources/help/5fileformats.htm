@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>5. File formats - Agna Help</title>
+<style>/* Agna help stylesheet (2.1.3) - clean, modern, printable */
+body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+       font-size: 14px; line-height: 1.55; color: #222; background: #fff;
+       max-width: 820px; margin: 24px auto; padding: 0 20px; }
+h1 { font-size: 22px; border-bottom: 2px solid #298C8C; padding-bottom: 6px; }
+h2 { font-size: 17px; margin-top: 28px; color: #123; }
+h3 { font-size: 15px; }
+code, pre { background: #f4f6f6; border-radius: 4px; font-size: 13px; }
+pre { padding: 10px; overflow-x: auto; }
+table { border-collapse: collapse; margin: 12px 0; }
+th, td { border: 1px solid #c8d2d2; padding: 6px 10px; text-align: left; }
+th { background: #e8f0f0; }
+a { color: #1b6a6a; }
+blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
+             color: #345; background: #f7fbfb; }
+.warning { border-left: 4px solid #c0392b; background: #fdf3f2; padding: 6px 12px; }
+</style></head>
+<body>
+<h1>5. File formats</h1>
+<p>Agna saves and opens the following formats (File ▸ Save Network As... /</p>
+<p>Open Network):</p>
+<table>
+<tr><th>Format</th><th>Extension</th><th>Use</th></tr>
+</table>
+<table>
+<tr><th>---</th><th>---</th><th>---</th></tr>
+</table>
+<table>
+<tr><th>Agna</th><th><code>.agn</code></th><th>native format, preserves faces, coordinates, viewer settings</th></tr>
+</table>
+<table>
+<tr><th>Plain text</th><th><code>.txt</code>, <code>.csv</code></th><th>tab- or comma-separated matrices; CSV quotes node names</th></tr>
+</table>
+<table>
+<tr><th>Pajek</th><th><code>.net</code></th><th>the classic SNA format (Gephi-friendly export)</th></tr>
+</table>
+<table>
+<tr><th>Excel</th><th><code>.xls</code>, <code>.xlsx</code></th><th>JExcelAPI (<code>.xls</code>) and the built-in <code>.xlsx</code> reader</th></tr>
+</table>
+<table>
+<tr><th>GraphML</th><th><code>.graphml</code></th><th>XML graph format of Gephi, NetworkX, igraph, Cytoscape</th></tr>
+</table>
+<table>
+<tr><th>GML</th><th><code>.gml</code></th><th>the classic text format of igraph / NetworkX</th></tr>
+</table>
+<table>
+<tr><th>GraphSON</th><th><code>.json</code></th><th>JSON graph format (TinkerPop family, Gephi, Cytoscape)</th></tr>
+</table>
+<p>Interoperability notes:</p>
+<ul><li><b>GraphML / GML / GraphSON</b> export the matrix as a <i>directed</i> graph:</li></ul>
+<p>  nodes in their file order with their names, every non-zero tie as an</p>
+<p>  edge carrying its value as weight. On import, missing weights default</p>
+<p>  to 1, self-loops are ignored (the diagonal stays zero), and node order</p>
+<p>  defines the matrix indexing.</p>
+<ul><li><b>GraphSON</b> import accepts both the <code>{&quot;graph&quot;: {vertices, edges}}</code></li></ul>
+<p>  wrapper and a bare <code>{vertices, edges}</code> document; weights may use the</p>
+<p>  key <code>value</code> or <code>weight</code>.</p>
+<ul><li><b>Excel</b>: Numbers files (.xlsx) open directly; saving still writes</li></ul>
+<p>  the legacy <code>.xls</code>, which Excel and Numbers both read.</p>
+<ul><li><b>Pajek</b>: the export omits comment lines so Gephi imports cleanly;</li></ul>
+<p>  optional per-node *Vector blocks are controlled by a checkbox (remembered</p>
+<p>  in the settings).</p>
+<ul><li>Legacy files store face paths with platform-specific separators; Agna</li></ul>
+<p>  2.1.3 resolves them transparently, and any node without a stored face</p>
+<p>  falls back to the red-bullet default.</p>
+</body></html>

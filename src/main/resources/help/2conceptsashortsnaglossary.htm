@@ -19,19 +19,17 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 </style></head>
 <body>
 <h1>2. Concepts — a short SNA glossary</h1>
-<ul><li><i>Sociomatrix</i>: adjacency matrix; row i, column j = value of the direct</li></ul>
-<p>  tie from i to j. Agna networks are directed by default.</p>
-<ul><li><i>Degree measures</i>: Nodal Degree (neighbours of a node, symmetric</li></ul>
-<p>  networks), Emission/Reception Degree (outgoing/incoming tie counts),</p>
-<p>  weighted variants (sums of tie values). Indegree/Outdegree are BINARY</p>
-<p>  counts (only presence matters): changing a tie&#x27;s value does not move</p>
-<p>  them - add/remove ties or use the weighted variants instead.</p>
-<ul><li><i>Centrality</i>: Betweenness (Freeman), Closeness (Freeman; inverse of</li></ul>
-<p>  the distance sum), Fareness, Eccentricity (maximum distance),</p>
-<p>  Bavelas-Leavitt index.</p>
-<ul><li><i>Prestige</i>: proximity prestige (Lin 1976) — see Methodology.</li></ul>
-<ul><li><i>Cliques</i>: maximal n-cliques (Luce&#x27;s n-clique: maximal node sets whose</li></ul>
-<p>  mutual geodesic distance is at most the chosen diameter).</p>
-<ul><li><i>Status/Determination</i>: Agna-specific degree-based coefficients —</li></ul>
-<p>  see Methodology.</p>
+<ul><li><b>Sociomatrix</b>: a square table whose cell (i, j) holds the value of the</li></ul>
+<p>  tie from actor i to actor j. Row i is actor i&#x27;s <i>emission</i> (outgoing)</p>
+<p>  profile, column j is actor j&#x27;s <i>reception</i> (incoming) profile.</p>
+<ul><li><b>Directed vs undirected</b>: a directed tie (arc) goes one way; an</li></ul>
+<p>  undirected tie (edge) goes both ways. Agna stores arcs; a network whose</p>
+<p>  matrix is symmetric is read as possibly undirected.</p>
+<ul><li><b>Degree</b>: for directed networks, outdegree = number of outgoing ties,</li></ul>
+<p>  indegree = number of incoming ties; nodal degree = the pair.</p>
+<ul><li><b>Geodesic</b>: the shortest path between two actors, measured in hops.</li></ul>
+<ul><li><b>Outsider / isolate</b>: an actor with an all-zero row <i>and</i> an all-zero</li></ul>
+<p>  column (neither emits nor receives).</p>
+<ul><li><b>Walk vs path</b>: a walk may repeat actors; a path may not. Matrices</li></ul>
+<p>  square to count walks of length 2.</p>
 </body></html>

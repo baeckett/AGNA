@@ -19,24 +19,37 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 </style></head>
 <body>
 <h1>3. Methodology — what exactly is computed (read before publishing results)</h1>
-<ul><li><b>Density</b> uses the directed convention: arcs / (n * (n-1)). For a</li></ul>
-<p>  symmetric matrix the undirected reading (edges / (n * (n-1)/2)) yields</p>
+<ul><li><b>Density</b> uses the directed convention: arcs / (n · (n − 1)). For a</li></ul>
+<p>  symmetric matrix the undirected reading (edges / (n · (n − 1)/2)) yields</p>
 <p>  the same value; Agna prints both labels explicitly, and warns when the</p>
 <p>  matrix is asymmetric so no undirected density exists.</p>
+<ul><li><b>Nodal degree</b> per direction: outdegree d⁺(i) = Σⱼ A[i][j],</li></ul>
+<p>  indegree d⁻(j) = Σᵢ A[i][j].</p>
 <ul><li><b>Geodesics matrix</b>: entries are shortest-path hop counts. A 0 entry</li></ul>
 <p>  means &quot;no path&quot; (and the diagonal). **Eccentricity, Closeness and</p>
 <p>  Betweenness refuse to compute on disconnected networks** and print a</p>
 <p>  warning instead of silently treating unreachable pairs as distance 0.</p>
+<ul><li><b>Eccentricity</b> e(i) = max over reachable j of d(i, j); <b>diameter</b> =</li></ul>
+<p>  max over i of e(i) (largest geodesic).</p>
 <ul><li><b>Betweenness</b> is raw (unnormalised) Freeman betweenness, summed over</li></ul>
-<p>  ordered pairs.</p>
-<ul><li><b>Prestige</b> = proximity prestige: (share of nodes that can reach i)</li></ul>
-<p>  x (average closeness of those nodes); 0 when nobody can reach i.</p>
-<ul><li><b>Cohesion</b> = density of mutual (two-way) dyads.</li></ul>
-<ul><li><b>Determination</b> = (in-strength - out-strength) / (n-1);</li></ul>
-<p>  <b>Sociometric Status</b> = (in-strength + out-strength) / (n-1).</p>
+<p>  ordered pairs, computed with Brandes&#x27; algorithm: for each pair (s, t),</p>
+<p>  the share of shortest s–t paths that pass through the actor.</p>
+<ul><li><b>Bavelas-Leavitt / Closeness / Fareness</b> are distance-based measures</li></ul>
+<p>  built on the geodesic matrix; they require a connected network (see</p>
+<p>  above).</p>
+<ul><li><b>Prestige</b> = proximity prestige (Lin 1976): the share of other actors</li></ul>
+<p>  that can reach i, times the average closeness of those actors; 0 when</p>
+<p>  nobody can reach i.</p>
+<ul><li><b>Cohesion</b> = density of mutual (two-way) dyads: the share of ordered</li></ul>
+<p>  pairs with A[i][j] = A[j][i] ≠ 0.</p>
+<ul><li><b>Determination</b> = (in-strength − out-strength) / (n − 1);</li></ul>
+<p>  <b>Sociometric Status</b> = (in-strength + out-strength) / (n − 1).</p>
 <p>  These are Agna&#x27;s own coefficients; verify they match the convention in</p>
 <p>  your field before citing them.</p>
 <ul><li>Analyses that depend on distances assume unweighted (graph) distances;</li></ul>
 <p>  edge <i>values</i> are used by the degree/status/density statistics, not by</p>
 <p>  the path-based measures.</p>
+<ul><li><b>N-Cliques</b> are enumerated with the Bron–Kerbosch (Tomita pivot)</li></ul>
+<p>  algorithm; the search is capped at 1000 reported cliques and the report</p>
+<p>  says so when the cap is reached.</p>
 </body></html>
