@@ -1,6 +1,7 @@
 # docs/ — Manual and help sources
 
 - `manual.md` — single source of the user manual (in-app help + PDF).
+- `cli.md` — command reference for the Agna CLI (including `metrics`).
 - `help-styles.css` — stylesheet for the generated HTML help.
 - `manuals/` — generated PDF/Print output (not committed yet).
 
