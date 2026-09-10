@@ -579,4 +579,31 @@ public class CliTest
                 "ten matrix columns, got " + firstDataRow.split("\t").length);
         assertTrue(matrix.contains("Clone of"), "clone named");
         }
+
+    @Test
+    public void drawRespectsBackgroundAndFlags() throws Exception
+        {
+        File png = File.createTempFile("agna_cli_draw_bg", ".png");
+        png.deleteOnExit();
+        run("draw", "samples/example2.agn", "--out", png.getAbsolutePath(),
+                "--layout", "circular", "--size", "400x300",
+                "--background", "#102030", "--no-faces");
+        java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(png);
+        assertEquals(400, img.getWidth());
+        assertEquals(300, img.getHeight());
+        int corner = img.getRGB(2, 2) & 0xffffff;
+        assertEquals(0x102030, corner, "corner pixel is the background");
+        }
+
+    @Test
+    public void drawPrintsTheUsedCoordinates() throws Exception
+        {
+        File png = File.createTempFile("agna_cli_draw_co", ".png");
+        png.deleteOnExit();
+        String text = run("draw", "samples/example2.agn", "--out",
+                png.getAbsolutePath(), "--layout", "grid");
+        assertTrue(text.contains("index\tname\tx\ty"), text);
+        assertTrue(text.lines().count() == 11, "1 header + 9 coords");
+        assertTrue(text.contains("(layout grid"), text);
+        }
     }

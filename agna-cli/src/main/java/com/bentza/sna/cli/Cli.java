@@ -81,7 +81,11 @@ public final class Cli
                 + "                                  merge-nodes:N1,N2,.. | "
                 + "remove-outsiders | renumber | add-nodes:N | clone-node:N\n"
                 + "  draw IN --out PNG --layout L   L = circular | random | "
-                + "spring | grid | concentric; --size WxH; --labels\n"
+                + "spring | grid | concentric; --size WxH; --labels;\n"
+                + "                                  --background #rrggbb; "
+                + "--no-faces; --edge-values; prints the used layout\n"
+                + "                                  coordinates (index, "
+                + "name, x, y) to stdout\n"
                 + "  generate --nodes N --out FILE  random (--seed S, "
                 + "--degree D) | star | circular\n"
                 + "  matrix FILE [--format csv|tsv] [--out FILE]\n"
@@ -729,6 +733,9 @@ public final class Cli
         int width = 1200;
         int height = 900;
         boolean labels = false;
+        Color background = null;
+        boolean noFaces = false;
+        boolean edgeValues = false;
         for (int i = 1; i < args.length; i++)
             {
             String a = args[i];
@@ -763,9 +770,18 @@ public final class Cli
                     width = Integer.parseInt(wh[0]);
                     height = Integer.parseInt(wh[1]);
                     }
+                } else if ("--background".equals(a) && i + 1 < args.length)
+                {
+                background = colorOf(args[++i]);
                 } else if ("--labels".equals(a))
                 {
                 labels = true;
+                } else if ("--no-faces".equals(a))
+                {
+                noFaces = true;
+                } else if ("--edge-values".equals(a))
+                {
+                edgeValues = true;
                 } else if (input == null)
                 {
                 input = a;
@@ -774,14 +790,56 @@ public final class Cli
         if (input == null || output == null)
             {
             out.println("usage: agna draw IN --out PNG [--layout L] "
-                    + "[--size WxH] [--labels]");
+                    + "[--size WxH] [--labels] [--background #rrggbb] "
+                    + "[--no-faces] [--edge-values]");
             return 1;
             }
         FullNet full = open(input);
+        NetworkRenderer.RenderOptions opts = new NetworkRenderer.RenderOptions();
+        opts.labels = labels;
+        opts.background = background;
+        opts.facesVisible = noFaces ? Boolean.FALSE : null;
+        opts.edgeValues = edgeValues ? Boolean.TRUE : null;
         boolean ok = NetworkRenderer.renderToImage(full, new File(output),
-                width, height, layout, labels);
-        out.println(ok ? "drew " + output : "draw failed: " + output);
-        return ok ? 0 : 1;
+                width, height, layout, opts);
+        if (!ok)
+            {
+            out.println("draw failed: " + output);
+            return 1;
+            }
+        out.println("drew " + output + " (layout " + layoutName(layout)
+                + ", " + width + "x" + height + ")");
+        // the coordinates the render used, for scripts to reuse
+        Network net = full.getNetwork();
+        out.println("index\tname\tx\ty");
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            out.println(i + "\t" + net.getActor(i).getName() + "\t"
+                    + fmt(net.getActor(i).getX()) + "\t"
+                    + fmt(net.getActor(i).getY()));
+            }
+        return 0;
+        }
+
+    private static String layoutName(int layout)
+        {
+        if (layout == NetworkLayouts.RANDOM)
+            {
+            return "random";
+            }
+        if (layout == NetworkLayouts.SPRING)
+            {
+            return "spring";
+            }
+        if (layout == NetworkLayouts.GRID)
+            {
+            return "grid";
+            }
+        if (layout == NetworkLayouts.CONCENTRIC)
+            {
+            return "concentric";
+            }
+        return "circular";
         }
 
     private int generate(String[] args) throws Exception

@@ -292,6 +292,41 @@ public class AppRuntime
         return currentFullNet.get();
         }
 
+    // ---- 2.1.3: headless entry points (CLI renderer) set and restore
+    // the current network themselves; the desktop keeps its own
+    // suppliers registered at startup ----
+    public static java.util.function.Supplier<Network> currentNetworkSupplier()
+        {
+        return currentNetwork;
+        }
+
+    public static java.util.function.Supplier<FullNet> currentFullNetSupplier()
+        {
+        return currentFullNet;
+        }
+
+    public static void setCurrentNetwork(Network net)
+        {
+        currentNetwork = () -> net;
+        }
+
+    public static void setCurrentFullNet(FullNet full)
+        {
+        currentFullNet = () -> full;
+        }
+
+    public static void setCurrentNetworkSupplier(
+            java.util.function.Supplier<Network> supplier)
+        {
+        currentNetwork = supplier;
+        }
+
+    public static void setCurrentFullNetSupplier(
+            java.util.function.Supplier<FullNet> supplier)
+        {
+        currentFullNet = supplier;
+        }
+
     public static void setProgress(int percent)
         {
         progressSink.accept(percent);
