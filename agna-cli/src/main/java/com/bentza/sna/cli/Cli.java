@@ -89,9 +89,13 @@ public final class Cli
                 + "  ego FILE --node NAME --out OUT  extract the 1-hop ego "
                 + "network\n"
                 + "  components FILE                 connected components\n"
-                + "  metrics FILE [--format csv|json] [--out FILE]\n"
-                + "                                  structured metrics "
-                + "(degrees, emission/reception, betweenness, ...)\n"
+                + "  metrics FILE [METRIC...] [--all] [--format csv|json] [--out FILE]\n"
+                + "                                  structured metrics; "
+                + "pick by name (density, diameter, eccentricity,\n"
+                + "                                  closeness, betweenness, "
+                + "indegree, outdegree, total-degree, emission,\n"
+                + "                                  reception, status, "
+                + "determination, geodesics) or --all (default)\n"
                 + "  distance FILE --from A --to B   shortest path between "
                 + "two nodes\n"
                 + "  diff A B [--out FILE.csv]       structural comparison\n"
@@ -982,6 +986,12 @@ public final class Cli
         String file = null;
         String outFile = null;
         String format = "csv";
+        boolean all = false;
+        java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
+        java.util.Set<String> known = java.util.Set.of("density",
+                "diameter", "eccentricity", "closeness", "betweenness",
+                "indegree", "outdegree", "total-degree", "emission",
+                "reception", "status", "determination", "geodesics");
         for (int i = 1; i < args.length; i++)
             {
             String a = args[i];
@@ -991,26 +1001,45 @@ public final class Cli
                 } else if ("--format".equals(a) && i + 1 < args.length)
                 {
                 format = args[++i];
+                } else if ("--all".equals(a))
+                {
+                all = true;
                 } else if (file == null)
                 {
                 file = a;
+                } else if (known.contains(a))
+                {
+                wanted.add(a);
+                } else
+                {
+                out.println("unknown metric: " + a + " (run 'agna --help' "
+                        + "for the metric list)");
+                return 1;
                 }
             }
         if (file == null)
             {
-            out.println("usage: agna metrics FILE [--format csv|json] "
-                    + "[--out FILE]");
+            out.println("usage: agna metrics FILE [METRIC...] [--all] "
+                    + "[--format csv|json] [--out FILE]");
             return 1;
             }
+        if (all || wanted.isEmpty())
+            {
+            wanted = null; // every metric
+            }
         Network net = open(file).getNetwork();
-        if (!CliMetrics.isConnected(net))
+        boolean wantsDistance = wanted == null || wanted.contains("diameter")
+                || wanted.contains("eccentricity")
+                || wanted.contains("closeness")
+                || wanted.contains("betweenness");
+        if (wantsDistance && !CliMetrics.isConnected(net))
             {
             out.println("note: the network is disconnected; the "
                     + "distance-based measures (diameter, eccentricity, "
                     + "closeness, betweenness) are omitted");
             }
-        String text = "json".equals(format) ? CliMetrics.json(net)
-                : String.join("\n", CliMetrics.csv(net)) + "\n";
+        String text = "json".equals(format) ? CliMetrics.json(net, wanted)
+                : String.join("\n", CliMetrics.csv(net, wanted)) + "\n";
         if (outFile != null)
             {
             Files.write(new File(outFile).toPath(), text.getBytes(

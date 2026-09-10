@@ -157,9 +157,15 @@ public final class CliMetrics
      * CSV lines with the uniform header metric,node1,node2,value.
      * Scalar metrics use empty node cells; node metrics one node; pair
      * metrics (geodesics) both. Distance-based measures are skipped for
-     * disconnected networks.
+     * disconnected networks. When wanted is non-null only the named
+     * metrics are emitted.
      */
     public static List<String> csv(Network net)
+        {
+        return csv(net, null);
+        }
+
+    public static List<String> csv(Network net, java.util.Set<String> wanted)
         {
         List<String> rows = new ArrayList<>();
         rows.add(HEADER);
@@ -257,16 +263,38 @@ public final class CliMetrics
                         hops[i][j]));
                 }
             }
-        return rows;
+        if (wanted == null)
+            {
+            return rows;
+            }
+        List<String> filtered = new ArrayList<>();
+        filtered.add(HEADER);
+        for (String line : rows)
+            {
+            if (line.equals(HEADER))
+                {
+                continue;
+                }
+            if (wanted.contains(splitCsv(line)[0]))
+                {
+                filtered.add(line);
+                }
+            }
+        return filtered;
         }
 
     public static String json(Network net)
+        {
+        return json(net, null);
+        }
+
+    public static String json(Network net, java.util.Set<String> wanted)
         {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();
         root.put("network", net.getName());
         ArrayNode metrics = root.putArray("metrics");
-        for (String line : csv(net))
+        for (String line : csv(net, wanted))
             {
             if (line.equals(HEADER))
                 {

@@ -367,4 +367,32 @@ public class CliTest
                 StandardCharsets.UTF_8).startsWith("index\tname\tout"),
                 "node table file");
         }
+
+    @Test
+    public void metricsFilterToNamedMetrics() throws Exception
+        {
+        String text = run("metrics", "samples/example2.agn", "indegree",
+                "betweenness");
+        String[] lines = text.split("\n");
+        assertTrue(lines[0].equals("metric,node1,node2,value"),
+                "header kept");
+        assertTrue(lines.length == 19, "header + 9 indegree + 9 "
+                + "betweenness rows, got " + lines.length);
+        for (int i = 1; i < lines.length; i++)
+            {
+            String metric = lines[i].split(",")[0];
+            assertTrue(metric.equals("indegree") || metric.equals(
+                    "betweenness"), "unexpected metric " + metric);
+            }
+        }
+
+    @Test
+    public void metricsRejectsUnknownNames() throws Exception
+        {
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        int code = new Cli(new java.io.PrintStream(buf)).run(new String[] {
+                "metrics", "samples/example2.agn", "fancyness" });
+        assertEquals(1, code);
+        assertTrue(buf.toString().contains("unknown metric"), buf.toString());
+        }
     }
