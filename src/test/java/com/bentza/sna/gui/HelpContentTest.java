@@ -68,6 +68,16 @@ public class HelpContentTest
                 {
                 to_math++;
                 }
+            String frag = href.contains("#")
+                    ? href.substring(href.indexOf("#") + 1) : null;
+            if (frag != null)
+                {
+                String pageText = read(new File(dir, page));
+                assertTrue(
+                        pageText.contains("name=\"" + frag + "\"")
+                                || pageText.contains("id=\"" + frag + "\""),
+                        "anchor " + frag + " missing in " + page);
+                }
             }
         assertTrue(links >= 15,
                 "the menu reference should be link-rich, found " + links);

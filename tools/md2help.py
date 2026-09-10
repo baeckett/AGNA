@@ -107,8 +107,10 @@ def main():
                 continue
             if line.startswith("### "):
                 sub = line[4:].strip()
-                body.append('<h2 id="%s">%s</h2>' % (slug(sub),
-                        html.escape(sub)))
+                # both id and name: JEditorPane's scrollToReference
+                # matches the classic name attribute
+                body.append('<h2 id="%s" name="%s">%s</h2>' % (slug(sub),
+                        slug(sub), html.escape(sub)))
                 continue
             body.append(render_block([line]))
         (OUT / (slug(title) + ".htm")).write_text(PAGE_THEME.format(

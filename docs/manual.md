@@ -293,10 +293,12 @@ Interoperability notes:
 - **Merge Network** (File ▸ Merge Network...): join two networks by
   actor name with a Sum / Maximum / Keep policy, as described in
   [Matrix operations](5matrixoperationsformulas.htm#mergenetwork).
-- **Session log**: the Output pane records every operation with a
-  timestamp (`> [time] ...` lines) — open, new, save, transforms, merge —
-  so you can reconstruct what was done to a network. Use
-  View ▸ Hide/Show Output to toggle the pane.
+### Session log
+
+The Output pane records every operation with a timestamp
+(`> [time] ...` lines) — open, new, save, transforms, merge — so you can
+reconstruct what was done to a network. Use View ▸ Hide/Show Output to
+toggle the pane.
 - **Export/import family**: Excel import (including Numbers `.xlsx`),
   GraphML, GML and GraphSON round-trips — see
   [File formats](6fileformats.htm).
