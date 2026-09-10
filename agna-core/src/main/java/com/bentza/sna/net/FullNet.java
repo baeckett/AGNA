@@ -1567,7 +1567,7 @@ import javax.swing.JTextPane;
 
         try
             {
-            nn = parseNextInt(str, "Title y");
+            nn = parseNextInt(str, "Title Y");
             area.setTitleY(nn);
             } catch (Exception e)
             {
