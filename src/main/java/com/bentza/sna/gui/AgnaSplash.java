@@ -19,13 +19,13 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /**
- * 2.1.3: modernised splash screen - the black logo, the wordmark and the
- * version on a clean dark panel; click anywhere or wait five seconds to
- * dismiss it.
+ * 2.1.3: modernised splash screen - the white lockup, the wordmark and
+ * the version on a clean light panel; click anywhere or wait a few
+ * seconds to dismiss it.
  */
 public class AgnaSplash extends JWindow
     {
-    final int waitTime = 5000;
+    final int waitTime = 4000;
 
     public AgnaSplash(Frame f)
         {
