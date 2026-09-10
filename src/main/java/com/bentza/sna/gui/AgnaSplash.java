@@ -25,7 +25,7 @@ import javax.swing.SwingUtilities;
  */
 public class AgnaSplash extends JWindow
     {
-    final int waitTime = 4000;
+    final int waitTime = 10000;
 
     public AgnaSplash(Frame f)
         {
