@@ -122,8 +122,14 @@ public class NodeArea extends JButton implements MouseListener,
         setInitialSettings(); // settings generated;
         // ini file exists?
         if (Environment.getSettingsFile().exists())
-            AppRuntime.getCurrentFullNet().readInitialSettings(this,
-                    Environment.getSettingsFile().getAbsolutePath());
+            {
+            // 2.1.3: headless contexts (CLI, library) may have no
+            // AppRuntime current network; skip the settings then
+            FullNet current_full = AppRuntime.getCurrentFullNet();
+            if (current_full != null)
+                current_full.readInitialSettings(this, Environment
+                        .getSettingsFile().getAbsolutePath());
+            }
                                                                             // form
                                                                             // file
         if (edges_image.getWidth() != area_width)

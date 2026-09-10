@@ -206,4 +206,45 @@ public class SettingsRoundTripTest
         full.attachArea();
         return full.getAgna2DefaultSettings(area);
         }
+
+    @Test
+    public void areaConstructionSurvivesSettingsFileWithoutHooks()
+            throws Exception
+        {
+        // regression: a real installation has ~/.agna/AgnaDefaultSettings.ini
+        // and the CLI (headless) never registers an AppRuntime current
+        // network; the viewer constructor must not dereference it
+        String oldHome = System.getProperty("user.home");
+        java.util.function.Supplier<FullNet> prevFull =
+                com.bentza.sna.core.AppRuntime.currentFullNetSupplier();
+        java.util.function.Supplier<com.bentza.sna.net.Network> prevNet =
+                com.bentza.sna.core.AppRuntime.currentNetworkSupplier();
+        try
+            {
+            Path home = Files.createTempDirectory("agna_no_hooks_home");
+            System.setProperty("user.home", home.toString());
+            Path agna = home.resolve(".agna");
+            Files.createDirectories(agna);
+            Files.write(agna.resolve("AgnaDefaultSettings.ini"),
+                    "Print Names\tyes\nSeparator\t10\n".getBytes(
+                            java.nio.charset.StandardCharsets.UTF_8));
+            assertTrue(com.bentza.sna.Environment.getSettingsFile().exists(),
+                    "settings file present, as on a real machine");
+            // the CLI registers no hooks: the current network is null
+            com.bentza.sna.core.AppRuntime.setCurrentFullNetSupplier(
+                    () -> null);
+            com.bentza.sna.core.AppRuntime.setCurrentNetworkSupplier(
+                    () -> null);
+
+            FullNet full = new FullNet();
+            full.createDefaultNetwork(3);
+            full.attachArea(); // must not throw without AppRuntime hooks
+            assertTrue(full.getArea() != null, "area constructed");
+            } finally
+            {
+            System.setProperty("user.home", oldHome);
+            com.bentza.sna.core.AppRuntime.setCurrentFullNetSupplier(prevFull);
+            com.bentza.sna.core.AppRuntime.setCurrentNetworkSupplier(prevNet);
+            }
+        }
     }
