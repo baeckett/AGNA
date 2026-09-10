@@ -7,10 +7,16 @@
   <groupId>com.bentza.sna</groupId>
   <artifactId>agna</artifactId>
   <version>2.1.3</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
   <name>Agna</name>
-  <description>Agna - a Java desktop application for social network analysis and sequence analysis (2.1.3, cleaned and bug-fixed)</description>
+  <description>Agna - social network analysis (open source, 2.1.3). Monorepo: agna-core (engine), agna-cli (command line), agna-desktop (Swing application).</description>
+
+  <modules>
+    <module>agna-core</module>
+    <module>agna-cli</module>
+    <module>agna-desktop</module>
+  </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,74 +24,61 @@
     <junit.version>5.10.2</junit.version>
   </properties>
 
-  <dependencies>
-    <!-- Modern cross-platform look & feel (MIT) -->
-    <dependency>
-      <groupId>com.formdev</groupId>
-      <artifactId>flatlaf</artifactId>
-      <version>3.4.1</version>
-    </dependency>
-
-    <!-- JSON handling for GraphSON import/export (Apache-2.0) -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.17.1</version>
-    </dependency>
-
-    <!-- Excel export: JExcelAPI (LGPL), same library family as the bundled jxl.jar of 2.1.2 -->
-    <dependency>
-      <groupId>net.sourceforge.jexcelapi</groupId>
-      <artifactId>jxl</artifactId>
-      <version>2.6.12</version>
-    </dependency>
-
-    
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
-  <repositories>
-    
-  </repositories>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.bentza.sna</groupId>
+        <artifactId>agna-core</artifactId>
+        <version>2.1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.formdev</groupId>
+        <artifactId>flatlaf</artifactId>
+        <version>3.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.17.1</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.jexcelapi</groupId>
+        <artifactId>jxl</artifactId>
+        <version>2.6.12</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
-    <finalName>agna-2.1.3</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.5</version>
-        <configuration>
-          <systemPropertyVariables>
-            <java.awt.headless>true</java.awt.headless>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-      <!-- Self-contained executable jar (bundles jxl + resources) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.2</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals><goal>shade</goal></goals>
-            <configuration>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>com.bentza.sna.Agna</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.2.5</version>
+          <configuration>
+            <systemPropertyVariables>
+              <java.awt.headless>true</java.awt.headless>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>

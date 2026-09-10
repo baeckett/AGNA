@@ -17,4 +17,4 @@ Copyright (C) 2002–2026 Marius Ion Bența. Website (provisional): netanalysis.
 - packaging/ — macOS dmg recipe, app icon (.icns), signing guide
 
 ## License
-Pending final choice (engine LGPL / app GPL split planned).
+Apache License 2.0 (all modules). See LICENSE.
