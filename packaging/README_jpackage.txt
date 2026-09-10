@@ -14,13 +14,14 @@ jpackage is not a cross-compiler.
        --input jars \
        --main-jar agna-2.1.3.jar \
        --type dmg \
+       --dest dist \
        --icon packaging/Agna.icns \
        --java-options "-Xmx1024M" \
        --vendor "Marius Ion Benta" \
        --copyright "Copyright (C) 2002-2026 Marius Ion Benta" \
        --about-text "Agna 2.1.3 - Social Network Analysis. Open source (license pending). Website: https://www.netanalysis.co.uk (provisional)"
 
-   This produces Agna-2.1.3.dmg with an embedded JRE - no Java install
+   This produces dist/Agna-2.1.3.dmg with an embedded JRE - no Java install
    needed on the target machine, and the dock crafts from Agna.icns.
 
 3. First run: macOS may say the app is from an unidentified developer;
@@ -35,3 +36,7 @@ Notes:
   remembered, we should move the settings path to the user home first
   (planned for the release packaging pass).
 - Building a .app only (no dmg): use --type app-image.
+
+- Validated on Linux with --type app-image (same recipe, excluding the
+  mac-only icon/type flags): the launcher builds and the runtime embeds
+  correctly. The dmg step itself must run on macOS.
