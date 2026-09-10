@@ -265,4 +265,106 @@ public class CliTest
             }
         return -1;
         }
+
+    @Test
+    public void analyseAllIncludesEveryMetric() throws Exception
+        {
+        String text = run("analyse", "samples/example2.agn", "--all");
+        assertTrue(text.contains("Betweenness"), text.substring(0,
+                Math.min(200, text.length())));
+        assertTrue(text.contains("Determination")
+                && text.contains("Emission")
+                && text.contains("Reception"), "degree family present");
+        assertTrue(text.contains("Cliques found")
+                && text.contains("Chain summary"), "cliques + chain present");
+        }
+
+    @Test
+    public void analyseOutSavesTheReport() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_rep", ".txt");
+        out.deleteOnExit();
+        String text = run("analyse", "samples/example2.agn", "density",
+                "--out", out.getAbsolutePath());
+        assertTrue(text.contains("wrote analysis report"), text);
+        assertTrue(new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8).contains("Density"),
+                "report file carries the analysis");
+        }
+
+    @Test
+    public void metricsCsvCoversEveryRowShape() throws Exception
+        {
+        String text = run("metrics", "samples/example2.agn");
+        assertTrue(text.startsWith("metric,node1,node2,value"), text);
+        assertTrue(text.contains("density,,"), "scalar row");
+        assertTrue(text.contains("indegree,") && text.contains("betweenness,"),
+                "node rows");
+        assertTrue(text.contains("geodesics,"), "pair rows");
+        assertTrue(text.contains("closeness,")
+                && text.contains("determination,"), "connected metrics");
+        }
+
+    @Test
+    public void metricsJsonIsStructured() throws Exception
+        {
+        String text = run("metrics", "samples/example2.agn", "--format",
+                "json");
+        assertTrue(text.contains("\"network\""), text.substring(0,
+                Math.min(120, text.length())));
+        assertTrue(text.contains("\"metric\"") && text.contains(
+                "\"betweenness\""), "metrics in json");
+        }
+
+    @Test
+    public void metricsOutWritesACsvFile() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_met", ".csv");
+        out.deleteOnExit();
+        String text = run("metrics", "samples/example2.agn", "--out",
+                out.getAbsolutePath());
+        assertTrue(text.contains("wrote metrics"), text);
+        assertTrue(new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8).startsWith(
+                        "metric,node1,node2,value"), "csv header");
+        }
+
+    @Test
+    public void distanceReportsAPath() throws Exception
+        {
+        String text = run("distance", "samples/example2.agn", "--from", "1",
+                "--to", "9");
+        assertTrue(text.length() > 30, "path output present");
+        }
+
+    @Test
+    public void diffReportsEdgeDifferences() throws Exception
+        {
+        File star = File.createTempFile("agna_cli_diff_a", ".agn");
+        File rnd = File.createTempFile("agna_cli_diff_b", ".agn");
+        star.deleteOnExit();
+        rnd.deleteOnExit();
+        run("generate", "--nodes", "8", "--type", "star", "--out",
+                star.getAbsolutePath());
+        run("generate", "--nodes", "8", "--type", "random", "--seed", "3",
+                "--out", rnd.getAbsolutePath());
+        String text = run("diff", star.getAbsolutePath(),
+                rnd.getAbsolutePath());
+        assertTrue(text.contains("0 node(s) added")
+                && text.contains("0 node(s) removed"), text);
+        assertTrue(text.contains("edge-diff,"), "edge rows present");
+        }
+
+    @Test
+    public void nodesOutWritesTheTable() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_nodes", ".csv");
+        out.deleteOnExit();
+        String text = run("nodes", "samples/example2.agn", "--out",
+                out.getAbsolutePath());
+        assertTrue(text.contains("wrote node table"), text);
+        assertTrue(new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8).startsWith("index\tname\tout"),
+                "node table file");
+        }
     }

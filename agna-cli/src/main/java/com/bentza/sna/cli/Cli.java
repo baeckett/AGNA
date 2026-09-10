@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -53,12 +54,15 @@ public final class Cli
                 + "commands:\n"
                 + "  version                         print version\n"
                 + "  info FILE                       network summary\n"
-                + "  analyse FILE [--all|NAME...]    run analyses (basic, "
+                + "  analyse FILE [--all|NAME...|cliques:N] [--out FILE]\n"
+                + "                                  run analyses (basic, "
                 + "density, cohesion, nodal, indegree, outdegree,\n"
                 + "                                  emission, reception, "
                 + "determination, status, geodesics, eccentricity,\n"
                 + "                                  diameter, bavelas, "
-                + "closeness, fareness, betweenness, prestige, cliques, full)\n"
+                + "closeness, fareness, betweenness, prestige, cliques,\n"
+                + "                                  open-chain, full); --all "
+                + "runs every metric; --out saves the report\n"
                 + "  convert IN OUT [--in-format F] [--out-format F]\n"
                 + "                                  convert format "
                 + "(agn/txt/csv/net/graphml/gml/graphson/xls; xls needs a\n"
@@ -78,12 +82,19 @@ public final class Cli
                 + "spring | grid | concentric; --size WxH; --labels\n"
                 + "  generate --nodes N --out FILE  random (--seed S, "
                 + "--degree D) | star | circular\n"
-                + "  matrix FILE [--format csv|tsv] print the matrix\n"
-                + "  nodes FILE                      node table (degrees + "
+                + "  matrix FILE [--format csv|tsv] [--out FILE]\n"
+                + "                                  print the matrix\n"
+                + "  nodes FILE [--out FILE]         node table (degrees + "
                 + "coordinates)\n"
                 + "  ego FILE --node NAME --out OUT  extract the 1-hop ego "
                 + "network\n"
                 + "  components FILE                 connected components\n"
+                + "  metrics FILE [--format csv|json] [--out FILE]\n"
+                + "                                  structured metrics "
+                + "(degrees, emission/reception, betweenness, ...)\n"
+                + "  distance FILE --from A --to B   shortest path between "
+                + "two nodes\n"
+                + "  diff A B [--out FILE.csv]       structural comparison\n"
                 + "  --help                          this text\n"
                 + "use '-' as IN/OUT for stdin/stdout (stdin defaults to "
                 + "agn text)\n";
@@ -224,6 +235,18 @@ public final class Cli
             {
             return components(args);
             }
+        if ("metrics".equals(cmd))
+            {
+            return metrics(args);
+            }
+        if ("distance".equals(cmd))
+            {
+            return distance(args);
+            }
+        if ("diff".equals(cmd))
+            {
+            return diff(args);
+            }
         out.println("unknown command: " + cmd);
         out.print(help());
         return 1;
@@ -255,19 +278,24 @@ public final class Cli
         {
         if (args.length < 2)
             {
-            out.println("usage: agna analyse FILE [--all|NAME...]");
+            out.println("usage: agna analyse FILE [--all|NAME...] "
+                    + "[--out FILE]");
             return 1;
             }
         FullNet full = open(args[1]);
         Network net = full.getNetwork();
         AgnaLib lib = new AgnaLib();
         boolean all = false;
+        String outFile = null;
         java.util.List<String> names = new java.util.ArrayList<>();
         for (int i = 2; i < args.length; i++)
             {
             if ("--all".equals(args[i]))
                 {
                 all = true;
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
                 } else
                 {
                 names.add(args[i]);
@@ -279,20 +307,42 @@ public final class Cli
             }
         if (all)
             {
+            // every metric the engine offers
             names.addAll(java.util.Arrays.asList("basic", "density",
-                    "cohesion", "nodal", "geodesics", "eccentricity",
-                    "diameter", "bavelas", "closeness", "fareness",
-                    "betweenness", "prestige", "full"));
+                    "cohesion", "nodal", "indegree", "outdegree", "emission",
+                    "reception", "determination", "status", "geodesics",
+                    "open-chain", "eccentricity", "diameter", "bavelas",
+                    "closeness", "fareness", "betweenness", "prestige",
+                    "cliques", "full"));
             }
+        StringBuilder report = new StringBuilder();
         for (String name : names)
             {
-            String text = analysisText(lib, net, name);
+            String text;
+            if (name.startsWith("cliques:"))
+                {
+                text = lib.outCliques(net, Integer.parseInt(name.substring(
+                        name.indexOf(':') + 1)));
+                } else
+                {
+                text = analysisText(lib, net, name);
+                }
             if (text == null)
                 {
                 out.println("unknown analysis: " + name);
                 return 1;
                 }
-            out.print(text);
+            report.append(text);
+            report.append('\n');
+            }
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), report.toString()
+                    .getBytes(StandardCharsets.UTF_8));
+            out.println("wrote analysis report to " + outFile);
+            } else
+            {
+            out.print(report);
             }
         return 0;
         }
@@ -320,6 +370,7 @@ public final class Cli
             case "betweenness": return lib.outBetweenness(net);
             case "prestige": return lib.outPrestige(net);
             case "cliques": return lib.outCliques(net, 2);
+            case "open-chain": return lib.outOpenChainSummary(net);
             case "full": return lib.outFullAnalysis(net);
             default: return null;
             }
@@ -690,6 +741,7 @@ public final class Cli
     private int matrix(String[] args) throws Exception
         {
         String file = null;
+        String outFile = null;
         String sep = "\t";
         for (int i = 1; i < args.length; i++)
             {
@@ -698,6 +750,9 @@ public final class Cli
                 String f = args[i + 1];
                 sep = "csv".equals(f) ? "," : "\t";
                 i++;
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
                 } else if (file == null)
                 {
                 file = args[i];
@@ -705,7 +760,8 @@ public final class Cli
             }
         if (file == null)
             {
-            out.println("usage: agna matrix FILE [--format csv|tsv]");
+            out.println("usage: agna matrix FILE [--format csv|tsv] "
+                    + "[--out FILE]");
             return 1;
             }
         Network net = open(file).getNetwork();
@@ -729,19 +785,40 @@ public final class Cli
                 }
             sb.append('\n');
             }
-        out.print(sb);
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), sb.toString().getBytes(
+                    StandardCharsets.UTF_8));
+            out.println("wrote matrix to " + outFile);
+            } else
+            {
+            out.print(sb);
+            }
         return 0;
         }
 
     private int nodes(String[] args) throws Exception
         {
-        if (args.length < 2)
+        String file = null;
+        String outFile = null;
+        for (int i = 1; i < args.length; i++)
             {
-            out.println("usage: agna nodes FILE");
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna nodes FILE [--out FILE]");
             return 1;
             }
-        Network net = open(args[1]).getNetwork();
-        out.println("index\tname\tout\tin\tx\ty");
+        Network net = open(file).getNetwork();
+        StringBuilder sb = new StringBuilder();
+        sb.append("index\tname\tout\tin\tx\ty\n");
         for (int i = 0; i < net.getSize(); i++)
             {
             int outDeg = 0;
@@ -757,9 +834,20 @@ public final class Cli
                     inDeg++;
                     }
                 }
-            out.println(i + "\t" + net.getActor(i).getName() + "\t" + outDeg
-                    + "\t" + inDeg + "\t" + fmt(net.getActor(i).getX())
-                    + "\t" + fmt(net.getActor(i).getY()));
+            sb.append(i).append('\t').append(net.getActor(i).getName())
+                    .append('\t').append(outDeg).append('\t').append(inDeg)
+                    .append('\t').append(fmt(net.getActor(i).getX()))
+                    .append('\t').append(fmt(net.getActor(i).getY()))
+                    .append('\n');
+            }
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), sb.toString().getBytes(
+                    StandardCharsets.UTF_8));
+            out.println("wrote node table to " + outFile);
+            } else
+            {
+            out.print(sb);
             }
         return 0;
         }
@@ -887,6 +975,189 @@ public final class Cli
         out.println(n + " nodes, " + count + " component"
                 + (count == 1 ? "" : "s"));
         return 0;
+        }
+
+    private int metrics(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        String format = "csv";
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if (file == null)
+                {
+                file = a;
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna metrics FILE [--format csv|json] "
+                    + "[--out FILE]");
+            return 1;
+            }
+        Network net = open(file).getNetwork();
+        if (!CliMetrics.isConnected(net))
+            {
+            out.println("note: the network is disconnected; the "
+                    + "distance-based measures (diameter, eccentricity, "
+                    + "closeness, betweenness) are omitted");
+            }
+        String text = "json".equals(format) ? CliMetrics.json(net)
+                : String.join("\n", CliMetrics.csv(net)) + "\n";
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), text.getBytes(
+                    StandardCharsets.UTF_8));
+            out.println("wrote metrics to " + outFile);
+            } else
+            {
+            out.print(text);
+            }
+        return 0;
+        }
+
+    private int distance(String[] args) throws Exception
+        {
+        String file = null;
+        String from = null;
+        String to = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--from".equals(args[i]) && i + 1 < args.length)
+                {
+                from = args[++i];
+                } else if ("--to".equals(args[i]) && i + 1 < args.length)
+                {
+                to = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || from == null || to == null)
+            {
+            out.println("usage: agna distance FILE --from NAME --to NAME");
+            return 1;
+            }
+        Network net = open(file).getNetwork();
+        int f = findActor(net, from);
+        int t = findActor(net, to);
+        if (f < 0 || t < 0)
+            {
+            out.println("no such node: " + (f < 0 ? from : to));
+            return 1;
+            }
+        out.print(new AgnaLib().outShortestPaths(net, f, t));
+        return 0;
+        }
+
+    private int diff(String[] args) throws Exception
+        {
+        if (args.length < 3)
+            {
+            out.println("usage: agna diff A B [--out FILE.csv]");
+            return 1;
+            }
+        String outFile = null;
+        for (int i = 3; i < args.length; i++)
+            {
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[i + 1];
+                }
+            }
+        Network na = open(args[1]).getNetwork();
+        Network nb = open(args[2]).getNetwork();
+        java.util.Set<String> namesA = new java.util.LinkedHashSet<>();
+        java.util.Set<String> namesB = new java.util.LinkedHashSet<>();
+        for (int i = 0; i < na.getSize(); i++)
+            {
+            namesA.add(na.getActor(i).getName());
+            }
+        for (int i = 0; i < nb.getSize(); i++)
+            {
+            namesB.add(nb.getActor(i).getName());
+            }
+        List<String> rows = new ArrayList<>();
+        rows.add("kind,node1,node2,valueA,valueB");
+        int added = 0;
+        int removed = 0;
+        for (String name : namesA)
+            {
+            if (!namesB.contains(name))
+                {
+                rows.add("node-removed," + quoteCsv(name) + ",,,");
+                removed++;
+                }
+            }
+        for (String name : namesB)
+            {
+            if (!namesA.contains(name))
+                {
+                rows.add("node-added," + quoteCsv(name) + ",,,");
+                added++;
+                }
+            }
+        List<String> shared = new ArrayList<>();
+        for (String name : namesA)
+            {
+            if (namesB.contains(name))
+                {
+                shared.add(name);
+                }
+            }
+        int edgeDiffs = 0;
+        for (int i = 0; i < shared.size(); i++)
+            {
+            int ia = findActor(na, shared.get(i));
+            int ib = findActor(nb, shared.get(i));
+            for (int j = 0; j < shared.size(); j++)
+                {
+                int ja = findActor(na, shared.get(j));
+                int jb = findActor(nb, shared.get(j));
+                float va = na.getValue(ia, ja);
+                float vb = nb.getValue(ib, jb);
+                if (va != vb)
+                    {
+                    rows.add("edge-diff," + quoteCsv(shared.get(i)) + ","
+                            + quoteCsv(shared.get(j)) + ","
+                            + String.format(Locale.ROOT, "%.4f", va) + ","
+                            + String.format(Locale.ROOT, "%.4f", vb));
+                    edgeDiffs++;
+                    }
+                }
+            }
+        String summary = added + " node(s) added, " + removed
+                + " node(s) removed, " + edgeDiffs
+                + " edge value difference(s)";
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), String.join("\n", rows)
+                    .getBytes(StandardCharsets.UTF_8));
+            out.println(summary);
+            out.println("wrote diff to " + outFile);
+            } else
+            {
+            out.println(summary);
+            out.println(String.join("\n", rows));
+            }
+        return 0;
+        }
+
+    private static String quoteCsv(String s)
+        {
+        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0)
+            {
+            return '"' + s.replace("\"", "\"\"") + '"';
+            }
+        return s;
         }
 
     // compact number formatting: 1.0 -> 1, 0.25 -> 0.25
