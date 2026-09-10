@@ -20,6 +20,7 @@ PAGE_THEME = """<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>{title} - Agna Help</title>
 <style>{css}</style></head>
 <body>
+<!-- md2help generated - do not edit by hand; edit docs/manual.md -->
 {body}
 </body></html>"""
 
@@ -108,6 +109,17 @@ def main():
             body.append(render_block([line]))
         (OUT / (slug(title) + ".htm")).write_text(PAGE_THEME.format(
             title=title, css=CSS, body="\n".join(body)), encoding="utf-8")
+
+    # self-cleaning: drop pages this generator created in an earlier run
+    # that are no longer part of the manual (stale numbering, renamed
+    # sections), while leaving unrelated legacy help pages untouched
+    current = {"help_contents.htm"}
+    current.update(slug(t) + ".htm" for t, _ in sections)
+    for stale in OUT.glob("*.htm"):
+        if stale.name in current:
+            continue
+        if "md2help generated" in stale.read_text(encoding="utf-8", errors="ignore"):
+            stale.unlink()
 
     print("generated:", sorted(p.name for p in OUT.glob("*.htm")))
 
