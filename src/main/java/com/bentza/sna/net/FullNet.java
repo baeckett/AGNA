@@ -2376,10 +2376,19 @@ tmp_node.setFace(tmpname);
         else
             // errors here
             {
-            if (JOptionPane.showOptionDialog(MainFrame.getCurrentFrame(),
-                    "This file contains errors. Attempt to read it anyway?",
-                    "Error parsing", JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.ERROR_MESSAGE, null, null, null) != 0)
+            // 2.1.3: without a window (headless runs, the CLI) the forgiving
+            // answer is taken - read the file anyway
+            boolean read_anyway = true;
+            if (MainFrame.getCurrentFrame() != null
+                    && !java.awt.GraphicsEnvironment.isHeadless())
+                {
+                read_anyway = JOptionPane.showOptionDialog(
+                        MainFrame.getCurrentFrame(),
+                        "This file contains errors. Attempt to read it anyway?",
+                        "Error parsing", JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.ERROR_MESSAGE, null, null, null) == 0;
+                }
+            if (!read_anyway)
                 return;
 
             ni = (int) Math.sqrt(ni);

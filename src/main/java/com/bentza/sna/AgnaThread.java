@@ -22,7 +22,8 @@ import java.awt.Cursor;
     // sets the main frame to its default state
     public void undecorate()
         {
-        MainFrame.progress_dialog.setPercent(-1);
+        if (MainFrame.progress_dialog != null)
+            MainFrame.progress_dialog.setPercent(-1);
         MainFrame.getCurrentFrame().setCursor(
                 Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         MainFrame.setCurrentStatus(MainFrame.default_status);

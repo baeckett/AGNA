@@ -53,7 +53,8 @@ public class PajekExporter
         try
             {
             Thread.sleep(500);
-            MainFrame.progress_dialog.setPercent(60);
+            if (MainFrame.progress_dialog != null)
+                MainFrame.progress_dialog.setPercent(60);
             } catch (Exception e1) {
       AgnaLog.warn("suppressed exception", e1);
       }
