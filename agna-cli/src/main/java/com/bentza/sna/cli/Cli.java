@@ -11,6 +11,8 @@ import com.bentza.sna.net.FullNet;
 import com.bentza.sna.net.Network;
 import com.bentza.sna.net.NetworkLayouts;
 import com.bentza.sna.net.NetworkRenderer;
+import com.bentza.sna.net.NodeArea;
+import java.awt.Color;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -73,11 +75,11 @@ public final class Cli
                 + "                                  normalize-binary | "
                 + "normalize-threshold:V | add-scalar:V |\n"
                 + "                                  multiply-scalar:V | "
-                + "square | merge:FILE:POLICY |\n"
++ "                                  square | merge:FILE:POLICY |\n"
                 + "                                  delete-node:N | "
                 + "delete-nodes:N1,N2,.. | isolate:N |\n"
                 + "                                  merge-nodes:N1,N2,.. | "
-                + "remove-outsiders\n"
+                + "remove-outsiders | renumber | add-nodes:N | clone-node:N\n"
                 + "  draw IN --out PNG --layout L   L = circular | random | "
                 + "spring | grid | concentric; --size WxH; --labels\n"
                 + "  generate --nodes N --out FILE  random (--seed S, "
@@ -111,6 +113,18 @@ public final class Cli
                 + "  delete-nodes FILE N1,N2 --out OUT\n"
                 + "  add-nodes FILE --count N --out OUT\n"
                 + "  renumber FILE --out OUT         name nodes 1..n\n"
+                + "  from-chain FILE --out OUT        create a network from a "
+                + "chain file\n"
+                + "  layout FILE --layout L --out OUT\n"
+                + "                                  apply a layout "
+                + "(circular|random|spring|grid|concentric|star) and save\n"
+                + "                                  the new coordinates "
+                + "without rendering\n"
+                + "  set FILE --out OUT [--flag VALUE ...]\n"
+                + "                                  edit viewer attributes "
+                + "(Image/Edge menu properties, default face);\n"
+                + "                                  run 'agna set' with no "
+                + "flags for the full flag list\n"
                 + "  --help                          this text\n"
                 + "use '-' as IN/OUT for stdin/stdout (stdin defaults to "
                 + "agn text)\n";
@@ -306,6 +320,18 @@ public final class Cli
         if ("renumber".equals(cmd))
             {
             return simpleNetOp(args, "renumber");
+            }
+        if ("from-chain".equals(cmd))
+            {
+            return fromChain(args);
+            }
+        if ("layout".equals(cmd))
+            {
+            return layoutCommand(args);
+            }
+        if ("set".equals(cmd))
+            {
+            return set(args);
             }
         out.println("unknown command: " + cmd);
         out.print(help());
@@ -593,6 +619,28 @@ public final class Cli
             {
             net.addActors(Integer.parseInt(op.substring(op.indexOf(':')
                     + 1)), false);
+            } else if (op.startsWith("clone-node:"))
+            {
+            // matrix-based clone: copies incoming and outgoing ties
+            String cname = op.substring(op.indexOf(':') + 1);
+            int src = findActor(net, cname);
+            if (src < 0)
+                {
+                out.println("no such node: " + cname);
+                return false;
+                }
+            net.addActor(-1, -1, 400, true);
+            int nw = net.getSize() - 1;
+            net.getActor(nw).setName("Clone of "
+                    + net.getActor(src).getName());
+            net.getActor(nw).setFace(net.getActor(src).getFaceSource());
+            for (int j = 0; j < nw; j++)
+                {
+                net.setValue(net.getValue(src, j), nw, j);
+                net.setValue(net.getValue(j, src), j, nw);
+                }
+            net.setValue(0f, nw, src);
+            net.setValue(0f, src, nw);
             } else
             {
             out.println("unknown op: " + op);
@@ -1532,6 +1580,317 @@ public final class Cli
                 }
             }
         return null;
+        }
+
+    // create a network from a chain file (whitespace-separated
+    // sequences; arcs follow the transitions), mirroring the desktop's
+    // "Create a network from a chain file"
+    private int fromChain(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        stdoutFormat = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || outFile == null)
+            {
+            out.println("usage: agna from-chain FILE --out OUT");
+            return 1;
+            }
+        FullNet full = new FullNet();
+        byte[] bytes = Files.readAllBytes(new File(file).toPath());
+        full.readNetworkFromChain(new String(bytes,
+                StandardCharsets.ISO_8859_1), extOf(file));
+        write(full, outFile);
+        out.println("created network from chain -> " + outFile);
+        return 0;
+        }
+
+    // apply a layout to an existing network and save the new coordinates
+    // (no image is rendered)
+    private int layoutCommand(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        String layoutName = "spring";
+        int width = 1200;
+        int height = 900;
+        stdoutFormat = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--layout".equals(a) && i + 1 < args.length)
+                {
+                layoutName = args[++i];
+                } else if ("--size".equals(a) && i + 1 < args.length)
+                {
+                String[] wh = args[++i].toLowerCase().split("x");
+                if (wh.length == 2)
+                    {
+                    width = Integer.parseInt(wh[0]);
+                    height = Integer.parseInt(wh[1]);
+                    }
+                } else if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(a) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = a;
+                }
+            }
+        if (file == null || outFile == null)
+            {
+            out.println("usage: agna layout FILE --layout L --out OUT "
+                    + "[--size WxH]");
+            return 1;
+            }
+        int layoutInt;
+        if ("circular".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.CIRCULAR;
+            } else if ("random".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.RANDOM;
+            } else if ("spring".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.SPRING;
+            } else if ("grid".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.GRID;
+            } else if ("concentric".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.CONCENTRIC;
+            } else if ("star".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.STAR;
+            } else
+            {
+            out.println("unknown layout: " + layoutName);
+            return 1;
+            }
+        FullNet full = open(file);
+        NetworkLayouts.apply(full.getNetwork(), layoutInt, width, height);
+        write(full, outFile);
+        out.println("layout (" + layoutName + ") -> " + outFile);
+        return 0;
+        }
+
+    // edit the viewer attributes of an existing network file (the
+    // Network Viewer's Image and Edge menu properties) and save a new
+    // file. Every flag maps onto a NodeArea property that the agn
+    // format persists; defaults come from the file itself.
+    private int set(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        stdoutFormat = null;
+        java.util.Map<String, String> opts = new java.util.LinkedHashMap<>();
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if (a.startsWith("--") && i + 1 < args.length
+                    && !"--out-format".equals(a) && !"--out".equals(a))
+                {
+                opts.put(a.substring(2), args[++i]);
+                } else if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--out-format".equals(a) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                } else if (file == null)
+                {
+                file = a;
+                }
+            }
+        if (file == null || outFile == null)
+            {
+            out.println("usage: agna set FILE --out OUT [--flag VALUE ...]");
+            out.println("flags: --name T --names-visible on|off --names-x N "
+                    + "--names-y N --title-visible on|off --title-x N "
+                    + "--title-y N");
+            out.println("       --grid-visible on|off --grid-step N "
+                    + "--separator N --grid-transparency N");
+            out.println("       --max-transparency N --edge-value-visible "
+                    + "on|off --edge-value-position N --edge-value-color "
+                    + "#rrggbb --edge-color #rrggbb --names-color #rrggbb "
+                    + "--grid-color #rrggbb --title-color #rrggbb "
+                    + "--background-color #rrggbb");
+            out.println("       --background-image FILE "
+                    + "--background-image-x N --background-image-y N "
+                    + "--background-image-width N --background-image-height N");
+            out.println("       --faces-visible on|off "
+                    + "--allow-edge-selection on|off --color-fidelity on|off "
+                    + "--snap-to-grid on|off --default-face FILE");
+            return 1;
+            }
+        FullNet full = open(file);
+        NodeArea area = full.getArea();
+        java.util.Map<String, String> F = opts;
+        if (F.containsKey("name"))
+            {
+            full.getNetwork().setName(F.get("name"));
+            }
+        if (F.containsKey("names-visible"))
+            {
+            area.setPrintNames(onOff(F.get("names-visible")));
+            }
+        if (F.containsKey("names-x"))
+            {
+            area.setNamesX(intOf(F.get("names-x")));
+            }
+        if (F.containsKey("names-y"))
+            {
+            area.setNamesY(intOf(F.get("names-y")));
+            }
+        if (F.containsKey("title-visible"))
+            {
+            area.setTitleVisible(onOff(F.get("title-visible")));
+            }
+        if (F.containsKey("title-x"))
+            {
+            area.setTitleX(intOf(F.get("title-x")));
+            }
+        if (F.containsKey("title-y"))
+            {
+            area.setTitleY(intOf(F.get("title-y")));
+            }
+        if (F.containsKey("grid-visible"))
+            {
+            area.setGridEnabled(onOff(F.get("grid-visible")));
+            }
+        if (F.containsKey("grid-step"))
+            {
+            area.setGridSpace(intOf(F.get("grid-step")));
+            }
+        if (F.containsKey("separator"))
+            {
+            area.setSeparator(intOf(F.get("separator")));
+            }
+        if (F.containsKey("grid-transparency"))
+            {
+            area.setGridTransparency(intOf(F.get("grid-transparency")));
+            }
+        if (F.containsKey("max-transparency"))
+            {
+            area.setMaxTransparency(intOf(F.get("max-transparency")));
+            }
+        if (F.containsKey("edge-value-visible"))
+            {
+            area.setEdgeValueVisible(onOff(F.get("edge-value-visible")));
+            }
+        if (F.containsKey("edge-value-position"))
+            {
+            area.setEdgeValuePosition(intOf(F.get("edge-value-position")));
+            }
+        if (F.containsKey("edge-value-color"))
+            {
+            area.setEdgeValueColor(colorOf(F.get("edge-value-color")));
+            }
+        if (F.containsKey("edge-color"))
+            {
+            area.setArrowColor(colorOf(F.get("edge-color")));
+            }
+        if (F.containsKey("names-color"))
+            {
+            area.setNamesColor(colorOf(F.get("names-color")));
+            }
+        if (F.containsKey("grid-color"))
+            {
+            area.setGridColor(colorOf(F.get("grid-color")));
+            }
+        if (F.containsKey("title-color"))
+            {
+            area.setTitleColor(colorOf(F.get("title-color")));
+            }
+        if (F.containsKey("background-color"))
+            {
+            area.setBackgroundColor(colorOf(F.get("background-color")));
+            }
+        if (F.containsKey("background-image"))
+            {
+            area.setBackgroundImage(F.get("background-image"));
+            }
+        if (F.containsKey("background-image-x"))
+            {
+            area.setBackgroundImageX(intOf(F.get("background-image-x")));
+            }
+        if (F.containsKey("background-image-y"))
+            {
+            area.setBackgroundImageY(intOf(F.get("background-image-y")));
+            }
+        if (F.containsKey("background-image-width"))
+            {
+            area.setBackgroundImageWidth(intOf(F.get(
+                    "background-image-width")));
+            }
+        if (F.containsKey("background-image-height"))
+            {
+            area.setBackgroundImageHeight(intOf(F.get(
+                    "background-image-height")));
+            }
+        if (F.containsKey("faces-visible"))
+            {
+            area.setFacesVisible(onOff(F.get("faces-visible")));
+            }
+        if (F.containsKey("allow-edge-selection"))
+            {
+            area.setAllowES(onOff(F.get("allow-edge-selection")));
+            }
+        if (F.containsKey("color-fidelity"))
+            {
+            area.setColorFidelity(onOff(F.get("color-fidelity")));
+            }
+        if (F.containsKey("snap-to-grid"))
+            {
+            area.setSTGEnabled(onOff(F.get("snap-to-grid")));
+            }
+        if (F.containsKey("default-face"))
+            {
+            String face = F.get("default-face");
+            for (int i = 0; i < full.getNetwork().getSize(); i++)
+                {
+                full.getNetwork().getActor(i).setFace(face);
+                }
+            }
+        write(full, outFile);
+        out.println("attributes set -> " + outFile);
+        return 0;
+        }
+
+    private static boolean onOff(String v)
+        {
+        return v.equalsIgnoreCase("on") || v.equalsIgnoreCase("yes")
+                || v.equalsIgnoreCase("true");
+        }
+
+    private static int intOf(String v)
+        {
+        return Integer.parseInt(v.trim());
+        }
+
+    private static Color colorOf(String v) throws Exception
+        {
+        String h = v.startsWith("#") ? v.substring(1) : v;
+        if (h.length() != 6)
+            {
+            throw new Exception("expected a #rrggbb color, got: " + v);
+            }
+        return new Color(Integer.parseInt(h, 16));
         }
 
     // compact number formatting: 1.0 -> 1, 0.25 -> 0.25

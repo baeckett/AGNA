@@ -496,4 +496,87 @@ public class CliTest
         assertTrue(parseNodes(run("info", more.getAbsolutePath())) == 11,
                 "three nodes added");
         }
+
+    @Test
+    public void fromChainCreatesANetwork() throws Exception
+        {
+        File chain = File.createTempFile("agna_cli_chain", ".txt");
+        File out = File.createTempFile("agna_cli_chain_out", ".agn");
+        chain.deleteOnExit();
+        out.deleteOnExit();
+        Files.write(chain.toPath(),
+                "alpha beta gamma beta alpha delta".getBytes(
+                        StandardCharsets.UTF_8));
+        run("from-chain", chain.getAbsolutePath(), "--out",
+                out.getAbsolutePath());
+        String info = run("info", out.getAbsolutePath());
+        assertTrue(info.contains("nodes:  "), info);
+        int nodes = parseNodes(info);
+        assertTrue(nodes >= 2, "chain nodes present: " + nodes);
+        }
+
+    @Test
+    public void layoutSavesDeterministicCoordinates() throws Exception
+        {
+        File src = File.createTempFile("agna_cli_lay_in", ".agn");
+        File a = File.createTempFile("agna_cli_lay_a", ".agn");
+        File b = File.createTempFile("agna_cli_lay_b", ".agn");
+        src.deleteOnExit();
+        a.deleteOnExit();
+        b.deleteOnExit();
+        run("generate", "--nodes", "12", "--type", "random", "--seed", "8",
+                "--out", src.getAbsolutePath());
+        run("layout", src.getAbsolutePath(), "--layout", "spring", "--out",
+                a.getAbsolutePath());
+        run("layout", src.getAbsolutePath(), "--layout", "spring", "--out",
+                b.getAbsolutePath());
+        assertTrue(java.util.Arrays.equals(Files.readAllBytes(a.toPath()),
+                Files.readAllBytes(b.toPath())),
+                "layout is deterministic");
+        assertTrue(run("info", a.getAbsolutePath()).contains("nodes:  12"),
+                "laid-out file opens");
+        }
+
+    @Test
+    public void setModifiesViewerAttributes() throws Exception
+        {
+        File src = File.createTempFile("agna_cli_set_in", ".agn");
+        File out = File.createTempFile("agna_cli_set_out", ".agn");
+        src.deleteOnExit();
+        out.deleteOnExit();
+        run("generate", "--nodes", "6", "--type", "star", "--out",
+                src.getAbsolutePath());
+        run("set", src.getAbsolutePath(), "--out", out.getAbsolutePath(),
+                "--names-visible", "on", "--background-color", "#ff0000",
+                "--max-transparency", "100", "--grid-color", "#0000ff",
+                "--default-face", "sample_face.png");
+        com.bentza.sna.net.FullNet back = new Cli(
+                new java.io.PrintStream(new ByteArrayOutputStream())).open(
+                        out.getAbsolutePath());
+        assertTrue(back.getArea().getPrintNames(), "names visible");
+        assertTrue(back.getArea().getBackgroundColor().getRGB()
+                == new java.awt.Color(255, 0, 0).getRGB(),
+                "background red");
+        assertTrue(back.getArea().getMaxTransparency() == 100,
+                "max transparency");
+        assertTrue(back.getArea().getGridColor().getRGB()
+                == new java.awt.Color(0, 0, 255).getRGB(), "grid blue");
+        }
+
+    @Test
+    public void cloneNodeCopiesTies() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_clone", ".agn");
+        out.deleteOnExit();
+        String[] names = firstTwoNames();
+        run("transform", "samples/example2.agn", out.getAbsolutePath(),
+                "--op", "clone-node:" + names[0]);
+        String info = run("info", out.getAbsolutePath());
+        assertTrue(info.contains("nodes:  10"), info);
+        String matrix = run("matrix", out.getAbsolutePath());
+        String firstDataRow = matrix.lines().skip(1).findFirst().get();
+        assertTrue(firstDataRow.split("\t").length == 11,
+                "ten matrix columns, got " + firstDataRow.split("\t").length);
+        assertTrue(matrix.contains("Clone of"), "clone named");
+        }
     }
