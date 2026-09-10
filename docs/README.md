@@ -2,6 +2,8 @@
 
 - `manual.md` — single source of the user manual (in-app help + PDF).
 - `cli.md` — command reference for the Agna CLI (including `metrics`).
+- `agna.1` — the CLI man page (roff).
+- `agnacompletion.bash`, `agnacompletion.zsh` — shell completions.
 - `help-styles.css` — stylesheet for the generated HTML help.
 - `manuals/` — generated PDF/Print output (not committed yet).
 
