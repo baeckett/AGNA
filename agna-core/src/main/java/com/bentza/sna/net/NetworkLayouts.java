@@ -13,6 +13,8 @@ public class NetworkLayouts
     public static final int CIRCULAR = 0;
     public static final int RANDOM = 1;
     public static final int SPRING = 2;
+    public static final int GRID = 3;
+    public static final int CONCENTRIC = 4;
 
     private NetworkLayouts()
         {
@@ -23,6 +25,16 @@ public class NetworkLayouts
         int n = net.getSize();
         if (n == 0)
             {
+            return;
+            }
+        if (layout == GRID)
+            {
+            applyGrid(net, width, height);
+            return;
+            }
+        if (layout == CONCENTRIC)
+            {
+            applyConcentric(net, width, height);
             return;
             }
         if (layout == CIRCULAR)
@@ -111,5 +123,77 @@ public class NetworkLayouts
             net.getActor(i).setX((int) Math.round(px[i]), width);
             net.getActor(i).setY((int) Math.round(py[i]), height);
             }
+        }
+
+    // deterministic row/column lattice
+    private static void applyGrid(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        int cols = (int) Math.ceil(Math.sqrt(n));
+        int rows = (int) Math.ceil((double) n / cols);
+        float mx = width * 0.08f;
+        float my = height * 0.08f;
+        float cellW = (width - 2 * mx) / cols;
+        float cellH = (height - 2 * my) / rows;
+        for (int k = 0; k < n; k++)
+            {
+            int col = k % cols;
+            int row = k / cols;
+            net.getActor(k).setX((int) Math.round(mx + col * cellW
+                    + cellW / 2), width);
+            net.getActor(k).setY((int) Math.round(my + row * cellH
+                    + cellH / 2), height);
+            }
+        }
+
+    // hub-and-spoke: the highest-degree actor sits in the centre, the
+    // rest fan out on concentric rings (ring r holds ranks r^2..(r+1)^2)
+    private static void applyConcentric(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        Integer[] rank = new Integer[n];
+        for (int i = 0; i < n; i++)
+            {
+            rank[i] = i;
+            }
+        java.util.Arrays.sort(rank, new java.util.Comparator<Integer>()
+            {
+            public int compare(Integer a, Integer b)
+                {
+                return degree(net, b) - degree(net, a);
+                }
+            });
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+        int rings = (int) Math.ceil(Math.sqrt(n));
+        double maxR = Math.min(width, height) * 0.42;
+        for (int i = 0; i < n; i++)
+            {
+            int r = (int) Math.floor(Math.sqrt(i));
+            double radius = rings > 1 ? maxR * r / (rings - 1) : 0.0;
+            double angle = (i - r * r) * 2 * Math.PI
+                    / Math.max(1, 2 * r + 1) + r * 0.5;
+            if (r == 0)
+                {
+                radius = 0.0;
+                }
+            net.getActor(rank[i]).setX((int) Math.round(cx + radius
+                    * Math.cos(angle)), width);
+            net.getActor(rank[i]).setY((int) Math.round(cy + radius
+                    * Math.sin(angle)), height);
+            }
+        }
+
+    private static int degree(Network net, int i)
+        {
+        int d = 0;
+        for (int j = 0; j < net.getSize(); j++)
+            {
+            if (i != j && net.getValue(i, j) != 0f)
+                {
+                d++;
+                }
+            }
+        return d;
         }
     }

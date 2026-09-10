@@ -67,7 +67,8 @@ import com.bentza.sna.io.JpegUtils;
             e_hide_faces, e_change_faces, e_set_edge, d_add_node, d_clone_node,
             d_isolate_node, d_delete_node, d_transpose, d_symmetrize,
             d_remove_outsiders, n_set_x, n_set_y, e_random_layout,
-            e_circular_layout, n_change_name, n_face_width, n_change_face,
+            e_circular_layout, e_grid_layout, e_concentric_layout,
+            n_change_name, n_face_width, n_change_face,
             e_change_faces_width, n_no_face, n_default_face,
             n_select_next_node, n_select_next_arrow, e_names_x, e_names_y,
             e_view_grid, e_hide_grid, e_grid_step, e_grid_color,
@@ -85,7 +86,8 @@ import com.bentza.sna.io.JpegUtils;
             gtool_select_next, gtool_export_image, gtool_insert_in_output,
             gtool_allow_edge_selection, gtool_show_connection_value,
             gtool_add_nodes, gtool_delete_nodes, gtool_circular_layout,
-            gtool_random_layout, border_button;
+            gtool_random_layout, gtool_grid_layout, gtool_concentric_layout,
+            border_button;
 
     private Dimension dim_tool;
 
@@ -434,6 +436,20 @@ import com.bentza.sna.io.JpegUtils;
                         || e.getSource() == gtool_circular_layout)
                     {
                     doCircularLayout();
+                    }
+
+                // sets grid layout
+                if (e.getSource() == e_grid_layout
+                        || e.getSource() == gtool_grid_layout)
+                    {
+                    doGridLayout();
+                    }
+
+                // sets concentric layout
+                if (e.getSource() == e_concentric_layout
+                        || e.getSource() == gtool_concentric_layout)
+                    {
+                    doConcentricLayout();
                     }
 
                 // select next node
@@ -2151,6 +2167,22 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         my_area.repaint();
         }
 
+    private void doGridLayout()
+        {
+        my_area.setGridLayout();
+        gr_full_net.setChanged(true);
+        my_area.paintEdges();
+        my_area.repaint();
+        }
+
+    private void doConcentricLayout()
+        {
+        my_area.setConcentricLayout();
+        gr_full_net.setChanged(true);
+        my_area.paintEdges();
+        my_area.repaint();
+        }
+
     /**
      * static method allowing to change the selected actor; not to be placed in
      * threads!
@@ -3405,6 +3437,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_scale_image = new JMenuItem("Scale Image...");
         e_random_layout = new JMenuItem("Random Layout");
         e_circular_layout = new JMenuItem("Circular Layout");
+        e_grid_layout = new JMenuItem("Grid Layout");
+        e_concentric_layout = new JMenuItem("Concentric Layout");
         JMenu e_background_i = new JMenu("Background Picture");
         e_background_color = new JMenuItem("Background Color...");
         e_background_image = new JMenuItem("From File...");
@@ -3458,6 +3492,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_scale_image.setToolTipText("Scale image proportionally");
         e_random_layout.setToolTipText("Spread all nodes randomly");
         e_circular_layout.setToolTipText("Arrange all nodes in a circle");
+        e_grid_layout.setToolTipText("Arrange all nodes in a grid");
+        e_concentric_layout.setToolTipText("Arrange nodes in concentric circles by degree");
         e_background_i.setToolTipText("Background image settings");
         e_background_color.setToolTipText("Change background color");
         e_background_image
@@ -3523,6 +3559,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_scale_image.setMnemonic('s');
         e_random_layout.setMnemonic('r');
         e_circular_layout.setMnemonic('c');
+        e_grid_layout.setMnemonic('g');
+        e_concentric_layout.setMnemonic('o');
         e_background_i.setMnemonic('b');
         e_background_color.setMnemonic('k');
         e_background_image.setMnemonic('f');
@@ -3632,6 +3670,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_scale_image.addActionListener(act_change_image);
         e_random_layout.addActionListener(act_change_image);
         e_circular_layout.addActionListener(act_change_image);
+        e_grid_layout.addActionListener(act_change_image);
+        e_concentric_layout.addActionListener(act_change_image);
         e_background_color.addActionListener(act_change_image);
         e_background_image.addActionListener(act_change_image);
         e_background_x.addActionListener(act_change_image);
@@ -3740,6 +3780,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gImage.addSeparator();
         gImage.add(e_random_layout);
         gImage.add(e_circular_layout);
+        gImage.add(e_grid_layout);
+        gImage.add(e_concentric_layout);
         gImage.addSeparator();
         gImage.add(e_title);
         gImage.add(e_grid);
@@ -4043,6 +4085,10 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 .isClassicToolbarIcons() ? Environment
                         .getButtonImageIcon("RandomLayout.gif")
                 : ModernIcons.get(ModernIcons.RANDOM_LAYOUT, 22));
+        gtool_grid_layout = new JButton(ModernIcons.get(
+                ModernIcons.GRID_LAYOUT, 22));
+        gtool_concentric_layout = new JButton(ModernIcons.get(
+                ModernIcons.CONCENTRIC_LAYOUT, 22));
         gtool_select_next = new JButton(gi_select_next);
         gtool_export_image = new JButton(gi_export_image);
         gtool_insert_in_output = new JButton(gi_insert_in_output);
@@ -4116,6 +4162,10 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 .isClassicToolbarIcons() ? Environment
                         .getButtonImageIcon("rRandomLayout.gif")
                 : ModernIcons.get(ModernIcons.RANDOM_LAYOUT, 22, true));
+        gtool_grid_layout.setRolloverIcon(ModernIcons.get(
+                ModernIcons.GRID_LAYOUT, 22, true));
+        gtool_concentric_layout.setRolloverIcon(ModernIcons.get(
+                ModernIcons.CONCENTRIC_LAYOUT, 22, true));
         gtool_select_next.setRolloverIcon(gir_select_next);
         gtool_export_image.setRolloverIcon(gir_export_image);
         gtool_insert_in_output.setRolloverIcon(gir_insert_in_output);
@@ -4136,6 +4186,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_image_width.setBorder(null);
         gtool_circular_layout.setBorder(null);
         gtool_random_layout.setBorder(null);
+        gtool_grid_layout.setBorder(null);
+        gtool_concentric_layout.setBorder(null);
         gtool_select_next.setBorder(null);
         gtool_export_image.setBorder(null);
         gtool_insert_in_output.setBorder(null);
@@ -4155,6 +4207,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_delete_nodes.setPreferredSize(dim_tool);
         gtool_circular_layout.setPreferredSize(dim_tool);
         gtool_random_layout.setPreferredSize(dim_tool);
+        gtool_grid_layout.setPreferredSize(dim_tool);
+        gtool_concentric_layout.setPreferredSize(dim_tool);
 
         gtool_edge_color.setMaximumSize(dim_tool);
         gtool_view_names.setMaximumSize(dim_tool);
@@ -4167,6 +4221,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_delete_nodes.setMaximumSize(dim_tool);
         gtool_circular_layout.setMaximumSize(dim_tool);
         gtool_random_layout.setMaximumSize(dim_tool);
+        gtool_grid_layout.setMaximumSize(dim_tool);
+        gtool_concentric_layout.setMaximumSize(dim_tool);
 
         gtool_separator.setPreferredSize(dim_tool);
         gtool_edge_value.setPreferredSize(dim_tool);
@@ -4216,6 +4272,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_image_width.setToolTipText("Image width");
         gtool_circular_layout.setToolTipText("Circular Layout");
         gtool_random_layout.setToolTipText("Random Layout");
+        gtool_grid_layout.setToolTipText("Grid Layout");
+        gtool_concentric_layout.setToolTipText("Concentric Layout");
         gfield_separator.setToolTipText("Edge separation (px)");
         gfield_edge_value.setToolTipText("Edge value");
         gtool_separator.up_button
@@ -4260,6 +4318,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_image_width.addActionListener(act_change_image);
         gtool_circular_layout.addActionListener(act_change_image);
         gtool_random_layout.addActionListener(act_change_image);
+        gtool_grid_layout.addActionListener(act_change_image);
+        gtool_concentric_layout.addActionListener(act_change_image);
         gfield_separator.addActionListener(act_change_image);
         gfield_edge_value.addActionListener(act_change_node);
         gtool_edge_value.up_button.addActionListener(act_change_node);
@@ -4331,6 +4391,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtools.addSeparator();
         gtools.add(gtool_circular_layout);
         gtools.add(gtool_random_layout);
+        gtools.add(gtool_grid_layout);
+        gtools.add(gtool_concentric_layout);
         gtools.addSeparator();
         gtools.add(gtool_add_nodes);
         gtools.add(gtool_delete_nodes);

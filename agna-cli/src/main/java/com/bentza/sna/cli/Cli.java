@@ -50,7 +50,7 @@ public final class Cli
                 + "                                  multiply-scalar:V | "
                 + "square | merge:FILE:POLICY\n"
                 + "  draw IN --out PNG --layout L   L = circular | random | "
-                + "spring; --size WxH; --labels\n"
+                + "spring | grid | concentric; --size WxH; --labels\n"
                 + "  --help                          this text\n";
         }
 
@@ -355,6 +355,16 @@ public final class Cli
                     } else if ("spring".equals(l))
                     {
                     layout = NetworkLayouts.SPRING;
+                    } else if ("grid".equals(l))
+                    {
+                    layout = NetworkLayouts.GRID;
+                    } else if ("concentric".equals(l))
+                    {
+                    layout = NetworkLayouts.CONCENTRIC;
+                    } else if (!"circular".equals(l))
+                    {
+                    out.println("unknown layout: " + l);
+                    return 1;
                     }
                 } else if ("--size".equals(a) && i + 1 < args.length)
                 {

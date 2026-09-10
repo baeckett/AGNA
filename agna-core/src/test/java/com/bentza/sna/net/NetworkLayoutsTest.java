@@ -76,17 +76,92 @@ public class NetworkLayoutsTest
         }
 
     @Test
+    public void gridFillsTheCanvasInRows() throws Exception
+        {
+        Network net = sample();
+        int w = 800;
+        int h = 600;
+        NetworkLayouts.apply(net, NetworkLayouts.GRID, w, h);
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            int x = px(net.getActor(i), w);
+            int y = py(net.getActor(i), h);
+            assertTrue(x >= 0 && x < w && y >= 0 && y < h,
+                    "grid actor " + i + " inside canvas");
+            }
+        // every actor lands on a different grid cell (no two same)
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            for (int j = i + 1; j < net.getSize(); j++)
+                {
+                boolean same = px(net.getActor(i), w) == px(
+                        net.getActor(j), w)
+                        && py(net.getActor(i), h) == py(net.getActor(j), h);
+                assertTrue(!same, "grid cells distinct for " + i + "," + j);
+                }
+            }
+        }
+
+    @Test
+    public void concentricPutsTheHubInTheCentre() throws Exception
+        {
+        Network net = sample();
+        int w = 800;
+        int h = 600;
+        int hub = 0;
+        for (int i = 1; i < net.getSize(); i++)
+            {
+            if (degree(net, i) > degree(net, hub))
+                {
+                hub = i;
+                }
+            }
+        NetworkLayouts.apply(net, NetworkLayouts.CONCENTRIC, w, h);
+        double cx = w / 2.0;
+        double cy = h / 2.0;
+        double hubDist = Math.hypot(px(net.getActor(hub), w) - cx,
+                py(net.getActor(hub), h) - cy);
+        assertTrue(hubDist < 15, "highest-degree actor at the centre, "
+                + "dist=" + hubDist);
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            int x = px(net.getActor(i), w);
+            int y = py(net.getActor(i), h);
+            assertTrue(x >= 0 && x < w && y >= 0 && y < h,
+                    "concentric actor " + i + " inside canvas");
+            }
+        }
+
+    @Test
     public void layoutsAreDeterministic() throws Exception
         {
-        Network a = sample();
-        Network b = sample();
-        NetworkLayouts.apply(a, NetworkLayouts.RANDOM, 640, 480);
-        NetworkLayouts.apply(b, NetworkLayouts.RANDOM, 640, 480);
-        for (int i = 0; i < a.getSize(); i++)
+        for (int layout : new int[] { NetworkLayouts.RANDOM,
+                NetworkLayouts.GRID, NetworkLayouts.CONCENTRIC })
             {
-            assertTrue(px(a.getActor(i), 640) == px(b.getActor(i), 640)
-                    && py(a.getActor(i), 480) == py(b.getActor(i), 480),
-                    "same seed, same position for actor " + i);
+            Network a = sample();
+            Network b = sample();
+            NetworkLayouts.apply(a, layout, 640, 480);
+            NetworkLayouts.apply(b, layout, 640, 480);
+            for (int i = 0; i < a.getSize(); i++)
+                {
+                assertTrue(px(a.getActor(i), 640) == px(b.getActor(i), 640)
+                        && py(a.getActor(i), 480) == py(b.getActor(i), 480),
+                        "layout " + layout + " same seed, same position for "
+                                + "actor " + i);
+                }
             }
+        }
+
+    private static int degree(Network net, int i)
+        {
+        int d = 0;
+        for (int j = 0; j < net.getSize(); j++)
+            {
+            if (i != j && net.getValue(i, j) != 0f)
+                {
+                d++;
+                }
+            }
+        return d;
         }
     }

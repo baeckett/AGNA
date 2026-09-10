@@ -77,4 +77,19 @@ public class CliTest
         assertTrue(bytes[0] == (byte) 0x89 && bytes[1] == 'P'
                 && bytes[2] == 'N' && bytes[3] == 'G', "png signature");
         }
+
+    @Test
+    public void drawSupportsGridAndConcentric() throws Exception
+        {
+        for (String layout : new String[] { "grid", "concentric" })
+            {
+            File png = File.createTempFile("agna_cli_draw_" + layout,
+                    ".png");
+            png.deleteOnExit();
+            run("draw", "samples/example2.agn", "--out",
+                    png.getAbsolutePath(), "--layout", layout);
+            byte[] bytes = Files.readAllBytes(png.toPath());
+            assertTrue(bytes.length > 1000, layout + " png has content");
+            }
+        }
     }

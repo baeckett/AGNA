@@ -63,8 +63,10 @@ public class ModernIcons
     public static final int X_COORD = 33;
     public static final int Y_COORD = 34;
     public static final int EDGE_VALUE = 35;
+    public static final int GRID_LAYOUT = 36;
+    public static final int CONCENTRIC_LAYOUT = 37;
 
-    public static final int KIND_COUNT = 36;
+    public static final int KIND_COUNT = 38;
 
     public static Color accent()
         {
@@ -399,6 +401,42 @@ public class ModernIcons
                             dots[i][1] * s - s * 0.08f, s * 0.16f,
                             s * 0.16f));
                     }
+                break;
+            case GRID_LAYOUT:
+                g.setColor(line);
+                float gw = s * 0.58f;
+                float gx = s * 0.21f;
+                float gy = s * 0.21f;
+                for (int r = 1; r < 4; r++)
+                    {
+                    g.drawLine(Math.round(gx + gw * r / 4),
+                            Math.round(gy), Math.round(gx + gw * r / 4),
+                            Math.round(gy + gw));
+                    g.drawLine(Math.round(gx),
+                            Math.round(gy + gw * r / 4),
+                            Math.round(gx + gw),
+                            Math.round(gy + gw * r / 4));
+                    }
+                g.setColor(accent);
+                int gd = Math.max(3, Math.round(s * 0.12f));
+                g.fillRect(Math.round(gx + gw / 2 - gd / 2),
+                        Math.round(gy + gw / 2 - gd / 2), gd, gd);
+                break;
+            case CONCENTRIC_LAYOUT:
+                g.setColor(line);
+                float[][] ringR = { { 0.50f, 0.50f, 0.10f },
+                        { 0.50f, 0.50f, 0.26f }, { 0.50f, 0.50f, 0.42f } };
+                for (int i = 0; i < 3; i++)
+                    {
+                    g.draw(new Ellipse2D.Float(
+                            ringR[i][0] * s - ringR[i][2] * s,
+                            ringR[i][1] * s - ringR[i][2] * s,
+                            ringR[i][2] * s * 2, ringR[i][2] * s * 2));
+                    }
+                g.setColor(accent);
+                float cd = s * 0.16f;
+                g.fill(new Ellipse2D.Float(s * 0.50f - cd / 2,
+                        s * 0.50f - cd / 2, cd, cd));
                 break;
             case SELECT_NEXT:
                 g.setColor(line);

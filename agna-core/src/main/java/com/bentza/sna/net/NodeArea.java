@@ -414,6 +414,26 @@ public class NodeArea extends JButton implements MouseListener,
             }
         }
 
+    // 2.1.3: the two new layouts share the deterministic core
+    // implementations (also used by the CLI renderer)
+    public void setGridLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.GRID, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
+    public void setConcentricLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.CONCENTRIC, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
     public String getTitle()
         {
         return this.title;
