@@ -175,10 +175,6 @@ public class NetworkLayoutsTest
             }
         net.setValue(1f, 3, 4); // the single bridge
         net.setValue(1f, 4, 3);
-        for (int i = 0; i < 8; i++)
-            {
-            net.getActor(i).createCoordinates();
-            }
 
         NetworkLayouts.apply(net, NetworkLayouts.SPRING, 800, 600);
         double intra = 0.0;
@@ -210,6 +206,145 @@ public class NetworkLayoutsTest
         assertTrue(meanIntra < meanInter,
                 "spring separates cliques: intra=" + meanIntra
                         + " inter=" + meanInter);
+        }
+
+    @Test
+    public void singleNodeSurvivesEveryLayout() throws Exception
+        {
+        for (int layout : new int[] { NetworkLayouts.CIRCULAR,
+                NetworkLayouts.RANDOM, NetworkLayouts.SPRING,
+                NetworkLayouts.GRID, NetworkLayouts.CONCENTRIC })
+            {
+            Network net = new Network(1);
+            NetworkLayouts.apply(net, layout, 400, 400);
+            Actor actor = net.getActor(0);
+            assertTrue(Float.isFinite(actor.getX())
+                    && Float.isFinite(actor.getY()),
+                    "single node finite under layout " + layout);
+            }
+        }
+
+    @Test
+    public void disconnectedComponentsSeparate() throws Exception
+        {
+        Network net = new Network(15);
+        int[][] comps = { { 0, 1, 2, 3, 4 }, { 5, 6, 7, 8, 9 },
+                { 10, 11, 12, 13, 14 } };
+        for (int[] comp : comps)
+            {
+            addClique(net, comp);
+            }
+        NetworkLayouts.apply(net, NetworkLayouts.SPRING, 600, 600);
+        for (int i = 0; i < 15; i++)
+            {
+            assertTrue(Float.isFinite(net.getActor(i).getX())
+                    && Float.isFinite(net.getActor(i).getY()),
+                    "finite actor " + i);
+            assertTrue(px(net.getActor(i), 600) >= 0
+                    && px(net.getActor(i), 600) < 600
+                    && py(net.getActor(i), 600) >= 0
+                    && py(net.getActor(i), 600) < 600,
+                    "inside canvas actor " + i);
+            }
+        // the three components must drift apart: the smallest gap between
+        // component centroids exceeds the widest intra-clique spread, so
+        // no component overlaps another
+        double maxIntra = 0.0;
+        for (int[] comp : comps)
+            {
+            maxIntra = Math.max(maxIntra, intraSpread(net, comp));
+            }
+        double minInter = Double.POSITIVE_INFINITY;
+        for (int a = 0; a < comps.length; a++)
+            {
+            for (int b = a + 1; b < comps.length; b++)
+                {
+                minInter = Math.min(minInter, centroidDist(net, comps[a],
+                        comps[b]));
+                }
+            }
+        assertTrue(minInter > maxIntra,
+                "components separated: minInter=" + minInter
+                        + " maxIntra=" + maxIntra);
+        }
+
+    @Test
+    public void fullyConnectedGraphSettlesDeterministically() throws Exception
+        {
+        Network a = new Network(25);
+        Network b = new Network(25);
+        for (int i = 0; i < 25; i++)
+            {
+            for (int j = i + 1; j < 25; j++)
+                {
+                a.setValue(1f, i, j);
+                a.setValue(1f, j, i);
+                b.setValue(1f, i, j);
+                b.setValue(1f, j, i);
+                }
+            }
+        NetworkLayouts.apply(a, NetworkLayouts.SPRING, 600, 600);
+        NetworkLayouts.apply(b, NetworkLayouts.SPRING, 600, 600);
+        for (int i = 0; i < 25; i++)
+            {
+            assertTrue(Float.isFinite(a.getActor(i).getX())
+                    && Float.isFinite(a.getActor(i).getY()), "finite");
+            assertTrue(px(a.getActor(i), 600) == px(b.getActor(i), 600)
+                    && py(a.getActor(i), 600) == py(b.getActor(i), 600),
+                    "same seed, same position actor " + i);
+            }
+        }
+
+    private static void addClique(Network net, int[] comp)
+        {
+        for (int i = 0; i < comp.length; i++)
+            {
+            for (int j = i + 1; j < comp.length; j++)
+                {
+                net.setValue(1f, comp[i], comp[j]);
+                net.setValue(1f, comp[j], comp[i]);
+                }
+            }
+        }
+
+    private static double intraSpread(Network net, int[] comp)
+        {
+        double max = 0.0;
+        for (int i = 0; i < comp.length; i++)
+            {
+            for (int j = i + 1; j < comp.length; j++)
+                {
+                max = Math.max(max, Math.hypot(
+                        px(net.getActor(comp[i]), 600)
+                                - px(net.getActor(comp[j]), 600),
+                        py(net.getActor(comp[i]), 600)
+                                - py(net.getActor(comp[j]), 600)));
+                }
+            }
+        return max;
+        }
+
+    private static double centroidDist(Network net, int[] c1, int[] c2)
+        {
+        double cx1 = 0;
+        double cy1 = 0;
+        for (int i : c1)
+            {
+            cx1 += px(net.getActor(i), 600);
+            cy1 += py(net.getActor(i), 600);
+            }
+        cx1 /= c1.length;
+        cy1 /= c1.length;
+        double cx2 = 0;
+        double cy2 = 0;
+        for (int i : c2)
+            {
+            cx2 += px(net.getActor(i), 600);
+            cy2 += py(net.getActor(i), 600);
+            }
+        cx2 /= c2.length;
+        cy2 /= c2.length;
+        return Math.hypot(cx1 - cx2, cy1 - cy2);
         }
 
     private static int degree(Network net, int i)

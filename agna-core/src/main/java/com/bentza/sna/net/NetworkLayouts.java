@@ -16,16 +16,29 @@ public class NetworkLayouts
     public static final int GRID = 3;
     public static final int CONCENTRIC = 4;
 
+    public static final int SPRING_ITERATIONS = 60;
+
     private NetworkLayouts()
         {
         }
 
     public static void apply(Network net, int layout, int width, int height)
         {
+        apply(net, layout, width, height, SPRING_ITERATIONS);
+        }
+
+    public static void apply(Network net, int layout, int width, int height,
+            int iterations)
+        {
         int n = net.getSize();
         if (n == 0)
             {
             return;
+            }
+        // freshly built networks may carry actors with no coordinates yet
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
             }
         if (layout == GRID)
             {
@@ -74,13 +87,14 @@ public class NetworkLayouts
             }
         double area = (double) width * height;
         double k = Math.sqrt(area / Math.max(1, n));
-        for (int iter = 0; iter < 60; iter++)
+        int iters = Math.max(1, iterations);
+        for (int iter = 0; iter < iters; iter++)
             {
             float[] fx = new float[n];
             float[] fy = new float[n];
             // classic Fruchterman-Reingold cooling: large moves early,
             // gentle settling later
-            float temp = 1f - (float) iter / 60;
+            float temp = 1f - (float) iter / iters;
             for (int i = 0; i < n; i++)
                 {
                 for (int j = i + 1; j < n; j++)
