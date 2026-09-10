@@ -3762,6 +3762,21 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         // 2.1.3: the new black logo doubles as the window/dock icon
         main_icon = new ImageIcon(Agna.class.getResource("/agna_icon.png"));
 
+        // 2.1.3: replace the generic Java dock icon on macOS even when the
+        // app is started from a jar (the bundle path uses the .icns)
+        try
+            {
+            Class<?> app_class = Class.forName("com.apple.eawt.Application");
+            Object mac_app = app_class.getMethod("getApplication")
+                    .invoke(null);
+            app_class.getMethod("setDockIconImage", java.awt.Image.class)
+                    .invoke(mac_app, main_icon.getImage());
+            } catch (Exception e_mac_icon)
+            {
+            // not macOS (or a newer JDK without the old eawt API) - the
+            // frame icon still applies on other systems
+            }
+
         // read icon from current jar archive:
         // main_icon = new ImageIcon(Agna.class.getResource("Agna_icon.gif"));
 

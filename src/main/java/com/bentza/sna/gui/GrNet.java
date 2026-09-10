@@ -3276,6 +3276,15 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gr_exists = true;
 
         gr_frame = new JFrame();
+        // 2.1.3: the network viewer carries the Agna icon
+        try
+            {
+            gr_frame.setIconImage(new javax.swing.ImageIcon(
+                    GrNet.class.getResource("/agna_icon.png"))
+                    .getImage());
+            } catch (Exception e)
+            {
+            }
 
         if (gr_full_net.getNetworkFileName().equals(""))
             gr_frame.setTitle(gr_full_net.getNetwork().getName()
