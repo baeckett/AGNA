@@ -1,15 +1,25 @@
 package com.bentza.sna.cli;
 
 /**
- * Placeholder entry point for the Agna command-line interface.
- * The full command surface (analyse, convert, transform) is defined in
- * the next milestone; the engine it drives is already CLI-ready.
+ * Entry point for the Agna command-line interface.
  */
 public final class Main
     {
+    private Main()
+        {
+        }
+
     public static void main(String[] args)
         {
-        System.out.println("Agna CLI 2.1.3");
-        System.out.println("Command-line interface - coming in a later milestone.");
+        int code;
+        try
+            {
+            code = new Cli(System.out).run(args);
+            } catch (Exception e)
+            {
+            System.err.println("Agna CLI error: " + e.getMessage());
+            code = 1;
+            }
+        System.exit(code);
         }
     }
