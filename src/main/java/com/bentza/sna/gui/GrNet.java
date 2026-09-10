@@ -1642,7 +1642,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             } catch (Exception e)
             {
             JOptionPane.showMessageDialog(gr_frame,
-                    "Separation value must be an integer.", "Parsing error",
+                    "Grid step must be an integer.", "Parsing error",
                     JOptionPane.INFORMATION_MESSAGE);
             }
         }

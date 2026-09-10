@@ -685,6 +685,15 @@ import javax.swing.JTextPane;
             javax.xml.parsers.DocumentBuilderFactory factory = javax.xml.parsers.DocumentBuilderFactory
                     .newInstance();
             factory.setNamespaceAware(true);
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
             Document doc = factory.newDocumentBuilder().parse(
                     new java.io.ByteArrayInputStream(str.getBytes(
                             java.nio.charset.StandardCharsets.UTF_8)));
@@ -2109,12 +2118,23 @@ tmp_node.setFace(tmpname);
 
         try
             {
-            nn = parseNextInt(str, "Separator");
-            net_area.setSeparator(nn);
+            // 2.1.3: tolerate floats or junk left by older versions
+            String sep = parseFindNextWord(str, "Separator");
+            if (sep != null)
+                {
+                try
+                    {
+                    nn = Integer.parseInt(sep);
+                    } catch (NumberFormatException e_sep)
+                    {
+                    nn = (int) Float.parseFloat(sep);
+                    }
+                net_area.setSeparator(nn);
+                }
             } catch (Exception e)
             {
-            if (parseFindNextWord(str, "Edge Separation") != null)
-                errors.append("\nInvalid Edge Separation parameter.");
+            if (parseFindNextWord(str, "Separator") != null)
+                errors.append("\nInvalid Separator parameter.");
             }
 
         try

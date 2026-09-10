@@ -727,13 +727,7 @@ public class MainFrame //
         setTableCellEditor();
         updateMatrix();
 
-        if (my_full_net.getNetworkFileName().equals(""))
-            my_frame.setTitle(MainFrame.my_full_net.getNetwork().getName()
-                    + " - " + Environment.getApplicationFullName());
-        else
-            my_frame.setTitle(IOUtils.getNameWithoutExtension(my_full_net
-                    .getNetworkFileName())
-                    + " - " + Environment.getApplicationFullName());
+        refreshFrameTitle();
 
         appendOutputLog("Created a new network with " + t_nnodes
                 + " nodes.");
@@ -1092,13 +1086,7 @@ public class MainFrame //
             { // the same as in runner.go(), but no thread
             saveNetwork(my_full_net, thread_filename);
 
-            if (my_full_net.getNetworkFileName().equals(""))
-                my_frame.setTitle(MainFrame.my_full_net.getNetwork().getName()
-                        + " - " + Environment.getApplicationFullName());
-            else
-                my_frame.setTitle(IOUtils.getNameWithoutExtension(my_full_net
-                        .getNetworkFileName())
-                        + " - " + Environment.getApplicationFullName());
+            refreshFrameTitle();
 
             my_frame.validate();
             my_frame.repaint();
@@ -1213,6 +1201,20 @@ public class MainFrame //
                         updateMatrix();
                         progress_dialog.setPercent(90);
                         my_full_net.setChanged(false);
+                        // 2.1.3: analyses print the network name - make it
+                        // match the opened file name when nothing explicit
+                        // is stored, and keep the frame title in lockstep
+                        Network open_net = my_full_net.getNetwork();
+                        String open_name = open_net.getName();
+                        if (open_name == null
+                                || open_name.trim().length() == 0
+                                || open_name.equals("New Network"))
+                            {
+                            open_net.setName(IOUtils
+                                    .getNameWithoutExtension(my_full_net
+                                            .getNetworkFileName()));
+                            }
+                        refreshFrameTitle();
                         grid_model.setReady(true);
                         if (my_full_net.getNetworkFileName().equals(""))
                             my_frame.setTitle(MainFrame.my_full_net
@@ -1353,7 +1355,11 @@ public class MainFrame //
         final File t_file = file;
         final FullNet t_new_full_net = new FullNet();
         MainFrame.setCurrentStatus("Reading chain file. Please wait...");
-        my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        if (my_frame != null)
+            {
+            my_frame.setCursor(Cursor.getPredefinedCursor(
+                    Cursor.WAIT_CURSOR));
+            }
         JTextPane tmp_pane = new JTextPane();
         try (Reader reader = IOUtils.reader(t_file))
             {
@@ -1799,7 +1805,7 @@ public class MainFrame //
     // saves output when path is known:
     public static boolean saveOutput(AgnaTextPane o_edit, String file_name)
         {
-my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         MainFrame.setCurrentStatus("Writing file. Please wait...");
         EditorKit kit = null;
         Document doc = null;
@@ -1828,10 +1834,10 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     } catch (Exception e)
                     {
                     MainFrame.setCurrentStatus(MainFrame.default_status);
-                    my_frame.setCursor(Cursor
+                    if (my_frame != null) my_frame.setCursor(Cursor
                             .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                    my_frame.validate();
-                    my_frame.repaint();
+                    if (my_frame != null) my_frame.validate();
+                    if (my_frame != null) my_frame.repaint();
                     return false;
                     }
                 tmptext = null;
@@ -1856,18 +1862,18 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             // if (filestr.equals("htm") || filestr.equals("html"))
             o_edit.setFileName(file_name);
             MainFrame.setCurrentStatus(MainFrame.default_status);
-            my_frame.setCursor(Cursor
+            if (my_frame != null) my_frame.setCursor(Cursor
                     .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            my_frame.validate();
-            my_frame.repaint();
+            if (my_frame != null) my_frame.validate();
+            if (my_frame != null) my_frame.repaint();
             return true;
             } catch (Exception e)
             {
             MainFrame.setCurrentStatus(MainFrame.default_status);
-            my_frame.setCursor(Cursor
+            if (my_frame != null) my_frame.setCursor(Cursor
                     .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            my_frame.validate();
-            my_frame.repaint();
+            if (my_frame != null) my_frame.validate();
+            if (my_frame != null) my_frame.repaint();
             return false;
             }
 
@@ -2093,7 +2099,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     public static void setCurrentStatus(String tmp_status)
         {
-        status_bar.setText(tmp_status);
+        // 2.1.3: headless-safe (tests, CLI)
+        if (status_bar != null)
+            {
+            status_bar.setText(tmp_status);
+            }
         }
 
     // returns working directory plus file separator character
@@ -2413,6 +2423,20 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     // 2.1.3: the Output pane doubles as a session log; every operation
     // appends a timestamped line so non-expert users can follow what
     // happened and in which order
+    private static void refreshFrameTitle()
+        {
+        String name = Environment.getApplicationFullName();
+        if (my_full_net != null && my_full_net.getNetwork() != null)
+            {
+            String net_name = my_full_net.getNetwork().getName();
+            if (net_name != null && net_name.trim().length() > 0)
+                {
+                name = net_name + " - " + name;
+                }
+            }
+        my_frame.setTitle(name);
+        }
+
     private static void appendOutputLog(String message)
         {
         if (output_edit == null)

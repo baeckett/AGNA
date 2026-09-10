@@ -65,6 +65,15 @@ public class XlsxReader
         {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
         return factory.newDocumentBuilder().parse(
                 new java.io.ByteArrayInputStream(xml.getBytes(
                         java.nio.charset.StandardCharsets.UTF_8)));
