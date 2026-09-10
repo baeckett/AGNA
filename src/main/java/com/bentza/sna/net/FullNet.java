@@ -88,8 +88,12 @@ import javax.swing.JTextPane;
 
     public void writeInitialSettings()
         {
-        try (Writer writer = IOUtils.writer(new File(
-                    "AgnaDefaultSettings.ini")))
+        java.io.File settings_file = Environment.getSettingsFile();
+        if (settings_file.getParentFile() != null)
+            {
+            settings_file.getParentFile().mkdirs();
+            }
+        try (Writer writer = IOUtils.writer(settings_file))
             {
             JTextPane tmp_pane = new JTextPane();
             tmp_pane.setText(getAgna2DefaultSettings(getArea()));
@@ -207,15 +211,21 @@ import javax.swing.JTextPane;
 
         // converts a hex String to internal binary:
         // int i = Integer.parseInt(g .trim(), 16 /* radix */ );
-        if (s == null || s.length() < 1)
-        // return Color.gray;
+        if (s == null || s.length() < 7) // "#RRGGBB"
             {
             throw new ParsingError();
             }
-        int r = Integer.parseInt(s.substring(1, 3).trim(), 16);
-        int g = Integer.parseInt(s.substring(3, 5).trim(), 16);
-        int b = Integer.parseInt(s.substring(5, 7).trim(), 16);
-        return new Color(r, g, b);
+        try
+            {
+            int r = Integer.parseInt(s.substring(1, 3).trim(), 16);
+            int g = Integer.parseInt(s.substring(3, 5).trim(), 16);
+            int b = Integer.parseInt(s.substring(5, 7).trim(), 16);
+            return new Color(r, g, b);
+            } catch (NumberFormatException e)
+            {
+            // 2.1.3: non-hex content is a parse error, like a short value
+            throw new ParsingError();
+            }
         }
 
     // puts nodearea settings data into a writable string form:
@@ -1707,7 +1717,7 @@ import javax.swing.JTextPane;
                     for (i = 0; i < nn; i++)
                         {
                         my_network.getActor(i).setName(
-                                (String) val.elementAt(i));
+                                String.valueOf(val.elementAt(i)));
                         }
                     }
                 }
@@ -1753,7 +1763,7 @@ import javax.swing.JTextPane;
 
         // finding name of network:
         tmpname = parseFindNextWord(str, "Network Name");
-        if (tmpname.length() > 0)
+        if (tmpname != null && tmpname.length() > 0)
             my_network.setName(tmpname);
 
         // finding names of nodes:
@@ -1762,23 +1772,21 @@ import javax.swing.JTextPane;
 
         // is_err = true if "Error setting Node Name" occurres at least once
         boolean is_err = false;
-        if (i > 0 && i < len)
-            {
-            if (j > 0)
+        if (i > 0 && i < len && j > i)
                 {
                 val = parseStringVectorFromString(str.substring(i, j));
-                if (val.size() != my_network.getSize())
+                if (val == null || val.size() != my_network.getSize())
                     {
                     errors
                             .append("\nErrors encountered on reading Node Names.");
                     }
 
-                for (i = 0; i < val.size(); i++)
+                for (i = 0; val != null && i < val.size(); i++)
                     {
                     try
                         {
                         my_network.getActor(i).setName(
-                                (String) val.elementAt(i));
+                                String.valueOf(val.elementAt(i)));
                         } catch (Exception e1)
                         {
                         if (!is_err)
@@ -1793,15 +1801,13 @@ import javax.swing.JTextPane;
                 // error here
                 errors.append("\nNode Names not found.");
                 }
-
-            }
         // finding matrix:
         i = str.indexOf("Network Matrix") + 14;
         j = str.indexOf("End Network Matrix");
-        if (i > 0 && j > 0 && i < len)
+        if (i < j && i < len)
             {
             val = parseVectorFromString(str.substring(i, j), true);
-            nn = val.size();
+            nn = val == null ? 0 : val.size();
             if (nn != (int) Math.sqrt(nn) * (int) Math.sqrt(nn)
                     || my_network.getSize() != (int) Math.sqrt(nn))
                 {
@@ -1855,15 +1861,21 @@ import javax.swing.JTextPane;
         j = str.indexOf("End Node Faces");
         File test_file = null;
 
-        if (i > 0 && j > 0 && i < len)
+        if (i > 0 && j > i && i < len)
             {
             val = parseStringVectorFromString(str.substring(i, j));
             is_err = false;
-            for (i = 0; i < val.size(); i++)
+            for (i = 0; val != null && i < val.size(); i++)
                 {
                 tmpname = null;
-                tmpname = (String) val.elementAt(i);
+                tmpname = String.valueOf(val.elementAt(i));
                 tmp_node = my_network.getActor(i);
+                if (tmp_node == null)
+                    {
+                    // 2.1.3: more stored faces than actors (malformed
+                    // file) - stop reading them instead of crashing
+                    break;
+                    }
 
 tmp_node.setFace(tmpname);
                 // 2.1.3: the icon-width check was unreliable (an icon may
@@ -1908,10 +1920,10 @@ tmp_node.setFace(tmpname);
         j = str.indexOf("End Node Coordinates");
         if (i > 0 && i < len)
             {
-            if (j > 0)
+            if (j > i)
                 {
                 val = parseVectorFromString(str.substring(i, j), true);
-                nn = val.size();
+                nn = val == null ? 0 : val.size();
                 if (nn == 3 * (int) ((float) nn / 3)
                         && my_network.getSize() == (int) ((float) nn / 3))
                     {
@@ -2334,9 +2346,17 @@ tmp_node.setFace(tmpname);
         Vector val = parseVectorFromString(str, true);
         if (val == null)
             {
-            JOptionPane.showMessageDialog(MainFrame.getCurrentFrame(),
-                    "Agna could not read data from specified file.",
-                    "Error reading", JOptionPane.ERROR_MESSAGE);
+            if (MainFrame.getCurrentFrame() == null
+                    || java.awt.GraphicsEnvironment.isHeadless())
+                {
+                // 2.1.3: headless runs (tests, the CLI) log instead
+                AgnaLog.warn("could not read data from specified file");
+                } else
+                {
+                JOptionPane.showMessageDialog(MainFrame.getCurrentFrame(),
+                        "Agna could not read data from specified file.",
+                        "Error reading", JOptionPane.ERROR_MESSAGE);
+                }
             return;
             }
         ni = val.size();
@@ -2360,7 +2380,20 @@ tmp_node.setFace(tmpname);
                                                                                 // ==
                                                                                 // Integer.parseInt((String)val.elementAt(0)))
             {
-            ni = Integer.parseInt((String) val.elementAt(0));
+            try
+                {
+                ni = Integer.parseInt(String.valueOf(val.elementAt(0)));
+                } catch (NumberFormatException e_size)
+                {
+                try
+                    {
+                    ni = (int) Float.parseFloat(String.valueOf(val
+                            .elementAt(0)));
+                    } catch (NumberFormatException e_size2)
+                    {
+                    ni = 0;
+                    }
+                }
             my_network = new Network(ni);
             for (int i = 0; i < ni; i++)
                 {
@@ -2411,6 +2444,10 @@ tmp_node.setFace(tmpname);
         int i = 0;
         // vector of new values:
         Vector val = parseVectorFromString(str, false);
+        if (val == null)
+            {
+            return; // 2.1.3: unreadable csv content
+            }
         ni = val.size();
 
         // matrix values plus names:
@@ -2423,7 +2460,7 @@ tmp_node.setFace(tmpname);
             for (i = 1; i <= ni; i++)
                 {
                 // reading names
-                my_network.setNodeName((String) val.elementAt(i), i - 1);
+                my_network.setNodeName(String.valueOf(val.elementAt(i)), i - 1);
                 }
 
             float tmp_val = 0f;
@@ -2436,7 +2473,7 @@ tmp_node.setFace(tmpname);
                         // 2.1.3: trim first; a stray non-numeric cell (e.g. a
                         // label leaking into the matrix, like " Node") reads
                         // as 0 silently instead of spamming the console
-                        String cell = ((String) val.elementAt(i * (ni + 1)
+                        String cell = String.valueOf(val.elementAt(i * (ni + 1)
                                 + j)).trim();
                         tmp_val = cell.length() == 0 ? 0f : Float
                                 .parseFloat(cell);
@@ -2465,10 +2502,18 @@ tmp_node.setFace(tmpname);
         else
             // errors here
             {
-            if (JOptionPane.showOptionDialog(MainFrame.getCurrentFrame(),
-                    "This file contains errors. Attempt to read it anyway?",
-                    "Error parsing", JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.ERROR_MESSAGE, null, null, null) != 0)
+            // 2.1.3: headless runs take the forgiving answer
+            boolean read_anyway = true;
+            if (MainFrame.getCurrentFrame() != null
+                    && !java.awt.GraphicsEnvironment.isHeadless())
+                {
+                read_anyway = JOptionPane.showOptionDialog(
+                        MainFrame.getCurrentFrame(),
+                        "This file contains errors. Attempt to read it anyway?",
+                        "Error parsing", JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.ERROR_MESSAGE, null, null, null) == 0;
+                }
+            if (!read_anyway)
                 return;
 
             ni = (int) Math.sqrt(ni);

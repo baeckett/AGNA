@@ -2,6 +2,7 @@ package com.bentza.sna.net;
 
 import com.bentza.sna.AgnaLog;
 import com.bentza.sna.gui.MainFrame;
+import com.bentza.sna.Environment;
 import com.bentza.sna.gui.GrNet;
 import java.awt.Color;
 import java.awt.Component;
@@ -122,8 +123,9 @@ public class NodeArea extends JButton implements MouseListener,
         edges_image = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
         setInitialSettings(); // settings generated;
         // ini file exists?
-        if ((new File(M13)).exists())
-            MainFrame.getCurrentFullNet().readInitialSettings(this, M13);// settings
+        if (Environment.getSettingsFile().exists())
+            MainFrame.getCurrentFullNet().readInitialSettings(this,
+                    Environment.getSettingsFile().getAbsolutePath());
                                                                             // form
                                                                             // file
         if (edges_image.getWidth() != area_width)

@@ -1895,8 +1895,8 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     public void readInitialSettings()
         {
-        try (Reader reader = IOUtils.reader(new File(
-                    "AgnaDefaultSettings.ini")))
+        try (Reader reader = IOUtils.reader(
+                    Environment.getSettingsFile()))
             {
             JTextPane tmp_pane = new JTextPane();
             tmp_pane.read(reader, null);
@@ -3125,7 +3125,11 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         try
             {
-            java.io.File ini = new java.io.File("AgnaDefaultSettings.ini");
+            java.io.File ini = Environment.getSettingsFile();
+            if (ini.getParentFile() != null)
+                {
+                ini.getParentFile().mkdirs();
+                }
             String content = "";
             if (ini.exists())
                 {
@@ -3743,7 +3747,7 @@ my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         // default settings:
 
-        if ((new File("AgnaDefaultSettings.ini")).exists())
+        if (Environment.getSettingsFile().exists())
             readInitialSettings();// settings form file
         else
             setInitialSettings(); // settings generated

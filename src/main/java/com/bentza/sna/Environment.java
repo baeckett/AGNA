@@ -118,6 +118,23 @@ public class Environment
      * files (defaults under {@code ~/.agna/faces}). Faces are stored by file
      * path inside .agn documents, so they cannot live only on the classpath.
      */
+    // 2.1.3: the settings file lives in the user home so the bundled app
+    // works from inside its application bundle; a file placed in the
+    // working directory by earlier versions is still honoured for a
+    // smooth migration
+    public static File getSettingsFile()
+        {
+        File home_file = new File(System.getProperty("user.home")
+                + File.separator + ".agna" + File.separator
+                + "AgnaDefaultSettings.ini");
+        File cwd_file = new File("AgnaDefaultSettings.ini");
+        if (home_file.exists())
+            return home_file;
+        if (cwd_file.exists())
+            return cwd_file;
+        return home_file;
+        }
+
     public static String getFacesDirectory()
         {
         ensureAssetsExtracted();
