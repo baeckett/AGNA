@@ -705,8 +705,33 @@ public class MainFrame //
         saveChangedNetworks(true);
         final int t_nnodes = nnodes;
 
+        // 2.1.3: the New Network flow now offers a network type
+        String[] netTypes = { "Default (random)", "Star" };
+        int chosenType = JOptionPane.showOptionDialog(my_frame,
+                "Network type:", "New Network",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, netTypes, netTypes[0]);
+        if (chosenType == JOptionPane.CLOSED_OPTION)
+            {
+            return;
+            }
+
         FullNet new_full_net = new FullNet();
-        new_full_net.createDefaultNetwork(t_nnodes);
+        if (chosenType == 1)
+            {
+            Network star = new Network(t_nnodes);
+            star.setName("Star Network");
+            for (int j = 1; j < t_nnodes; j++)
+                {
+                star.setValue(1f, 0, j);
+                star.setValue(1f, j, 0);
+                }
+            NetworkLayouts.apply(star, NetworkLayouts.STAR, 400, 400);
+            new_full_net.setNetwork(star);
+            } else
+            {
+            new_full_net.createDefaultNetwork(t_nnodes);
+            }
 
         if (my_grafic != null)
             {

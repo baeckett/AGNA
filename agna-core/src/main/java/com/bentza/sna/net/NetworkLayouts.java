@@ -15,6 +15,7 @@ public class NetworkLayouts
     public static final int SPRING = 2;
     public static final int GRID = 3;
     public static final int CONCENTRIC = 4;
+    public static final int STAR = 5;
 
     public static final int SPRING_ITERATIONS = 60;
     public static final int SPRING_BH_ABOVE = 256;
@@ -50,6 +51,11 @@ public class NetworkLayouts
         if (layout == CONCENTRIC)
             {
             applyConcentric(net, width, height);
+            return;
+            }
+        if (layout == STAR)
+            {
+            applyStar(net, width, height);
             return;
             }
         if (layout == CIRCULAR)
@@ -528,5 +534,24 @@ public class NetworkLayouts
                 }
             }
         return d;
+        }
+
+    // hub-and-spoke: node 0 at the centre, everyone else on a ring
+    private static void applyStar(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+        double radius = Math.min(width, height) * 0.38;
+        net.getActor(0).setX((int) Math.round(cx), width);
+        net.getActor(0).setY((int) Math.round(cy), height);
+        for (int i = 1; i < n; i++)
+            {
+            double a = 2 * Math.PI * (i - 1) / Math.max(1, n - 1);
+            net.getActor(i).setX((int) Math.round(cx + radius * Math.cos(a)),
+                    width);
+            net.getActor(i).setY((int) Math.round(cy + radius * Math.sin(a)),
+                    height);
+            }
         }
     }

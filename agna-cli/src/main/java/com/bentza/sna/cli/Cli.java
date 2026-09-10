@@ -12,21 +12,38 @@ import com.bentza.sna.net.Network;
 import com.bentza.sna.net.NetworkLayouts;
 import com.bentza.sna.net.NetworkRenderer;
 import java.io.File;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * The Agna command-line surface (2.1.3):
- *   info, analyse, convert, transform, draw.
+ *   info, analyse, convert, transform, draw, version, generate,
+ *   matrix, nodes, ego, components.
  * Everything runs against the engine (agna-core) - no desktop needed.
+ * A file argument of "-" reads from stdin (agn text by default, override
+ * with --in-format); an output of "-" writes to stdout (text formats).
  */
 public final class Cli
     {
-    private final java.io.PrintStream out;
+    private final PrintStream out;
+    private final InputStream in;
+    private String stdinFormat = "agn";
+    private String stdoutFormat = null;
 
-    public Cli(java.io.PrintStream out)
+    public Cli(PrintStream out)
+        {
+        this(out, System.in);
+        }
+
+    public Cli(PrintStream out, InputStream in)
         {
         this.out = out;
+        this.in = in;
         }
 
     public String help()
@@ -34,6 +51,7 @@ public final class Cli
         return "Agna CLI 2.1.3\n"
                 + "usage: agna <command> [options] FILE\n\n"
                 + "commands:\n"
+                + "  version                         print version\n"
                 + "  info FILE                       network summary\n"
                 + "  analyse FILE [--all|NAME...]    run analyses (basic, "
                 + "density, cohesion, nodal, indegree, outdegree,\n"
@@ -41,23 +59,47 @@ public final class Cli
                 + "determination, status, geodesics, eccentricity,\n"
                 + "                                  diameter, bavelas, "
                 + "closeness, fareness, betweenness, prestige, cliques, full)\n"
-                + "  convert IN OUT                  convert format "
-                + "(agn/txt/csv/net/graphml/gml/graphson/xls)\n"
+                + "  convert IN OUT [--in-format F] [--out-format F]\n"
+                + "                                  convert format "
+                + "(agn/txt/csv/net/graphml/gml/graphson/xls; xls needs a\n"
+                + "                                  real file, the rest "
+                + "accept '-' for stdout)"
                 + "  transform IN OUT --op OP       transpose | symmetrize-max "
                 + "| symmetrize-sum | symmetrize-below |\n"
                 + "                                  normalize-binary | "
                 + "normalize-threshold:V | add-scalar:V |\n"
                 + "                                  multiply-scalar:V | "
-                + "square | merge:FILE:POLICY\n"
+                + "square | merge:FILE:POLICY |\n"
+                + "                                  delete-node:N | "
+                + "delete-nodes:N1,N2,.. | isolate:N |\n"
+                + "                                  merge-nodes:N1,N2,.. | "
+                + "remove-outsiders\n"
                 + "  draw IN --out PNG --layout L   L = circular | random | "
                 + "spring | grid | concentric; --size WxH; --labels\n"
-                + "  --help                          this text\n";
+                + "  generate --nodes N --out FILE  random (--seed S, "
+                + "--degree D) | star | circular\n"
+                + "  matrix FILE [--format csv|tsv] print the matrix\n"
+                + "  nodes FILE                      node table (degrees + "
+                + "coordinates)\n"
+                + "  ego FILE --node NAME --out OUT  extract the 1-hop ego "
+                + "network\n"
+                + "  components FILE                 connected components\n"
+                + "  --help                          this text\n"
+                + "use '-' as IN/OUT for stdin/stdout (stdin defaults to "
+                + "agn text)\n";
         }
 
-    public static FullNet open(String file) throws Exception
+    public FullNet open(String file) throws Exception
         {
         FullNet full = new FullNet();
         String ext = extOf(file);
+        if ("-".equals(file))
+            {
+            byte[] bytes = in.readAllBytes();
+            full.readNetwork(new String(bytes, StandardCharsets.ISO_8859_1),
+                    stdinFormat);
+            return full;
+            }
         if ("xls".equals(ext) || "xlsx".equals(ext))
             {
             full.readExcelFile(new File(file), ext);
@@ -77,9 +119,9 @@ public final class Cli
                 .toLowerCase() : "agn";
         }
 
-    public static void write(FullNet full, String file) throws Exception
+    public void write(FullNet full, String file) throws Exception
         {
-        String ext = extOf(file);
+        String ext = stdoutFormat != null ? stdoutFormat : extOf(file);
         String text = null;
         if ("agn".equals(ext))
             {
@@ -102,6 +144,16 @@ public final class Cli
             } else if ("graphson".equals(ext))
             {
             text = new GraphSONExporter().getGraphSON(full);
+            }
+        if ("-".equals(file))
+            {
+            if (text == null)
+                {
+                throw new Exception("stdout output supports text formats "
+                        + "(not xls)");
+                }
+            out.print(text);
+            return;
             }
         if (text != null)
             {
@@ -128,6 +180,10 @@ public final class Cli
             return args.length == 0 ? 1 : 0;
             }
         String cmd = args[0];
+        if ("version".equals(cmd) || "--version".equals(cmd))
+            {
+            return version();
+            }
         if ("info".equals(cmd))
             {
             return info(args);
@@ -148,9 +204,35 @@ public final class Cli
             {
             return draw(args);
             }
+        if ("generate".equals(cmd))
+            {
+            return generate(args);
+            }
+        if ("matrix".equals(cmd))
+            {
+            return matrix(args);
+            }
+        if ("nodes".equals(cmd))
+            {
+            return nodes(args);
+            }
+        if ("ego".equals(cmd))
+            {
+            return ego(args);
+            }
+        if ("components".equals(cmd))
+            {
+            return components(args);
+            }
         out.println("unknown command: " + cmd);
         out.print(help());
         return 1;
+        }
+
+    private int version()
+        {
+        out.println("Agna CLI 2.1.3");
+        return 0;
         }
 
     private int info(String[] args) throws Exception
@@ -247,8 +329,21 @@ public final class Cli
         {
         if (args.length < 3)
             {
-            out.println("usage: agna convert IN OUT");
+            out.println("usage: agna convert IN OUT [--in-format F]");
             return 1;
+            }
+        stdinFormat = "agn";
+        stdoutFormat = null;
+        for (int i = 3; i < args.length; i++)
+            {
+            if ("--in-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdinFormat = args[i + 1];
+                }
+            if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[i + 1];
+                }
             }
         FullNet full = open(args[1]);
         write(full, args[2]);
@@ -264,11 +359,21 @@ public final class Cli
             return 1;
             }
         String op = null;
+        stdinFormat = "agn";
+        stdoutFormat = null;
         for (int i = 0; i < args.length; i++)
             {
             if ("--op".equals(args[i]) && i + 1 < args.length)
                 {
                 op = args[i + 1];
+                }
+            if ("--in-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdinFormat = args[i + 1];
+                }
+            if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[i + 1];
                 }
             }
         if (op == null)
@@ -322,6 +427,38 @@ public final class Cli
                             : Network.MERGE_SUM;
             FullNet other = open(parts[0]);
             full.mergeWith(other.getNetwork(), policy);
+            } else if (op.startsWith("delete-node:"))
+            {
+            deleteNodes(net, op.substring(op.indexOf(':') + 1));
+            } else if (op.startsWith("delete-nodes:"))
+            {
+            deleteNodes(net, op.substring(op.indexOf(':') + 1));
+            } else if (op.startsWith("isolate:"))
+            {
+            int i = findActor(net, op.substring(op.indexOf(':') + 1));
+            if (i < 0)
+                {
+                out.println("no such node: " + op.substring(op.indexOf(':')
+                        + 1));
+                return 1;
+                }
+            for (int j = 0; j < net.getSize(); j++)
+                {
+                net.setValue(0f, i, j);
+                net.setValue(0f, j, i);
+                }
+            } else if (op.startsWith("merge-nodes:"))
+            {
+            mergeNodes(net, op.substring(op.indexOf(':') + 1).split(","));
+            } else if ("remove-outsiders".equals(op))
+            {
+            for (int i = net.getSize() - 1; i >= 0; i--)
+                {
+                if (net.isOutsider(i))
+                    {
+                    net.deleteActor(i);
+                    }
+                }
             } else
             {
             out.println("unknown op: " + op);
@@ -330,6 +467,78 @@ public final class Cli
         write(full, args[2]);
         out.println("transformed -> " + args[2]);
         return 0;
+        }
+
+    private static void deleteNodes(Network net, String list)
+        {
+        String[] names = list.split(",");
+        List<Integer> indices = new ArrayList<>();
+        for (String name : names)
+            {
+            int i = findActor(net, name.trim());
+            if (i >= 0)
+                {
+                indices.add(i);
+                }
+            }
+        indices.sort(java.util.Comparator.reverseOrder());
+        for (int i : indices)
+            {
+            net.deleteActor(i);
+            }
+        }
+
+    // merge the listed actors into the first: ties are summed, the other
+    // actors are removed (their own outgoing ties are folded in too)
+    private static void mergeNodes(Network net, String[] names)
+        {
+        int target = findActor(net, names[0].trim());
+        if (target < 0)
+            {
+            return;
+            }
+        List<Integer> others = new ArrayList<>();
+        for (int k = 1; k < names.length; k++)
+            {
+            int i = findActor(net, names[k].trim());
+            if (i >= 0 && i != target && !others.contains(i))
+                {
+                others.add(i);
+                }
+            }
+        for (int i : others)
+            {
+            for (int j = 0; j < net.getSize(); j++)
+                {
+                float outVal = net.getValue(i, j);
+                float inVal = net.getValue(j, i);
+                if (outVal != 0f)
+                    {
+                    net.setValue(net.getValue(target, j) + outVal, target, j);
+                    }
+                if (inVal != 0f)
+                    {
+                    net.setValue(net.getValue(j, target) + inVal, j, target);
+                    }
+                }
+            }
+        others.sort(java.util.Comparator.reverseOrder());
+        for (int i : others)
+            {
+            net.deleteActor(i);
+            }
+        }
+
+    private static int findActor(Network net, String name)
+        {
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            if (net.getActor(i).getName().equalsIgnoreCase(name))
+                {
+                return i;
+                }
+            }
+        return -1;
         }
 
     private int draw(String[] args) throws Exception
@@ -393,5 +602,301 @@ public final class Cli
                 width, height, layout, labels);
         out.println(ok ? "drew " + output : "draw failed: " + output);
         return ok ? 0 : 1;
+        }
+
+    private int generate(String[] args) throws Exception
+        {
+        String outFile = null;
+        String type = "random";
+        int nodes = 10;
+        long seed = 20260910L;
+        int degree = 2;
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--nodes".equals(a) && i + 1 < args.length)
+                {
+                nodes = Integer.parseInt(args[++i]);
+                } else if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--type".equals(a) && i + 1 < args.length)
+                {
+                type = args[++i];
+                } else if ("--seed".equals(a) && i + 1 < args.length)
+                {
+                seed = Long.parseLong(args[++i]);
+                } else if ("--degree".equals(a) && i + 1 < args.length)
+                {
+                degree = Integer.parseInt(args[++i]);
+                }
+            }
+        if (outFile == null)
+            {
+            out.println("usage: agna generate --nodes N --out FILE "
+                    + "[--type random|star|circular] [--seed S] [--degree D]");
+            return 1;
+            }
+        if (nodes < 1)
+            {
+            out.println("--nodes must be >= 1");
+            return 1;
+            }
+        FullNet full = new FullNet();
+        if ("star".equals(type))
+            {
+            Network net = new Network(nodes);
+            net.setName("Star Network");
+            for (int j = 1; j < nodes; j++)
+                {
+                net.setValue(1f, 0, j);
+                net.setValue(1f, j, 0);
+                }
+            NetworkLayouts.apply(net, NetworkLayouts.STAR, 800, 600);
+            full.setNetwork(net);
+            } else if ("circular".equals(type))
+            {
+            Network net = new Network(nodes);
+            net.setName("Circular Network");
+            NetworkLayouts.apply(net, NetworkLayouts.CIRCULAR, 800, 600);
+            full.setNetwork(net);
+            } else
+            {
+            // random: seeded Erdos-Renyi, reproducible with --seed
+            Network net = new Network(nodes);
+            net.setName("Random Network");
+            Random rnd = new Random(seed);
+            for (int i = 0; i < nodes; i++)
+                {
+                for (int j = i + 1; j < nodes; j++)
+                    {
+                    if (rnd.nextDouble() < (double) degree
+                            / Math.max(1, nodes - 1))
+                        {
+                        net.setValue(1f, i, j);
+                        net.setValue(1f, j, i);
+                        }
+                    }
+                }
+            NetworkLayouts.apply(net, NetworkLayouts.SPRING, 800, 600);
+            full.setNetwork(net);
+            }
+        write(full, outFile);
+        out.println("generated " + type + " network with " + nodes
+                + " nodes -> " + outFile);
+        return 0;
+        }
+
+    private int matrix(String[] args) throws Exception
+        {
+        String file = null;
+        String sep = "\t";
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--format".equals(args[i]) && i + 1 < args.length)
+                {
+                String f = args[i + 1];
+                sep = "csv".equals(f) ? "," : "\t";
+                i++;
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna matrix FILE [--format csv|tsv]");
+            return 1;
+            }
+        Network net = open(file).getNetwork();
+        int n = net.getSize();
+        StringBuilder sb = new StringBuilder(128 + 8 * n * n);
+        for (int j = 0; j < n; j++)
+            {
+            if (j > 0)
+                {
+                sb.append(sep);
+                }
+            sb.append(net.getActor(j).getName());
+            }
+        sb.append('\n');
+        for (int i = 0; i < n; i++)
+            {
+            sb.append(net.getActor(i).getName());
+            for (int j = 0; j < n; j++)
+                {
+                sb.append(sep).append(fmt(net.getValue(i, j)));
+                }
+            sb.append('\n');
+            }
+        out.print(sb);
+        return 0;
+        }
+
+    private int nodes(String[] args) throws Exception
+        {
+        if (args.length < 2)
+            {
+            out.println("usage: agna nodes FILE");
+            return 1;
+            }
+        Network net = open(args[1]).getNetwork();
+        out.println("index\tname\tout\tin\tx\ty");
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            int outDeg = 0;
+            int inDeg = 0;
+            for (int j = 0; j < net.getSize(); j++)
+                {
+                if (net.getValue(i, j) != 0f)
+                    {
+                    outDeg++;
+                    }
+                if (net.getValue(j, i) != 0f)
+                    {
+                    inDeg++;
+                    }
+                }
+            out.println(i + "\t" + net.getActor(i).getName() + "\t" + outDeg
+                    + "\t" + inDeg + "\t" + fmt(net.getActor(i).getX())
+                    + "\t" + fmt(net.getActor(i).getY()));
+            }
+        return 0;
+        }
+
+    private int ego(String[] args) throws Exception
+        {
+        String file = null;
+        String name = null;
+        String outFile = null;
+        for (int i = 1; i < args.length; i++)
+            {
+            if ("--node".equals(args[i]) && i + 1 < args.length)
+                {
+                name = args[++i];
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null || name == null || outFile == null)
+            {
+            out.println("usage: agna ego FILE --node NAME --out OUT");
+            return 1;
+            }
+        Network net = open(file).getNetwork();
+        int egoIdx = findActor(net, name);
+        if (egoIdx < 0)
+            {
+            out.println("no such node: " + name);
+            return 1;
+            }
+        List<Integer> neighbors = new ArrayList<>();
+        for (int j = 0; j < net.getSize(); j++)
+            {
+            if (j != egoIdx && (net.getValue(egoIdx, j) != 0f
+                    || net.getValue(j, egoIdx) != 0f))
+                {
+                neighbors.add(j);
+                }
+            }
+        int k = neighbors.size() + 1;
+        Network ego = new Network(k);
+        ego.setName(name + " ego (" + (k - 1) + " neighbours)");
+        ego.getActor(0).setName(net.getActor(egoIdx).getName());
+        for (int i = 0; i < neighbors.size(); i++)
+            {
+            int idx = neighbors.get(i);
+            ego.getActor(i + 1).setName(net.getActor(idx).getName());
+            for (int j = 0; j <= i; j++)
+                {
+                int jdx = neighbors.get(j);
+                float v = net.getValue(idx, jdx);
+                if (v != 0f)
+                    {
+                    ego.setValue(v, i + 1, j + 1);
+                    ego.setValue(v, j + 1, i + 1);
+                    }
+                }
+            float toEgo = net.getValue(idx, egoIdx);
+            if (toEgo != 0f)
+                {
+                ego.setValue(toEgo, i + 1, 0);
+                ego.setValue(toEgo, 0, i + 1);
+                }
+            }
+        NetworkLayouts.apply(ego, NetworkLayouts.SPRING, 800, 600);
+        FullNet full = new FullNet();
+        full.setNetwork(ego);
+        write(full, outFile);
+        out.println("extracted " + k + "-node ego network -> " + outFile);
+        return 0;
+        }
+
+    private int components(String[] args) throws Exception
+        {
+        if (args.length < 2)
+            {
+            out.println("usage: agna components FILE");
+            return 1;
+            }
+        Network net = open(args[1]).getNetwork();
+        int n = net.getSize();
+        boolean[] seen = new boolean[n];
+        int count = 0;
+        for (int s = 0; s < n; s++)
+            {
+            if (seen[s])
+                {
+                continue;
+                }
+            count++;
+            List<Integer> comp = new ArrayList<>();
+            List<Integer> queue = new ArrayList<>();
+            queue.add(s);
+            seen[s] = true;
+            while (!queue.isEmpty())
+                {
+                int u = queue.remove(queue.size() - 1);
+                comp.add(u);
+                for (int v = 0; v < n; v++)
+                    {
+                    if (!seen[v] && (net.getValue(u, v) != 0f
+                            || net.getValue(v, u) != 0f))
+                        {
+                        seen[v] = true;
+                        queue.add(v);
+                        }
+                    }
+                }
+            StringBuilder sb = new StringBuilder();
+            for (int idx : comp)
+                {
+                if (sb.length() > 0)
+                    {
+                    sb.append(", ");
+                    }
+                sb.append(net.getActor(idx).getName());
+                }
+            out.println("component " + count + " (" + comp.size()
+                    + " nodes): " + sb);
+            }
+        out.println(n + " nodes, " + count + " component"
+                + (count == 1 ? "" : "s"));
+        return 0;
+        }
+
+    // compact number formatting: 1.0 -> 1, 0.25 -> 0.25
+    private static String fmt(float v)
+        {
+        if (v == (long) v)
+            {
+            return String.valueOf((long) v);
+            }
+        String s = String.valueOf(v);
+        return s.endsWith(".0") ? s.substring(0, s.length() - 2) : s;
         }
     }

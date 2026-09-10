@@ -65,6 +65,16 @@ import javax.swing.JTextPane;
         changed = false;
         }
 
+    // 2.1.3: inject a fully built network (CLI generate/ego, desktop
+    // star option) without going through a file
+    public void setNetwork(Network tmp_network)
+        {
+        my_network = tmp_network;
+        net_area = null;
+        network_file_name = "";
+        changed = false;
+        }
+
     public boolean getChanged()
         {
         return changed;

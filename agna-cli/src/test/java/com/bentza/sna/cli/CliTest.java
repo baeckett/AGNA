@@ -92,4 +92,177 @@ public class CliTest
             assertTrue(bytes.length > 1000, layout + " png has content");
             }
         }
+
+    @Test
+    public void versionPrintsTheVersion() throws Exception
+        {
+        assertTrue(run("version").contains("Agna CLI 2.1.3"));
+        assertTrue(run("--version").contains("Agna CLI 2.1.3"));
+        }
+
+    @Test
+    public void convertThroughPipes() throws Exception
+        {
+        // stdin -> file
+        byte[] sample = Files.readAllBytes(new File("samples/example2.agn")
+                .toPath());
+        File out = File.createTempFile("agna_cli_pipe", ".graphml");
+        out.deleteOnExit();
+        Cli cli = new Cli(new java.io.PrintStream(
+                new ByteArrayOutputStream()), new java.io.ByteArrayInputStream(
+                        sample));
+        int code = cli.run(new String[] { "convert", "-",
+                out.getAbsolutePath() });
+        assertEquals(0, code);
+        assertTrue(new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8).contains("<graphml"),
+                "stdin converted to graphml");
+        // file -> stdout
+        String text = run("convert", "samples/example2.agn", "-",
+                "--out-format", "graphml");
+        assertTrue(text.contains("<graphml"), "stdout carries graphml");
+        }
+
+    @Test
+    public void generateIsReproducibleAndStarWorks() throws Exception
+        {
+        File a = File.createTempFile("agna_gen_a", ".agn");
+        File b = File.createTempFile("agna_gen_b", ".agn");
+        a.deleteOnExit();
+        b.deleteOnExit();
+        run("generate", "--nodes", "30", "--type", "random", "--seed",
+                "99", "--out", a.getAbsolutePath());
+        run("generate", "--nodes", "30", "--type", "random", "--seed",
+                "99", "--out", b.getAbsolutePath());
+        assertTrue(java.util.Arrays.equals(Files.readAllBytes(a.toPath()),
+                Files.readAllBytes(b.toPath())),
+                "same seed produces identical output");
+        File star = File.createTempFile("agna_gen_star", ".agn");
+        star.deleteOnExit();
+        run("generate", "--nodes", "8", "--type", "star", "--out",
+                star.getAbsolutePath());
+        assertTrue(run("info", star.getAbsolutePath()).contains("nodes:  8"),
+                "star has 8 nodes");
+        }
+
+    @Test
+    public void matrixPrintsNamesAndValues() throws Exception
+        {
+        String text = run("matrix", "samples/example2.agn");
+        String header = text.substring(0, text.indexOf('\n'));
+        assertTrue(header.contains("1") && header.contains("2"),
+                "matrix header names: " + header);
+        assertTrue(text.lines().count() >= 10, "matrix has rows");
+        }
+
+    @Test
+    public void nodesTableHasHeaderAndRows() throws Exception
+        {
+        String text = run("nodes", "samples/example2.agn");
+        assertTrue(text.startsWith("index\tname\tout\tin\tx\ty"), text);
+        assertTrue(text.lines().count() == 10, "header + 9 rows");
+        }
+
+    @Test
+    public void egoExtractsASmallerNetwork() throws Exception
+        {
+        String name = firstNodeName();
+        File out = File.createTempFile("agna_cli_ego", ".agn");
+        out.deleteOnExit();
+        String text = run("ego", "samples/example2.agn", "--node", name,
+                "--out", out.getAbsolutePath());
+        assertTrue(text.contains("ego network"), text);
+        String info = run("info", out.getAbsolutePath());
+        assertTrue(info.contains("nodes:  "), info);
+        int nodes = parseNodes(info);
+        assertTrue(nodes >= 2 && nodes < 9,
+                "ego network smaller than the source: " + nodes);
+        }
+
+    @Test
+    public void componentsCountsTheExample() throws Exception
+        {
+        String text = run("components", "samples/example2.agn");
+        assertTrue(text.contains("component 1"), text);
+        assertTrue(text.contains("1 component"), text);
+        }
+
+    @Test
+    public void componentsOnAnEdgeFreeGraph() throws Exception
+        {
+        File f = File.createTempFile("agna_cli_comp", ".agn");
+        f.deleteOnExit();
+        run("generate", "--nodes", "6", "--type", "circular", "--out",
+                f.getAbsolutePath());
+        String text = run("components", f.getAbsolutePath());
+        assertTrue(text.contains("6 components"), text);
+        }
+
+    @Test
+    public void transformDeleteNodesShrinksTheNetwork() throws Exception
+        {
+        String[] names = firstTwoNames();
+        File out = File.createTempFile("agna_cli_del", ".agn");
+        out.deleteOnExit();
+        run("transform", "samples/example2.agn", out.getAbsolutePath(),
+                "--op", "delete-nodes:" + names[0] + "," + names[1]);
+        assertTrue(parseNodes(run("info", out.getAbsolutePath())) == 7,
+                "two nodes deleted");
+        }
+
+    @Test
+    public void transformMergeNodesShrinksByOne() throws Exception
+        {
+        String[] names = firstTwoNames();
+        File out = File.createTempFile("agna_cli_mer", ".agn");
+        out.deleteOnExit();
+        run("transform", "samples/example2.agn", out.getAbsolutePath(),
+                "--op", "merge-nodes:" + names[0] + "," + names[1]);
+        assertTrue(parseNodes(run("info", out.getAbsolutePath())) == 8,
+                "one node merged away");
+        }
+
+    @Test
+    public void transformRemoveOutsidersOnAnEdgeFreeGraph() throws Exception
+        {
+        File f = File.createTempFile("agna_cli_out", ".agn");
+        f.deleteOnExit();
+        run("generate", "--nodes", "6", "--type", "circular", "--out",
+                f.getAbsolutePath());
+        File out = File.createTempFile("agna_cli_out2", ".agn");
+        out.deleteOnExit();
+        run("transform", f.getAbsolutePath(), out.getAbsolutePath(),
+                "--op", "remove-outsiders");
+        // all six nodes are outsiders and get removed in memory; the agn
+        // writer/reader floor an empty network at 2 nodes, so the file
+        // round-trips as 2 (without the op it would read back as 6)
+        assertTrue(parseNodes(run("info", out.getAbsolutePath())) == 2,
+                "all outsiders removed");
+        }
+
+    private String firstNodeName() throws Exception
+        {
+        String text = run("nodes", "samples/example2.agn");
+        return text.lines().skip(1).findFirst().get().split("\t")[1];
+        }
+
+    private String[] firstTwoNames() throws Exception
+        {
+        String text = run("nodes", "samples/example2.agn");
+        String[] lines = text.split("\n");
+        return new String[] { lines[1].split("\t")[1],
+                lines[2].split("\t")[1] };
+        }
+
+    private static int parseNodes(String infoText)
+        {
+        for (String line : infoText.split("\n"))
+            {
+            if (line.startsWith("nodes: "))
+                {
+                return Integer.parseInt(line.substring(7).trim());
+                }
+            }
+        return -1;
+        }
     }
