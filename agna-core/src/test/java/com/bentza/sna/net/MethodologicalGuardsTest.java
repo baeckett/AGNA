@@ -40,11 +40,11 @@ public class MethodologicalGuardsTest
         Network net = directedChain();
         AgnaLib lib = new AgnaLib();
         assertTrue(lib.outEccentricity(net).contains(
-                "WARNING: the network is disconnected"));
+                "is disconnected"));
         assertTrue(lib.outCloseness(net).contains(
-                "WARNING: the network is disconnected"));
+                "is disconnected"));
         assertTrue(lib.outBetweenness(net).contains(
-                "WARNING: the network is disconnected"));
+                "is disconnected"));
         }
 
     @Test

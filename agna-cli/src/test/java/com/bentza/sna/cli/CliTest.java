@@ -581,6 +581,50 @@ public class CliTest
         }
 
     @Test
+    public void infoOutWritesTheReport() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_info", ".txt");
+        out.deleteOnExit();
+        String text = run("info", "samples/example2.agn", "--out",
+                out.getAbsolutePath());
+        assertTrue(text.contains("wrote summary"), text);
+        String report = new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8);
+        assertTrue(report.contains("name:   Example 2"), report);
+        assertTrue(report.contains("The network is connected."), report);
+        }
+
+    @Test
+    public void componentsOutWritesCsv() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_comp_out", ".csv");
+        out.deleteOnExit();
+        String text = run("components", "samples/example2.agn", "--out",
+                out.getAbsolutePath());
+        assertTrue(text.contains("wrote components"), text);
+        String csv = new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8);
+        assertTrue(csv.startsWith("component,node"), csv);
+        assertTrue(csv.lines().count() == 10, "header + 9 nodes");
+        }
+
+    @Test
+    public void distanceOutWritesCsv() throws Exception
+        {
+        File out = File.createTempFile("agna_cli_dist_out", ".csv");
+        out.deleteOnExit();
+        String text = run("distance", "samples/example2.agn", "--from", "1",
+                "--to", "9", "--out", out.getAbsolutePath());
+        assertTrue(text.contains("wrote distance"), text);
+        String csv = new String(Files.readAllBytes(out.toPath()),
+                StandardCharsets.UTF_8);
+        assertTrue(csv.startsWith("from,to,hops,path"), csv);
+        String row = csv.lines().skip(1).findFirst().get();
+        assertTrue(row.startsWith("1,9,1,"), row);
+        assertTrue(row.contains("1 > 9"), row);
+        }
+
+    @Test
     public void drawRespectsBackgroundAndFlags() throws Exception
         {
         File png = File.createTempFile("agna_cli_draw_bg", ".png");

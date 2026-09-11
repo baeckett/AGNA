@@ -26,6 +26,9 @@ public class Agna
         {
         final Environment env = new Environment();
         final AgnaSplash splash_screen = new AgnaSplash(null);
+        // 2.1.3: the main frame paints over the splash; keep the splash
+        // above everything so it stays visible for its full wait time
+        splash_screen.setAlwaysOnTop(true);
         System.out.println("");
         System.out.println("   ****************************************");
         System.out.println("");

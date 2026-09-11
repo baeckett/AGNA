@@ -55,7 +55,8 @@ public final class Cli
                 + "usage: agna <command> [options] FILE\n\n"
                 + "commands:\n"
                 + "  version                         print version\n"
-                + "  info FILE                       network summary\n"
+                + "  info FILE [--out FILE]           network summary (incl. "
+                + "connectivity and outsiders)\n"
                 + "  analyse FILE [--all|NAME...|cliques:N] [--out FILE]\n"
                 + "                                  run analyses (basic, "
                 + "density, cohesion, nodal, indegree, outdegree,\n"
@@ -94,7 +95,7 @@ public final class Cli
                 + "coordinates)\n"
                 + "  ego FILE --node NAME --out OUT  extract the 1-hop ego "
                 + "network\n"
-                + "  components FILE                 connected components\n"
+                + "  components FILE [--out CSV]      connected components\n"
                 + "  metrics FILE [METRIC...] [--all] [--format csv|json] [--out FILE]\n"
                 + "                                  structured metrics; "
                 + "pick by name (density, diameter, eccentricity,\n"
@@ -102,7 +103,8 @@ public final class Cli
                 + "indegree, outdegree, total-degree, emission,\n"
                 + "                                  reception, status, "
                 + "determination, geodesics) or --all (default)\n"
-                + "  distance FILE --from A --to B   shortest path between "
+                + "  distance FILE --from A --to B [--out CSV]\n"
+                + "                                  shortest path between "
                 + "two nodes\n"
                 + "  diff A B [--out FILE.csv]       structural comparison\n"
                 + "network commands (each saves a new file via --out):\n"
@@ -350,17 +352,39 @@ public final class Cli
 
     private int info(String[] args) throws Exception
         {
-        if (args.length < 2)
+        String file = null;
+        String outFile = null;
+        for (int i = 1; i < args.length; i++)
             {
-            out.println("usage: agna info FILE");
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna info FILE [--out FILE]");
             return 1;
             }
-        FullNet full = open(args[1]);
+        FullNet full = open(file);
         Network net = full.getNetwork();
-        out.println("name:   " + net.getName());
-        out.println("nodes:  " + net.getSize());
-        out.println("edges:  " + net.getEdgesNumber());
-        out.print(new AgnaLib().outBasic(net));
+        StringBuilder sb = new StringBuilder();
+        sb.append("name:   ").append(net.getName()).append('\n');
+        sb.append("nodes:  ").append(net.getSize()).append('\n');
+        sb.append("edges:  ").append(net.getEdgesNumber()).append('\n');
+        sb.append(new AgnaLib().outBasic(net));
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), sb.toString().getBytes(
+                    StandardCharsets.UTF_8));
+            out.println("wrote summary to " + outFile);
+            } else
+            {
+            out.print(sb);
+            }
         return 0;
         }
 
@@ -1113,15 +1137,28 @@ public final class Cli
 
     private int components(String[] args) throws Exception
         {
-        if (args.length < 2)
+        String file = null;
+        String outFile = null;
+        for (int i = 1; i < args.length; i++)
             {
-            out.println("usage: agna components FILE");
+            if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if (file == null)
+                {
+                file = args[i];
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna components FILE [--out FILE.csv]");
             return 1;
             }
-        Network net = open(args[1]).getNetwork();
+        Network net = open(file).getNetwork();
         int n = net.getSize();
         boolean[] seen = new boolean[n];
         int count = 0;
+        List<String> csvRows = new ArrayList<>();
         for (int s = 0; s < n; s++)
             {
             if (seen[s])
@@ -1155,12 +1192,23 @@ public final class Cli
                     sb.append(", ");
                     }
                 sb.append(net.getActor(idx).getName());
+                csvRows.add(count + "," + quoteCsv(net.getActor(idx)
+                        .getName()));
                 }
             out.println("component " + count + " (" + comp.size()
                     + " nodes): " + sb);
             }
         out.println(n + " nodes, " + count + " component"
                 + (count == 1 ? "" : "s"));
+        if (outFile != null)
+            {
+            List<String> rows = new ArrayList<>();
+            rows.add("component,node");
+            rows.addAll(csvRows);
+            Files.write(new File(outFile).toPath(), String.join("\n", rows)
+                    .getBytes(StandardCharsets.UTF_8));
+            out.println("wrote components to " + outFile);
+            }
         return 0;
         }
 
@@ -1240,6 +1288,7 @@ public final class Cli
         String file = null;
         String from = null;
         String to = null;
+        String outFile = null;
         for (int i = 1; i < args.length; i++)
             {
             if ("--from".equals(args[i]) && i + 1 < args.length)
@@ -1248,6 +1297,9 @@ public final class Cli
                 } else if ("--to".equals(args[i]) && i + 1 < args.length)
                 {
                 to = args[++i];
+                } else if ("--out".equals(args[i]) && i + 1 < args.length)
+                {
+                outFile = args[++i];
                 } else if (file == null)
                 {
                 file = args[i];
@@ -1255,7 +1307,8 @@ public final class Cli
             }
         if (file == null || from == null || to == null)
             {
-            out.println("usage: agna distance FILE --from NAME --to NAME");
+            out.println("usage: agna distance FILE --from NAME --to NAME "
+                    + "[--out FILE.csv]");
             return 1;
             }
         Network net = open(file).getNetwork();
@@ -1266,8 +1319,58 @@ public final class Cli
             out.println("no such node: " + (f < 0 ? from : to));
             return 1;
             }
+        if (outFile != null)
+            {
+            String[] hopsAndPath = shortestPath(net, f, t);
+            String row = from + "," + to + "," + hopsAndPath[0] + ","
+                    + hopsAndPath[1];
+            Files.write(new File(outFile).toPath(), ("from,to,hops,path\n"
+                    + row).getBytes(StandardCharsets.UTF_8));
+            out.println("wrote distance to " + outFile);
+            return 0;
+            }
         out.print(new AgnaLib().outShortestPaths(net, f, t));
         return 0;
+        }
+
+    // unweighted hop count and one shortest path (names); "0" = no path
+    private static String[] shortestPath(Network net, int from, int to)
+        {
+        int n = net.getSize();
+        int[] dist = new int[n];
+        int[] prev = new int[n];
+        java.util.Arrays.fill(dist, -1);
+        java.util.Arrays.fill(prev, -1);
+        dist[from] = 0;
+        List<Integer> queue = new ArrayList<>();
+        queue.add(from);
+        while (!queue.isEmpty())
+            {
+            int v = queue.remove(queue.size() - 1);
+            for (int w = 0; w < n; w++)
+                {
+                if (dist[w] == -1 && net.getValue(v, w) != 0f)
+                    {
+                    dist[w] = dist[v] + 1;
+                    prev[w] = v;
+                    queue.add(w);
+                    }
+                }
+            }
+        if (dist[to] < 0)
+            {
+            return new String[] { "0", "-" };
+            }
+        StringBuilder path = new StringBuilder();
+        for (int v = to; v != -1; v = prev[v])
+            {
+            if (path.length() > 0)
+                {
+                path.insert(0, " > ");
+                }
+            path.insert(0, net.getActor(v).getName());
+            }
+        return new String[] { String.valueOf(dist[to]), path.toString() };
         }
 
     private int diff(String[] args) throws Exception

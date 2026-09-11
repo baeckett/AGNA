@@ -48,15 +48,34 @@ agna --version
 
 Prints `Agna CLI 2.1.3`.
 
+```
+$ agna version
+Agna CLI 2.1.3
+```
+
 ### info
 
 ```
-agna info FILE
+agna info FILE [--out FILE]
 ```
 
 Prints the network name, node count, edge count and Agna's basic
-description (node/edge totals, outsiders). The smallest useful command;
-also the fastest way to sanity-check a file.
+description — node/edge totals, outsiders, and (2.1.3) a connectivity
+note: "The network is connected." or that it is disconnected. The
+smallest useful command; also the fastest way to sanity-check a file.
+`--out FILE` writes the report instead of stdout.
+
+```
+$ agna info samples/example2.agn
+name:   Example 2
+nodes:  9
+edges:  20
+Basic description of Example 2
+...
+The network is connected.
+$ agna info net.agn --out summary.txt
+wrote summary to summary.txt
+```
 
 ### analyse
 
@@ -240,30 +259,38 @@ extracted 12-node ego network -> alice.agn
 ### components
 
 ```
-agna components FILE
+agna components FILE [--out FILE.csv]
 ```
 
 Lists the connected components with their member names (undirected
-connectivity):
+connectivity). `--out FILE.csv` writes a CSV file (header
+`component,node`, one row per node) instead of the readable listing.
 
 ```
+$ agna components samples/example2.agn
 component 1 (9 nodes): 1, 9, 4, 5, 6, 2, 8, 7, 3
 9 nodes, 1 component
+$ agna components net.agn --out components.csv
+wrote components to components.csv
 ```
 
 ### distance
 
 ```
-agna distance FILE --from A --to B
+agna distance FILE --from A --to B [--out FILE.csv]
 ```
 
 Prints the shortest path between two named nodes, using the engine's
 own shortest-path routine. A geodesic of 0 means no path.
+`--out FILE.csv` writes the machine-readable result instead (header
+`from,to,hops,path`).
 
 ```
 $ agna distance in.agn --from Alice --to Bob
 Shortest Path from node Alice to node Bob
      * Alice  Carol  Bob
+$ agna distance big.agn --from Alice --to Bob --out hops.csv
+wrote distance to hops.csv
 ```
 
 ### diff

@@ -1166,9 +1166,10 @@ import java.util.Vector;
         // would silently corrupt the result)
         if (!isConnected(outsrc))
             {
-            return it
-                    + "WARNING: the network is disconnected; eccentricity cannot be computed\n"
-                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            return it + "WARNING: " + outsrc.getName()
+                    + " is disconnected; the eccentricity index cannot be "
+                    + "computed (not all pairs of nodes are mutually "
+                    + "reachable)." + unit + lb;
             }
 
         int size = outsrc.getSize();
@@ -1253,9 +1254,10 @@ import java.util.Vector;
         // 2.1.3: refuse disconnected networks (0 = no path)
         if (!isConnected(outsrc))
             {
-            return it
-                    + "WARNING: the network is disconnected; fareness cannot be computed\n"
-                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            return it + "WARNING: " + outsrc.getName()
+                    + " is disconnected; the fareness index cannot be "
+                    + "computed (not all pairs of nodes are mutually "
+                    + "reachable)." + unit + lb;
             }
 
         int size = outsrc.getSize();
@@ -1308,9 +1310,10 @@ import java.util.Vector;
         // would silently corrupt the result)
         if (!isConnected(outsrc))
             {
-            return it
-                    + "WARNING: the network is disconnected; closeness cannot be computed\n"
-                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            return it + "WARNING: " + outsrc.getName()
+                    + " is disconnected; the closeness centrality index "
+                    + "cannot be computed (not all pairs of nodes are "
+                    + "mutually reachable)." + unit + lb;
             }
 
         int size = outsrc.getSize();
@@ -1622,9 +1625,10 @@ import java.util.Vector;
         // would silently corrupt the result)
         if (!isConnected(outsrc))
             {
-            return it
-                    + "WARNING: the network is disconnected; betweenness cannot be computed\n"
-                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            return it + "WARNING: " + outsrc.getName()
+                    + " is disconnected; the betweenness centrality index "
+                    + "cannot be computed (not all pairs of nodes are "
+                    + "mutually reachable)." + unit + lb;
             }
 
         int size = outsrc.getSize();
@@ -1790,9 +1794,10 @@ import java.util.Vector;
         // 2.1.3: refuse disconnected networks (0 = no path)
         if (!isConnected(outsrc))
             {
-            return it
-                    + "WARNING: the network is disconnected; bavelas cannot be computed\n"
-                    + "(not all pairs of nodes are mutually reachable)." + unit + lb;
+            return it + "WARNING: " + outsrc.getName()
+                    + " is disconnected; the Bavelas-Leavitt centrality "
+                    + "index cannot be computed (not all pairs of nodes are "
+                    + "mutually reachable)." + unit + lb;
             }
 
         int size = outsrc.getSize();
@@ -1999,6 +2004,12 @@ import java.util.Vector;
                 out.append("and nonsymmetric (ie, directed).");
             out.append(unit);
             }
+        // 2.1.3: connectivity at a glance
+        if (isConnected(src))
+            out.append(lb + it + "The network is connected." + unit);
+        else
+            out.append(lb + it + "The network is disconnected (not all "
+                    + "pairs of nodes are mutually reachable)." + unit);
         out.append(lb);
 
         return out.toString();

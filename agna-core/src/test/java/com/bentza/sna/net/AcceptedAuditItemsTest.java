@@ -79,8 +79,8 @@ public class AcceptedAuditItemsTest
         net.setValue(1f, 0, 1); // 1 reaches 0, but nobody reaches 2
         AgnaLib lib = new AgnaLib();
         assertTrue(lib.outFareness(net).contains(
-                "WARNING: the network is disconnected"));
+                " is disconnected"));
         assertTrue(lib.outBavelas(net).contains(
-                "WARNING: the network is disconnected"));
+                "is disconnected"));
         }
     }
