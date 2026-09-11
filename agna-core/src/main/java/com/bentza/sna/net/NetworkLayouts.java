@@ -133,11 +133,40 @@ public class NetworkLayouts
                 }
             for (int i = 0; i < n; i++)
                 {
-                float maxDisp = (float) (temp * k);
+                // 2.1.3: gentle moves (0.2 factor): the earlier full
+                // temperature blew nodes into the canvas clamp, where
+                // sparse graphs could not pull them back - the classic
+                // "nodes stuck on the border" artifact
+                float maxDisp = (float) (temp * k * 0.2);
                 float dx = Math.max(-maxDisp, Math.min(maxDisp, fx[i]));
                 float dy = Math.max(-maxDisp, Math.min(maxDisp, fy[i]));
                 px[i] = Math.max(10, Math.min(width - 10, px[i] + dx));
                 py[i] = Math.max(10, Math.min(height - 10, py[i] + dy));
+                }
+            }
+        // 2.1.3: fit the final layout into the canvas, like the desktop
+        // viewer does after every layout: spread the occupied bounding
+        // box across the full area with a margin, so no cluster is left
+        // pinned to an edge
+        float minX = Float.POSITIVE_INFINITY;
+        float maxX = Float.NEGATIVE_INFINITY;
+        float minY = Float.POSITIVE_INFINITY;
+        float maxY = Float.NEGATIVE_INFINITY;
+        for (int i = 0; i < n; i++)
+            {
+            minX = Math.min(minX, px[i]);
+            maxX = Math.max(maxX, px[i]);
+            minY = Math.min(minY, py[i]);
+            maxY = Math.max(maxY, py[i]);
+            }
+        if (maxX - minX > 1f && maxY - minY > 1f)
+            {
+            float spanX = width - 20f;
+            float spanY = height - 20f;
+            for (int i = 0; i < n; i++)
+                {
+                px[i] = 10f + (px[i] - minX) * spanX / (maxX - minX);
+                py[i] = 10f + (py[i] - minY) * spanY / (maxY - minY);
                 }
             }
         for (int i = 0; i < n; i++)

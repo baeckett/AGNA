@@ -2074,16 +2074,17 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             return;
         try
             {
-            my_area.setSeparator(Integer.parseInt(tmp_separator));
+            my_area.setSeparator(Integer.parseInt(tmp_separator.trim()));
             gr_full_net.setChanged(true);
             my_area.paintEdges();
             gr_frame.repaint();
             } catch (Exception e)
             {
+            // 2.1.3: the toolbar field commit reverts silently - no modal
+            // dialog here, because closing the viewer (Cmd+W / window
+            // close commits the focused field) must not raise a
+            // "Separation value must be an integer" error
             gfield_separator.setText(String.valueOf(my_area.getSeparator()));
-            JOptionPane.showMessageDialog(gr_frame,
-                    "Separation value must be an integer.", "Parsing error",
-                    JOptionPane.INFORMATION_MESSAGE);
             }
         }
 

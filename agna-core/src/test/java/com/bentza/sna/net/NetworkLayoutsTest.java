@@ -359,4 +359,56 @@ public class NetworkLayoutsTest
             }
         return d;
         }
+
+    @Test
+    public void springFillsTheCanvasInsteadOfHuggingBorders() throws Exception
+        {
+        // regression: a sparse graph used to blast nodes into the canvas
+        // clamp, leaving them pinned to the border and the centre empty
+        int n = 40;
+        Network net = new Network(n);
+        java.util.Random rnd = new java.util.Random(33L);
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = i + 1; j < n; j++)
+                {
+                if (rnd.nextDouble() < 2.0 / (n - 1))
+                    {
+                    net.setValue(1f, i, j);
+                    net.setValue(1f, j, i);
+                    }
+                }
+            }
+        NetworkLayouts.apply(net, NetworkLayouts.SPRING, 1200, 900);
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        boolean centreOccupied = false;
+        for (int i = 0; i < n; i++)
+            {
+            int x = px(net.getActor(i), 1200);
+            int y = py(net.getActor(i), 900);
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+            if (Math.abs(x - 600) < 300 && Math.abs(y - 450) < 225)
+                {
+                centreOccupied = true;
+                }
+            }
+        // the layout must spread across most of the canvas...
+        assertTrue(maxX - minX > 720, "horizontal spread " + (maxX - minX));
+        assertTrue(maxY - minY > 540, "vertical spread " + (maxY - minY));
+        // ...without leaving the centre empty (the border-pile symptom)
+        assertTrue(centreOccupied, "at least one node near the centre");
+        for (int i = 0; i < n; i++)
+            {
+            int x = px(net.getActor(i), 1200);
+            int y = py(net.getActor(i), 900);
+            assertTrue(x >= 0 && x < 1200 && y >= 0 && y < 900,
+                    "inside canvas");
+            }
+        }
     }
