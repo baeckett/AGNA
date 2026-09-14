@@ -1,34 +1,83 @@
-# Agna
+# AGNA
 
-**Agna** is a cross-platform, open-source Java application for **social
-network analysis and sequence analysis**. Enter a sociomatrix in a
-spreadsheet-style grid, inspect it as a node/edge graph, and run the classic
-measures — degree, density, cohesion, centrality, geodesics, shortest paths,
-cliques and more. Networks import/export in Agna's own `.agn` format, plain
-text, CSV, Pajek `.net`, MS Excel (`.xls`/`.xlsx`), GraphML, GML and
-GraphSON; the graph view exports images, and the command line renders
-networks headlessly.
+**AGNA — Applied Graph and Network Analysis Open Source** — is free desktop
+and command-line software for **social network analysis, sociometry, and
+sequential analysis**. It is designed for researchers, teachers, and students
+who want to create, visualize, and analyze networks **without programming**.
 
-Written originally by
-[Marius Ion Bența](https://www.netanalysis.co.uk) (2001–2005), **2.1.3** is
-the open-source revival of the last closed-source release (2.1.2):
-re-organized into a Maven monorepo, modernised (JDK 17, FlatLaf), bug-fixed,
-UTF-8 based, with a full test suite.
+Enter a sociomatrix in a spreadsheet-style grid, inspect it as a node/edge
+graph, and run the classic measures: density, components, distances,
+centrality, geodesics, shortest paths, cliques, and more. Networks import and
+export in AGNA's own `.agn` format, plain text, CSV, Pajek `.net`, Excel
+(`.xls`/`.xlsx`), GraphML, GML, and GraphSON; diagrams export to images and
+vector graphics, and the command line renders networks headlessly for
+reproducible workflows.
 
-## Layout
+> If you just want to try it: see the
+> [Quick Start](docs/QUICKSTART.md) or the
+> [latest release](https://github.com/baeckett/AGNA/releases) for ready-made
+> packages.
+
+## Who is AGNA for?
+
+AGNA is particularly suited to **small and medium research networks**:
+communication, collaboration, affiliation, interaction, behavioral,
+institutional, historical, and other relational data. It is used in
+sociology, anthropology, communication research, psychology, education,
+organizational research, animal-behavior studies, and the humanities. The
+original author, [Marius Ion Bența](https://www.netanalysis.co.uk), built it
+(2001–2005) as a friendly alternative to programming environments; **2.1.3**
+is the open-source revival of that work, modernized and fully tested.
+
+## The three components
+
+| Component | Purpose | Primary audience |
+|-----------|---------|------------------|
+| **AGNA Desktop** | Graphical network creation, visualization, and analysis | Researchers, students, teachers |
+| **AGNA Core** | Java library: network models, analyses, transformations, rendering, formats | Developers and research-software projects |
+| **AGNA CLI** | Command-line analysis, reproducible workflows, diagram generation | Advanced users, scripts, automation |
 
 ```
-agna-core/      engine: networks, analyses (AgnaLib), layouts, import/export
-agna-cli/       command-line interface (info, analyse, convert, transform,
-                draw, generate, metrics, ...)
-agna-desktop/   the desktop application (Swing)
-samples/        original sample networks (kept byte-identical)
-docs/           user manual, CLI reference, man page, shell completions
-packaging/      jpackage/DMG recipe, Agna.icns, signing guide
-CITATION.cff    machine-readable citation metadata (Zenodo DOI)
+AGNA Desktop ──────► AGNA Core ◄────── AGNA CLI
+(graphical UI)         (engine)        (command line)
 ```
 
-## Build and run
+The components share one architecture: **Desktop** provides the graphical
+interface, **Core** provides the reusable engine, and **CLI** exposes Core
+functions for scripted, reproducible work. All three are released under the
+**Apache License 2.0**.
+
+## What you can do
+
+- **Build networks** — create and edit directed, undirected, binary, and
+  valued networks through matrices, tables, and graphical views.
+- **Explore structure** — inspect density, components, distances, centrality,
+  sociometric patterns, and other network properties.
+- **Visualize relations** — use the integrated visual editor to arrange,
+  inspect, and export readable network diagrams.
+- **Teach and learn** — work with the bundled example networks
+  (`samples/`) and the [user manual](docs/manual.md).
+- **Automate** — repeat analyses from a terminal with AGNA CLI
+  ([reference](docs/cli.md), `--help` lists every command).
+
+## Quick start
+
+The shortest path to a first analysis is the
+[Quick Start](docs/QUICKSTART.md) — about ten minutes, using the bundled
+`Example 1` network: open the file, inspect the graph, run the basic
+measures, and export the results.
+
+## Installation
+
+Ready-made downloads (jars, CLI archive, Linux installer) are attached to
+each [release](https://github.com/baeckett/AGNA/releases). The desktop jar is
+self-contained:
+
+```
+java -jar agna-desktop-2.1.3.jar
+```
+
+### Build from source
 
 Requires JDK 17 and Maven.
 
@@ -40,7 +89,21 @@ java -jar agna-cli/target/agna-cli-2.1.3.jar --help # CLI
 ```
 
 On first start the bundled node-face images are materialized under
-`~/.agna/faces`.
+`~/.agna/faces`. All text I/O is UTF-8.
+
+## Repository layout
+
+```
+agna-core/      engine: networks, analyses, layouts, import/export
+agna-cli/       command-line interface (info, analyse, convert, transform,
+                draw, generate, metrics, ...)
+agna-desktop/   the desktop application (Swing)
+samples/        original sample networks (kept byte-identical)
+docs/           user manual, CLI reference, quick start, man page
+website/        project website draft (source for netanalysis.co.uk)
+packaging/      installer recipes (macOS dmg, icons), signing guide
+CITATION.cff    machine-readable citation metadata (Zenodo DOI)
+```
 
 ## License
 
@@ -67,7 +130,7 @@ fitness for high-risk activities.
 
 ## Citation
 
-If you use Agna in your research, please cite it (see also
+If you use AGNA in your research, please cite it (see also
 [CITATION.cff](CITATION.cff) and [CITATION.bib](CITATION.bib)):
 
 > Bența, M. I. (2026). *AGNA: Applied Graph and Network Analysis Open Source*
@@ -78,3 +141,4 @@ If you use Agna in your research, please cite it (see also
 - Website: https://www.netanalysis.co.uk
 - Contact: contact@netanalysis.co.uk
 - Copyright 2001–2026 Marius Ion Bența
+- [How to publish / make this repository public](docs/PUBLISHING.md)

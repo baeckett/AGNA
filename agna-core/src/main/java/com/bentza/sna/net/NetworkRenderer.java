@@ -41,8 +41,8 @@ public class NetworkRenderer
             int width, int height, int layout, RenderOptions opts)
         {
         // the NodeArea constructor and paintEdges consult the
-        // AppRuntime current network; save whatever the caller had and
-        // restore it afterwards
+        // AppRuntime current network; preserve the caller's previous
+        // network and restore it afterwards
         Supplier<FullNet> prevFull = AppRuntime.currentFullNetSupplier();
         Supplier<Network> prevNet = AppRuntime.currentNetworkSupplier();
         AppRuntime.setCurrentFullNet(full);

@@ -1,9 +1,9 @@
 package com.bentza.sna.core;
 
 /**
- * 2.1.3: the rows-of-a-sociomatrix operations the engine needs from
- * whatever grid is showing. The desktop table model implements this;
- * headless consumers (CLI, tests) can provide a no-op implementation.
+ * 2.1.3: the row operations the engine needs from the grid currently
+ * displayed. The desktop table model implements this; headless
+ * consumers (CLI, tests) can provide a no-op implementation.
  */
 public interface AgnaRowModel
     {

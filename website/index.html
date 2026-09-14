@@ -1,0 +1,269 @@
+<!--
+AGNA website starter — responsive, single-file site with a light header for a dark/coloured transparent PNG logo.
+
+IMAGE SETUP
+Place these two files in an `assets/` folder next to this HTML file:
+  assets/agna-hero-people-network.jpg   (16:9 hero background)
+  assets/agna-logo.png                  (transparent PNG logo designed for a white/light background)
+
+This revision:
+- Uses the title: “Applied Graph and Network Analysis Open Source”.
+- Removes the separate Open Source navigation item and section.
+- Integrates the essential desktop/core/CLI architecture, source, licensing, and developer
+  information into the “At a glance” area on the home page.
+
+Replace all values in square brackets before publishing.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AGNA — Applied Graph and Network Analysis Open Source: free software for social network analysis, sociometry, and sequential analysis.">
+  <title>AGNA — Applied Graph and Network Analysis Open Source — NetAnalysis.co.uk</title>
+  <style>
+    :root {
+      --ink: #17212b;
+      --muted: #52606d;
+      --paper: #ffffff;
+      --ground: #f5f7f8;
+      --line: #dbe2e7;
+      --brand: #126b78;
+      --brand-dark: #0b4e58;
+      --accent: #e8f4f5;
+      --code: #edf1f3;
+      --warning: #fff8df;
+      --max: 1060px;
+      --hero-image: url("assets/agna-hero-people-network.jpg");
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--ground);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+    a { color: var(--brand-dark); }
+    a:hover { color: var(--brand); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    code { background: var(--code); padding: .12rem .3rem; border-radius: 3px; font-size: .92em; }
+    pre { overflow-x: auto; padding: 1rem; background: #202a33; color: #f4f7f8; border-radius: 6px; line-height: 1.45; font-size: .88em; }
+    .wrap { width: min(var(--max), calc(100% - 2.4rem)); margin: 0 auto; }
+
+    .site-header {
+      color: #173c43;
+      background: linear-gradient(110deg, #ffffff 0%, #f4fbfc 53%, #dceff1 100%);
+      border-bottom: 1px solid #c4e0e3;
+    }
+    .top {
+      min-height: 122px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.2rem;
+      padding: .75rem 0;
+    }
+    .brand-link { display: inline-flex; align-items: center; width: clamp(195px, 29vw, 325px); text-decoration: none; }
+    .brand-logo { display: block; width: 100%; height: auto; max-height: 104px; object-fit: contain; object-position: left center; }
+    .brand-fallback { color: var(--brand-dark); letter-spacing: .05em; font-size: 1.45rem; font-weight: 800; }
+    .tag { margin: 0; max-width: 34rem; text-align: right; color: #315b63; font-size: .96rem; font-weight: 600; }
+
+    nav { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 3px rgba(20, 65, 70, .05); }
+    nav .wrap { display: flex; gap: .15rem; overflow-x: auto; }
+    nav a { white-space: nowrap; display: block; padding: .7rem .68rem; text-decoration: none; color: var(--muted); font-size: .88rem; border-bottom: 3px solid transparent; }
+    nav a:hover { border-bottom-color: var(--brand); color: var(--brand-dark); }
+
+    main { padding: 0 0 4rem; }
+    section:not(.hero) { scroll-margin-top: 4rem; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: clamp(1.35rem, 3vw, 2.6rem); margin: 1.35rem 0; box-shadow: 0 1px 2px rgba(0,0,0,.025); }
+
+    .hero { position: relative; isolation: isolate; overflow: hidden; min-height: clamp(440px, 64vw, 650px); display: flex; align-items: center; margin: 0 0 1.35rem; color: #fff; background-image: var(--hero-image); background-position: center center; background-size: cover; border-radius: 0 0 10px 10px; box-shadow: 0 3px 12px rgba(0,0,0,.13); }
+    .hero::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, rgba(5, 25, 31, .92) 0%, rgba(7, 38, 46, .79) 47%, rgba(7, 38, 46, .38) 100%), linear-gradient(180deg, rgba(1, 15, 20, .05), rgba(1, 15, 20, .35)); }
+    .hero-content { width: min(var(--max), calc(100% - 2.4rem)); margin: 0 auto; padding: 3.5rem 0; }
+    .hero-copy { max-width: 43rem; }
+    .hero .eyebrow { color: #bde9ed; }
+    .hero h1 { color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.34); }
+    .hero .lead { color: #f4ffff; text-shadow: 0 1px 4px rgba(0,0,0,.35); }
+    .hero .button { background: #f4ffff; border-color: #f4ffff; color: #0b4e58; }
+    .hero .button:hover { color: #fff; background: var(--brand); border-color: var(--brand); }
+    .hero .button.secondary { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.75); }
+    .hero .button.secondary:hover { background: rgba(255,255,255,.2); color: #fff; }
+    .hero-note { display: inline-block; margin-top: .5rem; color: #e4f9fb; font-size: .9rem; text-shadow: 0 1px 3px rgba(0,0,0,.35); }
+
+    h1, h2, h3 { line-height: 1.2; color: #102a30; }
+    h1 { font-size: clamp(2.35rem, 5.8vw, 4rem); margin: 0 0 .55rem; }
+    h2 { font-size: clamp(1.55rem, 3vw, 2.15rem); margin-top: 0; }
+    h3 { font-size: 1.12rem; margin-bottom: .35rem; }
+    .lead { font-size: clamp(1.08rem, 2vw, 1.28rem); max-width: 48rem; color: #273a43; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .1em; color: var(--brand); font-weight: 700; font-size: .77rem; margin: 0 0 .65rem; }
+    .buttons { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.45rem 0 1.1rem; }
+    .button { display: inline-block; padding: .67rem 1rem; border-radius: 5px; text-decoration: none; font-weight: 700; border: 1px solid var(--brand); color: #fff; background: var(--brand); }
+    .button:hover { color: #fff; background: var(--brand-dark); border-color: var(--brand-dark); }
+    .button.secondary { background: #fff; color: var(--brand-dark); }
+    .button.secondary:hover { background: var(--accent); color: var(--brand-dark); }
+    .notice { background: var(--accent); border-left: 4px solid var(--brand); padding: .9rem 1rem; margin: 1.25rem 0; }
+    .warning { background: var(--warning); border-left: 4px solid #c59b22; padding: .9rem 1rem; margin: 1.25rem 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+    .card { border: 1px solid var(--line); border-radius: 6px; padding: 1rem; background: #fbfcfc; }
+    .card p { margin-bottom: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .95rem; }
+    th, td { border: 1px solid var(--line); padding: .7rem; text-align: left; vertical-align: top; }
+    th { background: #edf6f7; color: #173c43; }
+    ul, ol { padding-left: 1.3rem; }
+    li + li { margin-top: .36rem; }
+    .small { color: var(--muted); font-size: .91rem; }
+    .placeholder { color: #8a4a00; font-weight: 700; }
+    .toc { columns: 2; column-gap: 2rem; }
+    .toc li { break-inside: avoid; }
+    footer { color: #dce6e8; background: #172a2e; padding: 2rem 0; font-size: .9rem; }
+    footer a { color: #c9edf1; }
+
+    @media (max-width: 700px) {
+      .top { min-height: auto; align-items: flex-start; flex-direction: column; gap: .35rem; padding: 1rem 0; }
+      .brand-link { width: min(275px, 78vw); }
+      .brand-logo { max-height: 90px; }
+      .tag { text-align: left; }
+      .hero { min-height: 520px; background-position: 61% center; }
+      .hero::before { background: linear-gradient(90deg, rgba(5, 25, 31, .93), rgba(7, 38, 46, .69)), linear-gradient(180deg, rgba(1, 15, 20, .13), rgba(1, 15, 20, .46)); }
+      .hero-content { padding: 3rem 0; }
+      .toc { columns: 1; }
+      table { font-size: .85rem; }
+      th, td { padding: .5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap top">
+      <a class="brand-link" href="#home" aria-label="AGNA home">
+        <img class="brand-logo" src="assets/agna-logo.png" alt="AGNA — Applied Graph and Network Analysis Open Source" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
+        <span id="logo-fallback" class="brand-fallback" style="display:none;">AGNA</span>
+      </a>
+      <p class="tag">Applied Graph and Network Analysis Open Source</p>
+    </div>
+  </header>
+
+  <nav aria-label="Primary navigation"><div class="wrap">
+    <a href="#home">Home</a><a href="#download">Download</a><a href="#quick-start">Quick Start</a><a href="#documentation">Documentation</a><a href="#cite">Cite AGNA</a><a href="#releases">Releases</a><a href="#about">About</a>
+  </div></nav>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-content"><div class="hero-copy">
+        <p class="eyebrow">Free and open source on NetAnalysis.co.uk</p>
+        <h1>AGNA</h1>
+        <p class="lead"><strong>Applied Graph and Network Analysis Open Source</strong> is a desktop and CLI software for social network analysis, sociometry, and sequential analysis. It is designed for researchers, teachers, and students who want to create, visualize, and analyze networks without programming.</p>
+        <div class="buttons"><a class="button" href="#download">Download AGNA Desktop</a><a class="button secondary" href="#quick-start">Read the Quick Start</a><a class="button secondary" href="#at-a-glance">Source and Developer Information</a></div>
+        <span class="hero-note">Current stable release: AGNA 2.1.3</span>
+      </div></div>
+    </section>
+
+    <div class="wrap">
+      <section id="at-a-glance" aria-label="AGNA overview">
+        <div class="notice"><strong>AGNA 2.1.3 is the current stable open-source release.</strong> It preserves AGNA’s original focus on accessible graphical network analysis, while also providing AGNA Core and AGNA CLI for reproducible and programmable workflows.</div>
+        <div class="grid">
+          <div class="card"><h3>Build networks</h3><p>Create and edit directed, undirected, binary, and valued networks through matrices, tables, and graphical views.</p></div>
+          <div class="card"><h3>Explore structure</h3><p>Inspect density, components, distances, centrality, sociometric patterns, and other network properties.</p></div>
+          <div class="card"><h3>Visualize relations</h3><p>Use an integrated visual editor to arrange, inspect, and export readable network diagrams.</p></div>
+          <div class="card"><h3>Teach and learn</h3><p>Work with small examples that make nodes, ties, matrices, and measures easier to understand.</p></div>
+        </div>
+        <h2>Who is AGNA for?</h2>
+        <p>AGNA is particularly suited to small and medium research networks: communication, collaboration, affiliation, interaction, behavioral, institutional, historical, and other relational data. It can be used in sociology, anthropology, communication research, psychology, education, organizational research, animal-behavior studies, and the humanities.</p>
+
+        <h2>At a glance</h2>
+        <table><thead><tr><th>Component</th><th>Purpose</th><th>Primary audience</th><th>Licence</th></tr></thead><tbody><tr><td>AGNA Desktop</td><td>Graphical network creation, visualization, and analysis</td><td>Researchers, students, teachers</td><td>Apache-2.0</td></tr><tr><td>AGNA Core</td><td>Java library for network models, analysis, transformations, rendering, and formats</td><td>Developers and research-software projects</td><td>Apache-2.0</td></tr><tr><td>AGNA CLI</td><td>Command-line analysis, reproducible workflows, and diagram generation</td><td>Advanced users, scripts, automation</td><td>Apache-2.0</td></tr></tbody></table>
+
+        <h3>Source, licensing, and reproducible workflows</h3>
+        <p>AGNA Desktop, AGNA Core, and AGNA CLI are free and open-source software released under the <strong>Apache License, Version 2.0</strong>. The licence permits use, modification, distribution, and commercial use, subject to preservation of applicable copyright, licence, and notice material. It also includes an explicit patent licence. Read the full <a href="https://www.apache.org/licenses/LICENSE-2.0" rel="license">Apache License 2.0</a>.</p>
+        <p>The projects share a common architecture: AGNA Desktop provides the graphical interface; AGNA Core provides the reusable engine; and AGNA CLI makes core functions available for command-line, scripted, and reproducible work.</p>
+        <pre>AGNA Desktop  ──────►  AGNA Core  ◄──────  AGNA CLI
+(graphical UI)          (engine)           (command line)</pre>
+        <p><a href="https://github.com/baeckett/AGNA">Browse source code</a> · <a href="https://github.com/baeckett/AGNA/blob/main/README.md">Read the contribution guide</a> · <a href="https://github.com/baeckett/AGNA/issues">Report a bug or propose an improvement</a> · <a href="mailto:contact@netanalysis.co.uk">Report security vulnerabilities privately</a></p>
+
+        <h3>Build from source</h3>
+        <pre>git clone <span class="placeholder">https://github.com/baeckett/AGNA.git</span>
+cd AGNA
+mvn verify   # requires JDK 17 and Maven</pre>
+        <p class="small">The repository builds with Maven against JDK 17; the full test suite (230 tests) runs with <code>mvn verify</code>.</p>
+
+        <h3>Use AGNA Core</h3>
+        <p>When AGNA Core is published to Maven Central, Java projects will be able to declare it as a dependency:</p>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;org.agna&lt;/groupId&gt;
+  &lt;artifactId&gt;agna-core&lt;/artifactId&gt;
+  &lt;version&gt;2.1.3&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+        <p class="small">AGNA Core is not yet published to Maven Central; add it through a local source build until the artifacts are published.</p>
+      </section>
+
+      <section id="download">
+        <p class="eyebrow">Installation</p><h2>Download AGNA</h2>
+        <p>The installers bundle the Java runtime. <strong>The plain desktop jar requires Java 17 or newer.</strong></p>
+        <div class="notice"><strong>Current stable version:</strong> 2.1.3<br><strong>Release date:</strong> 2026-09-11<br><strong>Software licence:</strong> Apache License 2.0</div>
+        <table><thead><tr><th>System</th><th>Download</th><th>Notes</th></tr></thead><tbody><tr><td>Windows</td><td><a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Download AGNA for Windows</a></td><td>Windows installer — published from a Windows build; see packaging/.</td></tr><tr><td>macOS</td><td><a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Download AGNA for macOS</a></td><td>macOS application (dmg) — built on a Mac; see packaging/.</td></tr><tr><td>Linux</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-amd64.deb">Download AGNA for Linux</a></td><td>Linux .deb available in the latest release.</td></tr></tbody></table>
+        <h3>Install AGNA Desktop</h3><div class="grid"><div class="card"><h3>Windows</h3><ol><li>Download the Windows installer.</li><li>Open it and follow the installation steps.</li><li>Start AGNA from the Start menu.</li></ol></div><div class="card"><h3>macOS</h3><ol><li>Download the macOS disk image or installer.</li><li>Move AGNA to Applications, or complete the installer.</li><li>Open AGNA from Applications or Launchpad.</li></ol></div><div class="card"><h3>Linux</h3><ol><li>Download the package for your distribution.</li><li>Install it with the standard system installer.</li><li>Start AGNA from the application launcher.</li></ol></div></div>
+        <h3>System requirements</h3><ul><li>Supported systems: <span class="placeholder">AGNA runs on any system with Java 17 or newer (Windows, macOS, Linux). The installers bundle a Java runtime, so no separate Java installation is needed.</span></li><li>Memory: <span class="placeholder">512 MB minimum; 2 GB recommended</span></li><li>Disk space: <span class="placeholder">about 150–250 MB installed</span></li><li>Internet connection: not required for normal analysis after installation.</li></ul>
+        <h3>Advanced downloads</h3><table><thead><tr><th>Component</th><th>For whom?</th><th>Download / installation</th></tr></thead><tbody><tr><td>AGNA CLI</td><td>Reproducible and automated workflows</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-cli.zip">Download CLI</a> (zip with the jar, man page and shell completions)</td></tr><tr><td>AGNA Core</td><td>Java developers and software projects</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-core.jar">Download Core JAR</a> · <a href="https://github.com/baeckett/AGNA/blob/main/docs">API documentation</a> (from source: <code>mvn javadoc:javadoc</code>)</td></tr><tr><td>Source code</td><td>Contributors and developers</td><td><a href="https://github.com/baeckett/AGNA">Browse source code</a></td></tr></tbody></table>
+        <p class="small">For advanced verification, see <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">SHA-256 checksums</a> and the <a href="#releases">release notes</a>.</p>
+      </section>
+
+      <section id="quick-start">
+        <p class="eyebrow">First steps</p><h2>Quick Start</h2><p>This short exercise introduces a small directed communication network. It is intended to help a new user open data, inspect a graph, calculate basic measures, and save results.</p>
+        <h3>1. Download the example data</h3><p>Download the <a href="https://github.com/baeckett/AGNA/tree/main/samples">six-person communication example</a>. The file should contain either an adjacency matrix or an edge list, depending on the version of AGNA you release.</p>
+        <h3>2. Open the network</h3><ol><li>Start AGNA Desktop.</li><li>Select <strong>File → Open</strong>.</li><li>Choose the example file.</li><li>Confirm whether ties are directed, and whether values are binary or weighted.</li></ol>
+        <h3>3. Inspect the network</h3><p>Open the graph view. Each node represents a person, and each arrow represents a directed communication tie. Drag a node to improve readability if necessary. Notice which people receive or send several ties and whether any are isolated.</p>
+        <h3>4. Calculate basic measures</h3><ol><li>Run the network description command to obtain the number of nodes, ties, density, and components.</li><li>Run degree centrality to inspect who has the most incoming or outgoing relations.</li><li>Run shortest-path or distance analysis to examine how easily actors can reach each other through the network.</li></ol>
+        <div class="warning"><strong>Interpret cautiously.</strong> A high centrality score describes a position in the network under the chosen data model. It does not by itself prove influence, authority, prestige, or causal power.</div>
+        <h3>5. Save and export</h3><ol><li>Save the AGNA project under a new name.</li><li>Export any table needed for later work.</li><li>Export the graph image or vector graphic for a presentation or paper.</li><li>Record the AGNA version and the analytical choices used.</li></ol><p>Continue with the <a href="#documentation">documentation</a> for importing data, working with different tie types, interpreting measures, and exporting results.</p>
+      </section>
+
+      <section id="documentation">
+        <p class="eyebrow">Manual and learning resources</p><h2>Documentation</h2><p>AGNA documentation is organized around research tasks. Replace the links below with the corresponding manual pages, PDFs, or downloadable examples when they are available.</p>
+        <div class="toc"><h3>Getting started</h3><ul><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Install AGNA</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Your first network</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Nodes, ties, graphs, and matrices</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Open, save, and export projects</a></li></ul><h3>Working with data</h3><ul><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Create a network by hand</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Import an adjacency matrix</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Import an edge list</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Directed, undirected, binary, and valued ties</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Missing data and absent ties</a></li></ul><h3>Analysis</h3><ul><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Size, density, and components</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Degree, closeness, and betweenness</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Geodesic distance and paths</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Sociometric analysis</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Sequential analysis</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Interpreting results responsibly</a></li></ul><h3>Visualization and exchange</h3><ul><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Use the visual network editor</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Arrange nodes, ties, and labels</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Export diagrams for publication</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Supported file formats</a></li><li><a href="https://github.com/baeckett/AGNA/blob/main/docs/manual.md">Export to other tools</a></li></ul></div>
+        <h3>Examples and teaching materials</h3><p><a href="https://github.com/baeckett/AGNA/tree/main/samples">Browse example networks and teaching exercises</a>. Each example should include a small data file, a research question, expected output, and interpretive notes.</p>
+        <h3>Need help?</h3><p>See the <a href="https://github.com/baeckett/AGNA/issues">support page</a>, search the <a href="https://github.com/baeckett/AGNA/issues">issue tracker</a>, or report a reproducible problem using the information requested there. Please remove confidential network data before attaching example files to a public issue.</p>
+      </section>
+
+      <section id="cite">
+        <p class="eyebrow">Research use</p><h2>Cite AGNA</h2><p>If you use AGNA in research, teaching, a thesis, or a publication, please cite the software version used. Where relevant, also cite the publication describing AGNA 2.1.</p>
+        <h3>Preferred software citation</h3><pre>Benta, Marius I. (2026). AGNA: Applied Graph and Network Analysis Open Source
+(Version 2.1.3) [Computer software]. <span class="placeholder">10.5281/zenodo.22708199</span>
+<span class="placeholder">https://github.com/baeckett/AGNA</span></pre><p class="small">The DOI is recorded in CITATION.cff / CITATION.bib in the source repository and matches the archived release.</p>
+        <h3>AGNA 2.1 publication</h3><pre>Benta, Marius I. (2005). Studying Communication Networks with AGNA 2.1.
+<span class="placeholder">[Complete journal / publisher details]</span>.
+https://doi.org/10.5281/zenodo.22708199</pre><p class="small">Verify all bibliographic details and the DOI landing page before publishing this citation.</p>
+        <h3>BibTeX</h3><pre>@software{benta_agna_2026,
+  author  = {Benta, Marius I.},
+  title   = {AGNA: Applied Graph and Network Analysis Open Source},
+  version = {2.1.3},
+  year    = {2026},
+  url     = {<span class="placeholder">www.netanalysis.co.uk</span>},
+  doi     = {<span class="placeholder">10.5281/zenodo.22708199</span>}
+}</pre>
+        <h3>Citation metadata</h3><p>The source repository includes a <code>CITATION.cff</code> file with machine-readable citation information. On GitHub, this can enable a “Cite this repository” option. For source code and software citation, see the <a href="https://citation-file-format.github.io/" rel="external">Citation File Format</a>.</p>
+      </section>
+
+      <section id="releases">
+        <p class="eyebrow">Version history</p><h2>Releases</h2><p>Every release includes a version number, release notes, source tag, downloadable artifacts, and checksums. Record the version you use in research outputs.</p>
+        <div class="card"><h3>AGNA 2.1.3 — Stable Open-Source Release</h3><p><strong>Released:</strong> 2026-09-11</p><ul><li>First public open-source release of AGNA Desktop, AGNA Core, and AGNA CLI.</li><li><span class="placeholder">This release revives the original AGNA Desktop under the Apache License 2.0 and adds AGNA Core (the reusable Java engine) and AGNA CLI (30+ commands for headless, reproducible analysis and diagram generation). The codebase is modernized (Maven/JDK 17, FlatLaf look and feel, UTF-8) and covered by 230 tests; import/export adds GraphML, GML and GraphSON alongside Pajek, Excel and text formats.</span></li><li><span class="placeholder"></span></li></ul><p><a href="https://github.com/baeckett/AGNA/releases">Release notes and downloads</a> · <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Source tag</a> · <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">SHA-256 checksums</a></p></div>
+        <h3>Known issues</h3><p><span class="placeholder">No critical known issues are currently recorded. The Linux installer is available from the release page; the macOS and Windows installers are built on their respective platforms (see packaging/).</span></p>
+        <h3>Update policy</h3><p>AGNA aims for stable releases appropriate to research and teaching. If AGNA includes an update check, it should retrieve only public version information and should never transmit project files, graph data, node labels, edge labels, or file paths.</p>
+        <h3>Verify downloads</h3><p>Advanced users can compare the SHA-256 checksum of a downloaded installer or archive with the values published for the release. This helps confirm that the file matches the released artifact.</p><pre># Example only — adapt to the user’s operating system
+sha256sum AGNA-2.1.3-amd64.deb</pre>
+      </section>
+
+      <section id="about">
+        <p class="eyebrow">Project history</p><h2>About AGNA</h2><p>AGNA—Applied Graph and Network Analysis Open Source—was created by <strong>Marius I. Benta</strong> as a free application for social network analysis, sociometry, and sequential analysis.</p><p>From its beginning, AGNA was intended for researchers, teachers, and students who needed accessible graphical tools rather than a programming environment. Ease of use, direct visual interaction, and clarity of output were central priorities.</p>
+        <h3>AGNA today</h3><p>AGNA 2.1.3 is a stable open-source release. It preserves the Desktop application while separating the reusable computational engine as AGNA Core and providing AGNA CLI for reproducible command-line workflows.</p><p>The project’s long-term aim is modest and practical: to keep accessible network analysis available to researchers who work with relational data and to provide an open foundation for teaching, scholarship, and future development.</p>
+        <h3>Acknowledgements</h3><p><span class="placeholder">Thanks to everyone who tested the 2.1.3 revival, reported bugs, and contributed suggestions; your feedback made this release possible.</span></p>
+        <h3>Contact</h3><ul><li>General contact: <a href="mailto:contact@netanalysis.co.uk">contact@netanalysis.co.uk</a></li><li>Source code and issue tracker: <a href="https://github.com/baeckett/AGNA">https://github.com/baeckett/AGNA</a></li><li>Security reports: <a href="mailto:contact@netanalysis.co.uk">contact@netanalysis.co.uk</a></li></ul>
+        <h3>Privacy</h3><p>AGNA Desktop is intended to process network data locally on the user’s computer. It should not upload project files, node labels, edge information, or analysis results to AGNA servers. Read the full <a href="https://www.netanalysis.co.uk">privacy notice</a> before publication and ensure that it accurately describes the released software and website.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer><div class="wrap"><strong>AGNA — Applied Graph and Network Analysis Open Source</strong><br><span class="small">AGNA Desktop, AGNA Core, and AGNA CLI are released under the <a href="https://www.apache.org/licenses/LICENSE-2.0" rel="license">Apache License 2.0</a>.</span><br><span class="small">© <span class="placeholder">2001–2026 Marius Ion Bența</span>. <a href="#cite">Cite AGNA</a> · <a href="https://github.com/baeckett/AGNA">Source code</a> · <a href="#releases">Releases</a> · <a href="https://www.netanalysis.co.uk">Privacy</a></span></div></footer>
+</body>
+</html>

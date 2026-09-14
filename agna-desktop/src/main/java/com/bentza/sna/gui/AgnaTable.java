@@ -55,13 +55,13 @@ class AgnaTable extends JTable
 
     // 2.1.3: some native look and feels (Aqua on macOS) never paint the
     // grid even when showGrid is on; draw the lines ourselves, on top of
-    // whatever the look and feel painted, so the sociomatrix grid is
+    // the grid painted by the look and feel, so the sociomatrix grid is
     // visible everywhere.
     protected void paintComponent(java.awt.Graphics g)
         {
         super.paintComponent(g);
-        // 2.1.3: the sociomatrix grid is drawn here, on top of whatever the
-        // look and feel painted: native look and feels (Aqua on macOS)
+        // 2.1.3: the sociomatrix grid is drawn here, above the grid painted
+        // by the look and feel: native look and feels (Aqua on macOS)
         // force their own "off" grid defaults and never paint table grid
         // lines, so the drawing is unconditional.
         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();

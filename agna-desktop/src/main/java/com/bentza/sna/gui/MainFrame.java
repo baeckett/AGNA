@@ -1396,8 +1396,6 @@ public class MainFrame //
         tmp_pane = null;
         if (t_new_full_net.getNetwork() != null)
             {
-            // JOptionPane.showMessageDialog(null, "Serus!", "Test",
-            // JOptionPane.INFORMATION_MESSAGE);
             t_new_full_net.setChanged(false);
             if (my_grafic != null)
                 {
