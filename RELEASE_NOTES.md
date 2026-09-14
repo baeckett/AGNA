@@ -5,29 +5,67 @@ into a Maven monorepo.
 Copyright (C) 2001–2026 Marius Ion Bența.
 Website: https://www.netanalysis.co.uk — contact@netanalysis.co.uk
 
+## What is AGNA
+
+AGNA — Applied Graph and Network Analysis Open Source — is free software for
+social network analysis, sociometry, and sequential analysis: a desktop
+application, a command-line interface, and a reusable Java engine, all under
+the Apache License 2.0.
+
 ## Layout (monorepo)
 
-- `agna-core` — network engine: analyses, layouts, import/export
+- `agna-core` — network engine: networks, analyses, layouts, import/export
 - `agna-cli` — command-line interface (30+ commands: analyse, convert,
-  transform, draw, matrix, metrics, distance, diff, generate, ...)
+  transform, draw, generate, matrix, metrics, distance, diff, layout, ...)
 - `agna-desktop` — the Swing desktop application
 - `docs/`, `packaging/`, `samples/`, `LICENSE`, `CITATION.cff`/`CITATION.bib`
 
-## Features
+## New features in 2.1.3
 
-- Modern build: Maven/JDK 17, FlatLaf UI (light default, live look-and-feel
-  picker, classic-theme fallback), 230 tests (138 core, 42 CLI, 50 desktop)
-- Analysis battery: Full Analysis, scalable N-Cliques, prestige (Lin 1976),
-  Brandes betweenness, distance/diff suites
-- Import/export: agn, text/CSV, Pajek `.net` (Gephi-safe), Excel import
-  (.xls/.xlsx, incl. Numbers), GraphML, GML, GraphSON
-- Merge Network (by name; sum/max/keep policies); session log in the Output
-  pane; background analyses with cancellation
-- Headless rendering and drawing; Barnes–Hut spring layout; fuzz, stress and
-  rendering test suites
-- UTF-8 text I/O with legacy latin-1 read fallback
-- Node-face fallback; modern Help with formulas and links (incl. the citation
-  guide); settings stored in the user home (bundle-ready)
+- **New layout engine** — three algorithms: **grid**, **concentric**
+  (hub-centered by degree), and **force-directed spring embedding**
+  (Fruchterman–Reingold with Barnes–Hut acceleration for large networks).
+  Available in the desktop Image menu and toolbar, and from the CLI
+  (`layout`, `draw --layout`).
+- **AGNA CLI** — a full command surface (30+ commands) for headless,
+  reproducible analysis and diagram generation, with pipe support,
+  structured output (CSV/JSON), man page and shell completions.
+- **Analysis battery** — Full Analysis, scalable N-Cliques, prestige
+  (Lin 1976), Brandes betweenness, distance and structural-diff suites.
+- **Import/export** — agn, text/CSV, Pajek `.net` (Gephi-safe), Excel
+  (`.xls`/`.xlsx`, incl. Apple Numbers), GraphML, GML, GraphSON.
+- **Merge Network** (by name; sum/max/keep policies); session log in the
+  Output pane; background analyses with cancellation.
+- **Modern UI** — FlatLaf look and feel (light default, live theme picker,
+  classic fallback); node-face fallback; resizable modern Help with
+  formulas, links and the citation guide.
+- **UTF-8 text I/O** throughout, with a legacy latin-1 read fallback for
+  old files.
+- **Quality** — 230 automated tests (138 core, 42 CLI, 50 desktop):
+  fuzz, stress, performance, rendering, round-trips and unicode suites.
+
+## Bugs fixed in 2.1.3
+
+- Save As dialog reliability: self-healing default name, format filters,
+  directory/path guards, extension handling.
+- `.agn` reader: crash on files without a Background Image File setting;
+  optional-settings NPEs; spurious "Node" parse warnings.
+- Settings: the title vertical offset is restored correctly; no crash when
+  an existing `~/.agna` settings file is present.
+- Pajek export is Gephi-clean: no comment header, optional vector blocks,
+  coordinates normalized to 0..1, face round-trip.
+- Grid lines are now drawn unconditionally, visible under native look and
+  feels (macOS Aqua) that suppress them.
+- Spring layout: gentle displacement and fit-to-canvas normalization (no
+  border hugging); Barnes–Hut acceleration above 256 nodes (~12x faster on
+  1000–5000 node networks, same layout quality).
+- Path helpers no longer truncate at dots inside directory names; Excel
+  export is safe for headless runs.
+- Binary-degree semantics documented; the multiple-geodesics stub replaced;
+  clique enumeration capped with a truncation note; analyses land safely
+  on the event thread with cancellation.
+- Help: resizable window, regenerated contents with working anchors, stale
+  pages removed; legacy commented-out code removed from the sources.
 
 ## Citation
 
@@ -35,12 +73,14 @@ DOI: 10.5281/zenodo.22708199 — see CITATION.cff / CITATION.bib
 
 ## Files
 
-- `agna-desktop/target/agna-2.1.3.jar` — run: `java -jar agna-desktop/target/agna-2.1.3.jar`
-- `agna-cli/target/agna-cli-2.1.3.jar` — run: `java -jar agna-cli/target/agna-cli-2.1.3.jar --help`
-- `agna-core/target/agna-2.1.3.jar` — library
-- `packaging/` — macOS dmg recipe, app icon (.icns), signing guide
+- `AGNA-2.1.3-desktop.jar` — run: `java -jar AGNA-2.1.3-desktop.jar`
+- `AGNA-2.1.3-cli.zip` — CLI jar + reference + man page + completions
+- `AGNA-2.1.3-core.jar` (+ sources jar)
+- `AGNA-2.1.3-Linux-x64.tar.gz` — self-contained Linux archive
+- macOS (.dmg) and Windows installers are built on their platforms from
+  the recipes in `packaging/`
 
 ## License
 
-Apache License 2.0 (all modules). See LICENSE. The High-Risk Activities
-Disclaimer is in the README.
+Apache License 2.0 (all modules). See LICENSE and the README (including the
+High-Risk Activities Disclaimer).
