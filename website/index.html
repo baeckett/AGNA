@@ -183,7 +183,7 @@ Replace all values in square brackets before publishing.
         <p><a href="https://github.com/baeckett/AGNA">Browse source code</a> · <a href="https://github.com/baeckett/AGNA/blob/main/README.md">Read the contribution guide</a> · <a href="https://github.com/baeckett/AGNA/issues">Report a bug or propose an improvement</a> · <a href="mailto:contact@netanalysis.co.uk">Report security vulnerabilities privately</a></p>
 
         <h3>Build from source</h3>
-        <pre>git clone <span class="placeholder">https://github.com/baeckett/AGNA.git</span>
+        <pre>git clone https://github.com/baeckett/AGNA.git
 cd AGNA
 mvn verify   # requires JDK 17 and Maven</pre>
         <p class="small">The repository builds with Maven against JDK 17; the full test suite (230 tests) runs with <code>mvn verify</code>.</p>
@@ -202,10 +202,10 @@ mvn verify   # requires JDK 17 and Maven</pre>
         <p class="eyebrow">Installation</p><h2>Download AGNA</h2>
         <p>The installers bundle the Java runtime. <strong>The plain desktop jar requires Java 17 or newer.</strong></p>
         <div class="notice"><strong>Current stable version:</strong> 2.1.3<br><strong>Release date:</strong> 2026-09-11<br><strong>Software licence:</strong> Apache License 2.0</div>
-        <table><thead><tr><th>System</th><th>Download</th><th>Notes</th></tr></thead><tbody><tr><td>Windows</td><td><a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Download AGNA for Windows</a></td><td>Windows installer — published from a Windows build; see packaging/.</td></tr><tr><td>macOS</td><td><a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Download AGNA for macOS</a></td><td>macOS application (dmg) — built on a Mac; see packaging/.</td></tr><tr><td>Linux</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-Linux-x64.tar.gz">Download AGNA for Linux</a></td><td>Self-contained Linux x64 archive (tar.gz) in the latest release.</td></tr></tbody></table>
+        <table><thead><tr><th>System</th><th>Download</th><th>Notes</th></tr></thead><tbody><tr><td>Windows</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-desktop.jar">Download AGNA for Windows</a></td><td>Desktop jar (Java 17+) — the Windows installer (.exe/.msi) is built on Windows; see packaging/INSTALLERS.md.</td></tr><tr><td>macOS</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-desktop.jar">Download AGNA for macOS</a></td><td>Desktop jar (Java 17+) — the macOS dmg is built on a Mac; see packaging/INSTALLERS.md.</td></tr><tr><td>Linux</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-Linux-x64.tar.gz">Download AGNA for Linux</a></td><td>Self-contained Linux x64 archive (tar.gz) in the latest release.</td></tr></tbody></table>
         <h3>Install AGNA Desktop</h3><div class="grid"><div class="card"><h3>Windows</h3><ol><li>Download the Windows installer.</li><li>Open it and follow the installation steps.</li><li>Start AGNA from the Start menu.</li></ol></div><div class="card"><h3>macOS</h3><ol><li>Download the macOS disk image or installer.</li><li>Move AGNA to Applications, or complete the installer.</li><li>Open AGNA from Applications or Launchpad.</li></ol></div><div class="card"><h3>Linux</h3><ol><li>Download the package for your distribution.</li><li>Install it with the standard system installer.</li><li>Start AGNA from the application launcher.</li></ol></div></div>
-        <h3>System requirements</h3><ul><li>Supported systems: <span class="placeholder">AGNA runs on any system with Java 17 or newer (Windows, macOS, Linux). The installers bundle a Java runtime, so no separate Java installation is needed.</span></li><li>Memory: <span class="placeholder">512 MB minimum; 2 GB recommended</span></li><li>Disk space: <span class="placeholder">about 150–250 MB installed</span></li><li>Internet connection: not required for normal analysis after installation.</li></ul>
-        <h3>Advanced downloads</h3><table><thead><tr><th>Component</th><th>For whom?</th><th>Download / installation</th></tr></thead><tbody><tr><td>AGNA CLI</td><td>Reproducible and automated workflows</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-cli.zip">Download CLI</a> (zip with the jar, man page and shell completions)</td></tr><tr><td>AGNA Core</td><td>Java developers and software projects</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-core.jar">Download Core JAR</a> · <a href="https://github.com/baeckett/AGNA/blob/main/docs">API documentation</a> (from source: <code>mvn javadoc:javadoc</code>)</td></tr><tr><td>Source code</td><td>Contributors and developers</td><td><a href="https://github.com/baeckett/AGNA">Browse source code</a></td></tr></tbody></table>
+        <h3>System requirements</h3><ul><li>Supported systems: AGNA runs on any system with Java 17 or newer (Windows, macOS, Linux). The installers bundle a Java runtime, so no separate Java installation is needed.</li><li>Memory: 512 MB minimum; 2 GB recommended</li><li>Disk space: about 150–250 MB installed</li><li>Internet connection: not required for normal analysis after installation.</li></ul>
+        <h3>Advanced downloads</h3><table><thead><tr><th>Component</th><th>For whom?</th><th>Download / installation</th></tr></thead><tbody><tr><td>AGNA CLI</td><td>Reproducible and automated workflows</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-cli.zip">Download CLI</a> (zip with the jar, man page and shell completions)</td></tr><tr><td>AGNA Core</td><td>Java developers and software projects</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-core.jar">Download Core JAR</a> · <a href="https://github.com/baeckett/AGNA/blob/main/docs">API documentation</a> (from source: <code>mvn javadoc:javadoc</code>)</td></tr><tr><td>Source code</td><td>Contributors and developers</td><td><a href="https://github.com/baeckett/AGNA">Browse source code</a></td></tr><tr><td>AGNA Desktop (jar)</td><td>Quick start on any OS with Java 17+</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/AGNA-2.1.3-desktop.jar">Download desktop jar</a></td></tr><tr><td>Checksums</td><td>Verify any download</td><td><a href="https://github.com/baeckett/AGNA/releases/latest/download/SHA256SUMS.txt">SHA-256 checksums</a> for every artifact</td></tr></tbody></table>
         <p class="small">For advanced verification, see <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">SHA-256 checksums</a> and the <a href="#releases">release notes</a>.</p>
       </section>
 
@@ -229,29 +229,29 @@ mvn verify   # requires JDK 17 and Maven</pre>
       <section id="cite">
         <p class="eyebrow">Research use</p><h2>Cite AGNA</h2><p>If you use AGNA in research, teaching, a thesis, or a publication, please cite the software version used. Where relevant, also cite the publication describing AGNA 2.1.</p>
         <h3>Preferred software citation</h3><pre>Benta, Marius I. (2026). AGNA: Applied Graph and Network Analysis Open Source
-(Version 2.1.3) [Computer software]. <span class="placeholder">10.5281/zenodo.22708199</span>
-<span class="placeholder">https://github.com/baeckett/AGNA</span></pre><p class="small">The DOI is recorded in CITATION.cff / CITATION.bib in the source repository and matches the archived release.</p>
+(Version 2.1.3) [Computer software]. 10.5281/zenodo.22708199
+https://github.com/baeckett/AGNA</pre><p class="small">The DOI is recorded in CITATION.cff / CITATION.bib in the source repository and matches the archived release.</p>
         <h3>AGNA 2.1 publication</h3><pre>Benta, Marius I. (2005). Studying Communication Networks with AGNA 2.1.
-<span class="placeholder">[Complete journal / publisher details]</span>.
+[Complete journal / publisher details].
 https://doi.org/10.5281/zenodo.22708199</pre><p class="small">Verify all bibliographic details and the DOI landing page before publishing this citation.</p>
         <h3>BibTeX</h3><pre>@software{benta_agna_2026,
   author  = {Benta, Marius I.},
   title   = {AGNA: Applied Graph and Network Analysis Open Source},
   version = {2.1.3},
   year    = {2026},
-  url     = {<span class="placeholder">www.netanalysis.co.uk</span>},
-  doi     = {<span class="placeholder">10.5281/zenodo.22708199</span>}
+  url     = {www.netanalysis.co.uk},
+  doi     = {10.5281/zenodo.22708199}
 }</pre>
         <h3>Citation metadata</h3><p>The source repository includes a <code>CITATION.cff</code> file with machine-readable citation information. On GitHub, this can enable a “Cite this repository” option. For source code and software citation, see the <a href="https://citation-file-format.github.io/" rel="external">Citation File Format</a>.</p>
       </section>
 
       <section id="releases">
         <p class="eyebrow">Version history</p><h2>Releases</h2><p>Every release includes a version number, release notes, source tag, downloadable artifacts, and checksums. Record the version you use in research outputs.</p>
-        <div class="card"><h3>AGNA 2.1.3 — Stable Open-Source Release</h3><p><strong>Released:</strong> 2026-09-11</p><ul><li>First public open-source release of AGNA Desktop, AGNA Core, and AGNA CLI.</li><li><span class="placeholder">This release revives the original AGNA Desktop under the Apache License 2.0 and adds AGNA Core (the reusable Java engine) and AGNA CLI (30+ commands for headless, reproducible analysis and diagram generation). The codebase is modernized (Maven/JDK 17, FlatLaf look and feel, UTF-8) and covered by 230 tests; import/export adds GraphML, GML and GraphSON alongside Pajek, Excel and text formats.</span></li><li><span class="placeholder"></span></li></ul><p><a href="https://github.com/baeckett/AGNA/releases">Release notes and downloads</a> · <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Source tag</a> · <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">SHA-256 checksums</a></p></div>
-        <h3>Known issues</h3><p><span class="placeholder">No critical known issues are currently recorded. The Linux installer is available from the release page; the macOS and Windows installers are built on their respective platforms (see packaging/).</span></p>
+        <div class="card"><h3>AGNA 2.1.3 — Stable Open-Source Release</h3><p><strong>Released:</strong> 2026-09-11</p><ul><li>First public open-source release of AGNA Desktop, AGNA Core, and AGNA CLI.</li><li>This release revives the original AGNA Desktop under the Apache License 2.0 and adds AGNA Core (the reusable Java engine) and AGNA CLI (30+ commands for headless, reproducible analysis and diagram generation). The codebase is modernized (Maven/JDK 17, FlatLaf look and feel, UTF-8) and covered by 230 tests; import/export adds GraphML, GML and GraphSON alongside Pajek, Excel and text formats.</li><li></li></ul><p><a href="https://github.com/baeckett/AGNA/releases">Release notes and downloads</a> · <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">Source tag</a> · <a href="https://github.com/baeckett/AGNA/releases/tag/v2.1.3">SHA-256 checksums</a></p></div>
+        <h3>Known issues</h3><p>No critical known issues are currently recorded. The Linux installer is available from the release page; the macOS and Windows installers are built on their respective platforms (see packaging/).</p>
         <h3>Update policy</h3><p>AGNA aims for stable releases appropriate to research and teaching. If AGNA includes an update check, it should retrieve only public version information and should never transmit project files, graph data, node labels, edge labels, or file paths.</p>
         <h3>Verify downloads</h3><p>Advanced users can compare the SHA-256 checksum of a downloaded installer or archive with the values published for the release. This helps confirm that the file matches the released artifact.</p><pre># Example only — adapt to the user’s operating system
-sha256sum AGNA-2.1.3-amd64.deb</pre>
+sha256sum AGNA-2.1.3-Linux-x64.tar.gz</pre>
       </section>
 
       <section id="about">
@@ -264,6 +264,6 @@ sha256sum AGNA-2.1.3-amd64.deb</pre>
     </div>
   </main>
 
-  <footer><div class="wrap"><strong>AGNA — Applied Graph and Network Analysis Open Source</strong><br><span class="small">AGNA Desktop, AGNA Core, and AGNA CLI are released under the <a href="https://www.apache.org/licenses/LICENSE-2.0" rel="license">Apache License 2.0</a>.</span><br><span class="small">© <span class="placeholder">2001–2026 Marius Ion Bența</span>. <a href="#cite">Cite AGNA</a> · <a href="https://github.com/baeckett/AGNA">Source code</a> · <a href="#releases">Releases</a> · <a href="https://www.netanalysis.co.uk">Privacy</a></span></div></footer>
+  <footer><div class="wrap"><strong>AGNA — Applied Graph and Network Analysis Open Source</strong><br><span class="small">AGNA Desktop, AGNA Core, and AGNA CLI are released under the <a href="https://www.apache.org/licenses/LICENSE-2.0" rel="license">Apache License 2.0</a>.</span><br><span class="small">© 2001–2026 Marius Ion Bența. <a href="#cite">Cite AGNA</a> · <a href="https://github.com/baeckett/AGNA/blob/main/ACKNOWLEDGEMENTS.md">Acknowledgements</a> · <a href="https://github.com/baeckett/AGNA">Source code</a> · <a href="#releases">Releases</a> · <a href="https://www.netanalysis.co.uk">Privacy</a></span></div></footer>
 </body>
 </html>
