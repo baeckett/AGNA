@@ -24,6 +24,10 @@ preferred-citation:
       given-names: "Marius Ion"
   title: "Studying Communication Networks with AGNA 2.1"
   year: 2005
-  publisher: "Zenodo"
+  journal: "Cognition, Brain, Behavior"
+  volume: "IX"
+  issue: "3"
+  pages: "567-574"
+  publisher: "Romanian Association of Cognitive Sciences"
   doi: "10.5281/zenodo.2539249"
   url: "https://zenodo.org/record/2539249"

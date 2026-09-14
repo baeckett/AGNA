@@ -356,7 +356,7 @@ Source (Version 2.1.3) [Computer software].
 https://doi.org/10.5281/zenodo.22708199
 
 The software is described in Bența, M. I. (2005). Studying Communication
-Networks with AGNA 2.1. Journal article. Zenodo.
+Networks with AGNA 2.1. Cognition, Brain, Behavior, IX(3), 567-574.
 https://doi.org/10.5281/zenodo.2539249
 
 BibTeX entry:
@@ -374,11 +374,14 @@ BibTeX entry:
 @article{benta_2005_agna,
   author    = {Bența, Marius Ion},
   title     = {Studying Communication Networks with AGNA 2.1},
+  journal   = {Cognition, Brain, Behavior},
+  volume    = {IX},
+  number    = {3},
+  pages     = {567--574},
   year      = {2005},
-  publisher = {Zenodo},
+  publisher = {Romanian Association of Cognitive Sciences},
   doi       = {10.5281/zenodo.2539249},
-  url       = {https://zenodo.org/record/2539249},
-  note      = {Journal article, CC BY 4.0}
+  url       = {https://zenodo.org/record/2539249}
 }
 ```
 

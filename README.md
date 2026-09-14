@@ -138,8 +138,9 @@ If you use AGNA in your research, please cite it (see also
 
 The software is described in:
 
-> Bența, M. I. (2005). *Studying Communication Networks with AGNA 2.1*
-> [Journal article]. Zenodo. https://doi.org/10.5281/zenodo.2539249
+> Bența, M. I. (2005). *Studying Communication Networks with AGNA 2.1.*
+> Cognition, Brain, Behavior, IX(3), 567–574.
+> https://doi.org/10.5281/zenodo.2539249
 
 ## Links
 
