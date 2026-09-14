@@ -4418,6 +4418,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         h_about_agna.addActionListener(act_menu);
         h_contents.setMnemonic('c');
         h_about_agna.setMnemonic('a');
+        h_about_agna.setForeground(java.awt.Color.WHITE);
         h_contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
                 ActionEvent.CTRL_MASK));
         mHelp.add(h_contents);

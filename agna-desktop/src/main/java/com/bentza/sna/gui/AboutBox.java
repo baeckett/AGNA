@@ -55,7 +55,8 @@ class AboutBox
         // n_frame.setIconImage(MainFrame.getMainIcon().getImage());
 
         ImageIcon splash_icon = null;
-        Color background_color = new Color(221, 222, 211);
+        // 2.1.3: the About box follows the white splash palette
+        Color background_color = Color.WHITE;
         icon_label = new JLabel();
         try
             {
@@ -73,7 +74,7 @@ class AboutBox
             icon_label.setIcon(Environment.getButtonImageIcon("splash_01.gif"));
             }
         text_label = new JLabel(
-                "<html><font size = 2 color='#298C8C' face='Arial,Helvetica,Verdana,sans-serif'>"
+                "<html><font size = 2 color='#6E6E6E' face='Arial,Helvetica,Verdana,sans-serif'>"
                         + Environment.getApplicationFullName()
                         + "<br>"
                         + Environment.getApplicationCopyright()
