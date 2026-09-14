@@ -73,7 +73,8 @@ public class AgnaSplash extends JWindow
             {
             }
         JLabel version_label = new JLabel("Version " + version
-                + "  -  Social Network Analysis", SwingConstants.CENTER);
+                + " - Applied Graph & Network Analysis Open Source",
+                SwingConstants.CENTER);
         version_label.setForeground(new Color(110, 110, 110));
         version_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
         version_label.setBounds(0, 280, w, 22);

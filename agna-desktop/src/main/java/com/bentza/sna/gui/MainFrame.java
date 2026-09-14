@@ -90,8 +90,7 @@ public class MainFrame //
             a_fareness, a_betweenness, a_prestige, a_full_analysis, v_viewer,
             v_close, v_hide_output, v_view_output, p_working_directory,
             p_save_as_default, p_laf_native, p_laf_flatlaf,
-            p_laf_flatlaf_dark, h_contents, h_about_agna, h_cite_agna,
-            h_copy_citation;
+            p_laf_flatlaf_dark, h_contents, h_about_agna;
 
     private static JMenuBar mb;
 
@@ -4421,20 +4420,8 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         h_about_agna.setMnemonic('a');
         h_contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
                 ActionEvent.CTRL_MASK));
-        // 2.1.3: citation support in the Help menu
-        h_cite_agna = new JMenuItem("How to Cite AGNA...");
-        h_copy_citation = new JMenuItem("Copy AGNA Citation");
-        h_cite_agna.setToolTipText("How to cite AGNA in your research");
-        h_copy_citation.setToolTipText("Copy the AGNA citation to the "
-                + "clipboard");
-        h_cite_agna.addActionListener(act_menu);
-        h_copy_citation.addActionListener(act_menu);
-        h_cite_agna.setMnemonic('i');
-        h_copy_citation.setMnemonic('p');
         mHelp.add(h_contents);
         mHelp.add(h_about_agna);
-        mHelp.add(h_cite_agna);
-        mHelp.add(h_copy_citation);
 
         //
 

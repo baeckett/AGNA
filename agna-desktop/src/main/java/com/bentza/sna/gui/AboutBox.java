@@ -79,7 +79,9 @@ class AboutBox
                         + Environment.getApplicationCopyright()
                         + "<br>Licensed under the Apache License, Version 2.0"
                         + "<br><br>For the latest version, visit the Agna "
-                        + "website:");
+                        + "website:<br><br>"
+                        + Environment.getDesktopCitationBlock().replace("\n",
+                                "<br>"));
         // url_button = new JButton("<html><font size = 2 color='#FF0000'
         // face='Arial,Helvetica,Verdana,sans-serif'><a href='" +
         // MainFrame.getApplicationUrl() +"'>" + MainFrame.getApplicationUrl() +

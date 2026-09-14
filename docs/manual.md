@@ -347,5 +347,32 @@ toggle the pane.
 - **2.1.2** — the last closed-source release by Marius Ion Bența;
   single-jar application with the l2fprod skin themes.
 
-Copyright (C) 2002-2026 Marius Ion Bența. Website (provisional):
+## 11. Cite AGNA
+
+If you use AGNA in your research, please cite it as:
+
+Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open
+Source (Version 2.1.3) [Computer software].
+https://doi.org/10.5281/zenodo.22708199
+
+BibTeX entry:
+
+```
+@software{benta_2026_agna,
+  author  = {Bența, Marius Ion},
+  title   = {AGNA: Applied Graph and Network Analysis Open Source},
+  version = {2.1.3},
+  year    = {2026},
+  doi     = {10.5281/zenodo.22708199},
+  url     = {https://www.netanalysis.co.uk}
+}
+```
+
+The DOI is registered with Zenodo; the `CITATION.cff` file at the
+repository root carries the same metadata in machine-readable form.
+
+For reproducibility, report the AGNA version and the analysis options
+used.
+
+Copyright 2001–2026 Marius Ion Bența. Website:
 https://www.netanalysis.co.uk

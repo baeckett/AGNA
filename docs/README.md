@@ -4,6 +4,8 @@
 - `cli.md` — command reference for the Agna CLI (including `metrics`).
 - `agna.1` — the CLI man page (roff).
 - `agnacompletion.bash`, `agnacompletion.zsh` — shell completions.
+- `../CITATION.cff`, `../CITATION.bib` — citation metadata for AGNA 2.1.3
+  (DOI 10.5281/zenodo.22708199).
 - `help-styles.css` — stylesheet for the generated HTML help.
 - `manuals/` — generated PDF/Print output (not committed yet).
 
