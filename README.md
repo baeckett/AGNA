@@ -47,6 +47,24 @@ On first start the bundled node-face images are materialized under
 Apache License 2.0 — see [LICENSE](LICENSE). No warranty; use at your own
 discretion.
 
+## High-Risk Activities Disclaimer
+
+AGNA is provided for research, educational, and general analytical purposes.
+It is not designed, developed, tested, certified, or intended for use in
+hazardous or safety-critical environments requiring fail-safe performance.
+Without limitation, AGNA must not be used for the design, construction,
+operation, maintenance, monitoring, or control of nuclear facilities;
+aircraft, aviation navigation, aviation communications, or air-traffic
+control systems; direct life-support or life-critical medical systems;
+weapons systems; emergency-response control systems; or any other activity in
+which a failure, error, delay, interruption, or inaccurate output could
+reasonably be expected to result in death, personal injury, or severe
+physical, environmental, or property damage. Any use of AGNA in such high-risk
+activities is entirely at the user's own risk. To the maximum extent permitted
+by applicable law, the author and contributors disclaim all warranties,
+whether express, implied, statutory, or otherwise, including any warranty of
+fitness for high-risk activities.
+
 ## Citation
 
 If you use Agna in your research, please cite it (see also
