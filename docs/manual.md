@@ -355,6 +355,10 @@ Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open
 Source (Version 2.1.3) [Computer software].
 https://doi.org/10.5281/zenodo.22708199
 
+The software is described in Bența, M. I. (2005). Studying Communication
+Networks with AGNA 2.1. Journal article. Zenodo.
+https://doi.org/10.5281/zenodo.2539249
+
 BibTeX entry:
 
 ```
@@ -365,6 +369,16 @@ BibTeX entry:
   year    = {2026},
   doi     = {10.5281/zenodo.22708199},
   url     = {https://www.netanalysis.co.uk}
+}
+
+@article{benta_2005_agna,
+  author    = {Bența, Marius Ion},
+  title     = {Studying Communication Networks with AGNA 2.1},
+  year      = {2005},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.2539249},
+  url       = {https://zenodo.org/record/2539249},
+  note      = {Journal article, CC BY 4.0}
 }
 ```
 

@@ -18,12 +18,12 @@ keywords:
   - sequential analysis
   - open source
 preferred-citation:
-  type: software
+  type: article
   authors:
     - family-names: "Bența"
       given-names: "Marius Ion"
-  title: "AGNA: Applied Graph and Network Analysis Open Source"
-  version: "2.1.3"
-  year: 2026
-  doi: "10.5281/zenodo.22708199"
-  url: "https://www.netanalysis.co.uk"
+  title: "Studying Communication Networks with AGNA 2.1"
+  year: 2005
+  publisher: "Zenodo"
+  doi: "10.5281/zenodo.2539249"
+  url: "https://zenodo.org/record/2539249"
