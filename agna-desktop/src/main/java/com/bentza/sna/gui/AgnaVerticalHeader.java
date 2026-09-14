@@ -76,7 +76,6 @@ class AgnaVerticalHeader extends JPanel
         final Network tmp_network = MainFrame.getCurrentNetwork();
         for (int i = 0; i < n; i++)
             {
-            // i_button = HeaderButtonFactory.getButton( tmp_icon, i_dim );
             i_button = HeaderButtonFactory.requestButton(tmp_network
                     .getActor(i).getSmallFace(), i_dim);
             this.add(i_button);
@@ -100,14 +99,10 @@ class AgnaVerticalHeader extends JPanel
              * tmp_network.getActor(i).getFace().getImage().getScaledInstance(8,
              * -1, Image.SCALE_FAST); } catch(Exception e) {}
              */
-            // this.add(HeaderButtonFactory.requestButton(new
-            // ImageIcon(tmp_image), button_dim));
             this.add(HeaderButtonFactory.requestButton(tmp_network.getActor(i)
                     .getSmallFace(), i_dim));
 
             }
         this.setPreferredSize(new Dimension(i_dim.width, n * i_dim.height));
-        // this.repaint();
-        
         }
     }

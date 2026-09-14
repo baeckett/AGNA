@@ -362,7 +362,6 @@ import java.util.Vector;
                 {
                 finval = (double) src.getValue(i, j)
                         + (double) src.getValue(j, i);
-                // finval = 1.0 + 1.0;
                 src.setValue((float) finval, i, j);
                 src.setValue((float) finval, j, i);
                 }
@@ -834,7 +833,6 @@ import java.util.Vector;
                         {
                         if (tmpstr.getIndexOf(k) < 0)
                             {
-                            // drum.deleteAll();
                             drum = null;
                             drum = tmpstr.getClone();
                             drum.appendValue(k);
@@ -1949,7 +1947,6 @@ import java.util.Vector;
 
     public String outBasic(Network src)
         {
-        // AgnaLib();
         // initial values
         final int size = src.getSize();
         final int n_edges = src.getEdgesNumber();
@@ -2103,7 +2100,6 @@ import java.util.Vector;
     // generates a description of the newly opened chain:
     public String outOpenChainSummary(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         int[][] frequencies = new int[2][size];
@@ -2260,7 +2256,6 @@ import java.util.Vector;
 
     public String outEmissionDegree(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outemis =  weightedEmissionDegree(outsrc);
@@ -2283,7 +2278,6 @@ import java.util.Vector;
 
     public String outOutDegree(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         int i;
         StringBuffer out = new StringBuffer("");
@@ -2388,7 +2382,6 @@ import java.util.Vector;
 
             for (j = 0; j < size; j++)
                 {
-                // if (mat[j][i] != 0f)
                 if (src.getValue(j, i) != 0f)
                     finarray[i]++;
                 }
@@ -2421,7 +2414,6 @@ import java.util.Vector;
     // returns a string (publicable) version of receptionDegree()
     public String outReceptionDegree(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outrec =  weightedReceptionDegree(outsrc);
@@ -2444,7 +2436,6 @@ import java.util.Vector;
 
     public String outInDegree(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         int i;
         StringBuffer out = new StringBuffer("");
@@ -2539,7 +2530,6 @@ import java.util.Vector;
 
     public String outInDegreeOLD(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outrec = new float[size]; // binary data
@@ -2662,7 +2652,6 @@ import java.util.Vector;
     // makes sense for non-directed networks only!
     public String outNodalDegree(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outrec = new float[size];
@@ -2896,7 +2885,6 @@ import java.util.Vector;
 
     public String outDeterminationDegree(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outdet =  determinationDegree(outsrc);
@@ -2942,7 +2930,6 @@ import java.util.Vector;
 
     public String outSociometricStatus(Network outsrc)
         {
-        // AgnaLib();
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outss =  sociometricStatus(outsrc);
@@ -2966,7 +2953,6 @@ import java.util.Vector;
 
     // returns freeman's general index;
     // star_network_index are the centrality indexes of the corresponding star
-    // network;
     private float freemanGeneralIndex(float[] a, float[] star_network_index)
         {
         int nn = a.length;

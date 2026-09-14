@@ -136,9 +136,6 @@ public class VerticalToolBar extends JPanel
         {
         results_panel.removeAll();
         results_panel.setPreferredSize(field_dimension);
-        // this.repaint();
-
-        
         }
 
     public Dimension getThisDimension()
@@ -173,9 +170,7 @@ public class VerticalToolBar extends JPanel
             ToolTipManager.sharedInstance().registerComponent(new_button);
             }
 
-        // this.setPreferredSize(new Dimension( (int)this_dimension.getWidth(),
         // (int)(this.getPreferredSize().getHeight() + 16) ));
-        // results_panel.setPreferredSize(new Dimension(
         // (int)this_dimension.getWidth(),
         // (int)(results_panel.getPreferredSize().getHeight() + 16) ));
         }
@@ -303,7 +298,6 @@ public class VerticalToolBar extends JPanel
                     {
                     setSearching(true);
                     // ProgressDialog pd = MainFrame.progress_dialog;
-                    // pd.setPercent(2);
 
                     Network this_network = MainFrame.getCurrentNetwork();
                     final float percent_step = 100f / this_network.getSize();
@@ -377,8 +371,6 @@ public class VerticalToolBar extends JPanel
                         {
                         addNoResultsButton();
                         }
-
-                    // this.finish();
                     setSearching(false);
                     title_label.setText("Search");
                     // adjusting height according to number of nodes found:
@@ -408,11 +400,8 @@ public class VerticalToolBar extends JPanel
         this.setPreferredSize(this_dimension);
 
         JPanel top_panel = new JPanel();
-        // top_panel.setBorder(new EmptyBorder(1,2,2,2));
         top_panel.setBorder(BorderFactory
                 .createEtchedBorder(EtchedBorder.LOWERED));
-
-        // top_panel.setLayout(new BoxLayout(top_panel, BoxLayout.X_AXIS));
         top_panel.setPreferredSize(results_dimension);
 
         GridBagLayout c_layout = new GridBagLayout();
@@ -429,7 +418,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 6;
         co.gridheight = 1;
         co.weightx = 0.0;
-        // co.weighty = 0.0;
         co.fill = GridBagConstraints.NONE;
         co.anchor = GridBagConstraints.WEST;
         c_layout.setConstraints(title_label, co);
@@ -437,8 +425,6 @@ public class VerticalToolBar extends JPanel
 
         // placing search_field:
         search_field = new JTextField("");
-        // search_field.setPreferredSize(field_dimension);
-        // search_field.setMaximumSize(field_dimension);
         search_field.setToolTipText("Type string to search nodes by name");
         search_field.addActionListener(act_vertical_toolbar);
         search_field.addFocusListener(focus_change);
@@ -448,7 +434,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 6;
         co.gridheight = 1;
         co.weightx = 0.9;
-        // co.weighty = 0.8;
         co.fill = GridBagConstraints.HORIZONTAL;
         co.anchor = GridBagConstraints.WEST;
         c_layout.setConstraints(search_field, co);
@@ -459,7 +444,6 @@ public class VerticalToolBar extends JPanel
                 ? Environment.getButtonImageIcon("SearchNodes.gif")
                 : ModernIcons.get(ModernIcons.SEARCH, 22));
         // ImageIcon search_button_image =
-        // Environment.getButtonImageIcon("SearchNodes.gif");
         search_button.setRolloverIcon(MainFrame.isClassicToolbarIcons()
                 ? Environment.getButtonImageIcon("rSearchNodes.gif")
                 : ModernIcons.get(ModernIcons.SEARCH, 22, true));
@@ -470,11 +454,8 @@ public class VerticalToolBar extends JPanel
                 .isClassicToolbarIcons() ? Environment
                         .getButtonImageIcon("StopSearching.gif")
                 : ModernIcons.get(ModernIcons.STOP, 22, true));
-        // search_button.setPreferredSize(button_dimension);
-        // search_button.setMaximumSize(button_dimension);
         search_button.setToolTipText(START_TOOL_TIP);
         search_button.setBorder(null);
-        // search_button.setMargin(new Insets(0,3,0,0));
         search_button.addActionListener(act_vertical_toolbar);
         search_button.setEnabled(true);
         co.gridx = 0;
@@ -482,7 +463,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 2;
         co.gridheight = 1;
         co.weightx = 0.0;
-        // co.weighty = 0.0;
         co.fill = GridBagConstraints.NONE;
         co.anchor = GridBagConstraints.CENTER;
         c_layout.setConstraints(search_button, co);
@@ -509,7 +489,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 2;
         co.gridheight = 1;
         co.weightx = 0.0;
-        // co.weighty = 0.0;
         co.anchor = GridBagConstraints.WEST;
         c_layout.setConstraints(caps_box, co);
         top_panel.add(caps_box);
@@ -536,7 +515,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 2;
         co.gridheight = 1;
         co.weightx = 0.0;
-        // co.weighty = 0.0;
         c_layout.setConstraints(clear_before_box, co);
         top_panel.add(clear_before_box);
 
@@ -562,7 +540,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 2;
         co.gridheight = 1;
         co.weightx = 0.0;
-        // co.weighty = 0.0;
         c_layout.setConstraints(match_name_box, co);
         top_panel.add(match_name_box);
 
@@ -582,7 +559,6 @@ public class VerticalToolBar extends JPanel
         co.gridwidth = 2;
         co.gridheight = 1;
         co.weightx = 0.0;
-        // co.weighty = 0.0;
         co.anchor = GridBagConstraints.CENTER;
         c_layout.setConstraints(clear_all_button, co);
         top_panel.add(clear_all_button);
@@ -591,7 +567,6 @@ public class VerticalToolBar extends JPanel
 
         results_panel = new JPanel();
         results_panel.setMinimumSize(results_dimension);
-        // results_panel.setPreferredSize(new Dimension(100,25));
         results_panel.setBorder(null);
         results_panel.setLayout(new BoxLayout(results_panel, BoxLayout.Y_AXIS));
 

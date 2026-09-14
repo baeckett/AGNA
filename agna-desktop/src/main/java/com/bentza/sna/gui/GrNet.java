@@ -133,7 +133,6 @@ import com.bentza.sna.io.JpegUtils;
                 update_network_needed = false;
                 if (MainFrame.checkAllValues())
                     MainFrame.updateNetwork();
-                // MainFrame.updateNetwork();
                 if (gr_full_net.isArea())
                     my_area.updateArea(MainFrame.getCurrentNetwork());
                 int new_width = my_area.getWidth();
@@ -159,7 +158,6 @@ import com.bentza.sna.io.JpegUtils;
                         new_width + 10));
                 area_panel.revalidate();
                 MainFrame.setEnabledCloseViewerMenu();
-                // my_area.repaint();
                 }
         };
 
@@ -613,7 +611,6 @@ import com.bentza.sna.io.JpegUtils;
             new_x = Integer.parseInt(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             }
         if (new_x > 0 && new_x < my_area.getWidth())
             {
@@ -623,7 +620,6 @@ import com.bentza.sna.io.JpegUtils;
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
@@ -644,7 +640,6 @@ import com.bentza.sna.io.JpegUtils;
             new_y = Integer.parseInt(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             }
         if (new_y > 0 && new_y < my_area.getWidth())
             {
@@ -654,7 +649,6 @@ import com.bentza.sna.io.JpegUtils;
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
@@ -796,7 +790,6 @@ import com.bentza.sna.io.JpegUtils;
             
             // }
             // }; //end of thread
-            // runner.start();
             return true;
             } catch (Exception e)
             {
@@ -987,7 +980,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         area_panel.setPreferredSize(new Dimension(new_width + 10,
                 new_width + 10));
         area_panel.revalidate();
-        // my_area.repaint();
         gr_frame.repaint();
         gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
@@ -1091,8 +1083,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         BufferedImage img = my_area.getOutputImage();
         gr_output_pane.appendBufferedImage(img);
-        // gr_frame.repaint();
-        
         }
 
     private void doViewNames()
@@ -1126,7 +1116,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
 
             }
-        // gr_frame.repaint();
         }
 
     private void doMaxTransparency()
@@ -1215,7 +1204,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.setEdgeValuePosition(position);
             gr_full_net.setChanged(true);
             my_area.paintEdges();
-            // gr_frame.repaint();
             my_area.repaint();
             } catch (Exception e)
             {
@@ -1235,7 +1223,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.paintEdges();
             my_area.repaint();
             }
-        // gr_frame.repaint();
         }
 
     private void doChangeBackgroundColor()
@@ -1248,7 +1235,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
             gr_full_net.setChanged(true);
             }
-        // gr_frame.repaint();
         }
 
     private void doChangeBackgroundImage()
@@ -1268,7 +1254,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             {
             my_area.setBackgroundImage(tmp_image_name);
             gr_full_net.setChanged(true);
-            // gr_frame.repaint();
             my_area.paintEdges();
             my_area.repaint();
             }
@@ -1291,7 +1276,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             new_value = Integer.parseInt(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             }
         if (new_value > 0 && new_value < my_area.getWidth())
             {
@@ -1301,7 +1285,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
@@ -1322,7 +1305,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             new_value = Integer.parseInt(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             }
         if (new_value > 0 && new_value < my_area.getWidth())
             {
@@ -1332,7 +1314,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
@@ -1353,7 +1334,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             new_value = Integer.parseInt(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             }
         if (new_value > 0)
             {
@@ -1363,7 +1343,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
@@ -1383,7 +1362,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             scale_factor = Float.parseFloat(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             return;
             }
         if (scale_factor > 1)
@@ -1397,17 +1375,13 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
     private void doFitBackgroundToImage()
         {
         // final int old_size =
-        // Math.max(my_area.getBackgroundImageOriginalWidth(),
-        // my_area.getBackgroundImageOriginalHeight());
         // final int new_size = Math.min(my_area.getWidth(),
-        // my_area.getHeight());
         float scale_factor = 100f
                 * (float) (Math.min(my_area.getWidth(), my_area.getHeight()))
                 / (float) (Math.max(my_area.getBackgroundImageOriginalWidth(),
@@ -1436,7 +1410,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 null, null, String.valueOf(new_value));
         gr_frame.repaint();
         tmp_pane = null;
-        // tmp_str = (String) JOptionPane.showInputDialog(gr_frame,"Enter new
         // height for background image (pixels)","Title horizontal position",
         // JOptionPane.QUESTION_MESSAGE,null, null,String.valueOf(new_value));
         if (tmp_str == null)
@@ -1446,7 +1419,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             new_value = Integer.parseInt(tmp_str);
             } catch (Exception e)
             {
-            // showErrorParsing();
             }
         if (new_value > 0)
             {
@@ -1456,14 +1428,12 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.repaint();
             } else
             {
-            // showErrorParsing();
             }
         }
 
     private void doNoBackgroundImage()
         {
         my_area.setBackgroundImage("");
-        // gr_frame.repaint();
         gr_full_net.setChanged(true);
         my_area.paintEdges();
         my_area.repaint();
@@ -1513,7 +1483,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
         gr_full_net.setChanged(true);
         my_area.paintEdges();
-        // my_area.repaint();
         gr_frame.repaint();
         }
 
@@ -1529,7 +1498,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             border_button.setToolTipText("Click to hide left tools");
             }
         left_panel.revalidate();
-        // left_panel.repaint();
         gr_frame.repaint();
         }
 
@@ -1622,7 +1590,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         my_area.setGridEnabled(!is);
         my_area.paintEdges();
         gr_full_net.setChanged(true);
-        // my_area.repaint();
         gr_frame.repaint();
         }
 
@@ -1660,7 +1627,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             my_area.setGridSpace(grid_space);
             gr_full_net.setChanged(true);
             my_area.paintEdges();
-            // gr_frame.repaint();
             my_area.repaint();
             } catch (Exception e)
             {
@@ -1679,7 +1645,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
         gr_full_net.setChanged(true);
         my_area.paintEdges();
-        // gr_frame.repaint();
         my_area.repaint();
         }
 
@@ -1755,7 +1720,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         MainFrame.setTableCellEditor();
         gr_model.setReady(true);
         gr_full_net.setChanged(true);
-        // my_area.paintEdges();
         setDefaultStatus();
         gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         try
@@ -1847,7 +1811,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     private void doAddActor()
         {
-        // gr_frame.repaint();
         String tmp_str = "";
         Object[] values = new Object[10];
         for (int i = 0; i < 10; i++)
@@ -1870,7 +1833,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gr_full_net.addNodesToNetwork(nn); // no position specified
         for (int i = 1; i <= nn; i++)
             {
-            // gr_full_net.addNodeToNetwork(-1, -1, -1); // no position
             // specified
             // updates table:
             gr_model.addRowCol();
@@ -1891,7 +1853,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     private void doCloneActor()
         {
-        // gr_frame.repaint();
         gr_model.setReady(false);
         gr_full_net.cloneNodeToNetwork();
         gr_model.addRowCol();
@@ -1908,7 +1869,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         int isol_node = my_area.getSelectedActor();
         gr_model.setReady(false);
         gr_full_net.isolateNodeToNetwork(isol_node);
-        // gr_frame.repaint();
         my_area.paintEdges();
         gr_full_net.setChanged(true);
         gr_model.setReady(true);
@@ -1944,14 +1904,12 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gr_full_net.removeOutsidersInNetwork(gr_model);
 
         my_area.paintEdges();
-        // my_area.repaint();
         setDefaultStatus();
         setMatrix();
         gr_full_net.setChanged(true);
         gr_model.setReady(true);
         if (my_area.getSelectedActor() > -1)
             enableFirst();
-        // MainFrame.setTableHeaders();
         MainFrame.setTableCellEditor();
         gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         gr_frame.repaint();
@@ -1992,7 +1950,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gr_model.setReady(false);
         gr_full_net.symmetrize(gr_frame);
         setMatrix();
-        // gr_frame.repaint();
         my_area.paintEdges();
         my_area.repaint();
         gr_full_net.setChanged(true);
@@ -2158,9 +2115,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     private void doRandomLayout() // randomize positions of all nodes
         {
-        // gr_frame.repaint();
         my_area.setRandomLayout();
-        // my_area.setLagrangeLayout();
         my_area.paintEdges();
         my_area.repaint();
         gr_full_net.setChanged(true);
@@ -2170,7 +2125,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         {
         my_area.setCircleLayout();
         gr_full_net.setChanged(true);
-        // gr_frame.repaint();
         my_area.paintEdges();
         my_area.repaint();
         }
@@ -2208,7 +2162,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         if (my_area.selectActor(tmp_index))
             {
             doManageEnablingComponentsStatic();
-            // my_area.repaint();
             gr_frame.repaint();
             }
         }
@@ -2216,14 +2169,12 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     private void doSelectNextActor() // select next node
         {
         my_area.selectNextActor();
-        // gr_frame.repaint();
         my_area.repaint();
         }
 
     private static void doSelectNextArrow() // select next arrow
         {
         my_area.selectNextArrow();
-        // gr_frame.repaint();
         my_area.repaint();
         }
 
@@ -2268,7 +2219,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             setStatus("Rebuilding network image...");
             my_area.changeAllFaces(tmp_image_name);
             gr_full_net.setChanged(true);
-            // my_area.repaint();
             gr_frame.repaint();
             MainFrame.setAllNodeFaces(tmp_icon);
             setDefaultStatus();
@@ -2330,7 +2280,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     .setToolTipText("Disallow edge selection");
             }
         gr_full_net.setChanged(true);
-        // my_area.repaint();
         gr_frame.repaint();
         }
 
@@ -2853,7 +2802,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
 
         my_area.paintEdges();
-        // my_area.repaint();
         gr_frame.repaint();
         }
 
@@ -3279,7 +3227,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     } else
                     {
                     ki = new JMenu(childs[i].getName());
-                    // actual_menu.add(ki);
                     actual_menu.insert(ki, 2);
                     try
                         {
@@ -3343,7 +3290,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     .getNetworkFileName())
                     + " - Network Viewer - "
                     + Environment.getApplicationFullName());
-        // my_area=new NodeArea();
         my_area = tmp_net.net_area;
         ToolTipManager.sharedInstance().registerComponent(my_area);
         int a_width = my_area.getWidth();
@@ -3359,11 +3305,9 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gContent = gr_frame.getContentPane();
         gControlArea = new JPanel();
         gControlArea.setLayout(new BorderLayout());
-        // gContent.setBackground(Color.white);
         gControlArea.setPreferredSize(dim_frame);
         my_area.setPreferredSize(dim_inner_frame);
         my_area.addActionListener(act_area_clicked);
-        // my_area.addMouseListener(adapt_area_clicked);
 
         // genereaza miscarile nodului prin keys:
         up_x_key = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
@@ -3397,7 +3341,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         // asociaza key cu actionlistener:
         // KeyStroke my_key=KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
         // InputEvent.ALT_MASK, false);
-        // gr_frame.getRootPane().registerKeyboardAction(act_area_clicked,
         // my_key, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         // meniu si toolbar:
@@ -3482,7 +3425,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_view_names = new JMenuItem("Show Names");
         e_hide_names = new JMenuItem("Hide Names");
         e_names_color = new JMenuItem("Names Color...");
-        // e_names_font=new JMenuItem("Names Font...");
         e_names_x = new JMenuItem("X-coordinate...");
         e_names_y = new JMenuItem("Y-coordinate...");
         e_grid = new JMenu("Grid");
@@ -3629,7 +3571,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_change_faces_width.setMnemonic('w');
 
         // shortcut: (nu mere)
-        // e_max_transparency.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
         // ActionEvent.CTRL_MASK));
         e_set_edge.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
                 ActionEvent.CTRL_MASK));
@@ -3648,7 +3589,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_background_image.setEnabled(true);
         e_edge_color.setEnabled(true);
         e_names_color.setEnabled(true);
-        // e_names_font.setEnabled(true);
         e_set_edge.setEnabled(false);
 
         boolean is = false; // temporary boolean variable;
@@ -3716,7 +3656,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_view_names.addActionListener(act_change_image);
         e_hide_names.addActionListener(act_change_image);
         e_names_color.addActionListener(act_change_image);
-        // e_names_font.addActionListener(act_change_image);
         e_names_x.addActionListener(act_change_image);
         e_names_y.addActionListener(act_change_image);
         e_grid_step.addActionListener(act_change_image);
@@ -3752,7 +3691,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_names_properties.add(e_hide_names);
         e_names_properties.addSeparator();
         e_names_properties.add(e_names_color);
-        // e_names_properties.add(e_names_font);
         e_names_properties.addSeparator();
         e_names_properties.add(e_names_x);
         e_names_properties.add(e_names_y);
@@ -3934,7 +3872,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         h_contents.setToolTipText("Display the Agna Help frame");
         // generates strange error:
-        // h_about.setToolTipText("Display Agna copyright information");
 
         h_contents.setMnemonic('c');
         h_about.setMnemonic('a');
@@ -4016,7 +3953,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtools.setFloatable(false);
         dim_tool = new Dimension(23, 23);
         Dimension dim_fields = new Dimension(35, 20);
-        // gtools.setPreferredSize(new Dimension(400,25));
         ImageIcon gi_edge_color = Environment
                 .getButtonImageIcon("EdgeColor.gif");
         ImageIcon gi_view_names = Environment
@@ -4492,12 +4428,10 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         area_panel.setPreferredSize(dim_inner_frame);
 
         area_panel.add(my_area);
-        // setAreaPanelWidth(a_width);
         scroll_graph = new JScrollPane(area_panel);
 
         status_bar = new JLabel(DEFAULT_STATUS);
         status_panel = new JPanel();
-        // status_panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         status_panel.setMinimumSize(dim_tool);
         status_layout = new FlowLayout();
         status_layout.setAlignment(FlowLayout.LEFT);
@@ -4505,8 +4439,6 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         status_panel.add(status_bar);
 
         file_chooser = new JFileChooser();
-        // file_chooser.setCurrentDirectory(".");
-
         gControlArea.add(scroll_graph, BorderLayout.CENTER);
         gControlArea.add(status_panel, BorderLayout.SOUTH);
 
@@ -4524,12 +4456,9 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         left_panel = new JPanel();
         left_panel.setLayout(new BorderLayout());
-        // left_panel.setPreferredSize(new Dimension(120,100));
-
         border_button = new JButton();
         border_button.addActionListener(act_change_image);
         border_button.setPreferredSize(new Dimension(6, 40));
-        // border_button.setBackground(new Color(46,138,141));
         border_button.setBackground(Color.white);
         border_button.setToolTipText("Click to hide left tools");
         left_panel.add(left_scroll, BorderLayout.WEST);

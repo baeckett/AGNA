@@ -120,7 +120,6 @@ class HelpDialog
 
     private void enablingManager()
         {
-        // JOptionPane.showMessageDialog(null, String.valueOf(current_url) +
         // "\n" + String.valueOf(url_list.size()), "Test",
         // JOptionPane.INFORMATION_MESSAGE);
         if (url_list.size() <= 1)
@@ -166,7 +165,6 @@ class HelpDialog
         // 2.1.3: BorderLayout is required for the NORTH/CENTER constraints
         // below and so the content stretches when the window is resized
         control.setLayout(new BorderLayout());
-        // control.setBorder(BorderFactory.createRaisedBevelBorder());
         control.setPreferredSize(frame_dim);
         // text editor:
         editor_pane = new JEditorPane();
@@ -188,9 +186,6 @@ class HelpDialog
         url_list.removeAllElements();
         url_list.addElement(editor_pane.getPage());
         current_url = 0; // index of current url
-        // scroll_pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        // scroll_pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
         JToolBar button_panel = new JToolBar();
         button_panel.setFloatable(false);
         button_panel.setPreferredSize(new Dimension(frame_dim.width, 30));
@@ -248,9 +243,6 @@ class HelpDialog
         control.add(BorderLayout.CENTER, scroll_pane);
         control.setBorder(new EmptyBorder(new Insets(4, 4, 4, 4)));
         content.add(BorderLayout.CENTER, control);
-
-        // n_frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-
         n_frame.pack();
         // placing n_frame in ceneter of screen:
         Dimension sdim = Toolkit.getDefaultToolkit().getScreenSize();

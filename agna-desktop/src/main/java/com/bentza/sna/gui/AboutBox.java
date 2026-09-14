@@ -48,9 +48,6 @@ class AboutBox
         n_frame = new AgnaDialog(where, "Node Settings", true);
         n_frame.setTitle("About Agna");
         n_frame.setModal(true);
-
-        // n_frame.setIconImage(MainFrame.getMainIcon().getImage());
-
         ImageIcon splash_icon = null;
         // 2.1.3: the About box follows the white splash palette
         Color background_color = Color.WHITE;
@@ -81,9 +78,6 @@ class AboutBox
                         + "<br><br>"
                         + Environment.getDesktopCitationBlock().replace("\n",
                                 "<br>"));
-        // url_button = new JButton("<html><font size = 2 color='#FF0000'
-        // face='Arial,Helvetica,Verdana,sans-serif'><a href='" +
-        // MainFrame.getApplicationUrl() +"'>" + MainFrame.getApplicationUrl() +
         // "</a>");
         // 2.1.3: the URL is shown inline in the text, no separate link
         // button (the old red underlined UrlLabel is removed)
@@ -95,9 +89,6 @@ class AboutBox
 
         JPanel control = new JPanel();
         control.setBackground(background_color);
-        // control.setBorder(BorderFactory.createRaisedBevelBorder());
-        // control.setPreferredSize(frame_dim);
-
         GridBagLayout c_layout = new GridBagLayout();
         control.setLayout(c_layout);
         GridBagConstraints co = new GridBagConstraints();
@@ -137,12 +128,8 @@ class AboutBox
         control.add(icon_label);
 
         // finish:
-        // etched_panel.add(control);
         control.setBorder(new EmptyBorder(new Insets(4, 4, 4, 4)));
         content.add(BorderLayout.CENTER, control);
-
-        // n_frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-
         n_frame.pack();
         // placing n_frame in ceneter of screen:
         Dimension sdim = Toolkit.getDefaultToolkit().getScreenSize();

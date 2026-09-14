@@ -44,12 +44,10 @@ class NodeSettingsDialog
         {
             public void focusLost(FocusEvent e)
                 {
-                // if (e.getSource()==n_frame) {n_frame.show();}
                 }
 
             public void focusGained(FocusEvent e)
                 {
-                // if (e.getSource()==n_frame) {gfield_x.selectAll();}
                 }
         };
 
@@ -96,7 +94,6 @@ class NodeSettingsDialog
                     MainFrame.setNodeName(src_node.getName(), src_node_index);
                     MainFrame.setNodeFace(src_node.getFace(), src_node_index);
                     n_frame.dispose();
-                    // n_frame = null;
                     }
 
                 // cancel button listener:
@@ -104,7 +101,6 @@ class NodeSettingsDialog
                     {
                     apply_changes = false;
                     n_frame.dispose();
-                    // n_frame = null;
                     }
 
                 // path button listener:
@@ -118,7 +114,6 @@ class NodeSettingsDialog
                         tmp_image_name = GrNet.inputImageFile(tmp_image_name);
                     if (tmp_image_name == null)
                         {
-                        // n_frame.show();
                         return;
                         }
                     ImageIcon tmp_icon = null;
@@ -127,12 +122,10 @@ class NodeSettingsDialog
                         tmp_icon = new ImageIcon(tmp_image_name);
                         } catch (Exception e2)
                         {
-                        // n_frame.show();
                         return;
                         }
                     if (tmp_icon == null)
                         {
-                        // n_frame.show();
                         return;
                         }
                     try
@@ -143,9 +136,6 @@ class NodeSettingsDialog
       AgnaLog.warn("suppressed exception", e1);
       }
                     path_field.setText(tmp_image_name);
-                    // n_frame.pack();
-                    // n_frame.validate();
-                    // n_frame.show();
                     }
 
                 // checkbox listener:
@@ -174,18 +164,11 @@ class NodeSettingsDialog
         n_frame.setTitle("Node Settings");
         n_frame.setResizable(false);
         n_frame.setModal(true);
-
-        // n_frame.setSize(frame_dim);
-        // n_frame.setIconImage(MainFrame.getMainIcon().getImage());
-
         Container content = n_frame.getContentPane();
         content.setLayout(new BorderLayout());
         content.setBackground(Color.white);
 
         control = new JPanel();
-        // control.setBorder(BorderFactory.createRaisedBevelBorder());
-        // control.setPreferredSize(frame_dim);
-
         GridBagLayout c_layout = new GridBagLayout();
         control.setLayout(c_layout);
         GridBagConstraints co = new GridBagConstraints();
@@ -300,8 +283,6 @@ class NodeSettingsDialog
         face_panel = new JPanel();
         face_panel.setBorder(BorderFactory.createTitledBorder(BorderFactory
                 .createEtchedBorder(), "Face"));
-        // face_panel.setPreferredSize(panel_dim);
-        // face_panel.setMinimumSize(panel_dim);
 
         // face panel components:
         GridBagLayout f_layout = new GridBagLayout();
@@ -433,12 +414,8 @@ class NodeSettingsDialog
         width_field.setEnabled(is);
 
         // finish:
-        // etched_panel.add(control);
         control.setBorder(new EmptyBorder(new Insets(4, 4, 4, 4)));
         content.add(BorderLayout.CENTER, control);
-
-        // n_frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-
         n_frame.pack();
         // placing n_frame in ceneter of screen:
         Dimension sdim = Toolkit.getDefaultToolkit().getScreenSize();

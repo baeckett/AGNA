@@ -69,7 +69,6 @@ public class Agna
                             JOptionPane.QUESTION_MESSAGE, null, null, null);
                     if (confirm == 0)
                         {
-                        // frame.grid_model.setReady(false); // avoid annoying
                         // message 'Bad value encountered!...'
                         frame.saveChangedFiles(false);
 
@@ -270,8 +269,6 @@ public class Agna
  * String tmp = ""; // lists ascii code: for (int i = 0; i < 256; i++) { tmp += "<br>" +
  * String.valueOf(i) + " (" + (char)i + ")<br>"; }
  */
-
-// doAppendParagraphToOutput(tmp);
 /*
  * if (checkAllValues()) updateNetwork(); else return; String tmp_str = new
  * String(""); tmp_str = AgnaLib.outPrestige(my_full_net.getNetwork()); tmp_str +=

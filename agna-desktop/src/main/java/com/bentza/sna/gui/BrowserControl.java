@@ -108,8 +108,6 @@ public class BrowserControl
                     } catch (Exception e45) {
       AgnaLog.warn("suppressed exception", e45);
       }
-
-                // return;
                 }
             if (p == null)
                 return;

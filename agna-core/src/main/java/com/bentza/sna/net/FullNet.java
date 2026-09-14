@@ -46,7 +46,6 @@ import javax.swing.JTextPane;
     public void createDefaultNetwork()
         {
         my_network = new Network();
-        // if (isArea())
         net_area = null;
         network_file_name = "";
         changed = false;
@@ -375,7 +374,6 @@ import javax.swing.JTextPane;
         String lb = "\n";
         int nn = my_network.getSize();
         int i = 0;
-        // mat = my_network.getMatrix();
         StringBuffer filestr = new StringBuffer(""); // to be returned
         // writing general network data:
         filestr.append("Agna Data File" + lb);
@@ -1788,7 +1786,7 @@ import javax.swing.JTextPane;
         i = str.indexOf("Node Names") + 10;
         j = str.indexOf("End Node Names");
 
-        // is_err = true if "Error setting Node Name" occurres at least once
+        // is_err = true if "Error setting Node Name" occurs at least once
         boolean is_err = false;
         if (i > 0 && i < len && j > i)
                 {
@@ -1838,7 +1836,6 @@ import javax.swing.JTextPane;
                 {
                 for (j = 0; j < nn; j++)
                     {
-                    // my_network.setStringValue((String)val.elementAt(i * nn +
                     // j), i, j);
                     try
                         {
@@ -2407,7 +2404,6 @@ tmp_node.setFace(tmpname);
         else if ((ni == (int) Math.sqrt(ni - 1) * (int) Math.sqrt(ni - 1) + 1)) // &&
                                                                                 // (ni
                                                                                 // ==
-                                                                                // Integer.parseInt((String)val.elementAt(0)))
             {
             try
                 {
@@ -2571,7 +2567,6 @@ tmp_node.setFace(tmpname);
         if (ni > 2
                 && (ni == (int) Math.sqrt((float) ni - 1)
                         * (int) Math.sqrt((float) ni - 1) + 1)) // && (ni ==
-                                                                // Integer.parseInt((String)val.elementAt(0)))
             {
             try
                 {
@@ -2736,7 +2731,6 @@ tmp_node.setFace(tmpname);
                     {
                     try
                         {
-                        // tmp_val = Float.parseFloat(tmpstr);
                         val.addElement(tmpstr);
                         } catch (Exception e) {
       AgnaLog.warn("suppressed exception", e);
@@ -2788,7 +2782,6 @@ tmp_node.setFace(tmpname);
         if (isArea())
             {
             net_area.updateArea(my_network);
-            // net_area.getSelectedActor()=my_network.getSize()-1;
             }
         setChanged(true);
         }
@@ -2807,7 +2800,6 @@ tmp_node.setFace(tmpname);
         if (isArea())
             {
             net_area.updateArea(my_network);
-            // net_area.getSelectedActor()=my_network.getSize()-1;
             }
         setChanged(true);
         }
@@ -2872,7 +2864,6 @@ tmp_node.setFace(tmpname);
 
     public String symmetrize(JFrame tmp_frame)
         {
-        // AgnaLib.AgnaLib();
         AgnaLib agna_lib = new AgnaLib();
         Object[] values = { "Maximum", "Minimum", "Maximum Non-Zero",
                 "Minimum Non-Zero", "Below Diagonal", "Above Diagonal",

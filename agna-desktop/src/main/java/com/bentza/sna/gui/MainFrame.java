@@ -247,14 +247,12 @@ public class MainFrame //
 
             public void editingStopped(ChangeEvent e)
                 {
-                // MainFrame.setCurrentStatus("");
                 MainFrame.setCurrentStatus(MainFrame.default_status);
                 my_full_net.setChanged(true);
                 }
 
             public void editingCanceled(ChangeEvent e)
                 {
-                // MainFrame.setCurrentStatus("");
                 MainFrame.setCurrentStatus(MainFrame.default_status);
                 }
         };
@@ -578,14 +576,6 @@ public class MainFrame //
                 if (e.getSource() == h_about_agna)
                     {
                     // tring about_text = "<html>" +
-                    // Environment.getApplicationFullName() +"<br>" +
-                    // MainFrame.getApplicationCopyright() + "<br>Please visit
-                    // Agna website for the latest version:<br><a href='" +
-                    // MainFrame.getApplicationUrl() +"'>" +
-                    // MainFrame.getApplicationUrl() + "</a>";
-                    // JOptionPane.showMessageDialog(my_frame, about_text,
-                    // "About Agna", JOptionPane.INFORMATION_MESSAGE,
-                    // getMainIcon());
                     MainFrame.showAboutBox(my_frame);
                     }
 
@@ -824,7 +814,6 @@ public class MainFrame //
 
         try
             {
-            // Thread.sleep(500);
             progress_dialog.setPercent(60);
             } catch (Exception e1) {
       AgnaLog.warn("suppressed exception", e1);
@@ -1295,7 +1284,6 @@ public class MainFrame //
 
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Open Network File");
-        // chooser.setSelectedFile(file);
         chooser.setCurrentDirectory(file);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Select file and click here");
@@ -1353,7 +1341,6 @@ public class MainFrame //
 
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Open Chain File");
-        // chooser.setSelectedFile(file);
         chooser.setCurrentDirectory(file);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Select file and click here");
@@ -1491,7 +1478,6 @@ public class MainFrame //
 
         final JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Open Existing Output File");
-        // chooser.setSelectedFile(file);
         chooser.setCurrentDirectory(file);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Select file and click here");
@@ -1562,7 +1548,6 @@ public class MainFrame //
                     }
                 output_edit.setText("");
                 output_edit.setContentType("text/html");
-                // output_edit.setText("<br>");
                 kit = ((HTMLEditorKit) output_edit.getEditorKit());
                 doc = ((HTMLDocument) output_edit.getDocument());
                 kit.read(in, doc, 0);
@@ -1627,7 +1612,6 @@ public class MainFrame //
         // try
         // {
         // URL fileURL = file.toURL();
-        // output_edit.setPage(fileURL);
         // } catch(Exception e) {}
 
         }
@@ -1843,9 +1827,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                     kit = ((HTMLEditorKit) output_edit.getEditorKit());
                     doc = ((HTMLDocument) output_edit.getDocument());
                     tmptext = HTMLParser.parseTextToHTML(tmptext);
-                    // JOptionPane.showMessageDialog(null, tmptext, "Test",
                     // JOptionPane.INFORMATION_MESSAGE);
-                    // o_edit.appendParagraph(tmptext);
                     o_edit.setText(tmptext);
                     } catch (Exception e)
                     {
@@ -1875,7 +1857,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             kit.write(fileout, doc, 0, doc.getLength());
             fileout.flush();
             o_edit.setChanged(false);
-            // if (filestr.equals("htm") || filestr.equals("html"))
             o_edit.setFileName(file_name);
             MainFrame.setCurrentStatus(MainFrame.default_status);
             if (my_frame != null) my_frame.setCursor(Cursor
@@ -1897,16 +1878,10 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         // HTMLEditorKit kit = ((HTMLEditorKit) output_edit.getEditorKit());
         // HTMLDocument doc = ((HTMLDocument) output_edit.getDocument());
         // try {
-        // kit.insertHTML(doc, doc.getLength(), "<a
-        // HREF='http://java.sun.com'>java.sun.com</a>", 0, 0, HTML.Tag.A);
         // }
-        // catch (BadLocationException be)
         // {
-        // System.err.println(be.toString());
         // }
-        // catch (IOException ie)
         // {
-        // System.err.println(ie.toString());
         // }
         }
 
@@ -2038,9 +2013,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         // XX:
         grid_header.setName(tmp_name, tmp_node_index);
         my_grid.getTableHeader().validate();
-        // my_grid.validate();
         MainFrame.getCurrentFullNet().setChanged(true);
-        // MainFrame.updateNodeNames();
         // XX MainFrame.setTableHeaders();
 
         my_frame.validate();
@@ -2242,8 +2215,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                     try
                         {
                         StyleConstants.setFontFamily(set, choice);
-                        // textPane.setFont(set.toString().substring(7,
-                        // set.toString().length()), start, text.length());
                         textPane.getStyledDocument().setCharacterAttributes(
                                 start, text.length(), set, false);
                         } catch (Exception e1) {
@@ -2345,7 +2316,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         my_full_net.addNodesToNetwork(nn); // no position specified
         for (int i = 1; i <= nn; i++)
             {
-            // my_full_net.addNodeToNetwork(-1, -1, -1); // no position
             // specified
             grid_model.addRowCol();
             }
@@ -2808,7 +2778,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tmp_str = (String) JOptionPane.showInputDialog(my_frame,
                 "Please select clique diameter:", "Cliques",
                 JOptionPane.QUESTION_MESSAGE, null, values, "1");
-        // my_frame.repaint();
         if (tmp_str == null)
             return;
 
@@ -3468,7 +3437,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         int dif = nu - grid_model.getColumnCount();
         if (dif != 0)
             {
-            // my_grid.removeColumnSelectionInterval(nu,grid_model.getColumnCount()
             // - 1);
             grid_model.setColumnCount(nu);
             grid_model.fireTableStructureChanged();
@@ -3478,8 +3446,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 }
             grid_model.fireTableRowsDeleted(nu, nu + dif - 1);
             }
-        // my_grid.getTableHeader().getColumnModel().setColumnCount(nu);
-        // my_grid.validate();
         MainFrame.setTableCellEditor();
         my_grid.setPreferredSize(new Dimension(MainFrame.col_width
                 * my_grid.getColumnCount(), my_grid.getRowHeight()
@@ -3523,7 +3489,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         {
         int nu = my_grid.getModel().getColumnCount();
         grid_model.deleteDiagonal();
-        // XXupdateNodeNames();
         Network tmp_network = my_full_net.getNetwork();
         DefaultTableModel tmp_model = (DefaultTableModel) my_grid.getModel();
         if (nu != tmp_network.getSize())
@@ -3532,15 +3497,11 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             {
             for (int j = 0; j < nu; j++)
                 {
-                // tmp_network.setObjectValue(new
-                // Float((String)tmp_model.getValueAt(i,j)), i, j);
                 tmp_network.setObjectValue(my_grid.getValueAt(i, j), i, j);
                 }
             }
         if (my_full_net.isArea())
             my_full_net.net_area.updateArea(my_full_net.getNetwork());
-        // grid_model.setReady(true);
-        
         }
 
     // view graph form: *********************
@@ -3557,11 +3518,9 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             {
             if (my_grafic.gr_frame != null)
                 {
-                // my_grafic.getCurrentFrame().setTitle(my_full_net.getNetwork().getName()
                 // + " - Agna 2.0: Network Viewer");
                 my_grafic.my_area.paintEdges();
                 my_grafic.getCurrentFrame().pack();
-                // my_grafic.getCurrentFrame().show();
                 } else
                 {
                 my_grafic = null;
@@ -3576,16 +3535,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 }
             my_grafic = new GrNet(my_full_net, grid_model, output_edit);
             }
-        // this.repaint();
         setEnabledCloseViewerMenu();
         my_grafic.my_area.paintEdges();
-        // my_grafic.getCurrentFrame().setTitle(my_full_net.getNetwork().getName()
         // + " - Agna 2.0: Network Viewer");
         my_grafic.getCurrentFrame().toFront();
         my_grafic.getCurrentFrame().setState(JFrame.NORMAL);
         setCurrentStatus(default_status);
         my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        // my_grafic.gr_frame.repaint();
         }
 
     // dialog pre-quit: *********************
@@ -3725,8 +3681,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 MainFrame.setCurrentStatus("Editing cell: "
                         + tmp_network.getActor(row).getName() + " --> "
                         + tmp_network.getActor(column).getName());
-                // editor_field.setCaretColor(Colors.MRed);
-                // editor_field.setBackground(Colors.lightrose);
                 editor_field.getCaret().setSelectionVisible(true);
                 return editor_field;
                 }
@@ -3811,11 +3765,9 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             }
 
         // read icon from current jar archive:
-        // main_icon = new ImageIcon(Agna.class.getResource("Agna_icon.gif"));
 
         my_frame.setIconImage(main_icon.getImage());
         fContent = my_frame.getContentPane();
-        // fContent.setBackground(Color.white);
         controlArea = new JPanel(); // panel principal
         controlArea.setPreferredSize(max_dim); // new Dimension(600, 200));
         controlArea.setLayout(new BorderLayout());
@@ -3848,7 +3800,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         my_grid.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
                 enter_key, "selectNextColumnCell");
-        // my_grid.setBackground(Color.white);
         my_grid.setMinimumSize(new Dimension((int) (max_dim.width / 2),
                 max_dim.height));
         my_grid.setPreferredSize(new Dimension(MainFrame.col_width
@@ -3870,7 +3821,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         my_adapter = new ExcelAdapter(my_grid);
         scrollEditLeft = new JScrollPane(my_grid);
-        // scrollEditLeft.getViewport().setBackground(Color.red);
 
         // table header:
         grid_header = new AgnaTableHeader();
@@ -3891,7 +3841,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         upleft_button.setBorder(new LineBorder(Color.gray, 1));
         upleft_button.setPreferredSize(new Dimension((int) (col_width * 2 / 3),
                 my_grid.getRowHeight()));
-        // upleft_button.setEnabled(false);
         lowerleft_button = new JButton();
         if (MainFrame.isClassicToolbarIcons())
             {
@@ -3909,7 +3858,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             }
         lowerleft_button.addActionListener(act_menu);
         lowerleft_button.setToolTipText("Display the Agna Help frame Ctrl+H");
-        // lowerleft_button.setEnabled(false);
         JButton upright_button = new JButton();
         upright_button.setBorder(new LineBorder(Color.gray, 1));
         upright_button.setEnabled(false);
@@ -3924,8 +3872,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 .setCorner(JScrollPane.UPPER_RIGHT_CORNER, upright_button);
         scrollEditLeft.setCorner(JScrollPane.LOWER_RIGHT_CORNER,
                 lowerright_button);
-        // scrollEditLeft.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        // scrollEditLeft.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollEditLeft.setPreferredSize(new Dimension(
                 (int) (max_dim.width / 2), max_dim.height));
 
@@ -3941,7 +3887,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         // status bar:
         status_panel = new JPanel();
-        // status_panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         status_panel.setMinimumSize(new Dimension(40, 25));
         status_panel.setMaximumSize(new Dimension(max_dim.width, 25));
         status_panel.setPreferredSize(new Dimension(max_dim.width, 25));
@@ -3957,7 +3902,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         // Meniuri:
         mFile = new JMenu("File");
-        // mOutput=new JMenu("Output");
         mEdit = new JMenu("Edit");
         mData = new JMenu("Network");
         mAnalysis = new JMenu("Analysis");
@@ -3966,7 +3910,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mHelp = new JMenu("Help");
 
         mFile.setMnemonic('f');
-        // mOutput.setMnemonic('o');
         mEdit.setMnemonic('e');
         mData.setMnemonic('n');
         mAnalysis.setMnemonic('y');
@@ -4021,7 +3964,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mFile.add(f_save);
         mFile.add(f_simply_save);
         mFile.addSeparator();
-        // mFile.add(f_quit); // not yet
 
         // Submeniuri din EDIT:
         e_cut = new JMenuItem("Cut");
@@ -4060,7 +4002,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mEdit.add(e_cut);
         mEdit.add(e_copy);
         mEdit.add(e_paste);
-        // mEdit.add(e_delete);
         mEdit.addSeparator();
         mEdit.add(e_select_all);
 
@@ -4198,7 +4139,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 .setToolTipText("Find shortest paths between two nodes");
         a_all_shortest_paths
                 .setToolTipText("Find shortest paths for all pairs of nodes");
-        // a_cliques.setToolTipText("Find n-cliques in current network");
         a_centrality.setToolTipText("Centrality-related coefficients");
         a_bavelas
                 .setToolTipText("Compute Bavelas-Leavitt coefficient for each node");
@@ -4207,7 +4147,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_fareness.setToolTipText("Compute fareness coefficient for each node");
         a_betweenness
                 .setToolTipText("Compute betweenness  coefficient for each node");
-        // a_prestige.setToolTipText("Compute prestige coefficient for each
         // node");
 
         a_emissions.addActionListener(act_menu);
@@ -4240,7 +4179,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_geodesics.setMnemonic('g');
         a_shortest_paths.setMnemonic('s');
         a_all_shortest_paths.setMnemonic('a');
-        // a_cliques.setMnemonic('n');
         a_sociometrics.setMnemonic('s');
         a_outdegree.setMnemonic('o');
         a_nodal_degree.setMnemonic('n');
@@ -4256,7 +4194,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_closeness.setMnemonic('c');
         a_fareness.setMnemonic('f');
         a_betweenness.setMnemonic('w');
-        // a_prestige.setMnemonic('p');
         a_basic.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
                 ActionEvent.ALT_MASK));
         a_diameter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
@@ -4265,7 +4202,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 ActionEvent.ALT_MASK));
         a_all_shortest_paths.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_R, ActionEvent.ALT_MASK));
-        // a_cliques.setAccelerator (KeyStroke.getKeyStroke(KeyEvent.VK_Q,
         // ActionEvent.ALT_MASK));
         a_density.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
                 ActionEvent.ALT_MASK));
@@ -4297,9 +4233,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_distance.addSeparator();
         a_distance.add(a_shortest_paths);
         a_distance.add(a_all_shortest_paths);
-        // a_distance.addSeparator();
-        // a_distance.add(a_cliques);
-
         a_centrality.add(a_bavelas);
         a_centrality.addSeparator();
         a_centrality.add(a_closeness);
@@ -4315,7 +4248,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mAnalysis.add(a_cliques);
         mAnalysis.add(a_sociometrics);
         mAnalysis.add(a_centrality);
-        // mAnalysis.addSeparator();
         mAnalysis.add(a_full_analysis);
 
         // Submeniuri din VIEW:
@@ -4343,9 +4275,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         mView.add(v_viewer);
         mView.add(v_close);
-        // mView.addSeparator();
-        // mView.add(v_hide_output);
-        // mView.add(v_view_output);
 
         // submeniuri din OUTPUT: -- am renuntat la el; trecute in FILE
         o_open = new JMenuItem("Open Output File");
@@ -4425,7 +4354,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         mb = new JMenuBar();
         mb.add(mFile);
-        // mb.add(mOutput);
         mb.add(mEdit);
         mb.add(mData);
         mb.add(mAnalysis);
@@ -4635,13 +4563,9 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tools.add(tool_open_output);
         tools.add(tool_clear_output);
         tools.add(tool_save_output);
-        // tools.addSeparator();
-
         JComboBox font_family_combo = makeFontFamilyCombo(output_edit);
         if (font_family_combo != null)
             tools.add(font_family_combo);
-        // tools.add(makeFontSizeCombo(output_edit));
-
         JPanel tools_panel = new JPanel();
         tools_panel.setLayout(new BorderLayout());
         tools_panel.add(tools, BorderLayout.WEST);

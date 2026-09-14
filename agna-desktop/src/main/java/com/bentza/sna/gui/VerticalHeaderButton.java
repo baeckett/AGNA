@@ -24,7 +24,6 @@ public class VerticalHeaderButton extends JButton
         this.setHorizontalAlignment(SwingConstants.LEFT);
         this.setVerticalAlignment(SwingConstants.CENTER);
         this.setMargin(new Insets(0, 0, 1, 0));
-        // this.setToolTipText(names[i]);
         this.addActionListener(act_button);
         this.setIcon(tmp_icon);
         }

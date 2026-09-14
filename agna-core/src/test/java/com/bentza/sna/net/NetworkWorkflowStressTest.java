@@ -52,10 +52,10 @@ public class NetworkWorkflowStressTest
         {
         String[][] samples = { { "4 full.txt", "txt" },
                 { "10 circle.agn", "agn" }, { "10 star.agn", "agn" },
-                { "10 star.csv", "csv" }, { "example1.agn", "agn" },
-                { "example2.agn", "agn" }, { "example3.agn", "agn" },
-                { "example1.xls", "xls" }, { "Chain2.agn", "agn" },
-                { "Chain2.txt", "txt" } };
+                { "example1.agn", "agn" }, { "example2.agn", "agn" },
+                { "example3.agn", "agn" }, { "example4.agn", "agn" },
+                { "random200.agn", "agn" }, { "Sociologists.agn", "agn" },
+                { "Chain1.txt", "txt" }, { "Chain2.txt", "txt" } };
         for (String[] s : samples)
             {
             FullNet full = open(s[0], s[1]);

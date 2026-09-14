@@ -48,11 +48,8 @@ public class AgnaTextPane extends JTextPane
     AgnaTextPane()
         {
         // RTFEditorKit rtf_edit = new RTFEditorKit();
-        // output_edit.setEditorKit(rtf_edit);
         // StyleContext edit_context = new StyleContext();
         // DefaultStyledDocument edit_doc = new
-        // DefaultStyledDocument(edit_context);
-        // output_edit.setDocument(edit_doc);
 
         HTMLEditorKit kit = new HTMLEditorKit();
         // StyleSheet css = new StyleSheet();
@@ -63,13 +60,10 @@ public class AgnaTextPane extends JTextPane
         this.setContentType("text/html");
         this.setEditable(true);
 
-        // output_edit.setText("<font face ='Verdana'>"
         // + "<b> blue text</b></font><br> Test"
         // + "<font face ='Trebuchet MS'color='red'>"
         // + "<b> red text</b>");
 
-        // output_edit.setCaretPosition(output_edit.getDocument().getLength());
-        // doAppendParagraphToOutput("test ok");
 
         /*
          * try { //kit.insertHTML(doc, doc.getLength(), "<IMG
@@ -78,13 +72,9 @@ public class AgnaTextPane extends JTextPane
          * width='54%'><tr><td width='25%'>&nbsp;</td><td width='25%'>&nbsp;</td><td width='25%'>&nbsp;</td></tr><tr><td width='25%'>&nbsp;</td><td width='25%'>&nbsp;</td><td width='25%'>&nbsp;</td></tr></table>",
          * 0, 0, HTML.Tag.TABLE); } catch(Exception e) {}
          */
-
-        // output_edit.setText("");
         changed = false;
         file_name = "";
         folder_name = "";
-        // if (folder not exist) create folder(folder_name);
-        // folder_name = MainFrame.getPathWithoutExtension(file_name) +
         // "_files";
         external_elements = 0;
         addCaretListener(list_caret);
@@ -179,12 +169,9 @@ public class AgnaTextPane extends JTextPane
             try
                 {
                 kit.insertHTML(doc, doc.getLength(), "<hr>", 0, 0, HTML.Tag.HR);
-                // kit.insertHTML(doc, doc.getLength(), "<p>" +
-                // newstr.toString() + "", 1, 0, HTML.Tag.P);
                 kit.insertHTML(doc, doc.getLength(), newstr.toString() + "", 0,
                         0, null);
                 this.setChanged(true);
-                // this.setCaretPosition(this.getText().length());
                 this.setCaretPosition(doc.getLength());
                 } catch (Exception e) {
       AgnaLog.warn("suppressed exception", e);
@@ -221,8 +208,6 @@ public class AgnaTextPane extends JTextPane
             doc = ((HTMLDocument) this.getDocument());
             try
                 {
-                // kit.insertHTML(doc, doc.getLength(), "<br>" +
-                // newstr.toString() + "", 0, 0, HTML.Tag.BR);
                 kit.insertHTML(doc, doc.getLength(), "<p>" + newstr.toString()
                         + "", 1, 0, HTML.Tag.P);
                 this.setChanged(true);
@@ -262,8 +247,6 @@ public class AgnaTextPane extends JTextPane
             doc = ((HTMLDocument) this.getDocument());
             try
                 {
-                // kit.insertHTML(doc, doc.getLength(), "<br>" +
-                // newstr.toString() + "", 0, 0, HTML.Tag.BR);
                 kit.insertHTML(doc, doc.getLength(), "<table border='1'>", 0,
                         0, HTML.Tag.TABLE);
                 this.setChanged(true);
@@ -559,11 +542,8 @@ public class AgnaTextPane extends JTextPane
         external_elements++;
         GrNet.saveImageAsJPG(tmp_img, filename);
 
-        // filename = MainFrame.getTopFolder(filename); // file without folder
-        // filename = MainFrame.getTopFolder(folder_name) + fs +filename; //
         // folder + file
 
-        // AgnaLib.AgnaLib();
         String appendstr = AgnaLib.it + AgnaLib.bold + "Visual representation"
                 + AgnaLib.unbold + " of " + AgnaLib.unit
                 + MainFrame.getCurrentNetwork().getName();
@@ -571,7 +551,6 @@ public class AgnaTextPane extends JTextPane
         // appendstr += AgnaLib.it + "Source file: " + AgnaLib.unit + filename;
         appendBlock(appendstr);
         appendstr = null;
-        // appendString(AgnaLib.it + "Source file: " + AgnaLib.unit + filename);
         filename = filename.replace(fs.charAt(0), '/');
         appendString("");
         appendExistingImage(filename);

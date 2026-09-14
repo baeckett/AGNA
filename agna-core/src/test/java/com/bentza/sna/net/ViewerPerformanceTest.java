@@ -28,7 +28,7 @@ public class ViewerPerformanceTest
         throws Exception
         {
         FullNet full = new FullNet();
-        full.readNetwork(readSample("200.agn"), "agn");
+        full.readNetwork(readSample("random200.agn"), "agn");
         assertTrue(full.getNetwork().getSize() >= 200);
 
         full.net_area = new NodeArea();

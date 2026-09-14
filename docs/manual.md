@@ -345,7 +345,7 @@ toggle the pane.
   session log; FlatLaf interface with classic-icon fallback; modernised
   Help; 100+ regression tests.
 - **2.1.2** — the last closed-source release by Marius Ion Bența;
-  single-jar application with the l2fprod skin themes.
+  single-jar desktop application.
 
 ## 11. Cite AGNA
 

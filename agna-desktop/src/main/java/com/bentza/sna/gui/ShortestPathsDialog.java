@@ -126,9 +126,6 @@ class ShortestPathsDialog
         content.setBackground(Color.white);
 
         JPanel control = new JPanel();
-        // control.setBorder(BorderFactory.createRaisedBevelBorder());
-        // control.setPreferredSize(frame_dim);
-
         GridBagLayout c_layout = new GridBagLayout();
         control.setLayout(c_layout);
         GridBagConstraints co = new GridBagConstraints();
@@ -236,9 +233,6 @@ class ShortestPathsDialog
 
         control.setBorder(new EmptyBorder(new Insets(4, 4, 4, 4)));
         content.add(BorderLayout.CENTER, control);
-
-        // n_frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-
         n_frame.pack();
         // placing n_frame in ceneter of screen:
         Dimension sdim = Toolkit.getDefaultToolkit().getScreenSize();

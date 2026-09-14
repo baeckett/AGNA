@@ -64,7 +64,6 @@ public class IndexedJButton extends JButton implements MouseListener,
         this.setHorizontalAlignment(SwingConstants.LEFT);
         this.setMargin(new Insets(0, 0, 1, 0));
         this.setBorder(null);
-        // this.setToolTipText(this.getText()); // node name in tip text
         /*
          * Image tmp_image; try { tmp_image =
          * tmp_actor.getFace().getImage().getScaledInstance(8, -1,
@@ -134,7 +133,6 @@ public class IndexedJButton extends JButton implements MouseListener,
         if (associate == null)
             return;
         GrNet.doSelectActor(this.getActorIndex());
-        // MainFrame.getCurrentArea().mouseClicked(e);
         }
 
     public void mouseEntered(MouseEvent e)

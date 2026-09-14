@@ -139,8 +139,6 @@ public class NodeArea extends JButton implements MouseListener,
         this.updateArea(tmp_network);
         edges_gr = edges_image.createGraphics();
         setImageLayout(default_image_layout);
-
-        // paintEdges();
         }
 
     public void setInitialSettings()
@@ -264,7 +262,6 @@ public class NodeArea extends JButton implements MouseListener,
             for (int j = 0; j < nodes_count; j++)
                 {
                 connection_val = tmp_network.getValue(i, j);
-                // connection_val = my_nodes[i].getEmissionsValue(j);
                 if (connection_val == 0f)
                     edges_mat[i][j] = 0;
                 else if (connection_val == minmat)
@@ -351,7 +348,6 @@ public class NodeArea extends JButton implements MouseListener,
 
         for (i = 0; i < nodes_count; i++)
             {
-            // i = (int)(nodes_count * Math.random());
             force_x = 0f;
             force_y = 0f;
             anti_x = 0f;
@@ -507,7 +503,6 @@ public class NodeArea extends JButton implements MouseListener,
         selected_node = tmp_index;
         if (selected_node == -1 || selected_node == second_selected)
             second_selected = -1;
-        // if (second_selected == -1)
         AppRuntime.setHTMLStatus(M01 + my_nodes[selected_node].name + M02
                 + String.valueOf(my_nodes[selected_node].getX(area_width))
                 + M03
@@ -629,7 +624,6 @@ public class NodeArea extends JButton implements MouseListener,
     public void setWidthParameter(int tmp_width)
         {
         area_width = tmp_width;
-        // paintEdges();
         }
 
     public void setWidthSimply(int tmp_width)
@@ -640,7 +634,6 @@ public class NodeArea extends JButton implements MouseListener,
         edges_image = new BufferedImage(area_width, area_width,
                 BufferedImage.TYPE_INT_RGB);
         edges_gr = edges_image.createGraphics();
-        // paintEdges();
         }
 
     public void setWidth(int tmp_width)
@@ -667,8 +660,6 @@ public class NodeArea extends JButton implements MouseListener,
         edges_image = new BufferedImage(area_width, area_width,
                 BufferedImage.TYPE_INT_RGB);
         edges_gr = edges_image.createGraphics();
-        // paintEdges();
-        // repaint();
         }
 
     public void setFacesVisible(boolean tmp_val)
@@ -1248,7 +1239,6 @@ public class NodeArea extends JButton implements MouseListener,
 
         fractie = 0;
         r = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
-        // radical=(double)r;
         radical = Math.sqrt((double) r);
         r_i = my_nodes[i_node].getSize() * 3 / 4;
         r = my_nodes[j_node].getSize() * 3 / 4; // r = razele bulinutzelor
@@ -1286,8 +1276,6 @@ public class NodeArea extends JButton implements MouseListener,
 
         r = (new_x2 - new_x1) * (new_x2 - new_x1) + (new_y2 - new_y1)
                 * (new_y2 - new_y1);
-
-        // radical=(double)r;
         radical = Math.sqrt((double) r);
         r = 8; // r = lungimea virfului de sageata
 
@@ -1360,8 +1348,6 @@ public class NodeArea extends JButton implements MouseListener,
       AgnaLog.warn("suppressed exception", e);
       }
             }
-
-        // background_image.paintIcon(this,edges_gr,0,0);
         if (grid_enabled && paint_to_screen)
             {
             paintGrids(edges_gr);
@@ -1505,7 +1491,6 @@ public class NodeArea extends JButton implements MouseListener,
         tmp_y = 0;
         tmp_size = 0;
         i = 0;
-        // super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         try
             {
@@ -1518,7 +1503,6 @@ public class NodeArea extends JButton implements MouseListener,
             tmp_x = my_nodes[i].getX(area_width);
             tmp_y = my_nodes[i].getY(area_width);
             tmp_size = my_nodes[i].getSize();
-            // if (faces_visible)
             // my_nodes[i].face.paintIcon(this,g,tmp_x,tmp_y);
             // SCALABLE IMAGE!:
             if (faces_visible)
@@ -1536,8 +1520,6 @@ public class NodeArea extends JButton implements MouseListener,
             // painting node names
             g.setColor(names_color);
             // drawstring on normal coordinates:
-            // g.drawString("Hello World" , 0,
-            // getFontMetrics(getFont()).getAscent());
             if (print_names)
                 g.drawString(my_nodes[i].name, (tmp_x + tmp_size + names_x),
                         (tmp_y + tmp_size + names_y));
@@ -1619,7 +1601,6 @@ public class NodeArea extends JButton implements MouseListener,
         {
         if (e.getClickCount() > 1)
             {
-            // doNodeSettingsDialog();
             int selnode = getSelectedActor();
             if (selnode >= 0)
                 {
@@ -1689,7 +1670,6 @@ public class NodeArea extends JButton implements MouseListener,
       AgnaLog.warn("suppressed exception", e1);
       }
             }
-        // repaint();
         return;
         }
 

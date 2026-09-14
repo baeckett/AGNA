@@ -25,9 +25,6 @@ class AgnaTableHeader
         h = MainFrame.getCurrentTable().getTableHeader();
         v = new AgnaVerticalHeader();
         // Dimension v_dim = h.getPreferredSize();
-        // v_dim.width = MainFrame.col_width;
-        // v_dim.height = MainFrame.getCurrentTable().getRowHeight();
-        // h.setPreferredSize(v_dim);
 
         }
 
@@ -119,7 +116,6 @@ class AgnaTableHeader
       }
 
         colmod.getColumn(tmp_index).setHeaderRenderer(hr);
-        // colmod.getColumn(tmp_index).setHeaderValue(v.getName(tmp_index));
         colmod.getColumn(tmp_index).setHeaderValue(actor_name);
         h.getTable().repaint();
         }
@@ -147,7 +143,6 @@ class AgnaTableHeader
       }
             actor_name = (String) colmod.getColumn(i).getHeaderValue();
             colmod.getColumn(i).setHeaderRenderer(hr);
-            // colmod.getColumn(i).setHeaderValue(v.getName(i));
             colmod.getColumn(i).setHeaderValue(actor_name);
             }
         h.getTable().repaint();

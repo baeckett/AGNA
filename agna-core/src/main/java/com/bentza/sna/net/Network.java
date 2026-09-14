@@ -42,7 +42,6 @@ public class Network
                     tmp_mat.length);
             for (int j = 0; j < tmp_mat.length; j++)
                 {
-                // tmp_node.emissions.setElementAt(String.valueOf(tmp_mat[i][j]),j);
                 tmp_node.setEmissionsValue(tmp_mat[i][j], j);
                 }
             all_nodes.addElement(tmp_node);
@@ -85,7 +84,6 @@ public class Network
             tmp_node = new Actor(String.valueOf(1), size);
             for (int j = 0; j < size; j++)
                 {
-                // tmp_node.emissions.setElementAt("1.0",j);
                 tmp_node.setEmissionsValue(1f, j);
                 }
             all_nodes.addElement(tmp_node);
@@ -95,11 +93,9 @@ public class Network
                 {
                 tmp_node = null;
                 tmp_node = new Actor(String.valueOf(i + 1), size);
-                // tmp_node.emissions.setElementAt("1.0",0);
                 tmp_node.setEmissionsValue(1f, 0);
                 for (int j = 1; j < size; j++)
                     {
-                    // tmp_node.emissions.setElementAt("0.0",j);
                     tmp_node.setEmissionsValue(0f, j);
                     }
                 all_nodes.addElement(tmp_node);
@@ -220,7 +216,6 @@ public class Network
         }
 
     public void setValue(float tmp_value, int i, int j) // schimba valoarea
-                                                        // elementului (i,j) din
                                                         // matricea retelei
 {
         int nn = this.getSize();
@@ -713,20 +708,16 @@ public class Network
         tmp_node = getActor(t_size - 1); // new node
         for (int i = 0; i < t_size; i++)
             {
-            // tmp_node.emissions.setElementAt(cloned_node.emissions.elementAt(i),
             // i);
             tmp_node.setEmissionsValue(cloned_node.getEmissionsValue(i), i);
             for (int j = 0; j < t_size; j++)
                 {
-                // getActor(j).emissions.setElementAt(getActor(j).emissions.elementAt(clone),
                 // t_size-1);
                 getActor(j).setEmissionsValue(
                         getActor(j).getEmissionsValue(clone), t_size - 1);
                 }
             }
-        // tmp_node.emissions.setElementAt("0.0", clone);
         tmp_node.setEmissionsValue(0f, clone);
-        // cloned_node.emissions.setElementAt("0.0", t_size-1);
         cloned_node.setEmissionsValue(0f, t_size - 1);
         tmp_node.name = "Clone of " + cloned_node.name;
         tmp_node.setFace(cloned_node.getFaceSource());
@@ -803,8 +794,6 @@ public class Network
             new_node.setX(tmp_x, tmp_x_max);
             new_node.setY(tmp_y, tmp_x_max);
             }
-        // new_node.setFace(getActor(0).getFaceSource());
-        // new_node.setSize(getActor(0).getSize());
         all_nodes.addElement(new_node);
 
         nn = all_nodes.size();

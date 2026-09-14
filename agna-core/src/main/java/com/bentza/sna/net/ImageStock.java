@@ -155,7 +155,6 @@ public class ImageStock
             } else
             try
                 {
-                // tmp_index = -1
                 // trying to build a new ImageIcon
                 ImageIcon tmp_image_icon = new ImageIcon(tmp_image_source);
                 ImageItem new_item = new ImageItem(tmp_image_icon,

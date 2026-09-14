@@ -1,7 +1,8 @@
 # Third-party software
 
-This project builds on the following third-party components. Their licence terms
-govern their use; Agna's own licence is still being decided (see README).
+This project builds on the following third-party components. AGNA itself is
+licensed under the Apache License 2.0 (see LICENSE and the README); the
+licences below govern the third-party components only.
 
 ## JExcelAPI (jxl)
 
@@ -12,27 +13,26 @@ govern their use; Agna's own licence is still being decided (see README).
 - Note: the original 2.1.2 archive bundled `jxl.jar` 2.5.1 with the same API;
   the dependency was upgraded to the last published 2.6.12 release.
 
-## l2fprod Skin Look and Feel
+## FlatLaf
 
-- Component: skinnable Swing look-and-feel engine behind Agna's theme packs.
-- Origin: only binaries were present in the original 2.1.2 archive
-  (`Lib/com/l2fprod/...`, 217 classes). These are vendored byte-for-byte in
-  `lib/l2fprod-skin-1.0.jar` and exposed to the build through a project-local
-  Maven repository (`lib/repo/`), so the jar resolves on a fresh checkout.
-- Licence: the l2fprod Skin Look and Feel was released under the GNU Lesser
-  General Public License (LGPL) by L2FProd.com. No licence text was shipped in
-  the original archive; if you redistribute, include the LGPL notice that
-  accompanies the upstream project (l2fprod.com / SourceForge).
-- Theme packs (`src/main/resources/themepacks/`) are data files from the
-  original distribution.
+- Component: modern cross-platform Swing look and feel, the application's
+  default theme.
+- Version: resolved from Maven Central (`com.formdev:flatlaf`).
+- Licence: Apache License 2.0.
+
+## Jackson
+
+- Component: JSON handling for GraphSON import/export.
+- Resolved from Maven Central.
+- Licence: Apache License 2.0.
+
+## JUnit 5
+
+- Component: test framework (test scope only).
+- Resolved from Maven Central.
+- Licence: Eclipse Public License 2.0.
 
 ## Sample data
 
-`Samples/` and the bundled faces/help assets are part of the original Agna 2.1.2
-distribution by Marius Benta and are carried over unchanged.
-
-## Java standard library
-
-No other runtime dependencies. JUnit 5 (test scope only) is resolved from
-Maven Central under the Eclipse Public Licence 2.0.
-- Jackson (Apache-2.0) - JSON handling for GraphSON import/export.
+`samples/` and the bundled faces/help assets are part of the original
+Agna 2.1.2 distribution by Marius Ion Bența and are carried over unchanged.

@@ -26,11 +26,12 @@ public class ExcelImportTest
         }
 
     @Test
-    public void importsNumbersXlsxSociomatrix() throws Exception
+    public void importsXlsxSociomatrix() throws Exception
         {
         FullNet full_net = new FullNet();
         String error = full_net.readExcelFile(
-                new File("samples/numbers_example.xlsx"), "xlsx");
+                TestXlsxFactory.sociomatrixWorkbook(10, "Example 3"),
+                "xlsx");
         assertNull(error, "import must succeed: " + error);
 
         Network net = full_net.getNetwork();
