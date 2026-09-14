@@ -19,3 +19,4 @@ __MACOSX/
 *.log
 # Shade-plugin byproduct
 dependency-reduced-pom.xml
+__pycache__/
