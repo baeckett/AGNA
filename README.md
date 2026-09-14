@@ -60,7 +60,7 @@ weapons systems; emergency-response control systems; or any other activity in
 which a failure, error, delay, interruption, or inaccurate output could
 reasonably be expected to result in death, personal injury, or severe
 physical, environmental, or property damage. Any use of AGNA in such high-risk
-activities is entirely at the user's own risk. To the maximum extent permitted
+activities is entirely at the user’s own risk. To the maximum extent permitted
 by applicable law, the author and contributors disclaim all warranties,
 whether express, implied, statutory, or otherwise, including any warranty of
 fitness for high-risk activities.
