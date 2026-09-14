@@ -141,4 +141,5 @@ If you use AGNA in your research, please cite it (see also
 - Website: https://www.netanalysis.co.uk
 - Contact: contact@netanalysis.co.uk
 - Copyright 2001–2026 Marius Ion Bența
+- [Acknowledgements](ACKNOWLEDGEMENTS.md)
 - [How to publish / make this repository public](docs/PUBLISHING.md)
