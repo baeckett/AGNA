@@ -1,27 +1,31 @@
 # Agna
 
-**Agna** is a desktop Java application for **social network analysis and sequence
-analysis**. It was originally written by Marius Benta (2002–2005): you enter a
-sociomatrix in a spreadsheet-style grid, inspect it as a node/edge graph, and
-run the classic measures (degree, density, cohesion, centrality, geodesics,
-shortest paths, etc.). Files can be imported/exported in Agna's own `.agn`
-format, tab/comma-separated text, CSV, Pajek `.net` and MS Excel; the graph view
-exports to SVG, JPEG and HTML.
+**Agna** is a cross-platform, open-source Java application for **social
+network analysis and sequence analysis**. Enter a sociomatrix in a
+spreadsheet-style grid, inspect it as a node/edge graph, and run the classic
+measures — degree, density, cohesion, centrality, geodesics, shortest paths,
+cliques and more. Networks import/export in Agna's own `.agn` format, plain
+text, CSV, Pajek `.net`, MS Excel (`.xls`/`.xlsx`), GraphML, GML and
+GraphSON; the graph view exports images, and the command line renders
+networks headlessly.
 
-This is the **2.1.3** worktree: a cleaned-up, bug-fixed, re-organized revival of
-the original closed-source **2.1.2** release. The licence for 2.1.3 is **still
-being decided** — no licence file is shipped yet.
+Written originally by
+[Marius Ion Bența](https://www.netanalysis.co.uk) (2001–2005), **2.1.3** is
+the open-source revival of the last closed-source release (2.1.2):
+re-organized into a Maven monorepo, modernised (JDK 17, FlatLaf), bug-fixed,
+UTF-8 based, with a full test suite.
 
 ## Layout
 
 ```
-src/main/java/com/bentza/sna/   application code (gui, io, net, gui/filter)
-src/main/resources/             bundled assets: buttons/, faces/, help/, themepacks/
-src/test/java/com/bentza/sna/   JUnit 5 tests
-samples/                        original sample networks (kept byte-identical)
-docs/manuals/                   user manual (.htm/.doc/.pdf) and print masters
-lib/                            vendored third-party binary (see THIRD-PARTY.md)
-pom.xml                         Maven build (JDK 17)
+agna-core/      engine: networks, analyses (AgnaLib), layouts, import/export
+agna-cli/       command-line interface (info, analyse, convert, transform,
+                draw, generate, metrics, ...)
+agna-desktop/   the desktop application (Swing)
+samples/        original sample networks (kept byte-identical)
+docs/           user manual, CLI reference, man page, shell completions
+packaging/      jpackage/DMG recipe, Agna.icns, signing guide
+CITATION.cff    machine-readable citation metadata (Zenodo DOI)
 ```
 
 ## Build and run
@@ -29,44 +33,30 @@ pom.xml                         Maven build (JDK 17)
 Requires JDK 17 and Maven.
 
 ```
-mvn test        # compile + run the unit tests
-mvn package     # builds target/agna-2.1.3.jar (self-contained, shaded)
-java -jar target/agna-2.1.3.jar
+mvn verify      # compile + run the full test suite (230 tests)
+mvn package     # builds the jars in each module's target/
+java -jar agna-desktop/target/agna-2.1.3.jar        # desktop
+java -jar agna-cli/target/agna-cli-2.1.3.jar --help # CLI
 ```
 
-On first start the bundled node-face images and theme packs are materialized
-under `~/.agna/faces` (faces are stored by file path inside `.agn` documents,
-so they must exist on disk).
+On first start the bundled node-face images are materialized under
+`~/.agna/faces`.
 
-## What changed in 2.1.3 (highlights)
+## License
 
-- **Namespace**: package root renamed `com.benta` → `com.bentza`; the network
-  engine class `Ajna` renamed `AgnaLib`.
-- **Modern toolchain**: compiles on JDK 17; removed the proprietary
-  `com.apple.mrj` and internal `com.sun.image.codec.jpeg` APIs; the l2fprod skin
-  engine and JExcelAPI are proper dependencies now.
-- **Bug fixes**
-  - Deleting two nodes no longer corrupts the matrix with stray zeros
-    (`AgnaTableModel.delRowCol` removed the wrong data column).
-  - Copy/paste from a spreadsheet no longer loses a column on empty cells
-    (`ExcelAdapter` tokenizer preserved imports).
-  - Text matrices with an empty diagonal (missing values) parse as zeros
-    instead of failing.
-  - Resource leaks closed (streams), 26 misguided `System.gc()` calls removed,
-    data layer no longer crashes before the GUI frame exists (headless-safe).
-- **Backward compatibility**: old `.agn` files that reference faces with the
-  legacy relative `.\Faces\...` paths and/or the old "Shaddow" spelling load
-  transparently; the bundled faces were renamed to the correct "Shadow"
-  spelling and stale misspelled files are cleaned from `~/.agna/faces`.
-- **Tests**: JUnit 5 suite covering deletion integrity, paste parsing, file I/O
-  round-trips against the original samples, and the legacy-face compatibility.
+Apache License 2.0 — see [LICENSE](LICENSE). No warranty; use at your own
+discretion.
 
-## Samples note
+## Citation
 
-The `samples/` directory is kept byte-identical to 2.1.2, including its legacy
-"Shaddow" face references — those files double as compatibility fixtures for
-the tests.
+If you use Agna in your research, please cite it (see also
+[CITATION.cff](CITATION.cff) and [CITATION.bib](CITATION.bib)):
 
-## Third-party software
+> Bența, M. I. (2026). *AGNA: Applied Graph and Network Analysis Open Source*
+> (Version 2.1.3) [Computer software]. https://doi.org/10.5281/zenodo.22708199
 
-See `THIRD-PARTY.md` for attribution of the bundled and dependency components.
+## Links
+
+- Website: https://www.netanalysis.co.uk
+- Contact: contact@netanalysis.co.uk
+- Copyright 2001–2026 Marius Ion Bența
