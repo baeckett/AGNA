@@ -1,6 +1,7 @@
 # docs/ — Manual and help sources
 
 - `manual.md` — single source of the user manual (in-app help + PDF).
+- `QUICKSTART.md` — ten-minute, installation-first guide for new users.
 - `cli.md` — command reference for the Agna CLI (including `metrics`).
 - `agna.1` — the CLI man page (roff).
 - `agnacompletion.bash`, `agnacompletion.zsh` — shell completions.

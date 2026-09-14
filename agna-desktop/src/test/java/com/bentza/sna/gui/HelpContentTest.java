@@ -53,7 +53,7 @@ public class HelpContentTest
         {
         File dir = helpDir();
         String menu = read(new File(dir, "3menureference.htm"));
-        Pattern link = Pattern.compile("href=\"([a-z0-9]+\\.htm(?:#[a-z0-9]+)?)\"");
+        Pattern link = Pattern.compile("href=\"([a-z0-9]+\\.htm(?:#[a-z0-9-]+)?)\"");
         Matcher m = link.matcher(menu);
         int links = 0;
         int to_math = 0;

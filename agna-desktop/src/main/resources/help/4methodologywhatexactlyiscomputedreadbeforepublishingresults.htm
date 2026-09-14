@@ -19,30 +19,30 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 </style></head>
 <body>
 <!-- md2help generated - do not edit by hand; edit docs/manual.md -->
-<h1>4. Methodology — what exactly is computed (read before publishing results)</h1>
+<h1 id="4-methodology--what-exactly-is-computed-read-before-publishing-results" name="4-methodology--what-exactly-is-computed-read-before-publishing-results">4. Methodology — what exactly is computed (read before publishing results)</h1>
 <h2 id="density" name="density">Density</h2>
 <p>Directed convention: arcs / (n · (n − 1)). For a symmetric matrix the</p>
 <p>undirected reading (edges / (n · (n − 1)/2)) yields the same value; Agna</p>
 <p>prints both labels explicitly, and warns when the matrix is asymmetric so</p>
 <p>no undirected density exists.</p>
-<h2 id="nodaldegreeanddirection" name="nodaldegreeanddirection">Nodal degree and direction</h2>
+<h2 id="nodal-degree-and-direction" name="nodal-degree-and-direction">Nodal degree and direction</h2>
 <p>Outdegree d⁺(i) = Σⱼ A[i][j]; indegree d⁻(j) = Σᵢ A[i][j]. Emission</p>
 <p>degree and reception degree are the weighted variants (they sum the tie</p>
 <p><i>values</i>, not just the non-zero cells).</p>
-<h2 id="geodesicsandshortestpaths" name="geodesicsandshortestpaths">Geodesics and shortest paths</h2>
+<h2 id="geodesics-and-shortest-paths" name="geodesics-and-shortest-paths">Geodesics and shortest paths</h2>
 <p>The geodesics matrix holds shortest-path hop counts. A 0 entry means &quot;no</p>
 <p>path&quot; (and the diagonal). Shortest Paths reports the actual intermediate</p>
 <p>steps. **Eccentricity, Closeness and Betweenness refuse to compute on</p>
 <p>disconnected networks** and print a warning instead of silently treating</p>
 <p>unreachable pairs as distance 0.</p>
-<h2 id="eccentricityanddiameter" name="eccentricityanddiameter">Eccentricity and diameter</h2>
+<h2 id="eccentricity-and-diameter" name="eccentricity-and-diameter">Eccentricity and diameter</h2>
 <p>Eccentricity e(i) = max over reachable j of d(i, j); diameter =</p>
 <p>max over i of e(i) — the largest geodesic of the network.</p>
 <h2 id="betweenness" name="betweenness">Betweenness</h2>
 <p>Raw (unnormalised) Freeman betweenness, summed over ordered pairs and</p>
 <p>computed with Brandes&#x27; algorithm: for each pair (s, t), the share of the</p>
 <p>shortest s–t paths that pass through the actor.</p>
-<h2 id="bavelasclosenessandfareness" name="bavelasclosenessandfareness">Bavelas, closeness and fareness</h2>
+<h2 id="bavelas-closeness-and-fareness" name="bavelas-closeness-and-fareness">Bavelas, closeness and fareness</h2>
 <p>Distance-based centralities built on the geodesic matrix. They require a</p>
 <p>connected network (see above); read the exact normalisation in the</p>
 <p>formulas.wpd companion — the family differs between authors, and Agna</p>
@@ -55,16 +55,16 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <h2 id="cohesion" name="cohesion">Cohesion</h2>
 <p>The density of mutual (two-way) dyads: the share of ordered pairs with</p>
 <p>A[i][j] = A[j][i] ≠ 0.</p>
-<h2 id="determinationandsociometricstatus" name="determinationandsociometricstatus">Determination and sociometric status</h2>
+<h2 id="determination-and-sociometric-status" name="determination-and-sociometric-status">Determination and sociometric status</h2>
 <p>Determination = (in-strength − out-strength) / (n − 1); Sociometric</p>
 <p>Status = (in-strength + out-strength) / (n − 1). These are Agna&#x27;s own</p>
 <p>coefficients; verify they match the convention in your field before</p>
 <p>citing them.</p>
-<h2 id="anoteondistances" name="anoteondistances">A note on distances</h2>
+<h2 id="a-note-on-distances" name="a-note-on-distances">A note on distances</h2>
 <p>Analyses that depend on distances assume unweighted (graph) distances;</p>
 <p>edge <i>values</i> are used by the degree/status/density statistics, not by</p>
 <p>the path-based measures.</p>
-<h2 id="ncliques" name="ncliques">N-Cliques</h2>
+<h2 id="n-cliques" name="n-cliques">N-Cliques</h2>
 <p>Enumerated with the Bron–Kerbosch (Tomita pivot) algorithm; the search is</p>
 <p>capped at 1000 reported cliques and the report says so when the cap is</p>
 <p>reached.</p>

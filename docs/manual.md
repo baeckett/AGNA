@@ -6,14 +6,14 @@
   its own format (`.agn`), text tables (`.txt`, `.csv`), Pajek (`.net`),
   Excel (`.xls` and `.xlsx`, including files saved by Apple Numbers),
   GraphML (`.graphml`), GML (`.gml`) and GraphSON (`.json`). See
-  [File formats](6fileformats.htm).
+  [File formats](#6-file-formats).
 - **Enter data**: with a new network (File ▸ New Network) the sociomatrix
   grid appears; type tie values into the cells. A value of 0 means "no
   tie".
 - **Analyse**: pick an analysis from the Analysis menu; the report appears
   in the Output pane, which doubles as a session log (every operation is
   recorded there with a timestamp). Every computation is explained in
-  [Methodology](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm).
+  [Methodology](#4-methodology--what-exactly-is-computed-read-before-publishing-results).
 - **Move data to other tools**: use File ▸ Save Network As... and choose
   GraphML, GML, GraphSON or Pajek — Gephi, Cytoscape, NetworkX, igraph and
   the R SNA packages all read at least one of these.
@@ -41,61 +41,61 @@
 Items that compute something link to their explanation; follow the link
 to read exactly what is calculated.
 
-- **File**: New Network; Open Network; [Merge Network...](5matrixoperationsformulas.htm#mergenetwork);
+- **File**: New Network; Open Network; [Merge Network...](#merge-network);
   Save Network As... (the format list is documented in
-  [File formats](6fileformats.htm)); Save Network; New From Chain...; Quit.
+  [File formats](#6-file-formats)); Save Network; New From Chain...; Quit.
 - **Edit**: Cut / Copy / Paste / Delete / Select All (spreadsheet cell
   editing).
 - **Network**:
   - Title...; Add Nodes...; Delete Selected Node — bookkeeping, no
     computation.
-  - [Add Scalar...](5matrixoperationsformulas.htm#addscalar) — shifts all
+  - [Add Scalar...](#add-scalar) — shifts all
     off-diagonal values by a constant.
-  - [Scalar Multiplication...](5matrixoperationsformulas.htm#scalarmultiplication)
+  - [Scalar Multiplication...](#scalar-multiplication)
     — scales all off-diagonal values by a factor.
-  - [Transpose](5matrixoperationsformulas.htm#transpose) — mirrors the
+  - [Transpose](#transpose) — mirrors the
     matrix across the diagonal.
-  - [Symmetrize...](5matrixoperationsformulas.htm#symmetrize) — makes the
+  - [Symmetrize...](#symmetrize) — makes the
     matrix symmetric; choose among 13 rules.
-  - [Normalize (Binarize)...](5matrixoperationsformulas.htm#normalizebinarize)
+  - [Normalize (Binarize)...](#normalize-binarize)
     — dichotomise to 0/1, or threshold a weighted matrix.
-  - [Remove Outsiders](5matrixoperationsformulas.htm#removeoutsiders) —
+  - [Remove Outsiders](#remove-outsiders) —
     delete isolates.
   - Renumber Nodes... — replaces names with numbers, no computation.
-  - [Square Matrix](5matrixoperationsformulas.htm#squarematrix) — M×M,
+  - [Square Matrix](#square-matrix) — M×M,
     counting two-step walks.
 - **Analysis**:
-  - Basic Description — the [full methodology page](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm)
+  - Basic Description — the [full methodology page](#4-methodology--what-exactly-is-computed-read-before-publishing-results)
     explains every number it reports.
-  - [Nodal Degree](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodaldegreeanddirection),
-    [Indegree](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodaldegreeanddirection),
-    [Outdegree](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodaldegreeanddirection)
+  - [Nodal Degree](#nodal-degree-and-direction),
+    [Indegree](#nodal-degree-and-direction),
+    [Outdegree](#nodal-degree-and-direction)
     — per-direction degree counts.
-  - [Density](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#density)
+  - [Density](#density)
     — the share of possible ties that exist.
-  - [Cohesion](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#cohesion)
+  - [Cohesion](#cohesion)
     — the share of mutual dyads.
   - Emission Degree, Reception Degree — the weighted out/in totals, see
-    [Nodal degree and direction](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodaldegreeanddirection).
-  - [Determination Degree](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#determinationandsociometricstatus),
-    [Sociometric Status](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#determinationandsociometricstatus)
+    [Nodal degree and direction](#nodal-degree-and-direction).
+  - [Determination Degree](#determination-and-sociometric-status),
+    [Sociometric Status](#determination-and-sociometric-status)
     — Agna's own status coefficients.
-  - [Eccentricity](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#eccentricityanddiameter),
-    [Diameter](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#eccentricityanddiameter)
+  - [Eccentricity](#eccentricity-and-diameter),
+    [Diameter](#eccentricity-and-diameter)
     — the longest geodesics.
-  - [Geodesic Matrix](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#geodesicsandshortestpaths),
-    [Shortest Paths...](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#geodesicsandshortestpaths),
-    [All Shortest Paths](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#geodesicsandshortestpaths).
-  - [N-Cliques](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#ncliques).
-  - [Bavelas-Leavitt](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#bavelasclosenessandfareness),
-    [Closeness](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#bavelasclosenessandfareness),
-    [Fareness](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#bavelasclosenessandfareness)
+  - [Geodesic Matrix](#geodesics-and-shortest-paths),
+    [Shortest Paths...](#geodesics-and-shortest-paths),
+    [All Shortest Paths](#geodesics-and-shortest-paths).
+  - [N-Cliques](#n-cliques).
+  - [Bavelas-Leavitt](#bavelas-closeness-and-fareness),
+    [Closeness](#bavelas-closeness-and-fareness),
+    [Fareness](#bavelas-closeness-and-fareness)
     — the distance-based centralities.
-  - [Betweenness](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#betweenness).
-  - [Prestige](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#prestige).
+  - [Betweenness](#betweenness).
+  - [Prestige](#prestige).
   - Full Analysis — the whole battery in one pass.
 - **View / Output**: Network Viewer (and its Close item); Hide/Show
-  Output; Open/Save/Clear the Output pane (the [session log](7newin213.htm#sessionlog)).
+  Output; Open/Save/Clear the Output pane (the [session log](#session-log)).
 - **Preferences**: Working Directory...; Save Settings As Default...;
   Look and Feel.
 - **Help**: Contents...; About Agna...
@@ -176,7 +176,7 @@ reached.
 
 All operations write back into the current sociomatrix. The diagonal (no
 self-loops) is preserved as 0 by every operation below. These are the
-operations behind the Network menu; the [menu reference](3menureference.htm)
+operations behind the Network menu; the [menu reference](#3-menu-reference)
 links them back here.
 
 ### Add scalar
@@ -292,7 +292,7 @@ Interoperability notes:
   revert to the bundled red bullet.
 - **Merge Network** (File ▸ Merge Network...): join two networks by
   actor name with a Sum / Maximum / Keep policy, as described in
-  [Matrix operations](5matrixoperationsformulas.htm#mergenetwork).
+  [Matrix operations](#merge-network).
 ### Session log
 
 The Output pane records every operation with a timestamp
@@ -301,13 +301,13 @@ reconstruct what was done to a network. Use View ▸ Hide/Show Output to
 toggle the pane.
 - **Export/import family**: Excel import (including Numbers `.xlsx`),
   GraphML, GML and GraphSON round-trips — see
-  [File formats](6fileformats.htm).
+  [File formats](#6-file-formats).
 - **Full Analysis** (Analysis ▸ Full Analysis): runs the whole battery
   in one pass, with a skip note when the network is disconnected.
 - Analyses run in the background with a cancellable progress dialog.
 - **This manual**: the help now explains every computation — see
-  [Methodology](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm)
-  and [Matrix operations](5matrixoperationsformulas.htm).
+  [Methodology](#4-methodology--what-exactly-is-computed-read-before-publishing-results)
+  and [Matrix operations](#5-matrix-operations--formulas).
 
 ## 8. Keyboard shortcuts
 
@@ -322,7 +322,7 @@ toggle the pane.
   Numbers as `.xlsx`, Agna opens that file too.
 - **How do I move a network to R or Python?** — save as GraphML, GML or
   GraphSON; the R packages igraph/statnet and Python's NetworkX read
-  those formats directly. See [File formats](6fileformats.htm).
+  those formats directly. See [File formats](#6-file-formats).
 - **Gephi won't import my Pajek file** — ensure the network export has
   comment lines disabled (they are by default; the option is remembered
   for the Pajek format).
@@ -332,7 +332,7 @@ toggle the pane.
 - **An analysis prints a warning instead of numbers** — distance-based
   measures (eccentricity, closeness, fareness, betweenness, geodesics)
   need a connected network; that is intentional, not a bug. See
-  [Methodology](4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm).
+  [Methodology](#4-methodology--what-exactly-is-computed-read-before-publishing-results).
 - **I cannot see grid lines / selections** — change the look and feel in
   Preferences; the grid is drawn by the table itself in every theme.
 

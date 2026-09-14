@@ -19,15 +19,15 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 </style></head>
 <body>
 <!-- md2help generated - do not edit by hand; edit docs/manual.md -->
-<h1>5. Matrix operations — formulas</h1>
+<h1 id="5-matrix-operations--formulas" name="5-matrix-operations--formulas">5. Matrix operations — formulas</h1>
 <p>All operations write back into the current sociomatrix. The diagonal (no</p>
 <p>self-loops) is preserved as 0 by every operation below. These are the</p>
-<p>operations behind the Network menu; the <a href="3menureference.htm">menu reference</a></p>
+<p>operations behind the Network menu; the <a href="3menureference.htm#3-menu-reference">menu reference</a></p>
 <p>links them back here.</p>
-<h2 id="addscalar" name="addscalar">Add scalar</h2>
+<h2 id="add-scalar" name="add-scalar">Add scalar</h2>
 <p>M′[i][j] = M[i][j] + c for i ≠ j. Useful to shift a weighted matrix</p>
 <p>before dichotomising.</p>
-<h2 id="scalarmultiplication" name="scalarmultiplication">Scalar multiplication</h2>
+<h2 id="scalar-multiplication" name="scalar-multiplication">Scalar multiplication</h2>
 <p>M′[i][j] = c · M[i][j] for i ≠ j.</p>
 <h2 id="transpose" name="transpose">Transpose</h2>
 <p>M′[i][j] = M[j][i] — mirrors the matrix across the diagonal, swapping</p>
@@ -82,25 +82,25 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 </table>
 <p>Use <b>Sum</b> to aggregate two measurements of the same tie, <b>Maximum</b> to</p>
 <p>take the stronger, <b>Below/Above</b> to keep one triangle&#x27;s opinion.</p>
-<h2 id="normalizebinarize" name="normalizebinarize">Normalize (Binarize)</h2>
+<h2 id="normalize-binarize" name="normalize-binarize">Normalize (Binarize)</h2>
 <p>Two options:</p>
 <ul><li><i>Binary</i>: M′[i][j] = 1 if M[i][j] ≠ 0, else 0.</li></ul>
 <ul><li><i>By threshold</i> (value t): M′[i][j] = 1 if M[i][j] &gt; t, else 0.</li></ul>
 <p>  Values exactly equal to the threshold become 0.</p>
-<h2 id="squarematrix" name="squarematrix">Square Matrix</h2>
+<h2 id="square-matrix" name="square-matrix">Square Matrix</h2>
 <p>M′ = M × M, i.e. M′[i][j] = Σₖ M[i][k] · M[k][j]. The entry (i, j)</p>
 <p>counts the walks of length 2 from i to j — the number of two-step</p>
 <p>intermediaries.</p>
-<h2 id="mergenetwork" name="mergenetwork">Merge Network</h2>
+<h2 id="merge-network" name="merge-network">Merge Network</h2>
 <p>Joins the current network with another file. Actors are matched **by</p>
 <p>name**: a name present in both networks becomes one actor; a name present</p>
 <p>only in the second file is appended. For a tie present in both, the</p>
 <p>policy decides: Sum → A[i][j] + B[i][j]; Maximum → the larger;</p>
 <p>Keep current value → the first network&#x27;s. The diagonal stays zero.</p>
-<h2 id="removeoutsiders" name="removeoutsiders">Remove outsiders</h2>
+<h2 id="remove-outsiders" name="remove-outsiders">Remove outsiders</h2>
 <p>Deletes every actor whose row <i>and</i> column are all zero, then renumbers</p>
 <p>the rest.</p>
-<h2 id="thebooleanproduct" name="thebooleanproduct">The boolean product</h2>
+<h2 id="the-boolean-product" name="the-boolean-product">The boolean product</h2>
 <p>Reachability questions use the boolean product internally:</p>
 <p>(A ⊗ B)[i][j] is 1 exactly when some k has A[i][k] = B[k][j] = 1.</p>
 </body></html>
