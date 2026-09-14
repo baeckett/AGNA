@@ -1,10 +1,12 @@
 package com.bentza.sna.cli;
 
 import com.bentza.sna.AgnaLog;
+import com.bentza.sna.Environment;
 import com.bentza.sna.io.ExcelExporter;
 import com.bentza.sna.io.GMLExporter;
 import com.bentza.sna.io.GraphMLExporter;
 import com.bentza.sna.io.GraphSONExporter;
+import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.io.PajekExporter;
 import com.bentza.sna.net.AgnaLib;
 import com.bentza.sna.net.FullNet;
@@ -143,8 +145,7 @@ public final class Cli
         if ("-".equals(file))
             {
             byte[] bytes = in.readAllBytes();
-            full.readNetwork(new String(bytes, StandardCharsets.ISO_8859_1),
-                    stdinFormat);
+            full.readNetwork(IOUtils.utf8BytesToText(bytes), stdinFormat);
             return full;
             }
         if ("xls".equals(ext) || "xlsx".equals(ext))
@@ -153,8 +154,7 @@ public final class Cli
             } else
             {
             byte[] bytes = Files.readAllBytes(new File(file).toPath());
-            full.readNetwork(new String(bytes, StandardCharsets.ISO_8859_1),
-                    ext);
+            full.readNetwork(IOUtils.utf8BytesToText(bytes), ext);
             }
         return full;
         }
@@ -205,7 +205,7 @@ public final class Cli
         if (text != null)
             {
             Files.write(new File(file).toPath(), text.getBytes(
-                    StandardCharsets.ISO_8859_1));
+                    StandardCharsets.UTF_8));
             } else if ("xls".equals(ext))
             {
             String error = new ExcelExporter().saveExcelNetwork(full, file);
@@ -347,7 +347,18 @@ public final class Cli
     private int version()
         {
         out.println("Agna CLI 2.1.3");
+        out.print(citationBlock());
         return 0;
+        }
+
+    // 2.1.3: the citation footer drawn from the Environment metadata
+    private String citationBlock()
+        {
+        return "Cite: Ben\u021Ba, M. I. (2026). "
+                + Environment.getSoftwareTitle()
+                + " (Version " + Environment.getApplicationVersion()
+                + ") [Computer software].\nhttps://doi.org/"
+                + Environment.getCitationDoi() + "\n";
         }
 
     private int info(String[] args) throws Exception
@@ -376,6 +387,7 @@ public final class Cli
         sb.append("nodes:  ").append(net.getSize()).append('\n');
         sb.append("edges:  ").append(net.getEdgesNumber()).append('\n');
         sb.append(new AgnaLib().outBasic(net));
+        sb.append('\n').append(citationBlock());
         if (outFile != null)
             {
             Files.write(new File(outFile).toPath(), sb.toString().getBytes(
@@ -449,6 +461,7 @@ public final class Cli
             report.append(text);
             report.append('\n');
             }
+        report.append('\n').append(citationBlock());
         if (outFile != null)
             {
             Files.write(new File(outFile).toPath(), report.toString()
@@ -1771,8 +1784,7 @@ public final class Cli
             }
         FullNet full = new FullNet();
         byte[] bytes = Files.readAllBytes(new File(file).toPath());
-        full.readNetworkFromChain(new String(bytes,
-                StandardCharsets.ISO_8859_1), extOf(file));
+        full.readNetworkFromChain(IOUtils.utf8BytesToText(bytes), extOf(file));
         write(full, outFile);
         out.println("created network from chain -> " + outFile);
         return 0;

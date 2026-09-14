@@ -293,6 +293,14 @@ public final class CliMetrics
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();
         root.put("network", net.getName());
+        // 2.1.3: citable metadata inside every structured report
+        ObjectNode software = root.putObject("software");
+        software.put("name", "AGNA CLI");
+        software.put("version", com.bentza.sna.Environment
+                .getApplicationVersion());
+        software.put("license", "Apache-2.0");
+        software.put("citationDoi", com.bentza.sna.Environment
+                .getCitationDoi());
         ArrayNode metrics = root.putArray("metrics");
         for (String line : csv(net, wanted))
             {

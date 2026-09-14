@@ -20,7 +20,7 @@ public class CliTest
         {
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         int code = new Cli(new java.io.PrintStream(buf)).run(args);
-        String text = buf.toString(StandardCharsets.ISO_8859_1.name());
+        String text = buf.toString(StandardCharsets.UTF_8.name());
         assertEquals(0, code, "exit code for " + String.join(" ", args)
                 + " -> " + text);
         return text;
@@ -622,6 +622,26 @@ public class CliTest
         String row = csv.lines().skip(1).findFirst().get();
         assertTrue(row.startsWith("1,9,1,"), row);
         assertTrue(row.contains("1 > 9"), row);
+        }
+
+    @Test
+    public void convertPreservesUnicodeNames() throws Exception
+        {
+        // Phase A: a UTF-8 agn file with CJK names must convert and
+        // reopen with the names intact
+        File in = File.createTempFile("agna_cli_utf8_in", ".agn");
+        File out = File.createTempFile("agna_cli_utf8_out", ".graphml");
+        in.deleteOnExit();
+        out.deleteOnExit();
+        Files.write(in.toPath(), ("Agna Data File\nVersion\t2.1.3\n"
+                + "Network Name\t网络测试\nNetwork Size\t2\nHas Viewer\tno\n"
+                + "Node Names\n中文节点\tБукурешть\t\nEnd Node Names\n"
+                + "Network Matrix\n0\t1\n1\t0\nEnd Network Matrix\n")
+                .getBytes(StandardCharsets.UTF_8));
+        run("convert", in.getAbsolutePath(), out.getAbsolutePath());
+        String matrix = run("matrix", out.getAbsolutePath());
+        assertTrue(matrix.contains("中文节点"), matrix);
+        assertTrue(matrix.contains("Букурешть"), matrix);
         }
 
     @Test

@@ -56,19 +56,35 @@ class AboutBox
 
         ImageIcon splash_icon = null;
         Color background_color = new Color(221, 222, 211);
-        splash_icon = Environment.getButtonImageIcon("splash_01.gif");
-        icon_label = new JLabel(splash_icon);
+        icon_label = new JLabel();
+        try
+            {
+            // 2.1.3: the official logo (horizontal white lockup)
+            java.awt.Image logo = javax.imageio.ImageIO.read(AboutBox.class
+                    .getResourceAsStream("/agna_logo.png"));
+            int logo_width = 140;
+            int logo_height = logo.getHeight(null) * logo_width
+                    / Math.max(1, logo.getWidth(null));
+            icon_label.setIcon(new ImageIcon(logo.getScaledInstance(
+                    logo_width, logo_height, java.awt.Image.SCALE_SMOOTH)));
+            } catch (Exception e)
+            {
+            // classic fallback
+            icon_label.setIcon(Environment.getButtonImageIcon("splash_01.gif"));
+            }
         text_label = new JLabel(
                 "<html><font size = 2 color='#298C8C' face='Arial,Helvetica,Verdana,sans-serif'>"
                         + Environment.getApplicationFullName()
-                        + "<br>Freeware<br>"
+                        + "<br>"
                         + Environment.getApplicationCopyright()
-                        + "<br><br>For the latest version, visit Agna website:");
+                        + "<br>Licensed under the Apache License, Version 2.0"
+                        + "<br><br>For the latest version, visit the Agna "
+                        + "website:");
         // url_button = new JButton("<html><font size = 2 color='#FF0000'
         // face='Arial,Helvetica,Verdana,sans-serif'><a href='" +
         // MainFrame.getApplicationUrl() +"'>" + MainFrame.getApplicationUrl() +
         // "</a>");
-        url_button = new UrlLabel(" ".trim());
+        url_button = new UrlLabel("https://www.netanalysis.co.uk");
         // url_button.setBorder(null);
         url_button.setBackground(background_color);
         // url_button.addActionListener(act_dialog);

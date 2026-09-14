@@ -15,28 +15,53 @@ public class IOUtils
         }
 
     /**
-     * 2.1.3: reader over a legacy Agna data file with an explicit charset.
-     * Old .agn/.txt/.ini files were written with Windows/ISO-8859-1 style
-     * encodings; reading them with the platform default (UTF-8 on modern
-     * systems) could garble diacritics. ISO-8859-1 maps every byte 1:1, so
-     * legacy files round-trip losslessly.
+     * 2.1.3 (Phase A): decode text as UTF-8 first, falling back to a
+     * byte-faithful latin-1 decode for legacy single-byte files written
+     * by the original app. ASCII content is identical under both; new
+     * UTF-8 files (Romanian, Cyrillic, CJK, ...) decode correctly, old
+     * files round-trip losslessly.
      */
+    public static String utf8BytesToText(byte[] bytes)
+        {
+        try
+            {
+            java.nio.CharBuffer chars = java.nio.charset.StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(
+                            java.nio.charset.CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(
+                            java.nio.charset.CodingErrorAction.REPORT)
+                    .decode(java.nio.ByteBuffer.wrap(bytes));
+            return chars.toString();
+            } catch (java.nio.charset.CharacterCodingException e)
+            {
+            return new String(bytes,
+                    java.nio.charset.StandardCharsets.ISO_8859_1);
+            }
+        }
+
     public static java.io.Reader reader(java.io.File file)
             throws java.io.FileNotFoundException
         {
-        return new java.io.InputStreamReader(new java.io.FileInputStream(file),
-                java.nio.charset.StandardCharsets.ISO_8859_1);
+        try
+            {
+            byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+            return new java.io.StringReader(utf8BytesToText(bytes));
+            } catch (java.io.IOException e)
+            {
+            throw new java.io.FileNotFoundException(file.toString());
+            }
         }
 
     /**
-     * 2.1.3: writer with an explicit charset (ISO-8859-1, see reader()).
+     * 2.1.3 (Phase A): all text output is UTF-8 now.
      */
     public static java.io.Writer writer(java.io.File file)
             throws java.io.IOException
         {
         return new java.io.OutputStreamWriter(
                 new java.io.FileOutputStream(file),
-                java.nio.charset.StandardCharsets.ISO_8859_1);
+                java.nio.charset.StandardCharsets.UTF_8);
         }
 
     /**

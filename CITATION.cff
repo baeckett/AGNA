@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use AGNA in your research, please cite it as described in Help > How to cite AGNA."
+title: "AGNA: Applied Graph and Network Analysis Open Source"
+version: "2.1.3"
+abstract: >-
+  AGNA (Applied Graph and Network Analysis) is cross-platform open-source
+  software for social network analysis and sequential analysis.
+authors:
+  - family-names: "Bența"
+    given-names: "Marius Ion"
+date-released: "2026-09-11"
+license: "Apache-2.0"
+url: "https://www.netanalysis.co.uk"
+doi: "10.5281/zenodo.22708199"
+keywords:
+  - social network analysis
+  - graph analysis
+  - sequential analysis
+  - open source
+preferred-citation:
+  type: software
+  authors:
+    - family-names: "Bența"
+      given-names: "Marius Ion"
+  title: "AGNA: Applied Graph and Network Analysis Open Source"
+  version: "2.1.3"
+  year: 2026
+  doi: "10.5281/zenodo.22708199"
+  url: "https://www.netanalysis.co.uk"

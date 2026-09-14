@@ -76,8 +76,23 @@ public class AgnaSplash extends JWindow
                 + "  -  Social Network Analysis", SwingConstants.CENTER);
         version_label.setForeground(new Color(110, 110, 110));
         version_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        version_label.setBounds(0, 352, w, 22);
+        version_label.setBounds(0, 280, w, 22);
         main_pane.add(version_label);
+
+        // 2.1.3: the official footer - exact text, source stays ASCII-safe
+        // (\u2013 = en dash, \u021B = t with comma below)
+        JLabel bottom_label = new JLabel(
+                "<html><center>Copyright 2001\u20132026 Marius Ion "
+                        + "Ben\u021Ba<br>www.netanalysis.co.uk<br><br>"
+                        + "AGNA is licensed under the Apache License, "
+                        + "Version 2.0.<br>You may obtain a copy of the "
+                        + "License at:<br>https://www.apache.org/licenses/"
+                        + "LICENSE-2.0</center></html>",
+                SwingConstants.CENTER);
+        bottom_label.setForeground(new Color(110, 110, 110));
+        bottom_label.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        bottom_label.setBounds(0, 300, w, 112);
+        main_pane.add(bottom_label);
 
         getContentPane().add(main_pane, java.awt.BorderLayout.CENTER);
         pack();

@@ -36,18 +36,17 @@ public class Environment
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
      */
-    // 2.1.3: provisional project page (final domain to be confirmed)
+    // 2.1.3: the official project page of Agna
     private final static String application_url = "https://www.netanalysis.co.uk";
 
-    private final static String application_email = "imbenta@yahoo.co.uk";
+    private final static String application_email = "contact@netanalysis.co.uk";
 
     /**
-     * Historic copyright line. The licence of the 2.1.3 open-source release is
-     * still being decided; see README.
+     * Official copyright line: 2001 is the year the Agna project started;
+     * the en dash (\u2013) and the t with comma below (\u021B) keep the
+     * source ASCII-safe while rendering the correct Romanian name.
      */
-    // 2.1.3: copyright holder's full name with the Romanian diacritic
-    // (\u021B = t with comma below); source stays ASCII-safe
-    private final static String application_copyright = "Copyright (C) 2002-2026: Marius Ion Ben\u021Ba";
+    private final static String application_copyright = "Copyright 2001\u20132026 Marius Ion Ben\u021Ba";
 
     public static final String fs = System.getProperty("file.separator");
 
@@ -92,6 +91,50 @@ public class Environment
     public static String getApplicationUrl()
         {
         return application_url;
+        }
+
+    // ---- 2.1.3: citation metadata ----
+    // All cite strings in the app, the CLI and the docs draw from here.
+
+    /** Zenodo DOI for the 2.1.3 release. */
+    public static final String CITATION_DOI = "10.5281/zenodo.22708199";
+
+    public static String getCitationDoi()
+        {
+        return CITATION_DOI;
+        }
+
+    public static String getSoftwareTitle()
+        {
+        return "AGNA: Applied Graph and Network Analysis Open Source";
+        }
+
+    /** APA-style software citation used in footers and the Help dialog. */
+    public static String getCitationText()
+        {
+        return "Ben\u021Ba, M. I. (2026). " + getSoftwareTitle()
+                + " (Version 2.1.3) [Computer software]. "
+                + "https://doi.org/" + getCitationDoi();
+        }
+
+    /** One-line footer for exported tables and reports. */
+    public static String getSoftwareFooter()
+        {
+        return "Generated with AGNA " + getApplicationVersion()
+                + " \u2014 cite: " + getCitationText();
+        }
+
+    /** The desktop "Software and citation" block (plain text, \\n lines). */
+    public static String getDesktopCitationBlock()
+        {
+        return "Software and citation\nAGNA Desktop "
+                + getApplicationVersion() + " \u2014 Apache License 2.0\n"
+                + "Ben\u021Ba, M. I. (2026). " + getSoftwareTitle()
+                + " (Version " + getApplicationVersion()
+                + ") [Computer software].\nhttps://doi.org/"
+                + getCitationDoi()
+                + "\n\nFor reproducibility, report the AGNA version and the "
+                + "analysis options used.";
         }
 
     /**
