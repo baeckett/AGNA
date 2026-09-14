@@ -17,9 +17,6 @@ class AboutBox
 
     private static JLabel text_label, icon_label;
 
-    // private static JButton url_button;
-    private static UrlLabel url_button;
-
     private static JButton ok_button;
 
     private static JPanel face_panel;
@@ -88,10 +85,8 @@ class AboutBox
         // face='Arial,Helvetica,Verdana,sans-serif'><a href='" +
         // MainFrame.getApplicationUrl() +"'>" + MainFrame.getApplicationUrl() +
         // "</a>");
-        url_button = new UrlLabel("https://www.netanalysis.co.uk");
-        // url_button.setBorder(null);
-        url_button.setBackground(background_color);
-        // url_button.addActionListener(act_dialog);
+        // 2.1.3: the URL is shown inline in the text, no separate link
+        // button (the old red underlined UrlLabel is removed)
         ok_button = new JButton("Ok");
         ok_button.addActionListener(act_dialog);
 
@@ -129,16 +124,6 @@ class AboutBox
         co.weighty = 0.5;
         c_layout.setConstraints(ok_button, co);
         control.add(ok_button);
-
-        // placing url_button:
-        co.gridx = 2;
-        co.gridy = 1;
-        co.gridwidth = 1;
-        co.gridheight = 1;
-        co.weightx = 0.5;
-        co.weighty = 0.0;
-        c_layout.setConstraints(url_button, co);
-        control.add(url_button);
 
         // placing icon_label:
         co.gridx = 0;
