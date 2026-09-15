@@ -66,6 +66,13 @@ the Apache License 2.0.
   on the event thread with cancellation.
 - Help: resizable window, regenerated contents with working anchors, stale
   pages removed; legacy commented-out code removed from the sources.
+- Engine hardening: matrix APIs validate shape before computing (no silent
+  ArrayIndexOutOfBounds); integer matrix multiplication accumulates in
+  `long` and fails loudly on overflow; non-finite (NaN/infinity) tie values
+  are rejected at the transformation entry points; clique reports state
+  when enumeration was truncated or cancelled; all-shortest-path
+  enumeration is capped; metamorphic invariance tests (permutation,
+  transposition, symmetrization) added.
 
 ## Citation
 

@@ -18,6 +18,60 @@ import java.util.Vector;
     // the worst case and a dense network can produce millions of cliques
     public static final int MAX_REPORTED_CLIQUES = 1000;
 
+    // 2.1.3: set when the reported-clique cap was reached (distinct from a
+    // user cancellation; outCliques appends the completion note)
+    public static volatile boolean clique_truncated;
+
+    // 2.1.3: shortest-path enumeration cap and its completion flag
+    private static final int MAX_SHORTEST_PATHS = 10000;
+    private static volatile boolean shortest_paths_truncated;
+
+    // -- matrix validation guards (2.1.3 hardening) ---------------------
+    private static void requireNonEmptySquare(float[][] m, String name)
+        {
+        if (m == null || m.length == 0)
+            throw new IllegalArgumentException(name + " must be a non-empty matrix");
+        int n = m.length;
+        for (int i = 0; i < n; i++)
+            {
+            if (m[i] == null || m[i].length != n)
+                throw new IllegalArgumentException(name
+                        + " must be a square matrix: row " + i + " has "
+                        + (m[i] == null ? "no" : String.valueOf(m[i].length))
+                        + " columns, expected " + n);
+            }
+        }
+
+    private static void requireNonEmptySquare(int[][] m, String name)
+        {
+        if (m == null || m.length == 0)
+            throw new IllegalArgumentException(name + " must be a non-empty matrix");
+        int n = m.length;
+        for (int i = 0; i < n; i++)
+            {
+            if (m[i] == null || m[i].length != n)
+                throw new IllegalArgumentException(name
+                        + " must be a square matrix: row " + i + " has "
+                        + (m[i] == null ? "no" : String.valueOf(m[i].length))
+                        + " columns, expected " + n);
+            }
+        }
+
+    private static void requireFiniteNetwork(Network src, String op)
+        {
+        int n = src.getSize();
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = 0; j < n; j++)
+                {
+                if (!Float.isFinite(src.getValue(i, j)))
+                    throw new IllegalArgumentException(op + ": " + src.getName()
+                            + " contains a non-finite tie value (NaN or "
+                            + "infinity) at [" + i + "][" + j + "]");
+                }
+            }
+        }
+
         public static void initAjna()
         {
         // type-dependent text elements:
@@ -117,6 +171,7 @@ import java.util.Vector;
     // returns the maximum element of a matrix
     public float matrixMax(float[][] src)
         {
+        requireNonEmptySquare(src, "matrixMax");
         int size = src.length;
         int i, j;
         float finval = Float.NEGATIVE_INFINITY;
@@ -133,6 +188,7 @@ import java.util.Vector;
 
     public float matrixMax(int[][] src)
         {
+        requireNonEmptySquare(src, "matrixMax");
         int size = src.length;
         int i, j;
         int finval = Integer.MIN_VALUE;
@@ -214,6 +270,7 @@ import java.util.Vector;
 
     public void symmetrizeMaximum(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeMaximum");
         int size = src.getSize();
         int i = 0;
         int j = 0;
@@ -231,6 +288,7 @@ import java.util.Vector;
 
     public void symmetrizeMaximumNonZero(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeMaximumNonZero");
         int size = src.getSize();
         int i = 0;
         int j = 0;
@@ -248,6 +306,7 @@ import java.util.Vector;
 
     public void symmetrizeMinimum(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeMinimum");
         int size = src.getSize();
         int i, j;
         float finval = 0f;
@@ -264,6 +323,7 @@ import java.util.Vector;
 
     public void symmetrizeMinimumNonZero(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeMinimumNonZero");
         int size = src.getSize();
         int i = 0;
         int j = 0;
@@ -282,6 +342,7 @@ import java.util.Vector;
     // keeps the left side of sociomatrix
     public void symmetrizeBelow(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeBelow");
         int size = src.getSize();
         int i, j;
         float finval = 0f;
@@ -298,6 +359,7 @@ import java.util.Vector;
     // keeps the right side of sociomatrix;
     public void symmetrizeAbove(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeAbove");
         int size = src.getSize();
         int i, j;
         float finval = 0f;
@@ -315,6 +377,7 @@ import java.util.Vector;
     // if one element is zero on the left, keeps the right one;
     public void symmetrizeBelowNonZero(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeBelowNonZero");
         int size = src.getSize();
         int i, j;
         float finval = 0f;
@@ -335,6 +398,7 @@ import java.util.Vector;
     // if one element is zero on the right, keeps the left one;
     public void symmetrizeAboveNonZero(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeAboveNonZero");
         int size = src.getSize();
         int i, j;
         float finval = 0f;
@@ -353,6 +417,7 @@ import java.util.Vector;
 
     public void symmetrizeSum(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeSum");
         int size = src.getSize();
         int i, j;
         double finval = 0f;
@@ -370,6 +435,7 @@ import java.util.Vector;
 
     public void symmetrizeProduct(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeProduct");
         int size = src.getSize();
         int i, j;
         double finval = 0;
@@ -396,6 +462,7 @@ import java.util.Vector;
 
     public void symmetrizeProductNonZero(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeProductNonZero");
         int size = src.getSize();
         int i, j;
         float finval = 0f;
@@ -413,6 +480,7 @@ import java.util.Vector;
 
     public void symmetrizeAM(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeAM");
         int size = src.getSize();
         int i, j;
         double finval = 0;
@@ -430,6 +498,7 @@ import java.util.Vector;
 
     public void symmetrizeGM(Network src)
         {
+        requireFiniteNetwork(src, "symmetrizeGM");
         int size = src.getSize();
         int i, j;
         double finval = 0;
@@ -451,6 +520,7 @@ import java.util.Vector;
 
     public void addScalar(Network src, float scal)
         {
+        requireFiniteNetwork(src, "addScalar");
         int size = src.getSize();
         int i, j;
         double finval = 0;
@@ -469,6 +539,7 @@ import java.util.Vector;
 
     public void multiplyByScalar(Network src, float scal)
         {
+        requireFiniteNetwork(src, "multiplyByScalar");
         int size = src.getSize();
         int i, j;
         double finval = 0;
@@ -515,6 +586,8 @@ import java.util.Vector;
     // returns multiplication as boolean matrix
     public boolean[][] multiplyMatricesBoolean(float[][] first, float[][] second)
         {
+        requireNonEmptySquare(first, "multiplyMatricesBoolean(first)");
+        requireNonEmptySquare(second, "multiplyMatricesBoolean(second)");
         int size = first.length;
         int i, j, k;
         float temp = 0f; // temporary variable
@@ -523,15 +596,16 @@ import java.util.Vector;
             {
             for (j = 0; j < size; j++)
                 {
-                temp = 0;
+                // structural product: true when some k reaches j from i
+                finmat[i][j] = false;
                 for (k = 0; k < size; k++)
                     {
-                    temp += first[i][k] * second[k][j];
+                    if (first[i][k] != 0f && second[k][j] != 0f)
+                        {
+                        finmat[i][j] = true;
+                        break;
+                        }
                     }
-                if (temp != 0)
-                    finmat[i][j] = true;
-                else
-                    finmat[i][j] = false;
                 }
             }
         return finmat;
@@ -539,6 +613,8 @@ import java.util.Vector;
 
     public float[][] multiplyMatrices(float[][] first, float[][] second)
         {
+        requireNonEmptySquare(first, "multiplyMatrices(first)");
+        requireNonEmptySquare(second, "multiplyMatrices(second)");
         int size = first.length;
         int i, j, k;
         double temp; // temporary variable
@@ -553,6 +629,9 @@ import java.util.Vector;
                     temp += (double) first[i][k] * (double) second[k][j];
                     }
                 finmat[i][j] = (float) temp;
+                if (!Float.isFinite(finmat[i][j]))
+                    throw new ArithmeticException("multiplyMatrices: non-finite "
+                            + "result at [" + i + "][" + j + "]");
                 }
             }
         return finmat;
@@ -560,9 +639,11 @@ import java.util.Vector;
 
     public int[][] multiplyMatrices(int[][] first, int[][] second)
         {
+        requireNonEmptySquare(first, "multiplyMatrices(first)");
+        requireNonEmptySquare(second, "multiplyMatrices(second)");
         int size = first.length;
         int i, j, k;
-        int temp; // temporary variable
+        long temp; // overflow-safe accumulation (2.1.3)
         int[][] finmat = new int[size][size]; // final result
         for (i = 0; i < size; i++)
             {
@@ -571,9 +652,12 @@ import java.util.Vector;
                 temp = 0;
                 for (k = 0; k < size; k++)
                     {
-                    temp += first[i][k] * second[k][j];
+                    temp += (long) first[i][k] * (long) second[k][j];
                     }
-                finmat[i][j] = temp;
+                if (temp < Integer.MIN_VALUE || temp > Integer.MAX_VALUE)
+                    throw new ArithmeticException("multiplyMatrices: integer "
+                            + "overflow at [" + i + "][" + j + "]");
+                finmat[i][j] = (int) temp;
                 }
             }
         return finmat;
@@ -656,6 +740,8 @@ import java.util.Vector;
         int size = src.getSize();
         if (cdiam < 1 || size < 1)
             return null;
+        clique_search_cancelled = false;
+        clique_truncated = false;
 
         int[][] geod = geodesics(src);
         // derived graph: two nodes are "adjacent" when their mutual geodesic
@@ -709,6 +795,7 @@ import java.util.Vector;
                 if (cliques.size() >= MAX_REPORTED_CLIQUES)
                     {
                     clique_search_cancelled = true; // stop the search
+                    clique_truncated = true; // cap reached: list incomplete
                     return;
                     }
                 cliques.addElement(current.getClone());
@@ -800,6 +887,7 @@ import java.util.Vector;
     // method written by Adrian Duda;
     private Vector shortestPaths(Network src, int init, int end)
         {
+        shortest_paths_truncated = false;
         if (src.hasNoEmission(init) || src.hasNoReception(end))
             return null;
         Vector siruri_actuale = new Vector(1, 1); // contains only one element
@@ -823,6 +911,11 @@ import java.util.Vector;
         boolean gasit = false;
         while (gasit == false)
             {
+            if (siruri_bune.size() >= MAX_SHORTEST_PATHS)
+                {
+                shortest_paths_truncated = true; // cap reached: incomplete
+                break;
+                }
             for (int i = 0; i < siruri_actuale.size(); i++)
                 {
                 tmpstr = (IntList) siruri_actuale.elementAt(i);
@@ -1608,6 +1701,14 @@ import java.util.Vector;
             // out += unli;
             } // end for i
         // out += unol;
+        if (clique_truncated)
+            out.append(lb + it + "Showing the first "
+                    + MAX_REPORTED_CLIQUES
+                    + " maximal cliques; enumeration was stopped and this "
+                    + "list is incomplete." + unit);
+        else if (clique_search_cancelled)
+            out.append(lb + it + "Clique enumeration was cancelled; this "
+                    + "list is incomplete." + unit);
         out.append(lb);
 
         /*
@@ -1874,16 +1975,19 @@ import java.util.Vector;
 
     public void normalize(Network src)
         {
+        requireFiniteNetwork(src, "normalize");
         normalize(src, NORMALIZE_BINARY, 0f);
         }
 
     public void normalize(Network src, int mode)
         {
+        requireFiniteNetwork(src, "normalize");
         normalize(src, mode, 0f);
         }
 
     public void normalize(Network src, int mode, float threshold)
         {
+        requireFiniteNetwork(src, "normalize");
         final int size = src.getSize();
         if (mode == NORMALIZE_THRESHOLD)
             {
