@@ -94,5 +94,12 @@ High-Risk Activities Disclaimer).
 
 ## Software bills of materials
 
-- `docs/sbom/AGNA-2.1.3-SBOM.json` — CycloneDX 1.4 aggregate SBOM for this
-  release (also attached on the release page).
+- `docs/sbom/AGNA-2.1.3-SBOM.json` — CycloneDX 1.4 aggregate SBOM.
+- `docs/sbom/AGNA-2.1.3-SPDX.json` — SPDX 2.2 variant (ISO/IEC 5962),
+  converted from the same dependency graph.
+- Both are attached on the release page; the `sbom-gate` CI job fails the
+  build when a component's license is not allowlisted or a banned/
+  SNAPSHOT component appears. The dependency on log4j 1.2.14 (transitive
+  of jxl, end-of-life, known CVEs) was removed via exclusion; the optional
+  OWASP NVD scan runs locally with `mvn -Psbom-gate verify
+  -Ddependency-check.skip=false`.

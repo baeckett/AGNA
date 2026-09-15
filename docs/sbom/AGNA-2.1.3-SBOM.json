@@ -1,10 +1,10 @@
 {
   "bomFormat" : "CycloneDX",
   "specVersion" : "1.4",
-  "serialNumber" : "urn:uuid:c8f0af55-1967-4cd8-952a-53fc768ff003",
+  "serialNumber" : "urn:uuid:c0e5c91d-8ae4-44f8-a99e-c44a8bc09aa5",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2026-09-15T09:26:27Z",
+    "timestamp" : "2026-09-15T09:47:34Z",
     "tools" : [
       {
         "vendor" : "OWASP Foundation",
@@ -351,76 +351,6 @@
       "bom-ref" : "pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar"
     },
     {
-      "publisher" : "Apache Software Foundation",
-      "group" : "log4j",
-      "name" : "log4j",
-      "version" : "1.2.14",
-      "description" : "Log4j",
-      "scope" : "required",
-      "hashes" : [
-        {
-          "alg" : "MD5",
-          "content" : "599b8ba07d1d04f0ea34414e861d7ad1"
-        },
-        {
-          "alg" : "SHA-1",
-          "content" : "03b254c872b95141751f414e353a25c2ac261b51"
-        },
-        {
-          "alg" : "SHA-256",
-          "content" : "e3bff9ab64a09b1ac2800f3b5fb1e3d99728064acb6dd3924938507638a404fb"
-        },
-        {
-          "alg" : "SHA-512",
-          "content" : "7b6b7bddd05a6f3e911b277527d31be12c4339aeb2d14177286a1bf533ef39d203dd48102b92469b78e03bc85a699e20aa2332ec06966d6dc95fd8953462df37"
-        },
-        {
-          "alg" : "SHA-384",
-          "content" : "4b37304b497ed9f792c70c71c45702ba962ce77fe8902a2e444fde6e7bbdd6601fe471f3052f602aba573e88ccdd768a"
-        },
-        {
-          "alg" : "SHA3-384",
-          "content" : "ecc86e3738723daf0d1bdd5c4da06f35a8b02b503d4d9f945777ddede082275c410e2d7b9f60a8c607cfd196f78a4f94"
-        },
-        {
-          "alg" : "SHA3-256",
-          "content" : "5058f247416be5a8d13158199fc466984f10f487300e53c6f1df5056022c0381"
-        },
-        {
-          "alg" : "SHA3-512",
-          "content" : "62cd90caf28b0dcae272f5641a410a5565c68fdd81cca535f479e2a093bb49442d4d7d9b43b048428213e93d35fefd3f4b193f9cb88f469ff679e37236513913"
-        }
-      ],
-      "licenses" : [
-        {
-          "license" : {
-            "id" : "Apache-2.0"
-          }
-        }
-      ],
-      "purl" : "pkg:maven/log4j/log4j@1.2.14?type=jar",
-      "externalReferences" : [
-        {
-          "type" : "website",
-          "url" : "http://logging.apache.org/log4j/docs/"
-        },
-        {
-          "type" : "issue-tracker",
-          "url" : "http://issues.apache.org/bugzilla"
-        },
-        {
-          "type" : "mailing-list",
-          "url" : "http://mail-archives.apache.org/mod_mbox/logging-log4j-dev/"
-        },
-        {
-          "type" : "vcs",
-          "url" : "http://svn.apache.org/viewcvs.cgi/logging/log4j/tags/v1_2_14/"
-        }
-      ],
-      "type" : "library",
-      "bom-ref" : "pkg:maven/log4j/log4j@1.2.14?type=jar"
-    },
-    {
       "group" : "com.bentza.sna",
       "name" : "agna-cli",
       "version" : "2.1.3",
@@ -539,12 +469,6 @@
     },
     {
       "ref" : "pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar",
-      "dependsOn" : [
-        "pkg:maven/log4j/log4j@1.2.14?type=jar"
-      ]
-    },
-    {
-      "ref" : "pkg:maven/log4j/log4j@1.2.14?type=jar",
       "dependsOn" : [ ]
     },
     {
