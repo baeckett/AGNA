@@ -66,6 +66,8 @@ the Apache License 2.0.
   on the event thread with cancellation.
 - Help: resizable window, regenerated contents with working anchors, stale
   pages removed; legacy commented-out code removed from the sources.
+- Performance benchmarks are separate from the correctness suite and run
+  only with `mvn verify -Pbenchmarks` (stable on shared CI runners).
 - Engine hardening: matrix APIs validate shape before computing (no silent
   ArrayIndexOutOfBounds); integer matrix multiplication accumulates in
   `long` and fails loudly on overflow; non-finite (NaN/infinity) tie values

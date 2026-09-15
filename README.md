@@ -87,7 +87,8 @@ java -jar agna-desktop-2.1.3.jar
 Requires JDK 17 and Maven.
 
 ```
-mvn verify      # compile + run the full test suite (230 tests)
+mvn verify      # compile + run the full correctness suite (239 tests)
+                # performance benchmarks: mvn verify -Pbenchmarks
 mvn package     # builds the jars in each module's target/
 java -jar agna-desktop/target/agna-2.1.3.jar        # desktop
 java -jar agna-cli/target/agna-cli-2.1.3.jar --help # CLI
