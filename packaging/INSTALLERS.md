@@ -124,8 +124,8 @@ links stay valid:
    (`sha256sum AGNA-2.1.3.dmg` on macOS, `Get-FileHash` on Windows), then
    replace the file.
 4. If you want the website rows to point straight at the installers,
-   swap the macOS/Windows download links in `website/index.html` to
-   `releases/latest/download/AGNA-2.1.3.dmg` (and `.msi`), commit and push.
+   update the matching macOS/Windows download links on the published site
+   (https://www.netanalysis.co.uk) to the new asset names.
 
 ## Linux (reference)
 
