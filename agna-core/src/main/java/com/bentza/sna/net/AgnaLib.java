@@ -3,7 +3,9 @@ package com.bentza.sna.net;
 import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.core.AppRuntime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
         public class AgnaLib
@@ -735,7 +737,7 @@ import java.util.Vector;
      * 
      * @return a Vector of IntLists, or null for an invalid diameter
      */
-    private Vector cliquesMain(Network src, int cdiam)
+    private List<IntList> cliquesMain(Network src, int cdiam)
         {
         int size = src.getSize();
         if (cdiam < 1 || size < 1)
@@ -760,7 +762,7 @@ import java.util.Vector;
                 }
             }
 
-        Vector cliques = new Vector();
+        List<IntList> cliques = new ArrayList<>();
         int[] candidates = new int[size];
         for (int i = 0; i < size; i++)
             {
@@ -780,7 +782,7 @@ import java.util.Vector;
      * the ordered variant on mid-density graphs, checks the cancellation flag
      * so the UI can abort long enumerations.
      */
-    private void bronKerbosch(boolean[][] adjacent, Vector cliques,
+    private void bronKerbosch(boolean[][] adjacent, List<IntList> cliques,
             IntList current, int[] candidates, int candidate_count,
             int[] excluded, int excluded_count)
         {
@@ -798,7 +800,7 @@ import java.util.Vector;
                     clique_truncated = true; // cap reached: list incomplete
                     return;
                     }
-                cliques.addElement(current.getClone());
+                cliques.add(current.getClone());
                 }
             return;
             }
@@ -1664,7 +1666,7 @@ import java.util.Vector;
 
         IntList clique;
         int size = outsrc.getSize();
-        Vector final_cliques = cliquesMain(outsrc, clique_diameter);
+        List<IntList> final_cliques = cliquesMain(outsrc, clique_diameter);
         if (final_cliques == null || final_cliques.size() < 1)
             {
             out.append(it + "No " + String.valueOf(clique_diameter)
@@ -1680,7 +1682,7 @@ import java.util.Vector;
             out
                     .append(lb + blanc + blanc + blanc + blanc + blanc + "*"
                             + blanc);
-            clique = (IntList) final_cliques.elementAt(i);
+            clique = final_cliques.get(i);
             if (final_cliques != null)
                 {
                 IntListElement cursor = clique.getFirstElement();

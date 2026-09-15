@@ -1,0 +1,568 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.4",
+  "serialNumber" : "urn:uuid:c8f0af55-1967-4cd8-952a-53fc768ff003",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2026-09-15T09:26:27Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP Foundation",
+        "name" : "CycloneDX Maven plugin",
+        "version" : "2.7.10",
+        "hashes" : [
+          {
+            "alg" : "MD5",
+            "content" : "1cc7f6a0382f8bb2f758d6a6ea401d1b"
+          },
+          {
+            "alg" : "SHA-1",
+            "content" : "a4297947a1f2d7d453105db542651614bbd37f38"
+          },
+          {
+            "alg" : "SHA-256",
+            "content" : "bd0fdd8f2f2116eee5e715aeac1580f19eb7a10ec2b6f805b53567067658e872"
+          },
+          {
+            "alg" : "SHA-512",
+            "content" : "9cde8352a427e10b96cae01348fc7cfe5d4aa9cd0a5e5dd93b414ce3bb7d112993c3b3004e53af52567fbfa16de0704ec59a5556a635ad70571fd124ae389f39"
+          },
+          {
+            "alg" : "SHA-384",
+            "content" : "93d7bf5b5c735347edfbfbd66810273ca840f9a322b816d22d44c3d8e8255c09e86570bb23712aeb0cade0f478be5aeb"
+          },
+          {
+            "alg" : "SHA3-384",
+            "content" : "4467f16e9ca32190a6e49c65339eb28ee5e8c78f4e918fcf95128a4b7648898de56ccb43eacfad0c9391ef8cdb7d629a"
+          },
+          {
+            "alg" : "SHA3-256",
+            "content" : "ed2996c99b483e969221d5e9a40f562ea2ab85442d361d72a90e85266a3ed781"
+          },
+          {
+            "alg" : "SHA3-512",
+            "content" : "c8e6ea9ddc38edc77e284b3bf541663e84752bdc59ed1935799847a48a14ea2fa531b61008fefcba37d732a56702a11ac112437b9b80d18f4ecc8ef0ecfb32cf"
+          }
+        ]
+      }
+    ],
+    "component" : {
+      "group" : "com.bentza.sna",
+      "name" : "agna",
+      "version" : "2.1.3",
+      "description" : "Agna - social network analysis (open source, 2.1.3). Monorepo: agna-core (engine), agna-cli (command line), agna-desktop (Swing application).",
+      "licenses" : [ ],
+      "purl" : "pkg:maven/com.bentza.sna/agna@2.1.3?type=pom",
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.bentza.sna/agna@2.1.3?type=pom"
+    },
+    "properties" : [
+      {
+        "name" : "maven.goal",
+        "value" : "makeAggregateBom"
+      },
+      {
+        "name" : "maven.scopes",
+        "value" : "compile,provided,runtime,system"
+      }
+    ]
+  },
+  "components" : [
+    {
+      "group" : "com.bentza.sna",
+      "name" : "agna-core",
+      "version" : "2.1.3",
+      "description" : "The engine: AgnaLib, network model, import/export, preferences seam. No GUI dependency.",
+      "licenses" : [ ],
+      "purl" : "pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar",
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar"
+    },
+    {
+      "publisher" : "FasterXML",
+      "group" : "com.fasterxml.jackson.core",
+      "name" : "jackson-databind",
+      "version" : "2.17.1",
+      "description" : "General data-binding functionality for Jackson: works on core streaming API",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "f0a1c37dc7d937f14e183d84f15c0f83"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "0524dcbcccdde7d45a679dfc333e4763feb09079"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "b6ca2f7d5b1ab245cec5495ec339773d2d90554c48592590673fb18f4400a948"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "ca3fa3b21047c8762b5b806f82de712a353f30880af00297fce1f4fec90471435a25d93aa0925961a34f4fa18e0d973f4611d5cb2c53d3d0b28f00ac1b9b6462"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "e6d921331272972f4c6cd1f72b5dd4c0ede8f0eb4f3da0ae1cb7ee12ed64ceb6d7693a8f52601bc8df0ad8b3fa7cb45c"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "c21aee49a0131f017692f0749a4988759da20a791d327b2e33c2f6277aed192d082868369d6fbceb541d5483c6dbe399"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "e656bb7d5f0df07c47dcba4658b18843e4b3a4a12ca3b521a7e8607b48795d80"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "b833061dcb9c159a5063ccb554051818c7969fd2967160aaa9e7f3c45981a3a43e8053bfc2997b83774a950837425f9410f6f9b9a6eb37b7d5f8608081726fe1"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.1?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson"
+        },
+        {
+          "type" : "distribution",
+          "url" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-databind/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/FasterXML/jackson-databind"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.1?type=jar"
+    },
+    {
+      "publisher" : "FasterXML",
+      "group" : "com.fasterxml.jackson.core",
+      "name" : "jackson-annotations",
+      "version" : "2.17.1",
+      "description" : "Core annotations used for value types, used by Jackson data binding package.",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "dbeffa5994a6234489a205fd7f33d9b9"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "fca7ef6192c9ad05d07bc50da991bf937a84af3a"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "fccad82e13172c0e4384db71577219c9b8631c0820f4b18daaa57016fb661c76"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "d3edb04cffb0a7c3349c7dc1dcd154ff0a16686155b13e5e674adedbb07d6eaca156a5b0bec2857496dec8c3669dae7d04b3debce6b324ffcfdb278ea0fcc0fe"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "df95479d6e84ea028ee42d491336d0fb69100dcbeb2b828fd1794c272c33bb16e4a7dfffee82bff09fc4119ba4669a5d"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "a84cb1dda50488ac552cfcb372ca0f313f39577100b208209b337c22a0bb0a5c6185b78ed38a998991ddb01234bb3346"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "2ed3dfad7ad53ac0b835fb4c2b1fa8bff1b68d3be86c9a93b67ffe369305ad29"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "79213b46cb73f63e4839b2840e418c8648acb39c3c27a87c075eda08cfc342354c73a45ee7a303eb8234c914a60d152180cb29eabad71e2b4f7d44140b3059a7"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.17.1?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson"
+        },
+        {
+          "type" : "distribution",
+          "url" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-annotations/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/FasterXML/jackson-annotations"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.17.1?type=jar"
+    },
+    {
+      "publisher" : "FasterXML",
+      "group" : "com.fasterxml.jackson.core",
+      "name" : "jackson-core",
+      "version" : "2.17.1",
+      "description" : "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "9363584821290882417f1c3ceab784df"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "5e52a11644cd59a28ef79f02bddc2cc3bab45edb"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "ddb26c8a1f1a84535e8213c48b35b253370434e3287b3cf15777856fc4e58ce6"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "5ea2d50e0807082e01574df591567022f98a8366efae1ac9dd7085c3fb8508ea1cc39bf578bbd5d6e109e9116370062a96d1703e2d501b6c5884f54c3be4f171"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "1009a8e6db52c3de411d70380ee2b8f8b569e2beba5145fd788f8783bc866fb14cee757a5e0bcf51fc3e1692bd024f29"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "9d81565f61a363c89e87f11e3645fd747cd065b60d01607ecc8cef2ca8a9dab6540a77cc1d2587808824ab72782457e4"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "a30bb87fe658889b753394eff933ebcfc646656cc7ab99c13d3e6aae13681d14"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "e95c5a29de2ab54909272363503130b3e57e7ac01e98223b1d7c00cb16f38ca64ef4a2834e419482b11b08bea1b7fe16a7d5fc42a43a2f5c060227343b36a7a2"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.17.1?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson-core"
+        },
+        {
+          "type" : "distribution",
+          "url" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-core/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/FasterXML/jackson-core"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.17.1?type=jar"
+    },
+    {
+      "group" : "net.sourceforge.jexcelapi",
+      "name" : "jxl",
+      "version" : "2.6.12",
+      "description" : "JExcelApi is a java library which provides the ability to read, write, and modify Microsoft Excel spreadsheets.",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "62f8a643ebd1ffcf891b51778dc37565"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "7faf62e0697f7a88954622dfe8c8de33ed142ac7"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "c5c53645ab751288398f30adaec5551879c5ee334d4862ea77b25a386646621c"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "faa2bd94c5ad0139f9c01175da34b34c3aea84d3741b5a3ad95fa348f52200696133ab92e2d9bff2415ca7803c381a2321be2e6b8b7e5867e84c3b14512a4dc6"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "ddf995337cf424be0270f9ccc7cce63d3c5a33a0209c4f963181cb9d7513dc51523337d2293dc67155c576cd6566f5fd"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "3fb8c91f293b8b1747f59f1f632f2281aa7ca51f0432df1275e4ca8c6dbd25a2ee2d80f4e253901fe73dbba085db6df6"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "77740c3ad3b99f80fb9afa8899749e49bda4a5a190b50f71cb19051ec001bd3e"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "3da043e7c56992f647bea98ac531471545b58dc1b50d5a07d2117fe2df427edc5cca2365273c92ce1bb09107a16f0b1a660c083455a13dbbfad09c8a9fcdd12b"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "name" : "GNU Lesser General Public License",
+            "url" : "http://www.opensource.org/licenses/lgpl-license.php"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "http://www.jexcelapi.org"
+        },
+        {
+          "type" : "vcs",
+          "url" : "http://jexcelapi.cvs.sourceforge.net/jexcelapi/"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar"
+    },
+    {
+      "publisher" : "Apache Software Foundation",
+      "group" : "log4j",
+      "name" : "log4j",
+      "version" : "1.2.14",
+      "description" : "Log4j",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "599b8ba07d1d04f0ea34414e861d7ad1"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "03b254c872b95141751f414e353a25c2ac261b51"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "e3bff9ab64a09b1ac2800f3b5fb1e3d99728064acb6dd3924938507638a404fb"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "7b6b7bddd05a6f3e911b277527d31be12c4339aeb2d14177286a1bf533ef39d203dd48102b92469b78e03bc85a699e20aa2332ec06966d6dc95fd8953462df37"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "4b37304b497ed9f792c70c71c45702ba962ce77fe8902a2e444fde6e7bbdd6601fe471f3052f602aba573e88ccdd768a"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "ecc86e3738723daf0d1bdd5c4da06f35a8b02b503d4d9f945777ddede082275c410e2d7b9f60a8c607cfd196f78a4f94"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "5058f247416be5a8d13158199fc466984f10f487300e53c6f1df5056022c0381"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "62cd90caf28b0dcae272f5641a410a5565c68fdd81cca535f479e2a093bb49442d4d7d9b43b048428213e93d35fefd3f4b193f9cb88f469ff679e37236513913"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/log4j/log4j@1.2.14?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "http://logging.apache.org/log4j/docs/"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "http://issues.apache.org/bugzilla"
+        },
+        {
+          "type" : "mailing-list",
+          "url" : "http://mail-archives.apache.org/mod_mbox/logging-log4j-dev/"
+        },
+        {
+          "type" : "vcs",
+          "url" : "http://svn.apache.org/viewcvs.cgi/logging/log4j/tags/v1_2_14/"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "pkg:maven/log4j/log4j@1.2.14?type=jar"
+    },
+    {
+      "group" : "com.bentza.sna",
+      "name" : "agna-cli",
+      "version" : "2.1.3",
+      "description" : "Command-line interface over the Agna engine.",
+      "licenses" : [ ],
+      "purl" : "pkg:maven/com.bentza.sna/agna-cli@2.1.3?type=jar",
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.bentza.sna/agna-cli@2.1.3?type=jar"
+    },
+    {
+      "group" : "com.bentza.sna",
+      "name" : "agna-desktop",
+      "version" : "2.1.3",
+      "description" : "The Swing desktop application.",
+      "licenses" : [ ],
+      "purl" : "pkg:maven/com.bentza.sna/agna-desktop@2.1.3?type=jar",
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.bentza.sna/agna-desktop@2.1.3?type=jar"
+    },
+    {
+      "group" : "com.formdev",
+      "name" : "flatlaf",
+      "version" : "3.4.1",
+      "description" : "Flat Look and Feel",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "5eff49957b9797239a31a9e918f25346"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "59161ce93728eaec725a26d646f7eff1d363decd"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "8b4bbd34727f80e74555b2be3d8dcb994434654986c64f4298162247a9d35ffc"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "6ee1b4f44c44f76a1ce9b8dfae92edd562207bf63aed95d92f2d26dc6cdca485cfdcddedb983a4c9e1a0ceea639d6aaae60322bdddcc2b853882035f60011779"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "57c5cfcd65eee4a8bf776e92906c695c8e8e87cdf0d38cc512bf70a1b50d21b5bab2b7a72d85d035938b78dcfffe40c8"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "0c665ba6594862925bc4c48c06ca696a246f98ddaf3c36ec33914464949e298cc241579ffecf738153857a7d62b20726"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "237a17792820ccc1cb02e6acca9343f20d5f3afde8b15c88003bb06b82ffcbff"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "d0f0e15c1b84d92ccd57b85d72787b76875a5bce0c89cbead2e48cb267d11ea55692e102d0578e8050eb9647b868e28cfcf693239c157de2ae8ce162a7fbfbf3"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/com.formdev/flatlaf@3.4.1?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/JFormDesigner/FlatLaf"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/JFormDesigner/FlatLaf/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/JFormDesigner/FlatLaf"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.formdev/flatlaf@3.4.1?type=jar"
+    }
+  ],
+  "dependencies" : [
+    {
+      "ref" : "pkg:maven/com.bentza.sna/agna@2.1.3?type=pom",
+      "dependsOn" : [
+        "pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar",
+        "pkg:maven/com.bentza.sna/agna-cli@2.1.3?type=jar",
+        "pkg:maven/com.bentza.sna/agna-desktop@2.1.3?type=jar"
+      ]
+    },
+    {
+      "ref" : "pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar",
+      "dependsOn" : [
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.1?type=jar",
+        "pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar"
+      ]
+    },
+    {
+      "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.1?type=jar",
+      "dependsOn" : [
+        "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.17.1?type=jar",
+        "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.17.1?type=jar"
+      ]
+    },
+    {
+      "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.17.1?type=jar",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.17.1?type=jar",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar",
+      "dependsOn" : [
+        "pkg:maven/log4j/log4j@1.2.14?type=jar"
+      ]
+    },
+    {
+      "ref" : "pkg:maven/log4j/log4j@1.2.14?type=jar",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "pkg:maven/com.bentza.sna/agna-cli@2.1.3?type=jar",
+      "dependsOn" : [
+        "pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar"
+      ]
+    },
+    {
+      "ref" : "pkg:maven/com.bentza.sna/agna-desktop@2.1.3?type=jar",
+      "dependsOn" : [
+        "pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar",
+        "pkg:maven/com.formdev/flatlaf@3.4.1?type=jar"
+      ]
+    },
+    {
+      "ref" : "pkg:maven/com.formdev/flatlaf@3.4.1?type=jar",
+      "dependsOn" : [ ]
+    }
+  ]
+}

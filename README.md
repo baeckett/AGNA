@@ -136,12 +136,6 @@ If you use AGNA in your research, please cite it (see also
 > Bența, M. I. (2026). *AGNA: Applied Graph and Network Analysis Open Source*
 > (Version 2.1.3) [Computer software]. https://doi.org/10.5281/zenodo.22708199
 
-The software is described in:
-
-> Bența, M. I. (2005). *Studying Communication Networks with AGNA 2.1.*
-> Cognition, Brain, Behavior, IX(3), 567–574.
-> https://doi.org/10.5281/zenodo.2539249
-
 ## Links
 
 - Website: https://www.netanalysis.co.uk

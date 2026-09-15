@@ -78,7 +78,36 @@
           <artifactId>maven-source-plugin</artifactId>
           <version>3.3.1</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.4.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <goals><goal>enforce</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <rules>
+            <requireJavaVersion><version>[17,)</version></requireJavaVersion>
+            <requireMavenVersion><version>[3.6.3,)</version></requireMavenVersion>
+            <bannedDependencies>
+              <excludes>
+                <exclude>junit:junit:*:*:compile</exclude>
+                <exclude>org.junit.vintage:*</exclude>
+              </excludes>
+            </bannedDependencies>
+          </rules>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

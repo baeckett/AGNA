@@ -91,3 +91,8 @@ DOI: 10.5281/zenodo.22708199 — see CITATION.cff / CITATION.bib
 
 Apache License 2.0 (all modules). See LICENSE and the README (including the
 High-Risk Activities Disclaimer).
+
+## Software bills of materials
+
+- `docs/sbom/AGNA-2.1.3-SBOM.json` — CycloneDX 1.4 aggregate SBOM for this
+  release (also attached on the release page).
