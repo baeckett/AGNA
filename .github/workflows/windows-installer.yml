@@ -26,12 +26,12 @@ jobs:
           New-Item -ItemType Directory -Force pkg, out | Out-Null
           Copy-Item agna-desktop\target\agna-2.1.3.jar pkg\agna-2.1.3.jar
           jpackage --type msi --name AGNA --app-version 2.1.3 `
-            --vendor "Marius Ion Bența" `
+            --vendor "Marius Ion Benta" `
             --description "AGNA - Applied Graph and Network Analysis Open Source" `
             --icon packaging\Agna.ico --input pkg --main-jar agna-2.1.3.jar `
             --main-class com.bentza.sna.Agna --dest out
           jpackage --type exe --name AGNA --app-version 2.1.3 `
-            --vendor "Marius Ion Bența" `
+            --vendor "Marius Ion Benta" `
             --description "AGNA - Applied Graph and Network Analysis Open Source" `
             --icon packaging\Agna.ico --input pkg --main-jar agna-2.1.3.jar `
             --main-class com.bentza.sna.Agna --dest out

@@ -140,6 +140,10 @@ need the distro's packaging tools (`fakeroot`, `rpmbuild`).
   `--java-options -Xdock:name=AGNA` (dock name) and
   `--java-options -Xmx512m` if memory should be capped.
 - Windows: the JDK on the build machine determines the bundled runtime;
-  use the same major version you test with.
+  use the same major version you test with. The `--vendor` string on
+  Windows must be ASCII ("Marius Ion Benta") - the diacritic in "Bența"
+  is mangled by the Windows shell when jpackage builds the registry key
+  (Software\Vendor\AGNA\2.1.3). The in-app author text and citations
+  always use the correct "Bența" spelling.
 - System requirements for the produced apps: same as the jar (Java
   runtime is bundled, ~150-250 MB installed).
