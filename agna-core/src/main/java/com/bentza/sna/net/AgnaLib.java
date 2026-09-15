@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.net;
 
 import com.bentza.sna.AgnaLog;
@@ -576,9 +581,7 @@ import java.util.Vector;
                     // temp += first.getValue(k,i) * second.getValue(j,k); //
                     // veche
                     }
-                /*
-                 * if (temp != 0) finmat[i][j]=1; else finmat[i][j]=0;
-                 */
+                
                 finmat[i][j] = (float) temp;
                 }
             }
@@ -697,35 +700,7 @@ import java.util.Vector;
         return goal;
         }
 
-    // string-based; deprecated;
-    // returns a vector of strings, ecah string being
-    // one of the possible shortest paths between init and end;
-    // method written by Adrian Duda;
-    /*
-     * private static Vector shortestPathsOLD(Network src, int init, int end) {
-     * Vector siruri_actuale = new Vector(1, 1); // contains only one element
-     * Vector siruri_noi = new Vector(1, 1); Vector siruri_bune = new Vector(1,
-     * 1); siruri_actuale.removeAllElements(); siruri_noi.removeAllElements();
-     * siruri_bune.removeAllElements(); // initialization: int nr_siruri = 1; //
-     * number of elements in siruri_acuale int ind; int n = src.getSize(); //
-     * size of network/matrix boolean[][] mat = new boolean[n][n]; mat =
-     * src.getBooleanMatrix(); // network's boolean matrix String tmpstr; //
-     * string de lucru String drum; tmpstr = new String(""); tmpstr +=
-     * (char)init; siruri_actuale.addElement(tmpstr); boolean gasit = false;
-     * while (gasit == false) { for (int i = 0; i < siruri_actuale.size(); i++) {
-     * tmpstr = (String)siruri_actuale.elementAt(i); ind =
-     * (int)tmpstr.charAt(tmpstr.length() - 1); // ind = last character of the
-     * string for (int k = 0; k < n; k++) { if (mat[ind][k]) { if
-     * (tmpstr.indexOf((char)k) < 0) { drum = new String(""); drum = tmpstr +
-     * (char)k; siruri_noi.addElement(drum); if (k == end) { gasit = true;
-     * siruri_bune.addElement(drum); } } } } }
-     * siruri_actuale.removeAllElements(); // echivalentul atribuirii:
-     * siruri_actuale = siruri_noi if (siruri_noi.size() > 0) { for (int k = 0;
-     * k < siruri_noi.size(); k++) {
-     * siruri_actuale.addElement((String)siruri_noi.elementAt(k)); } }
-     * siruri_noi.removeAllElements(); if (siruri_actuale.size() == 0) { break; //
-     * out of while } } return siruri_bune; }
-     */
+    
 
 /**
      * Enumerates the maximal n-cliques of the network: maximal sets of nodes
@@ -884,9 +859,11 @@ import java.util.Vector;
             }
         }
 
-    // returns a vector of IntLists, ecah string being
-    // one of the possible shortest paths between init and end;
-    // method written by Adrian Duda;
+    /*
+     * Shortest-path enumeration based on an earlier AGNA approach by
+     * Adrian Duda. The current implementation was rewritten for
+     * AGNA 2.1.3.
+     */
     private Vector shortestPaths(Network src, int init, int end)
         {
         shortest_paths_truncated = false;
@@ -964,17 +941,7 @@ import java.util.Vector;
         return siruri_bune;
         }
 
-    /*
-     * private static String[][] detailedGeodesics(Network src) { int size =
-     * src.getSize(); int i, j, vsize; // vsize = size of vector vsize = 0;
-     * String[][] sp = new String[size][size]; // shortest paths for a specific
-     * node Vector spv = null; // vector of shortest paths for (i = 0; i < size;
-     * i++) { for (j = 0; j < size; j++) { if (i == j) { sp[i][j] = new
-     * String(""); } else { spv = AgnaLib.shortestPaths(src, i, j); vsize =
-     * spv.size(); sp[i][j] = new String(""); for (int k = 0; k < vsize; k++) {
-     * sp[i][j] += (String)spv.elementAt(k); sp[i][j] += (char)255; } } } }
-     * return sp; }
-     */
+    
 
     /**
      * 2.1.3: true when every ordered pair of distinct nodes is mutually
@@ -1109,20 +1076,7 @@ import java.util.Vector;
         return ge;
         }
 
-    /*
-     * private int[][] geodesicsOLD(Network src) { int size = src.getSize(); int
-     * i, j, codarc; int[][] ge = new int[size][size]; // final result -
-     * geodesics float[][] b = src.getMatrix(); float[][] mTmp = new
-     * float[size][size]; for (i = 0; i < size; i++) { for (j = 0; j < size;
-     * j++) { ge[i][j] = Integer.MAX_VALUE; } } for (i = 0; i < size; i++) { for
-     * (j = 0; j < size; j++) { if (b[i][j] != 0f) mTmp[i][j]=1f; else
-     * mTmp[i][j] = 0f; } } for (codarc = 1; codarc <= size; codarc++) //codarc
-     * este lungimea unui arc *) { for (i = 0; i < size; i++) { for (j = 0; j <
-     * size; j++) { if (ge[i][j] > codarc && b[i][j] != 0f) ge[i][j]=codarc; } }
-     * b = multiplyMatrices(mTmp,b); for (i = 0; i < size; i++) b[i][i]=0f; }
-     * for (i = 0; i < size; i++) { for (j = 0; j < size; j++) if
-     * (ge[i][j]>Integer.MAX_VALUE - 1) ge[i][j]=0; } return ge; }
-     */
+    
 
 
     /**
@@ -1457,22 +1411,7 @@ import java.util.Vector;
 
     // returns a matrix whose elements represent the number
     // of geodesics from i to j
-    /*
-     * public float[][] multipleGeodesics(Network src) { // nu-i gata! int size =
-     * src.getSize(); int i, j, codarc; // codarc = length of a geodesic path i =
-     * 0; j = 0; codarc = 0; float[][] geomat = geodesics(src); // matrix of
-     * geodesics float[][] srcmat = src.getMatrix();// matrix of src float[][]
-     * powermat = new float[size][size]; // src successively multiplied by
-     * itself float[][] athens = new float[size][size]; // athens[i][j] = number
-     * of geodesics between i and j // ie, the matrix of multiple geodesics; to
-     * be returned for (i = 0; i < size; i++) { for (j = 0; j < size; j++) {
-     * athens[i][j] = 0f; } } // initializations end here powermat = srcmat; //
-     * first step: power = 1 for (codarc = 1; codarc <= size; codarc++) { for (i =
-     * 0; i < size; i++) { for (j = 0; j < size; j++) { if (geomat[i][j] ==
-     * codarc) { athens[i][j] = powermat[i][j]; } } } powermat =
-     * multiplyMatrices(powermat, srcmat); // next step } geomat = null; srcmat =
-     * null; powermat = null;  return athens; }
-     */
+    
 
     // returns a matrix whose elements represent the number
     // of geodesics from i to j
@@ -1563,43 +1502,10 @@ import java.util.Vector;
         }
 
 
-    /*
-     * public static String outDetailedGeodesics(Network outsrc) { AgnaLib();
-     * String out = new String(""); int size = outsrc.getSize(); int k, lmax;
-     * char kchar; boolean no_geodesic = true; String[][] outarray = new
-     * String[size][size]; outarray = AgnaLib.detailedGeodesics(outsrc); out = it +
-     * bold + "Detailed Geodesics" + unbold + " in "+ unit + outsrc.getName() +
-     * lb; for (int i = 0; i < size; i++) { for (int j = 0; j < size; j++) { if
-     * (outarray[i][j] != null && outarray[i][j].length() > 0) { no_geodesic =
-     * false; lmax = outarray[i][j].length(); out += lb + it + "Shortest path(s)
-     * from " + unit + outsrc.getActor(i).getName() + it + " to " + unit +
-     * outsrc.getActor(j).getName() + it + ":" + unit; out += ol + li; for (k =
-     * 0; k < lmax; k++) { kchar = outarray[i][j].charAt(k); out +=
-     * blanc+blanc+blanc; // node separation if (kchar == (char)255) { //out +=
-     * lb ; // path separation if (k < lmax-1) { out += unli; out += li; } }
-     * else { try { //out += "\t" + String.valueOf((int)kchar + 1); out +=
-     * outsrc.getActor((int)kchar).getName(); } catch(Exception e) { } } } out +=
-     * unli + unol + blanc; } } } if (no_geodesic) { out += lb + it + "No
-     * geodesic path found in this network." + unit + lb; } return out; }
-     */
+    
 
     // string-based;
-    /*
-     * public static String outShortestPathsOLD(Network outsrc, int i_from, int
-     * i_to) { AgnaLib(); String out = new String(""); String path; int size =
-     * outsrc.getSize(); char kchar; Vector sp = shortestPaths(outsrc, i_from,
-     * i_to); if (sp.size() < 1 || i_from == i_to) return null; out = it + bold +
-     * "Shortest Path(s)" + unbold + " from node "+ unit +
-     * outsrc.getActor(i_from).getName() + it + " to node " + unit +
-     * outsrc.getActor(i_to).getName() + lb; //out += ol; for (int i = 0; i <
-     * sp.size(); i++) { //out += li + blanc+blanc+blanc; // node separation out +=
-     * lb + blanc + blanc + blanc + blanc + blanc + "*" + blanc; path =
-     * (String)sp.elementAt(i); if (path != null && path.length() > 1) { for
-     * (int k = 0; k < path.length(); k++) { kchar = path.charAt(k); try { out +=
-     * outsrc.getActor((int)kchar).getName(); out += blanc + blanc + blanc; }
-     * catch(Exception e) { } } // end for k } // end if //out += unli; } // end
-     * for i //out += unol; out += lb; return out; }
-     */
+    
 
     public String outShortestPaths(Network outsrc, int i_from, int i_to)
         {
@@ -1713,10 +1619,7 @@ import java.util.Vector;
                     + "list is incomplete." + unit);
         out.append(lb);
 
-        /*
-         * Clique my_clique = new Clique();
-         * out.append(my_clique.cliquesMain(outsrc, clique_diameter));
-         */
+        
         return out.toString();
         }
 
@@ -1960,11 +1863,7 @@ import java.util.Vector;
 
         outarray = null;
 
-        /*
-         * if (AppRuntime.getCurrentWeight()) { out += it + bold + "Weighted
-         * Bavelas-Leavitt Centrality Statistics" + unbold + unit; out += lb +
-         * outStatistics(outrecwei, false); outrecwei = null; }
-         */
+        
         return out.toString();
         }
 
@@ -2261,27 +2160,7 @@ import java.util.Vector;
         }
 
     // generates a description of the newly opened chain:
-    /*
-     * public String outOpenChainSummaryOLD(Network outsrc) { //AgnaLib(); int size =
-     * outsrc.getSize(); StringBuffer out = new StringBuffer(""); int[]
-     * frequencies = openChainSummary(outsrc); float[] probabilities =
-     * frequenciesToProbabilities(frequencies); out.append(it + "New network
-     * created from chain file." + unit); out.append(lb + it + bold + "Network
-     * name: " + unbold + unit + outsrc.getName()); out.append(lb + it + bold +
-     * "Number of sequence codes identified: " + unbold + unit +
-     * String.valueOf(size)); out.append(lb + it + bold + "Chain summary:" +
-     * unbold + unit); out.append(lb + table + tr); out.append(td + it +
-     * "Sequence code" + unit + untd + td + it + "Frequency" + unit + untd + td +
-     * it + "Probability" + unit + untd + untr); for (int i = 0; i < size; i++) {
-     * out.append(tr); out.append(td + it + outsrc.getActor(i).getName() + unit +
-     * untd + td + String.valueOf(frequencies[i]) + untd + td +
-     * String.valueOf(probabilities[i]) +untd); out.append(untr); }
-     * out.append(untable); // generating statistics: out.append(it + bold +
-     * "Sequence Frequency Statistics" + unbold + unit); out.append(lb +
-     * outStatistics(frequencies, false)); out.append(it + bold + "Sequence
-     * Probability Statistics" + unbold + unit); out.append(lb +
-     * outStatistics(probabilities, false)); return out.toString(); }
-     */
+    
 
     // computes the network cohesion index:
     // divides the number of mutual choices in a binary directed matrix
@@ -3272,17 +3151,6 @@ import java.util.Vector;
         return out.toString();
         }
 
-    /*
-     * private void doNap() { try { Thread.sleep(400); } catch(Exception e) {}
-     * ProgressDialog tmp_pd = MainFrame.getCurrentProgressDialog(); if (tmp_pd ==
-     * null || tmp_pd.getStop()) {
-     * AppRuntime.getDialogParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-     * MainFrame.setCurrentStatus(MainFrame.default_status);
-     * //tmp_pd.setPercent(-1); if (Thread.currentThread() != null) { Thread
-     * tmp_thread = Thread.currentThread(); if (tmp_thread.isAlive()) { try {
-     * tmp_pd.stopPane(); tmp_thread.interrupt(); tmp_thread = null; } catch
-     * (Exception e) { } } } } else { tmp_pd.setPercent(tmp_pd.getPercent() +
-     * 20); } }
-     */
+    
 
     }

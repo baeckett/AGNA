@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import com.bentza.sna.Agna;
@@ -33,11 +38,7 @@ class AboutBox
                     }
 
                 // url button listener:
-                /*
-                 * if (e.getSource()==url_button) {
-                 * BrowserControl.displayURL(MainFrame.getApplicationUrl());
-                 * //n_frame.dispose(); //n_frame = null; }
-                 */
+                
                 }
         };
 

@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.net;
 
 import com.bentza.sna.AgnaLog;
@@ -642,13 +647,7 @@ public class NodeArea extends JButton implements MouseListener,
             return;
         scale_factor = ((float) tmp_width / area_width);
         this.area_width = tmp_width;
-        /*
-         * for (int i=0; i<nodes_count; i++) {
-         * //my_nodes[i].moveActor((int)((float)my_nodes[i].getX(area_width)*scale_factor),
-         * (int)((float)my_nodes[i].getY(area_width)*scale_factor), area_width,
-         * false); my_nodes[i].setX(scale_factor * my_nodes[i].getX());
-         * my_nodes[i].setY(scale_factor * my_nodes[i].getY()); }
-         */
+        
         background_image_x = (int) ((float) background_image_x * scale_factor);
         background_image_y = (int) ((float) background_image_y * scale_factor);
         background_image_width = (int) ((float) background_image_width * scale_factor);
@@ -1635,18 +1634,7 @@ public class NodeArea extends JButton implements MouseListener,
                 }
             return;
             }
-        /*
-         * int x,y,i, mx, my, ms; x=e.getX(); y=e.getY(); if (selected_node >=
-         * 0) { ms=my_nodes[selected_node].node_size; } else
-         * ms=my_nodes[0].node_size; this.selected_node= -1; for (i=0;i<nodes_count;i++) {
-         * mx=my_nodes[i].getX(area_width); my=my_nodes[i].getY(area_width); if
-         * (mx <= x && x <= mx + ms && my <= y && y <= my + ms) {
-         * this.selected_node=i; this.validate(); small_x=x-mx; small_y=y-my;
-         * AppRuntime.setHTMLStatus("<html><font size = 2
-         * face='Arial,Helvetica,Verdana,sans-serif'>" + my_nodes[i].name+" -
-         * Current position: ( " + String.valueOf(mx)+" , " + String.valueOf(my) +" )
-         * "); break; } }
-         */
+        
         if (second_selected >= 0 && allow_ES)
             {
             try
@@ -1703,28 +1691,7 @@ public class NodeArea extends JButton implements MouseListener,
         return;
         }
 
-    /*
-     * public void mouseMoved(MouseEvent e) { int x,y,i,nx,ny,ns; x=e.getX();
-     * y=e.getY(); for (i=0;i<nodes_count;i++) { ns=my_nodes[i].getSize();
-     * nx=my_nodes[i].getX(area_width); ny=my_nodes[i].getY(area_width); if (nx <=
-     * x && x <= nx + ns && ny <= y && y <= ny + ns) { // we are in actor zone
-     * colored_node=i; status_bar.setText("<html><font size=2
-     * face='Arial,Helvetica,Verdana,sans-serif'>" + my_nodes[i].name);
-     * this.setToolTipText(my_nodes[i].name); repaint(); break; } else {
-     * colored_node=-1; if (colorize) { if (selected_node >= 0) {
-     * status_bar.setText("<html><font size=2
-     * face='Arial,Helvetica,Verdana,sans-serif'>" +
-     * my_nodes[selected_node].name + " - Use ALT + arrow keys to change
-     * position."); if (second_selected >= 0) status_bar.setText("<html><font
-     * size = 2 face='Arial,Helvetica,Verdana,sans-serif'>Edge selected: <font
-     * size = 2 color='#298C8C' face='Arial,Helvetica,Verdana,sans-serif'>" +
-     * String.valueOf(my_nodes[second_selected].name) + " </font> --> <font size =
-     * 2 color='#298C8C'> " + String.valueOf(my_nodes[selected_node].name) + "
-     * </font>. Edge Value: <font size = 2 color='#298C8C'>" +
-     * String.valueOf(AppRuntime.getCurrentNetwork().getValue(second_selected,
-     * selected_node))); } else status_bar.setText(default_status); repaint();
-     * colorize=false; } } } }
-     */
+    
 
     public void mouseMoved(MouseEvent e)
         {

@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import java.awt.Color;
@@ -157,11 +162,7 @@ class AgnaTable extends JTable
             String from_to = "Cell: " + MainFrame.getNodeName(row) + " --> "
                     + MainFrame.getNodeName(col);
 
-            /*
-             * XX: String from_to ="Cell: " +
-             * MainFrame.getVerticalHeaderName(row) + " --> " +
-             * MainFrame.getHorizontalHeaderName(col);
-             */
+            
             if (row == col)
                 {
                 return "<html><font size = 2 face='Arial,Helvetica,Verdana,sans-serif' color='red'>"
@@ -231,10 +232,5 @@ class AgnaTable extends JTable
         editor = null;
         }
 
-    /*
-     * public String getToolTipText(MouseEvent e) { if (e == null) return null;
-     * int where = whereAreWe(e.getX(), e.getY()); if (where == -1) return null;
-     * else return my_nodes[where].name; } public Class getColumnClass(int
-     * column) { if (column < 1) { return String.class; } return Integer.class; }
-     */
+    
     }

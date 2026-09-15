@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.net;
 
 import com.bentza.sna.AgnaLog;
@@ -84,11 +89,7 @@ face_item = getImageStockInstance().requestImageItem(AppRuntime
         emissions = new float[tmp_net_size];
         }
 
-    /*
-     * public Actor(String tmp_name, String tmp_face_source) { grid_space=40;
-     * name=tmp_name; face_item = image_stock.requestImageItem(tmp_face_source);
-     * setSize(); }
-     */
+    
     public void createCoordinates()
         {
         xy = new NodeXY();
@@ -256,9 +257,7 @@ face_item = getImageStockInstance().requestImageItem(AppRuntime
         return face_item.image_icon;
         }
 
-    /*
-     * public void setFaceSource(String tmp_source) { face_source = tmp_source; }
-     */
+    
 
     public String getFaceSource()
         {

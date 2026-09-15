@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import com.bentza.sna.AgnaLog;
@@ -560,12 +565,7 @@ public class AgnaTextPane extends JTextPane
             }
         }
 
-    /*
-     * private String getContextLineBreak() { String cont =
-     * this.getContentType(); if (cont.equals("text/plain") ||
-     * cont.equals("text")) { return "\n"; } if (cont.equals("text/html")) {
-     * return "<br>"; } return null; }
-     */
+    
 
     // End of class
     }

@@ -11,7 +11,8 @@ licences below govern the third-party components only.
 - Resolved from Maven Central (`org.apache.poi:poi`).
 - Licence: Apache License 2.0.
 - Transitive dependencies (all Apache License 2.0): commons-codec,
-  commons-collections4, commons-math3, SparseBitSet, log4j-api.
+  commons-collections4, commons-math3, commons-io, SparseBitSet,
+  log4j-api.
 
 ## FlatLaf
 

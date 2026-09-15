@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import javax.swing.JButton;
@@ -30,13 +35,5 @@ public class HeaderButtonFactory
         return button;
         }
 
-    /*
-     * public static VerticalHeaderButton requestButtonOLD(ImageIcon icon,
-     * Dimension button_dim) { if (icon == null) icon = new ImageIcon();
-     * VerticalHeaderButton button =
-     * (VerticalHeaderButton)buttons_by_icon.get(icon); if(button == null) {
-     * button = new VerticalHeaderButton(icon, button_dim);
-     * buttons_by_icon.put(icon, button); System.out.println("Creating button"); }
-     * return button; }
-     */
+    
     }

@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import com.bentza.sna.AgnaLog;
@@ -1441,22 +1446,7 @@ public class MainFrame //
             }
         }
 
-    /*
-     * private void doOpenOutputOLD() { File file=new File("."); JFileChooser
-     * chooser=new JFileChooser(); chooser.setDialogTitle("Open Existing Output
-     * File"); //chooser.setSelectedFile(file);
-     * chooser.setCurrentDirectory(file);
-     * chooser.setMultiSelectionEnabled(false);
-     * chooser.setApproveButtonToolTipText("Select file and click here");
-     * chooser.addChoosableFileFilter(new OutputFilesFilter()); int return_val =
-     * chooser.showOpenDialog(null); if (return_val ==
-     * JFileChooser.CANCEL_OPTION) return; file=chooser.getSelectedFile(); str =
-     * ""; try { FileInputStream inputStream = new
-     * FileInputStream(file.getCanonicalPath()); int b = 0; while(b != -1) { b =
-     * inputStream.read(); str += (char)b; } inputStream.close();
-     * output_edit.setCaretPosition(output_edit.getText().length());
-     * output_edit.replaceSelection(str); } catch(Exception esc) { } }
-     */
+    
 
     private void doOpenOutput() // new version
         {
@@ -3456,11 +3446,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 {
                 my_grid.setValueAt(String.valueOf(tmp_network.getValue(i, j)),
                         i, j);
-                /*
-                 * if (i != j)
-                 * my_grid.setValueAt(String.valueOf(tmp_network.getValue(i,j)),i,j);
-                 * else my_grid.setValueAt("0.0",i,j);
-                 */
+                
                 }
             }
         MainFrame.setTableHeaders();

@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import com.bentza.sna.AgnaLog;
@@ -114,10 +119,7 @@ public class VerticalToolBar extends JPanel
         {
             public void focusLost(FocusEvent e)
                 {
-                /*
-                 * if (e.getSource()==search_field) { // begin search
-                 * doManageSearch(); }
-                 */
+                
                 }
 
             public void focusGained(FocusEvent e)
@@ -362,10 +364,7 @@ public class VerticalToolBar extends JPanel
 
                             } // end while
 
-                    /*
-                     * if (pd.getStop()) { this.undecorate(); return; // exit
-                     * without reading network }
-                     */
+                    
 
                     if (!at_least_one_node_found)
                         {

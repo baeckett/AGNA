@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import javax.swing.*;
@@ -67,9 +72,7 @@ public class VerticalHeaderButton extends JButton
         return (int) ((float) (this.getY() - min_y) / h);
         }
 
-    /*
-     * public String getToolTipText() { return super.getText(); }
-     */
+    
 
     // buttons's actionlistener:
     private ActionListener act_button = new ActionListener()

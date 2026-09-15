@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.gui;
 
 import com.bentza.sna.AgnaLog;
@@ -2087,9 +2092,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         if (up)
             { // separation cannot be bigger than 16
             // or less than zero
-            /*
-             * if (new_s>=16) {return;}
-             */
+            
             new_s++;
             } else
             {
@@ -2153,11 +2156,13 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         my_area.repaint();
         }
 
+    
     /**
      * static method allowing to change the selected actor; not to be placed in
      * threads!
      */
     public static void doSelectActor(int tmp_index) // select next node
+    
         {
         if (my_area.selectActor(tmp_index))
             {
@@ -2492,17 +2497,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 }
         };
 
-    /*
-     * private MouseAdapter adapt_area_clicked = new MouseAdapter() { public
-     * void mouseClicked(MouseEvent e) { if (e.getClickCount() > 1) { if
-     * (my_area.getSelectedActor() < 10000) { // double-click inside node: int
-     * selnode = my_area.getSelectedActor(); Node candidate =
-     * my_area.my_nodes[selnode]; if (node_dialog == null) { node_dialog = new
-     * NodeSettingsDialog(candidate, selnode); node_dialog.showDialog(); } //
-     * node_dialog = null; } else { // double-click outside node: try { int x =
-     * e.getX(); int y = e.getY(); doAddNodeHere(x, y, my_area.getWidth()); }
-     * catch (Exception exc) {} } } } };
-     */
+    
 
     // block to be used in act_area_clicked and constructor:
     public static void enableFirst()
@@ -2608,15 +2603,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     }
                 doManageEnablingComponents(e, second_unsolved);
 
-                /*
-                 * if (my_area.getSelectedActor() >=0) // if end-node is
-                 * selected { enableFirst(); if (my_area.getSecondSelected() >=
-                 * 0) // if start-node is selected { enableSecond(); if
-                 * (e.getSource()==e_set_edge) { doChangeEdgeValue(); } if
-                 * (second_unsolved && e.getSource()==n_select_next_arrow) {
-                 * doSelectNextArrow(); } } else { disableSecond(); } } else {
-                 * disableFirst(); }
-                 */
+                
                 }
         };
 

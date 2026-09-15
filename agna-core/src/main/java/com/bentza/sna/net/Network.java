@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.net;
 
 import com.bentza.sna.AgnaLog;
@@ -230,16 +235,7 @@ public class Network
         tmp_node.setEmissionsValue(tmp_value, j);
         }
 
-    /*
-     * public void setStringValue(String tmp_value, int i, int j) // schimba
-     * valoarea elementului (i,j) din matricea retelei { Actor tmp_node=new
-     * Actor(); tmp_node=(Actor)all_nodes.elementAt(i);
-     * tmp_node.setStringEmissionsValue(tmp_value, j); } public void
-     * setStringValue(Object tmp_value, int i, int j) // schimba valoarea
-     * elementului (i,j) din matricea retelei { Actor tmp_node=new Actor();
-     * tmp_node=(Actor)all_nodes.elementAt(i);
-     * tmp_node.setStringEmissionsValue(tmp_value, j); }
-     */
+    
 
     public void setObjectValue(Object tmp_value, int i, int j) // schimba
                                                                 // valoarea
@@ -807,9 +803,7 @@ public class Network
                 } catch (Exception e) {
       AgnaLog.warn("suppressed exception", e);
       }
-            /*
-             * if (getActor(i) != null) { getActor(i).addEmissionsElement(); }
-             */
+            
             }
         }
 

@@ -1,0 +1,12 @@
+AGNA - Applied Graph and Network Analysis Open Source
+
+Copyright 2001-2026 Marius Ion Bența.
+
+This product includes software developed by the AGNA project:
+https://www.netanalysis.co.uk
+
+This distribution is licensed under the Apache License, Version 2.0
+(see LICENSE). Third-party components bundled with the distribution
+retain their own license and notice files (META-INF/NOTICE within the
+distributed jars); the full component list is maintained in
+THIRD_PARTY_NOTICES.md.

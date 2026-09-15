@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2001-2026 Marius Ion Bența
+ */
+
 package com.bentza.sna.net;
 
 import java.util.Vector;
@@ -156,9 +161,7 @@ class IntList // ordered list of integers;
             return;
         first = null;
         
-        /*
-         * while (first.next != null) { deleteElementAt(0); } first.setValue(0);
-         */
+        
 
         }
 
