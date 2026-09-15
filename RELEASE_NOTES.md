@@ -86,7 +86,7 @@ DOI: 10.5281/zenodo.22708199 — see CITATION.cff / CITATION.bib
 - `AGNA-2.1.3-cli.zip` — CLI jar + reference + man page + completions
 - `AGNA-2.1.3-core.jar` (+ sources jar)
 - `AGNA-2.1.3-Linux-x64.tar.gz` — self-contained Linux archive
-- `AGNA-2.1.3-3-linux-setup.deb` — Debian/Ubuntu installer (bundled runtime,
+- `AGNA-2.1.3-3-linux-amd64-setup.deb` — Debian/Ubuntu installer (bundled runtime,
   installs to `/opt/agna` with an `agna` launcher on the PATH)
 - macOS (.dmg) and Windows installers are built on their platforms from
   the recipes in `packaging/`

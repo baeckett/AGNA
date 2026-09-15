@@ -78,12 +78,16 @@ All installers bundle the Java runtime; no separate Java installation is
 needed. Choose your platform from the
 [latest release](https://github.com/baeckett/AGNA/releases):
 
-- **Windows** — [setup (.msi)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-setup.msi) ·
-  [setup (.exe)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-setup.exe)
-- **macOS** — [setup (.dmg)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-2-macos-setup.dmg)
-- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-setup.deb) ·
-  [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-setup.rpm) ·
+- **Windows** — [setup (.msi)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-x64-setup.msi) ·
+  [setup (.exe)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-x64-setup.exe)
+- **macOS** — [setup (.dmg)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-2-macos-arm64-setup.dmg)
+- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-amd64-setup.deb) ·
+  [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-amd64-setup.rpm) ·
   [portable x64 archive](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-Linux-x64.tar.gz)
+
+All installers are 64-bit: **Windows x64**, **macOS arm64** (Apple Silicon),
+**Linux amd64**. The macOS dmg runs on M-series Macs; an Intel-macOS build
+can be produced with an x64 JDK if needed.
 
 Users with Java 17+ can also run the self-contained desktop jar directly:
 
