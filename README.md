@@ -1,5 +1,10 @@
 # AGNA
 
+[![CI](https://github.com/baeckett/AGNA/actions/workflows/ci.yml/badge.svg)](https://github.com/baeckett/AGNA/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
+![AGNA 2.1.3 on macOS: sociomatrix grid, analysis report, and Network Viewer](website/assets/Agna_screenshot_macos.png)
+
 **AGNA — Applied Graph and Network Analysis Open Source** — is free desktop
 and command-line software for **social network analysis, sociometry, and
 sequential analysis**. It is designed for researchers, teachers, and students

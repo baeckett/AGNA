@@ -17,8 +17,8 @@ jpackage is not a cross-compiler.
        --dest dist \
        --icon packaging/Agna.icns \
        --java-options "-Xmx1024M" \
-       --vendor "Marius Ion Benta" \
-       --copyright "Copyright 2001-2026 Marius Ion Benta" \
+       --vendor "Marius Ion Bența" \
+       --copyright "Copyright 2001-2026 Marius Ion Bența" \
        --about-text "Agna 2.1.3 - Applied Graph & Network Analysis Open Source. Licensed under the Apache License, Version 2.0. Website: https://www.netanalysis.co.uk"
 
    This produces dist/Agna-2.1.3.dmg with an embedded JRE - no Java install

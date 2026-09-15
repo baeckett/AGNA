@@ -97,6 +97,20 @@ High-Risk Activities Disclaimer).
 - `docs/sbom/AGNA-2.1.3-SBOM.json` — CycloneDX 1.4 aggregate SBOM.
 - `docs/sbom/AGNA-2.1.3-SPDX.json` — SPDX 2.2 variant (ISO/IEC 5962),
   converted from the same dependency graph.
+### SBOM diff for this release
+
+| | First BOM (audit baseline) | Final BOM |
+|---|---|---|
+| Format | CycloneDX 1.4 | CycloneDX 1.4 + SPDX 2.2 |
+| Components | 9 | 14 (all Apache License 2.0) |
+| Non-permissive licenses | LGPL (JExcelAPI/jxl 2.6.12) | none |
+| Known-vulnerable EOL component | log4j 1.2.14 (transitive of jxl) | none (log4j-api 2.23.1, Apache-2.0) |
+| Excel `.xls` stack | JExcelAPI (LGPL) | Apache POI 5.3.0 (with commons-codec,
+  commons-collections4, commons-math3, commons-io, SparseBitSet) |
+
+The `sbom-gate` CI job now enforces the Apache-2.0-only policy; the gate
+allowlist contains no other license.
+
 - Both are attached on the release page; the `sbom-gate` CI job fails the
   build when a component's license is not allowlisted or a banned/
   SNAPSHOT component appears. All runtime dependencies are Apache License
