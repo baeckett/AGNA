@@ -1,5 +1,14 @@
 # Building the macOS and Windows installers
 
+Ready-made scripts in `packaging/` drive the builds below:
+`build-macos.command` (macOS dmg), `build-windows.cmd` (Windows msi),
+`build-linux.sh` (Linux deb/rpm, `[deb|rpm|both]`). The Linux `.deb` is
+prebuilt and attached to each release; tag pushes also build the Linux and
+Windows installers automatically in the `linux-packages` and
+`windows-installer` CI workflows.
+
+The steps below are the scripts' manual equivalents.
+
 AGNA Desktop is packaged into native installers with **jpackage** (JDK 17+).
 Nothing here needs to run in a continuous-integration service — each
 installer is built **on its own operating system** (jpackage cannot
