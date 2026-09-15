@@ -99,7 +99,8 @@ High-Risk Activities Disclaimer).
   converted from the same dependency graph.
 - Both are attached on the release page; the `sbom-gate` CI job fails the
   build when a component's license is not allowlisted or a banned/
-  SNAPSHOT component appears. The dependency on log4j 1.2.14 (transitive
-  of jxl, end-of-life, known CVEs) was removed via exclusion; the optional
+  SNAPSHOT component appears. All runtime dependencies are Apache License
+  2.0: the Excel `.xls` path moved from JExcelAPI (LGPL) to Apache POI,
+  which also removed the end-of-life log4j 1.x transitive. The optional
   OWASP NVD scan runs locally with `mvn -Psbom-gate verify
   -Ddependency-check.skip=false`.

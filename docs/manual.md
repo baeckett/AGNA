@@ -258,7 +258,7 @@ Open Network):
 | Agna | `.agn` | native format, preserves faces, coordinates, viewer settings |
 | Plain text | `.txt`, `.csv` | tab- or comma-separated matrices; CSV quotes node names |
 | Pajek | `.net` | the classic SNA format (Gephi-friendly export) |
-| Excel | `.xls`, `.xlsx` | JExcelAPI (`.xls`) and the built-in `.xlsx` reader |
+| Excel | `.xls`, `.xlsx` | Apache POI (`.xls`) and the built-in `.xlsx` reader |
 | GraphML | `.graphml` | XML graph format of Gephi, NetworkX, igraph, Cytoscape |
 | GML | `.gml` | the classic text format of igraph / NetworkX |
 | GraphSON | `.json` | JSON graph format (TinkerPop family, Gephi, Cytoscape) |

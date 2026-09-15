@@ -4,14 +4,14 @@ This project builds on the following third-party components. AGNA itself is
 licensed under the Apache License 2.0 (see LICENSE and the README); the
 licences below govern the third-party components only.
 
-## JExcelAPI (jxl)
+## Apache POI
 
-- Component: MS Excel read/write library, used for the Excel export feature.
-- Version: 2.6.12, resolved from Maven Central
-  (`net.sourceforge.jexcelapi:jxl`).
-- Licence: GNU Lesser General Public License (LGPL).
-- Note: the original 2.1.2 archive bundled `jxl.jar` 2.5.1 with the same API;
-  the dependency was upgraded to the last published 2.6.12 release.
+- Component: MS Excel `.xls` (HSSF) read/write library, used for the Excel
+  import/export feature.
+- Resolved from Maven Central (`org.apache.poi:poi`).
+- Licence: Apache License 2.0.
+- Transitive dependencies (all Apache License 2.0): commons-codec,
+  commons-collections4, commons-math3, SparseBitSet, log4j-api.
 
 ## FlatLaf
 

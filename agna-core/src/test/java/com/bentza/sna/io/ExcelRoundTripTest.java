@@ -13,15 +13,13 @@ import org.junit.jupiter.api.Test;
 
 import com.bentza.sna.net.FullNet;
 
-import jxl.Cell;
-import jxl.NumberCell;
-import jxl.Sheet;
-import jxl.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 /**
  * 2.1.3: the Excel export must produce a workbook that round-trips: same
  * sheet name, same node names on the header row and column, and identical
- * sociomatrix values, readable by JExcelAPI itself.
+ * sociomatrix values, readable by Apache POI itself.
  */
 public class ExcelRoundTripTest
     {
@@ -34,7 +32,7 @@ public class ExcelRoundTripTest
         }
 
     @Test
-    public void excelExportRoundTripsThroughJExcelApi() throws Exception
+    public void excelExportRoundTripsThroughApachePoi() throws Exception
         {
         FullNet full_net = new FullNet();
         full_net.readNetwork(readSample("4 full.txt"), "txt");
@@ -48,27 +46,27 @@ public class ExcelRoundTripTest
                 xls.getAbsolutePath());
         assertNull(error, "export must succeed: " + error);
 
-        Workbook wb = Workbook.getWorkbook(xls);
+        HSSFWorkbook wb = new HSSFWorkbook(
+                new java.io.FileInputStream(xls));
         try
             {
-            Sheet sheet = wb.getSheet(0);
+            HSSFSheet sheet = wb.getSheetAt(0);
             assertNotNull(sheet);
-            assertEquals(full_net.getNetwork().getName(), sheet.getName());
+            assertEquals(full_net.getNetwork().getName(),
+                    sheet.getSheetName());
 
             final int nn = full_net.getNetwork().getSize();
             final float[][] mat = full_net.getNetwork().getMatrix();
             for (int i = 0; i < nn; i++)
                 {
-                Cell name_h = sheet.getCell(i + 1, 0);
-                Cell name_v = sheet.getCell(0, i + 1);
                 assertEquals(full_net.getNetwork().getActorName(i),
-                        name_h.getContents());
+                        sheet.getRow(0).getCell(i + 1).getStringCellValue());
                 assertEquals(full_net.getNetwork().getActorName(i),
-                        name_v.getContents());
+                        sheet.getRow(i + 1).getCell(0).getStringCellValue());
                 for (int j = 0; j < nn; j++)
                     {
-                    Cell cell = sheet.getCell(j + 1, i + 1);
-                    double value = ((NumberCell) cell).getValue();
+                    double value = sheet.getRow(i + 1).getCell(j + 1)
+                            .getNumericCellValue();
                     assertEquals(mat[i][j], value, 1e-6,
                             "cell (" + i + "," + j + ")");
                     }

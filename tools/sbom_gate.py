@@ -25,19 +25,11 @@ import sys
 # Groups that belong to this project and are always acceptable.
 OWN_GROUPS = {"com.bentza.sna"}
 
-# License IDs (SPDX) or exact declared names that are acceptable for
-# runtime and test dependencies. LGPL-2.1 appears through jxl (the Excel
-# writer); its notice obligations are documented in THIRD_PARTY_NOTICES.md.
+# License IDs (SPDX) acceptable for runtime dependencies. All runtime
+# dependencies are Apache License 2.0 by policy (the Excel .xls path moved
+# from JExcelAPI/LGPL to Apache POI); anything else fails the gate.
 ALLOWED_LICENSE_IDS = {
-    "Apache-2.0", "MIT", "BSD-2-Clause", "BSD-3-Clause", "ISC",
-    "EPL-1.0", "EPL-2.0",
-    "LGPL-2.1-only", "LGPL-2.1-or-later", "LGPL-3.0-only", "LGPL-3.0-or-later",
-    "MPL-2.0", "Zlib",
-}
-ALLOWED_LICENSE_NAMES = {
-    "GNU Lesser General Public License",          # jxl's declared name
-    "GNU Lesser General Public License v2.1",
-    "Common Development and Distribution License 1.0",  # EPL-adjacent legacy
+    "Apache-2.0",
 }
 
 # Banned coordinates: group:artifact (any version). log4j 1.x is
@@ -87,7 +79,7 @@ def main():
             failures.append(f"{coordinate}: SNAPSHOT/range version")
             continue
         license = license_of(c)
-        ok = license in ALLOWED_LICENSE_IDS or license in ALLOWED_LICENSE_NAMES
+        ok = license in ALLOWED_LICENSE_IDS
         if not ok:
             failures.append(
                 f"{coordinate}: license {license!r} not in allowlist "

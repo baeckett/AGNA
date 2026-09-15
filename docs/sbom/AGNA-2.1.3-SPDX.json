@@ -3,14 +3,14 @@
   "spdxVersion": "SPDX-2.2",
   "creationInfo": {
     "comment": "This SPDX document has been converted from CycloneDX format.",
-    "created": "2026-09-15T09:47:34Z",
+    "created": "2026-09-15T10:01:04Z",
     "creators": [
       "Tool: CycloneDX Maven plugin-2.7.10"
     ]
   },
   "name": "com.bentza.sna agna-2.1.3",
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "http://spdx.org/spdxdocs/com.bentza.sna agna-2.1.3-c0e5c91d-8ae4-44f8-a99e-c44a8bc09aa5",
+  "documentNamespace": "http://spdx.org/spdxdocs/com.bentza.sna agna-2.1.3-239dd0b0-e703-4bfa-a397-4d138d105757",
   "packages": [
     {
       "SPDXID": "SPDXRef-pkg:maven/com.bentza.sna/agna-core@2.1.3?type=jar",
@@ -143,41 +143,270 @@
       "versionInfo": "2.17.1"
     },
     {
-      "SPDXID": "SPDXRef-pkg:maven/net.sourceforge.jexcelapi/jxl@2.6.12?type=jar",
+      "SPDXID": "SPDXRef-pkg:maven/org.apache.poi/poi@5.3.0?type=jar",
       "checksums": [
         {
           "algorithm": "MD5",
-          "checksumValue": "62f8a643ebd1ffcf891b51778dc37565"
+          "checksumValue": "03fe04731115d9a90fa3394eef25db26"
         },
         {
           "algorithm": "SHA1",
-          "checksumValue": "7faf62e0697f7a88954622dfe8c8de33ed142ac7"
+          "checksumValue": "0a26d24e85a2440d7b76d2ddd187abb0ee7c056e"
         },
         {
           "algorithm": "SHA256",
-          "checksumValue": "c5c53645ab751288398f30adaec5551879c5ee334d4862ea77b25a386646621c"
+          "checksumValue": "d514ebff22327762d38f551b6d1d78bb764770afd8d37546387ca41790323fef"
         },
         {
           "algorithm": "SHA512",
-          "checksumValue": "faa2bd94c5ad0139f9c01175da34b34c3aea84d3741b5a3ad95fa348f52200696133ab92e2d9bff2415ca7803c381a2321be2e6b8b7e5867e84c3b14512a4dc6"
+          "checksumValue": "e240b1726155e9a262377bdd2b50558f7cd8b780eeb506f2163df79c083126149790ecc9353ba0253d254bd3b8c7949ea1f009f49f979117ec578f67b40a1115"
         },
         {
           "algorithm": "SHA384",
-          "checksumValue": "ddf995337cf424be0270f9ccc7cce63d3c5a33a0209c4f963181cb9d7513dc51523337d2293dc67155c576cd6566f5fd"
+          "checksumValue": "55286fcc45995298dad027e82b20a6c9762fa71fad1dcd6bc3bfc898d48c072a86bed68f99d890022bb4833cbda788cb"
         }
       ],
       "copyrightText": "NOASSERTION",
-      "description": "JExcelApi is a java library which provides the ability to read, write, and modify Microsoft Excel spreadsheets.",
+      "description": "Apache POI - Java API To Access Microsoft Format Files",
       "downloadLocation": "NOASSERTION",
       "homepage": "NOASSERTION",
       "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
       "licenseInfoFromFiles": [
         "NOASSERTION"
       ],
-      "name": "jxl",
+      "name": "poi",
       "originator": "NOASSERTION",
       "supplier": "NOASSERTION",
-      "versionInfo": "2.6.12"
+      "versionInfo": "5.3.0"
+    },
+    {
+      "SPDXID": "SPDXRef-pkg:maven/commons-codec/commons-codec@1.17.0?type=jar",
+      "checksums": [
+        {
+          "algorithm": "MD5",
+          "checksumValue": "ca1f080782f7e77cb3aec451e7a7f02d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0dbe8eef6e14460e73da07f7b11bf994d6626355"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f700de80ac270d0344fdea7468201d8b9c805e5c648331c3619f2ee067ccfc59"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cb9c3b2055d0b31d106293f0bc3696f90a11a30953e5b05a1a3c453e98a563475c93d7c6d1707e75f59d0806fba5fd8e4486b8bd72e58bb6ae995bdbbeeb7e17"
+        },
+        {
+          "algorithm": "SHA384",
+          "checksumValue": "a0fd174b2f8a21b43828371a7ee03c915b79e69d7b0e16cfe6367f794e2f8e6bbebc261e8a4ba35a79779b2338a774a4"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "description": "The Apache Commons Codec component contains encoder and decoders for various formats such as Base16, Base32, Base64, digest, and Hexadecimal. In addition to these widely used encoders and decoders, the codec package also maintains a collection of phonetic encoding utilities.",
+      "downloadLocation": "NOASSERTION",
+      "homepage": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "name": "commons-codec",
+      "originator": "NOASSERTION",
+      "supplier": "NOASSERTION",
+      "versionInfo": "1.17.0"
+    },
+    {
+      "SPDXID": "SPDXRef-pkg:maven/org.apache.commons/commons-collections4@4.4?type=jar",
+      "checksums": [
+        {
+          "algorithm": "MD5",
+          "checksumValue": "4a37023740719b391f10030362c86be6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "62ebe7544cb7164d87e0637a2a6a2bdc981395e8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5939c9931eb9557caee3b45fe1dd9ce54cabdc4e6182ed7faac77e1a866dd0cb602bfa4ece2f3316d769913366106bd2b61bf3bb5faad1fa7d808124c06dec0f"
+        },
+        {
+          "algorithm": "SHA384",
+          "checksumValue": "74059fd8f61c366ed448e102256fdbd1db0d690501c2c296c80f3657a2c0d8ade3dd9533b1431cc29786bbb624195f46"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "description": "The Apache Commons Collections package contains types that extend and augment the Java Collections Framework.",
+      "downloadLocation": "NOASSERTION",
+      "homepage": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "name": "commons-collections4",
+      "originator": "NOASSERTION",
+      "supplier": "NOASSERTION",
+      "versionInfo": "4.4"
+    },
+    {
+      "SPDXID": "SPDXRef-pkg:maven/org.apache.commons/commons-math3@3.6.1?type=jar",
+      "checksums": [
+        {
+          "algorithm": "MD5",
+          "checksumValue": "5b730d97e4e6368069de1983937c508e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e4ba98f1d4b3c80ec46392f25e094a6a2e58fcbf"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8bc2438b3b4d9a6be4a47a58410b2d4d0e56e05787ab24badab8cbc9075d61857e8d2f0bffedad33f18f8a356541d00f80a8597b5dedb995be8480d693d03226"
+        },
+        {
+          "algorithm": "SHA384",
+          "checksumValue": "95d1186d9ca06a3ea2e6437ddec3a55698e2493d3e72f6f554746b74fa929892bd71a2ab501a4e7b1ce56b7cd64e7ab4"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "description": "The Apache Commons Math project is a library of lightweight, self-contained mathematics and statistics components addressing the most common practical problems not immediately available in the Java programming language or commons-lang.",
+      "downloadLocation": "NOASSERTION",
+      "homepage": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "name": "commons-math3",
+      "originator": "NOASSERTION",
+      "supplier": "NOASSERTION",
+      "versionInfo": "3.6.1"
+    },
+    {
+      "SPDXID": "SPDXRef-pkg:maven/commons-io/commons-io@2.16.1?type=jar",
+      "checksums": [
+        {
+          "algorithm": "MD5",
+          "checksumValue": "ed8191a5a217940140001b0acfed18d9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "377d592e740dc77124e0901291dbfaa6810a200e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "97eab31b073c5c57c8bcfaa2fec7b481a15a9a1f9ed864dfdc63b57f062b230557caa734c3133aca1165facb588c58db0185c07832241d70159e87a4bcf48008"
+        },
+        {
+          "algorithm": "SHA384",
+          "checksumValue": "bd78e2eb3d005046d1329557d3a77529e98384d4d87940374eef432d73d5a06ef20fb7b0c44389de64496fe134dcf199"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "description": "The Apache Commons IO library contains utility classes, stream implementations, file filters, file comparators, endian transformation classes, and much more.",
+      "downloadLocation": "NOASSERTION",
+      "homepage": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "name": "commons-io",
+      "originator": "NOASSERTION",
+      "supplier": "NOASSERTION",
+      "versionInfo": "2.16.1"
+    },
+    {
+      "SPDXID": "SPDXRef-pkg:maven/com.zaxxer/SparseBitSet@1.3?type=jar",
+      "checksums": [
+        {
+          "algorithm": "MD5",
+          "checksumValue": "fbe27bb4c05e8719b7fff5aa71a57364"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "533eac055afe3d5f614ea95e333afd6c2bde8f26"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c5609f2fdd72ab2e7461a03c85004a47941b883926f84665302bfff35aba5fa48d4ce47ac24314a3bc2dd7c70e1f8d824567e5026fd17485b06c44999942af5f"
+        },
+        {
+          "algorithm": "SHA384",
+          "checksumValue": "bb6204a7383b1ad02f5f314c65ad50e264d4f7818e1aeaf7b45b28124dc740eebee3ff74fb07f09787dcd3985fe6de17"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "description": "An efficient sparse bitset implementation for Java",
+      "downloadLocation": "NOASSERTION",
+      "homepage": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "name": "SparseBitSet",
+      "originator": "NOASSERTION",
+      "supplier": "NOASSERTION",
+      "versionInfo": "1.3"
+    },
+    {
+      "SPDXID": "SPDXRef-pkg:maven/org.apache.logging.log4j/log4j-api@2.23.1?type=jar",
+      "checksums": [
+        {
+          "algorithm": "MD5",
+          "checksumValue": "bee2e2dcbeeb983bdb6b71c9c3476b6a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9c15c29c526d9c6783049c0a77722693c66706e1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "92ec1fd36ab3bc09de6198d2d7c0914685c0f7127ea931acc32fd2ecdd82ea89"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2a296246b0059ff5fe5c26e2ba3f48aa99e38d7658d613fbd02f32c6d4262f93a67525e6cc4d767fa5c2ab0e39e70bb3c0d3966d38ea4f01608588c084af3162"
+        },
+        {
+          "algorithm": "SHA384",
+          "checksumValue": "3937cb646009763a94b199a0d6c0065441b9914e2b25e3d58db523874ea760276b445ff300015948d3a813217e0ee404"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "description": "The Apache Log4j API",
+      "downloadLocation": "NOASSERTION",
+      "homepage": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "name": "log4j-api",
+      "originator": "NOASSERTION",
+      "supplier": "NOASSERTION",
+      "versionInfo": "2.23.1"
     },
     {
       "SPDXID": "SPDXRef-pkg:maven/com.bentza.sna/agna-cli@2.1.3?type=jar",

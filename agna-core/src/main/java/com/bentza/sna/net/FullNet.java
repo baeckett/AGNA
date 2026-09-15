@@ -556,7 +556,7 @@ import javax.swing.JTextPane;
     // parses file-string given by MainFrame's openNetwork()
     // 2.1.3: opens an Excel workbook in the layout Agna writes on export:
     // row 0 = actor names, column 0 = actor names, inner cells = matrix.
-    // Legacy .xls is read with JExcelAPI (bundled), .xlsx with the bundled
+    // Legacy .xls is read with Apache POI (bundled), .xlsx with the bundled
     // OOXML reader. Returns null on success or a user-readable error string.
     public String readExcelFile(java.io.File file, String extension)
         {
@@ -571,20 +571,32 @@ import javax.swing.JTextPane;
                         .readFirstSheetName(file);
                 } else
                 {
-                jxl.Workbook wb = jxl.Workbook.getWorkbook(file);
-                try
+                try (org.apache.poi.hssf.usermodel.HSSFWorkbook wb =
+                        new org.apache.poi.hssf.usermodel.HSSFWorkbook(
+                                new java.io.FileInputStream(file)))
                     {
-                    jxl.Sheet sheet = wb.getSheet(0);
-                    sheet_name = sheet.getName();
-                    int rows = sheet.getRows();
-                    int cols = sheet.getColumns();
+                    org.apache.poi.ss.usermodel.Sheet sheet =
+                            wb.getSheetAt(0);
+                    sheet_name = sheet.getSheetName();
+                    int rows = sheet.getLastRowNum() + 1;
+                    org.apache.poi.ss.usermodel.Row header_row =
+                            sheet.getRow(0);
+                    int cols = header_row == null ? 0
+                            : header_row.getLastCellNum();
                     grid = new String[rows][cols];
+                    org.apache.poi.ss.usermodel.DataFormatter fmt =
+                            new org.apache.poi.ss.usermodel.DataFormatter();
                     for (int i = 0; i < rows; i++)
+                        {
+                        org.apache.poi.ss.usermodel.Row r = sheet.getRow(i);
                         for (int j = 0; j < cols; j++)
-                            grid[i][j] = sheet.getCell(j, i).getContents();
-                    } finally
-                    {
-                    wb.close();
+                            {
+                            org.apache.poi.ss.usermodel.Cell cell = r == null
+                                    ? null : r.getCell(j);
+                            grid[i][j] = cell == null
+                                    ? "" : fmt.formatCellValue(cell);
+                            }
+                        }
                     }
                 }
             if (grid == null || grid.length < 2 || grid[0].length < 2)

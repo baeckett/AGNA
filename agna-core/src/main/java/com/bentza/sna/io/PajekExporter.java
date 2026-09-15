@@ -10,8 +10,6 @@ import java.lang.StringBuffer;
 import java.io.File;
 import java.util.Date;
 import java.util.Vector;
-import jxl.*;
-import jxl.write.*;
 
 /**
  * A class that returns a network as a MS Excel String ready to be saved as a
