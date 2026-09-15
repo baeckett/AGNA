@@ -74,12 +74,21 @@ measures, and export the results.
 
 ## Installation
 
-Ready-made downloads (jars, CLI archive, Linux installer) are attached to
-each [release](https://github.com/baeckett/AGNA/releases). The desktop jar is
-self-contained:
+All installers bundle the Java runtime; no separate Java installation is
+needed. Choose your platform from the
+[latest release](https://github.com/baeckett/AGNA/releases):
+
+- **Windows** — [setup (.msi)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-setup.msi) ·
+  [setup (.exe)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-setup.exe)
+- **macOS** — [setup (.dmg)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-2-macos-setup.dmg)
+- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-setup.deb) ·
+  [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-setup.rpm) ·
+  [portable x64 archive](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-Linux-x64.tar.gz)
+
+Users with Java 17+ can also run the self-contained desktop jar directly:
 
 ```
-java -jar agna-desktop-2.1.3.jar
+java -jar AGNA-2.1.3-desktop.jar
 ```
 
 ### Build from source

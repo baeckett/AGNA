@@ -364,7 +364,7 @@ BibTeX entry:
   title     = {{AGNA}: Applied Graph and Network Analysis Open Source},
   version   = {2.1.3},
   year      = {2026},
-  publisher = {Zenodo},
+  publisher = {AGNA Open Source},
   doi       = {10.5281/zenodo.22708199},
   url       = {https://github.com/baeckett/AGNA}
 }
