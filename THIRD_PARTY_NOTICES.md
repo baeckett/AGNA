@@ -1,39 +1,58 @@
-# Third-party software
+# Third-party software and notices
 
-This project builds on the following third-party components. AGNA itself is
-licensed under the Apache License 2.0 (see LICENSE and the README); the
-licences below govern the third-party components only.
+AGNA itself is licensed under the **Apache License, Version 2.0** (see
+`LICENSE` and `NOTICE`). This document lists the third-party components
+bundled with or used by the distribution, with their licences and copyright
+lines. The authoritative copies of each component's licence and notice text
+are retained inside the distributed jars (`META-INF/LICENSE*`,
+`META-INF/NOTICE*`); the lines below are transcribed from those sources and
+from the components' published metadata. The machine-readable inventory of
+the same components is in `docs/sbom/AGNA-2.1.3-SBOM.json` (CycloneDX) and
+`docs/sbom/AGNA-2.1.3-SPDX.json`.
 
-## Apache POI
+## Bundled runtime components (Apache License 2.0)
 
-- Component: MS Excel `.xls` (HSSF) read/write library, used for the Excel
-  import/export feature.
-- Resolved from Maven Central (`org.apache.poi:poi`).
-- Licence: Apache License 2.0.
-- Transitive dependencies (all Apache License 2.0): commons-codec,
-  commons-collections4, commons-math3, commons-io, SparseBitSet,
-  log4j-api.
+| Component | Version | Copyright |
+|-----------|---------|-----------|
+| Apache POI (`org.apache.poi:poi`, HSSF `.xls` support) | 5.3.0 | Copyright 2001-2024 The Apache Software Foundation; this product includes software developed by The Apache Software Foundation |
+| Jackson JSON processor (`jackson-core`, `jackson-databind`, `jackson-annotations`) | 2.17.1 | Copyright 2007-, Tatu Saloranta |
+| Apache Commons Codec | 1.17.0 | Copyright 2002-2024 The Apache Software Foundation |
+| Apache Commons Collections | 4.4 | Copyright 2001-2024 The Apache Software Foundation |
+| Apache Commons IO | 2.16.1 | Copyright 2002-2024 The Apache Software Foundation |
+| Apache Commons Math | 3.6.1 | Copyright 2001-2021 The Apache Software Foundation |
+| Apache Log4j API (`log4j-api`) | 2.23.1 | Copyright 1999-2024 Apache Software Foundation |
+| SparseBitSet | 1.3 | Copyright 2015 B. Caulfield |
+| FlatLaf | 3.4.1 | Copyright (c) 2021 FormDev Software GmbH |
 
-## FlatLaf
+All of the above are distributed under the **Apache License, Version 2.0**.
+They are shaded into the deliverable jars and installers; their licence
+texts and notices are preserved in the jars' `META-INF` as required by the
+Apache License.
 
-- Component: modern cross-platform Swing look and feel, the application's
-  default theme.
-- Version: resolved from Maven Central (`com.formdev:flatlaf`).
-- Licence: Apache License 2.0.
+## Test-only components (not bundled)
 
-## Jackson
+| Component | Version | Licence | Copyright |
+|-----------|---------|---------|-----------|
+| JUnit 5 (`junit-jupiter`) | 5.10.2 | Eclipse Public License 2.0 | Copyright 2015-2023 The JUnit Team |
 
-- Component: JSON handling for GraphSON import/export.
-- Resolved from Maven Central.
-- Licence: Apache License 2.0.
+JUnit is resolved from Maven Central in `test` scope only; it is never
+included in the distributed jars or installers.
 
-## JUnit 5
+## Bundled content from the original distribution
 
-- Component: test framework (test scope only).
-- Resolved from Maven Central.
-- Licence: Eclipse Public License 2.0.
+- The example networks under `samples/` and the node-face/help assets are
+  part of the original AGNA distribution by Marius Ion Bența (2001-2005)
+  and are carried over unchanged.
+- Icons, splash artwork, and the website are created for this project and
+  are licensed under Apache License 2.0 with the project.
+- The historical paper *Studying Communication Networks with AGNA 2.1*
+  (Bența, 2005) is attached to the release as a separate asset (CC BY 4.0
+  per its Zenodo record) and is not part of the source distribution.
 
-## Sample data
+## Keeping this document accurate
 
-`samples/` and the bundled faces/help assets are part of the original
-Agna 2.1.2 distribution by Marius Ion Bența and are carried over unchanged.
+The CI "sbom-gate" job regenerates the CycloneDX SBOM on every release and
+fails the build if any dependency's licence leaves the Apache-2.0
+allowlist. When dependencies change, this document must be updated in the
+same change set; the SBOMs and `docs/sbom/` files are regenerated from the
+resolved dependency graph.
