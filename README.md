@@ -30,7 +30,7 @@ communication, collaboration, affiliation, interaction, behavioral,
 institutional, historical, and other relational data. It is used in
 sociology, anthropology, communication research, psychology, education,
 organizational research, animal-behavior studies, and the humanities. The
-original author, [Marius Ion Bența](https://www.netanalysis.co.uk), built it
+original author, [Marius Ion Bența](https://www.netanalysis.co.uk) (George Barițiu History Institute, Cluj)[https://institutuldeistoriegeorgebaritiu.ro/], built it
 (2001–2005) as a friendly alternative to programming environments; **2.1.3**
 is the open-source revival of that work, modernized and fully tested.
 
