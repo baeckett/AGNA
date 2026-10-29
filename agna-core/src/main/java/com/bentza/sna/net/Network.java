@@ -133,17 +133,20 @@ public class Network
         {
         int n = all_nodes.size();
         float min = Float.POSITIVE_INFINITY;
-        // 2.1.3: iterate the nodes directly instead of materializing the full
-        // matrix (avoided allocation per call); an all-zero matrix yields 0f
-        // instead of +Infinity
         for (int i = 0; i < n; i++)
             {
-            for (int j = 0; j < n; j++)
+            Actor actor = (Actor) all_nodes.elementAt(i);
+            if (actor != null && actor.emissions != null)
                 {
-                float value = getValue(i, j);
-                if (value != 0f && min > value)
+                float[] em = actor.emissions;
+                int limit = Math.min(n, em.length);
+                for (int j = 0; j < limit; j++)
                     {
-                    min = value;
+                    float value = em[j];
+                    if (value != 0f && min > value)
+                        {
+                        min = value;
+                        }
                     }
                 }
             }
@@ -154,15 +157,20 @@ public class Network
         {
         int n = all_nodes.size();
         float max = Float.NEGATIVE_INFINITY;
-        // 2.1.3: same as getMin (no matrix allocation; all-zero -> 0f)
         for (int i = 0; i < n; i++)
             {
-            for (int j = 0; j < n; j++)
+            Actor actor = (Actor) all_nodes.elementAt(i);
+            if (actor != null && actor.emissions != null)
                 {
-                float value = getValue(i, j);
-                if (value != 0f && max < value)
+                float[] em = actor.emissions;
+                int limit = Math.min(n, em.length);
+                for (int j = 0; j < limit; j++)
                     {
-                    max = value;
+                    float value = em[j];
+                    if (value != 0f && max < value)
+                        {
+                        max = value;
+                        }
                     }
                 }
             }
@@ -183,23 +191,26 @@ public class Network
     // changes symmetry value;
     public boolean isSymmetric()
         {
-        int i, j, n;
-        boolean finval = true;
-        n = all_nodes.size();
-        // 2.1.3: no full-matrix allocation; compare cells directly
-        for (i = 0; i < n; i++)
+        int n = all_nodes.size();
+        for (int i = 0; i < n; i++)
             {
-            for (j = i; j < n; j++)
+            Actor actorI = (Actor) all_nodes.elementAt(i);
+            float[] emI = (actorI != null) ? actorI.emissions : null;
+            for (int j = i + 1; j < n; j++)
                 {
-                if (getValue(i, j) != getValue(j, i))
+                Actor actorJ = (Actor) all_nodes.elementAt(j);
+                float valIJ = (emI != null && j < emI.length) ? emI[j] : 0f;
+                float valJI = (actorJ != null && actorJ.emissions != null && i < actorJ.emissions.length)
+                        ? actorJ.emissions[i] : 0f;
+                if (valIJ != valJI)
                     {
-                    finval = false;
-                    return finval;
+                    setSymmetry(false);
+                    return false;
                     }
                 }
             }
-        setSymmetry(finval);
-        return finval;
+        setSymmetry(true);
+        return true;
         }
 
     public float getValue(int i, int j) // returneaza valoarea elementului (i,j)
@@ -325,17 +336,14 @@ public class Network
 
     public float[][] getMatrix() // returneaza matricea retelei
         {
-        int i, j, n;
-        n = all_nodes.size();
+        int n = all_nodes.size();
         float[][] mat = new float[n][n];
-        Actor cursor_actor;
-        for (i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
             {
-            cursor_actor = (Actor) all_nodes.elementAt(i);
-            for (j = 0; j < n; j++)
+            Actor actor = (Actor) all_nodes.elementAt(i);
+            if (actor != null && actor.emissions != null)
                 {
-                mat[i][j] = cursor_actor.getEmissionsValue(j);
-                // mat[i][j]=this.getValue(i,j);
+                System.arraycopy(actor.emissions, 0, mat[i], 0, Math.min(n, actor.emissions.length));
                 }
             }
         return mat;
@@ -362,26 +370,20 @@ public class Network
      */
     public boolean[][] getBooleanMatrix()
         {
-        int i, j, n;
-        n = this.getSize();
+        int n = all_nodes.size();
         boolean[][] mat = new boolean[n][n];
-        Actor tmp_node = null;
-
-        for (i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
             {
-            for (j = 0; j < n; j++)
+            Actor actor = (Actor) all_nodes.elementAt(i);
+            if (actor != null && actor.emissions != null)
                 {
-                try
+                float[] em = actor.emissions;
+                int limit = Math.min(n, em.length);
+                for (int j = 0; j < limit; j++)
                     {
-                    tmp_node = (Actor) all_nodes.elementAt(i);
-                    if (tmp_node.getEmissionsValue(j) == 0f)
-                        mat[i][j] = false;
-                    else
+                    if (em[j] != 0f)
                         mat[i][j] = true;
-                    } catch (ArrayIndexOutOfBoundsException e1)
-                    {
                     }
-
                 }
             }
         return mat;
@@ -390,14 +392,19 @@ public class Network
     // forces matrix to integer values
     public int[][] getIntegerMatrix()
         {
-        int i, j, n;
-        n = this.getSize();
+        int n = all_nodes.size();
         int[][] mat = new int[n][n];
-        for (i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
             {
-            for (j = 0; j < n; j++)
+            Actor actor = (Actor) all_nodes.elementAt(i);
+            if (actor != null && actor.emissions != null)
                 {
-                mat[i][j] = (int) this.getValue(i, j);
+                float[] em = actor.emissions;
+                int limit = Math.min(n, em.length);
+                for (int j = 0; j < limit; j++)
+                    {
+                    mat[i][j] = (int) em[j];
+                    }
                 }
             }
         return mat;
@@ -405,15 +412,20 @@ public class Network
 
     public int getEdgesNumber() // returns number of edges
         {
-        int i, j, n, n_edges;
-        n = this.getSize();
-        n_edges = 0;
-        for (i = 0; i < n; i++)
+        int n = all_nodes.size();
+        int n_edges = 0;
+        for (int i = 0; i < n; i++)
             {
-            for (j = 0; j < n; j++)
+            Actor actor = (Actor) all_nodes.elementAt(i);
+            if (actor != null && actor.emissions != null)
                 {
-                if (this.getValue(i, j) != 0f)
-                    n_edges++;
+                float[] em = actor.emissions;
+                int limit = Math.min(n, em.length);
+                for (int j = 0; j < limit; j++)
+                    {
+                    if (em[j] != 0f)
+                        n_edges++;
+                    }
                 }
             }
         return n_edges;

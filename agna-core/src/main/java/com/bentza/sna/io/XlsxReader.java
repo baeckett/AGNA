@@ -126,7 +126,7 @@ public class XlsxReader
 
     public static final int MAX_GRID_DIMENSION = 10000;
 
-    private static int columnOf(String ref)
+    private static int columnOf(String ref) throws Exception
         {
         if (ref == null)
             return -1;
@@ -139,15 +139,18 @@ public class XlsxReader
                 break;
             letters++;
             if (letters > 4) // Excel column letters are at most 3 (e.g. XFD)
-                return -1;
+                throw new Exception("Worksheet column exceeds safety limit: " + ref);
             column = column * 26 + (c - 'A' + 1);
             }
         if (letters == 0)
             return -1;
-        return column - 1; // zero based
+        int col = column - 1;
+        if (col >= MAX_GRID_DIMENSION)
+            throw new Exception("Worksheet column exceeds safety limit (" + MAX_GRID_DIMENSION + "): " + ref);
+        return col;
         }
 
-    private static int rowOf(String ref)
+    private static int rowOf(String ref) throws Exception
         {
         if (ref == null)
             return -1;
@@ -159,8 +162,10 @@ public class XlsxReader
                 try
                     {
                     long r = Long.parseLong(ref.substring(i));
-                    if (r <= 0 || r > MAX_GRID_DIMENSION)
+                    if (r <= 0)
                         return -1;
+                    if (r > MAX_GRID_DIMENSION)
+                        throw new Exception("Worksheet row exceeds safety limit (" + MAX_GRID_DIMENSION + "): " + ref);
                     return (int) (r - 1);
                     } catch (NumberFormatException e)
                     {

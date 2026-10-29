@@ -1430,40 +1430,43 @@ import java.util.Vector;
         boolean[][] mat = src.getBooleanMatrix();
         float[] cb = new float[n];
         IntList[] pred = new IntList[n];
+        for (int v = 0; v < n; v++)
+            pred[v] = new IntList();
         double[] dep = new double[n];
-        IntList stack = new IntList();
-        IntList queue = new IntList();
+        int[] order = new int[n];
+        int[] dist = new int[n];
+        double[] sigma = new double[n];
 
         for (int s = 0; s < n; s++)
             {
-            double[] sigma = new double[n];
-            int[] dist = new int[n];
             for (int v = 0; v < n; v++)
                 {
-                pred[v] = new IntList();
+                pred[v].deleteAll();
                 dist[v] = -1;
+                sigma[v] = 0.0;
+                dep[v] = 0.0;
                 }
             sigma[s] = 1.0;
             dist[s] = 0;
-            queue.deleteAll();
-            stack.deleteAll();
-            queue.appendValue(s);
 
-            int q = 0;
-            while (q < queue.getSize())
+            int head = 0;
+            int tail = 0;
+            order[tail++] = s;
+
+            while (head < tail)
                 {
-                int v = queue.getElementAt(q++).getValue();
-                stack.appendValue(v);
+                int v = order[head++];
+                boolean[] row = mat[v];
                 for (int w = 0; w < n; w++)
                     {
-                    if (!mat[v][w])
+                    if (!row[w])
                         {
                         continue;
                         }
                     if (dist[w] < 0)
                         {
                         dist[w] = dist[v] + 1;
-                        queue.appendValue(w);
+                        order[tail++] = w;
                         }
                     if (dist[w] == dist[v] + 1)
                         {
@@ -1473,28 +1476,20 @@ import java.util.Vector;
                     }
                 }
 
-            for (int v = 0; v < n; v++)
+            for (int i = tail - 1; i > 0; i--)
                 {
-                dep[v] = 0;
-                }
-            while (stack.getSize() > 1)
-                {
-                int w = stack.getLastElement().getValue();
+                int w = order[i];
                 IntListElement pre = pred[w].getFirstElement();
+                double coeff = (1.0 + dep[w]) / sigma[w];
                 while (pre != null)
                     {
                     int v = pre.getValue();
-                    dep[v] += (sigma[v] / sigma[w])
-                            * (1.0 + dep[w]);
+                    dep[v] += sigma[v] * coeff;
                     pre = pre.getNext();
                     }
-                stack.deleteElementAt(stack.getSize() - 1);
-                }
-            for (int v = 0; v < n; v++)
-                {
-                if (v != s)
+                if (w != s)
                     {
-                    cb[v] += (float) dep[v];
+                    cb[w] += (float) dep[w];
                     }
                 }
             }
@@ -2378,21 +2373,23 @@ import java.util.Vector;
     public float[] weightedReceptionDegree(Network src)
         {
         int size = src.getSize();
-        int i, j;
-        float[] finarray = new float[size];
-        float[][] mat = src.getMatrix();
-        double tmp = 0;
-        for (i = 0; i < size; i++)
+        double[] sums = new double[size];
+        for (int i = 0; i < size; i++)
             {
-            // finarray[i] = 0f;
-            tmp = 0;
-            for (j = 0; j < size; j++)
+            Actor actor = src.getActor(i);
+            if (actor != null && actor.emissions != null)
                 {
-                // finarray[i] += mat[j][i];
-                tmp += (double) mat[j][i];
+                float[] em = actor.emissions;
+                int limit = Math.min(size, em.length);
+                for (int j = 0; j < limit; j++)
+                    {
+                    sums[j] += em[j];
+                    }
                 }
-            finarray[i] = (float) tmp;
             }
+        float[] finarray = new float[size];
+        for (int j = 0; j < size; j++)
+            finarray[j] = (float) sums[j];
         return finarray;
         }
 
@@ -2849,22 +2846,33 @@ import java.util.Vector;
     private float[] determinationDegree(Network src)
         {
         int size = src.getSize();
-        int i, j;
-        float[] finarray = new float[size];
-        float[][] mat = src.getMatrix();
-        double tmp = 0;
-        for (i = 0; i < size; i++)
+        if (size <= 1)
+            return new float[size];
+        double[] inSums = new double[size];
+        double[] outSums = new double[size];
+        for (int i = 0; i < size; i++)
             {
-            // finarray [i] = 0f;
-            tmp = 0;
-            for (j = 0; j < size; j++)
+            Actor actor = src.getActor(i);
+            if (actor != null && actor.emissions != null)
                 {
-                // finarray[i] += mat[j][i] - mat [i][j];
-                tmp += (double) mat[j][i] - (double) mat[i][j];
+                float[] em = actor.emissions;
+                int limit = Math.min(size, em.length);
+                double rowSum = 0;
+                for (int j = 0; j < limit; j++)
+                    {
+                    float val = em[j];
+                    rowSum += val;
+                    inSums[j] += val;
+                    }
+                outSums[i] = rowSum;
                 }
-            finarray[i] = (float) ((double) tmp / ((double) size - 1));
             }
-
+        float[] finarray = new float[size];
+        double denom = (double) size - 1.0;
+        for (int i = 0; i < size; i++)
+            {
+            finarray[i] = (float) ((inSums[i] - outSums[i]) / denom);
+            }
         return finarray;
         }
 

@@ -15,6 +15,8 @@ import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 
+import com.bentza.sna.Environment;
+
 /**
  * 2.1.3: the command-line surface - info, analyse, convert, transform
  * and draw - must work end to end against the engine.
