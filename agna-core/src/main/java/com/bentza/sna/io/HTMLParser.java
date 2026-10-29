@@ -17,26 +17,43 @@ public class HTMLParser
         {
         }
 
+    public static String escapeHtml(String text)
+        {
+        if (text == null)
+            return "";
+        StringBuilder sb = new StringBuilder(text.length() + 16);
+        for (int i = 0; i < text.length(); i++)
+            {
+            char c = text.charAt(i);
+            switch (c)
+                {
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '"':
+                    sb.append("&quot;");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+                }
+            }
+        return sb.toString();
+        }
+
     public static String parseTextToHTML(String str)
         {
-        StringBuffer sb = new StringBuffer(str);
-        String lb = System.getProperty("line.separator");
-        int i = sb.toString().indexOf(lb);
-        int len = lb.length();
-        while (i != -1 && i + len + 1 <= sb.length())
-            {
-            sb.replace(i, i + len, "<br>");
-            i = sb.toString().indexOf(lb);
-            }
-        lb = "\n";
-        i = sb.toString().indexOf(lb);
-        len = lb.length();
-        while (i != -1 && i + len + 1 <= sb.length())
-            {
-            sb.replace(i, i + len, "<br>");
-            i = sb.toString().indexOf(lb);
-            }
-        return "<html><head></head><body>" + sb.toString() + "</body></html>";
+        if (str == null)
+            return "<html><head></head><body></body></html>";
+        String escaped = escapeHtml(str);
+        String withBreaks = escaped.replace("\r\n", "<br>").replace("\n", "<br>").replace("\r", "<br>");
+        return "<html><head></head><body>" + withBreaks + "</body></html>";
         }
 
     /*

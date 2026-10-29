@@ -101,8 +101,16 @@ public class CliTest
     @Test
     public void versionPrintsTheVersion() throws Exception
         {
-        assertTrue(run("version").contains("Agna CLI 2.1.3"));
-        assertTrue(run("--version").contains("Agna CLI 2.1.3"));
+        assertTrue(run("version").contains("Agna CLI " + Environment.getApplicationVersion()));
+        assertTrue(run("--version").contains("Agna CLI " + Environment.getApplicationVersion()));
+        }
+
+    @Test
+    public void extOfHandlesDirectoryDots()
+        {
+        assertEquals("csv", Cli.extOf("/Volumes/Data.2.1.4/network.csv"));
+        assertEquals("agn", Cli.extOf("/Volumes/Data.2.1.4/network"));
+        assertEquals("net", Cli.extOf("sample.NET"));
         }
 
     @Test

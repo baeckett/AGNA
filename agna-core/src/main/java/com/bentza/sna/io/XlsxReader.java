@@ -124,27 +124,48 @@ public class XlsxReader
         return shared;
         }
 
+    public static final int MAX_GRID_DIMENSION = 10000;
+
     private static int columnOf(String ref)
         {
+        if (ref == null)
+            return -1;
         int column = 0;
+        int letters = 0;
         for (int i = 0; i < ref.length(); i++)
             {
             char c = ref.charAt(i);
             if (c < 'A' || c > 'Z')
                 break;
+            letters++;
+            if (letters > 4) // Excel column letters are at most 3 (e.g. XFD)
+                return -1;
             column = column * 26 + (c - 'A' + 1);
             }
+        if (letters == 0)
+            return -1;
         return column - 1; // zero based
         }
 
     private static int rowOf(String ref)
         {
+        if (ref == null)
+            return -1;
         for (int i = 0; i < ref.length(); i++)
             {
             char c = ref.charAt(i);
             if (c >= '0' && c <= '9')
                 {
-                return Integer.parseInt(ref.substring(i)) - 1;
+                try
+                    {
+                    long r = Long.parseLong(ref.substring(i));
+                    if (r <= 0 || r > MAX_GRID_DIMENSION)
+                        return -1;
+                    return (int) (r - 1);
+                    } catch (NumberFormatException e)
+                    {
+                    return -1;
+                    }
                 }
             }
         return -1;
@@ -206,6 +227,10 @@ public class XlsxReader
                 max_col = Math.max(max_col, columnOf(ref));
                 }
             }
+        if (max_row < 0 || max_col < 0)
+            return new String[0][0];
+        if (max_row >= MAX_GRID_DIMENSION || max_col >= MAX_GRID_DIMENSION)
+            throw new Exception("Worksheet dimensions exceed safety limit (" + MAX_GRID_DIMENSION + " rows/columns)");
         String[][] grid = new String[max_row + 1][max_col + 1];
         for (int r = 0; r < grid.length; r++)
             for (int c = 0; c < grid[r].length; c++)

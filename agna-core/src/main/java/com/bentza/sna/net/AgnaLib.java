@@ -1436,14 +1436,14 @@ import java.util.Vector;
 
         for (int s = 0; s < n; s++)
             {
-            int[] sigma = new int[n];
+            double[] sigma = new double[n];
             int[] dist = new int[n];
             for (int v = 0; v < n; v++)
                 {
                 pred[v] = new IntList();
                 dist[v] = -1;
                 }
-            sigma[s] = 1;
+            sigma[s] = 1.0;
             dist[s] = 0;
             queue.deleteAll();
             stack.deleteAll();
@@ -1484,7 +1484,7 @@ import java.util.Vector;
                 while (pre != null)
                     {
                     int v = pre.getValue();
-                    dep[v] += ((double) sigma[v] / (double) sigma[w])
+                    dep[v] += (sigma[v] / sigma[w])
                             * (1.0 + dep[w]);
                     pre = pre.getNext();
                     }

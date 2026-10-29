@@ -58,7 +58,7 @@ public final class Cli
 
     public String help()
         {
-        return "Agna CLI 2.1.3\n"
+        return "Agna CLI " + Environment.getApplicationVersion() + "\n"
                 + "usage: agna <command> [options] FILE\n\n"
                 + "commands:\n"
                 + "  version                         print version\n"
@@ -166,8 +166,11 @@ public final class Cli
 
     public static String extOf(String file)
         {
-        int i = file.lastIndexOf('.');
-        return i > 0 && i < file.length() - 1 ? file.substring(i + 1)
+        if (file == null)
+            return "agn";
+        String name = new File(file).getName();
+        int i = name.lastIndexOf('.');
+        return i > 0 && i < name.length() - 1 ? name.substring(i + 1)
                 .toLowerCase() : "agn";
         }
 
@@ -351,7 +354,7 @@ public final class Cli
 
     private int version()
         {
-        out.println("Agna CLI 2.1.3");
+        out.println("Agna CLI " + Environment.getApplicationVersion());
         out.print(citationBlock());
         return 0;
         }

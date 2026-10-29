@@ -36,7 +36,7 @@ public class Environment
     {
     private final static String application_name = "Agna";
 
-    private final static String application_version = "2.1.3";
+    private final static String application_version = "2.1.4";
 
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
@@ -118,7 +118,7 @@ public class Environment
     public static String getCitationText()
         {
         return "Ben\u021Ba, M. I. (2026). " + getSoftwareTitle()
-                + " (Version 2.1.3) [Computer software]. "
+                + " (Version " + getApplicationVersion() + ") [Computer software]. "
                 + "https://doi.org/" + getCitationDoi();
         }
 

@@ -60,92 +60,47 @@ public class BrowserControl
 
     public static void displayURL(String url)
         {
-        if (url == null)
+        if (url == null || url.trim().isEmpty())
             return;
 
-        // modern approach first: let the OS open its default browser
-        if (Desktop.isDesktopSupported())
+        // validate protocol: only allow http, https, and file schemes
+        String trimmed = url.trim();
+        if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")
+                && !trimmed.startsWith("file://"))
+            {
+            AgnaLog.warn("BrowserControl: rejected URL with unsupported protocol: " + url);
+            return;
+            }
+
+        // modern approach: let the OS open its default browser via java.awt.Desktop
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
             {
             try
                 {
-                Desktop.getDesktop().browse(new URI(url));
+                Desktop.getDesktop().browse(new URI(trimmed));
                 return;
                 } catch (Exception e1)
                 {
-                // fall through to the legacy helpers
+                AgnaLog.warn("BrowserControl: Desktop.browse failed, falling back to process launcher: " + e1.getMessage());
                 }
             }
 
         int platform = getPlatform();
-        Process p = null;
-        String cmd = null;
-
-        if (platform == WINDOWS_PLATFORM)// windows
+        try
             {
-            // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
-            cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
-            try
+            if (platform == WINDOWS_PLATFORM)
                 {
-                p = Runtime.getRuntime().exec(cmd);
-                } catch (Exception e1)
-                {
-                return;
+                new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", trimmed).start();
                 }
-            }
-
-        else if (platform == UNIX_PLATFORM)// unix or linux
+            else if (platform == UNIX_PLATFORM)
+                {
+                new ProcessBuilder("xdg-open", trimmed).start();
+                }
+            } catch (Exception e)
             {
-            // Under Unix, Netscape has to be running for the "-remote"
-            // command to work. So, we try sending the command and
-            // check for an exit value. If the exit command is 0,
-            // it worked, otherwise we need to start the browser.
-            // cmd = 'netscape -remote openURL(http://www.javaworld.com)'
-            cmd = UNIX_PATH + " " + UNIX_FLAG + "(" + url + ")";
-            try
-                {
-                p = Runtime.getRuntime().exec(cmd);
-                } catch (Exception e23) // java.lang.NullPointerException e20)
-                {
-                cmd = UNIX_PATH_2 + " " + url;
-                try
-                    {
-                    p = Runtime.getRuntime().exec(cmd);
-                    } catch (Exception e45) {
-      AgnaLog.warn("suppressed exception", e45);
-      }
-                }
-            if (p == null)
-                return;
-            try
-                {
-                // wait for exit code -- if it's 0, command worked,
-                // otherwise we need to start the browser up.
-                int exitCode = p.waitFor();
-                if (exitCode != 0)
-                    {
-                    // Command failed, start up the browser
-                    cmd = UNIX_PATH + " " + url;
-                    try
-                        {
-                        p = Runtime.getRuntime().exec(cmd);
-                        } catch (Exception e5)
-                        {
-                        return;
-                        }
-                    }
-                } catch (InterruptedException e3)
-                {
-                return;
-                }
+            AgnaLog.warn("BrowserControl: failed to launch browser for " + url + ": " + e.getMessage());
             }
-
-        else if (platform == MAC_PLATFORM)// mac
-            {
-            // The MRJ API used here in 2.1.2 no longer exists; Desktop.browse
-            // above already covers macOS on any modern JDK, so nothing to do.
-            }
-
-        }// end of method
+        }
 
     public static boolean isAcceptedPlatform()
         {

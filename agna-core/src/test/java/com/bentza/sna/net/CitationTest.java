@@ -47,7 +47,7 @@ public class CitationTest
         {
         String block = Environment.getDesktopCitationBlock();
         assertTrue(block.contains("Software and citation"), block);
-        assertTrue(block.contains("AGNA Desktop 2.1.3"), block);
+        assertTrue(block.contains("AGNA Desktop " + Environment.getApplicationVersion()), block);
         assertTrue(block.contains("Apache License 2.0"), block);
         assertTrue(block.contains("reproducibility"), block);
         }

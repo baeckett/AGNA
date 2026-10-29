@@ -88,4 +88,30 @@ public class XlsxReaderTest
         assertEquals("Gappy", XlsxReader.readFirstSheetName(temp));
         assertTrue(grid.length == 2 && grid[0].length == 3);
         }
+
+    @Test
+    public void oversizedCellThrowsException() throws Exception
+        {
+        File temp = File.createTempFile("agna_xlsx_huge", ".xlsx");
+        temp.deleteOnExit();
+        String sheet = "<?xml version=\"1.0\"?><worksheet "
+                + "xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"
+                + "<sheetData>"
+                + "<row r=\"1048576\"><c r=\"XFD1048576\"><v>1</v></c></row>"
+                + "</sheetData></worksheet>";
+        try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(temp)))
+            {
+            zip.putNextEntry(new ZipEntry("xl/worksheets/sheet1.xml"));
+            zip.write(sheet.getBytes(StandardCharsets.UTF_8));
+            zip.closeEntry();
+            }
+        try
+            {
+            XlsxReader.readFirstSheet(temp);
+            org.junit.jupiter.api.Assertions.fail("Expected exception for oversized sheet");
+            } catch (Exception expected)
+            {
+            assertTrue(expected.getMessage().contains("safety limit"));
+            }
+        }
     }

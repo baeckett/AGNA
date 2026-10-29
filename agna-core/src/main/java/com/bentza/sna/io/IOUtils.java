@@ -171,16 +171,22 @@ public class IOUtils
 
     /**
      * Removes the extension from a file name or a path String. Leaves path
-     * unmodified.
+     * unmodified, preserving case and handling dots in directory names.
      */
     public static String getPathWithoutExtension(String filename)
         {
-        int i = filename.lastIndexOf('.');
-        if (i > 0 && i < filename.length() - 1)
+        if (filename == null)
+            return null;
+        java.io.File file = new java.io.File(filename);
+        String name = file.getName();
+        int i = name.lastIndexOf('.');
+        if (i > 0)
             {
-            return filename.substring(0, i).toLowerCase();
+            String base = name.substring(0, i);
+            String parent = file.getParent();
+            return parent != null ? parent + java.io.File.separator + base : base;
             }
-        return null;
+        return filename;
         }
 
     /**
