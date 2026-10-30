@@ -3380,6 +3380,94 @@ import java.util.Vector;
         return out.toString();
         }
 
-    
+    public String outLocalClustering(Network outsrc) {
+        String legacy = legacyOutLocalClustering(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createLocalClusteringReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutLocalClustering(Network outsrc) {
+        return it + bold + "Watts-Strogatz Local Clustering" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outTransitivity(Network outsrc) {
+        String legacy = legacyOutTransitivity(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createTransitivityReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutTransitivity(Network outsrc) {
+        return it + bold + "Global Transitivity" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outKCore(Network outsrc) {
+        String legacy = legacyOutKCore(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createKCoreReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutKCore(Network outsrc) {
+        return it + bold + "k-Core Decomposition" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outTriadCensus(Network outsrc) {
+        String legacy = legacyOutTriadCensus(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createTriadCensusReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutTriadCensus(Network outsrc) {
+        return it + bold + "Triad & Dyad Census" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outStructuralHoles(Network outsrc) {
+        String legacy = legacyOutStructuralHoles(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createStructuralHolesReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutStructuralHoles(Network outsrc) {
+        return it + bold + "Social Capital & Structural Holes" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outConnectivity(Network outsrc) {
+        String legacy = legacyOutConnectivity(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createConnectivityReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutConnectivity(Network outsrc) {
+        return it + bold + "Connectivity & Articulation Points" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outEigenvector(Network outsrc) {
+        String legacy = legacyOutEigenvector(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createEigenvectorReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutEigenvector(Network outsrc) {
+        return it + bold + "Eigenvector Centrality" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outBonacich(Network outsrc, double beta) {
+        String legacy = legacyOutBonacich(outsrc, beta);
+        AnalysisReport report = AnalysisReportFactory.createBonacichReport(outsrc, beta, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutBonacich(Network outsrc, double beta) {
+        return it + bold + "Bonacich Power Centrality (beta=" + beta + ")" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outPageRank(Network outsrc, double damping) {
+        String legacy = legacyOutPageRank(outsrc, damping);
+        AnalysisReport report = AnalysisReportFactory.createPageRankReport(outsrc, damping, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutPageRank(Network outsrc, double damping) {
+        return it + bold + "PageRank Centrality (d=" + damping + ")" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
 
     }

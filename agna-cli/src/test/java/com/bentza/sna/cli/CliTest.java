@@ -881,4 +881,37 @@ public class CliTest
         assertTrue(htmlOut.contains("Algorithm Performance"), htmlOut);
         assertTrue(htmlOut.contains("Notes / Methodological Remarks"), htmlOut);
         }
+
+    @Test
+    public void testNewAnalysisMetricsInCli() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+
+        String clust = run("analyse", sample.getAbsolutePath(), "--metric", "clustering");
+        assertTrue(clust.contains("Watts-Strogatz Local Clustering"), clust);
+
+        String trans = run("analyse", sample.getAbsolutePath(), "--metric", "transitivity");
+        assertTrue(trans.contains("Global Transitivity"), trans);
+
+        String kcore = run("analyse", sample.getAbsolutePath(), "--metric", "kcore");
+        assertTrue(kcore.contains("k-Core Decomposition"), kcore);
+
+        String triads = run("analyse", sample.getAbsolutePath(), "--metric", "triads");
+        assertTrue(triads.contains("Triad & Dyad Census"), triads);
+
+        String holes = run("analyse", sample.getAbsolutePath(), "--metric", "holes");
+        assertTrue(holes.contains("Structural Holes"), holes);
+
+        String comp = run("analyse", sample.getAbsolutePath(), "--metric", "components");
+        assertTrue(comp.contains("Connectivity"), comp);
+
+        String ev = run("analyse", sample.getAbsolutePath(), "--metric", "eigenvector");
+        assertTrue(ev.contains("Eigenvector Centrality"), ev);
+
+        String bon = run("analyse", sample.getAbsolutePath(), "--metric", "bonacich");
+        assertTrue(bon.contains("Bonacich Power Centrality"), bon);
+
+        String pr = run("analyse", sample.getAbsolutePath(), "--metric", "pagerank");
+        assertTrue(pr.contains("PageRank Centrality"), pr);
+        }
     }

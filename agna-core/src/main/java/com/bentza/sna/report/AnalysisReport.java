@@ -169,7 +169,7 @@ public class AnalysisReport {
             sb.append("  <tr style='border-top:1px dashed #e1e4e8; background:#ffffff;'>\n");
             sb.append("    <td colspan='2' style='padding:4px 8px; font-size:10px; color:#8c959f; font-style:italic;'>\n");
             sb.append("      Active Dataset: ").append(escapeHtml(networkName.isEmpty() ? "Sociomatrix" : networkName))
-              .append(" &bull; AGNA 2.1.5 Statistical Engine &bull; Tables available for export above\n");
+              .append(" &bull; AGNA 2.1.6 Statistical Engine &bull; Tables available for export above\n");
             sb.append("    </td>\n");
             sb.append("  </tr>\n");
             sb.append("</table>\n");

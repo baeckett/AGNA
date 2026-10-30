@@ -82,6 +82,7 @@ public final class Cli
                 + "determination, status, geodesics, eccentricity,\n"
                 + "                                  diameter, bavelas, "
                 + "closeness, fareness, betweenness, prestige, cliques,\n"
+                + "                                  clustering, transitivity, kcore, triads, holes, components, eigenvector, bonacich, pagerank,\n"
                 + "                                  open-chain, full); --all "
                 + "runs every metric; --out saves the report\n"
                 + "  convert IN OUT [--in-format F] [--out-format F]\n"
@@ -484,6 +485,9 @@ public final class Cli
                 } else if ("--format".equals(args[i]) && i + 1 < args.length)
                 {
                 format = args[++i].toLowerCase(Locale.ROOT);
+                } else if ("--metric".equals(args[i]) && i + 1 < args.length)
+                {
+                names.add(args[++i].toLowerCase(Locale.ROOT));
                 } else
                 {
                 names.add(args[i]);
@@ -605,6 +609,20 @@ public final class Cli
             case "betweenness": return lib.outBetweenness(net);
             case "prestige": return lib.outPrestige(net);
             case "cliques": return lib.outCliques(net, 2);
+            case "clustering": return lib.outLocalClustering(net);
+            case "transitivity": return lib.outTransitivity(net);
+            case "kcore": return lib.outKCore(net);
+            case "triads":
+            case "triad-census":
+            case "census": return lib.outTriadCensus(net);
+            case "holes":
+            case "structural-holes":
+            case "capital": return lib.outStructuralHoles(net);
+            case "components":
+            case "connectivity": return lib.outConnectivity(net);
+            case "eigenvector": return lib.outEigenvector(net);
+            case "bonacich": return lib.outBonacich(net, 0.1);
+            case "pagerank": return lib.outPageRank(net, 0.85);
             case "open-chain": return lib.outOpenChainSummary(net);
             case "full": return lib.outFullAnalysis(net);
             default: return null;

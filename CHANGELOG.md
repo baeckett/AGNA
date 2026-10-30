@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.6] - 2026-10-30
+
+### Added
+- **Watts-Strogatz Local Clustering & Newman Global Transitivity (`com.bentza.sna.clustering.ClusteringMetrics`)**:
+  - Implemented analytical local clustering coefficient $C_i = 2 T_i / (k_i(k_i - 1))$ for each node and network average $\langle C \rangle$ (Watts & Strogatz, 1998, *Nature*).
+  - Implemented Newman global network transitivity $T = 3 \times \text{Triangles} / \text{Connected Triplets}$ (Newman, 2003, *SIAM Review*).
+  - Surfaced in Swing Desktop under **Analysis ▸ Clustering & Cohesion ▸ Local Clustering (Watts-Strogatz)...** and **Global Transitivity (Triads)...** with SPSS-style analytical reports and tables.
+  - Added CLI support: `agna analyse FILE --metric clustering` and `agna analyse FILE --metric transitivity`.
+- **$k$-Core Decomposition (`com.bentza.sna.clustering.KCoreDecomposition`)**:
+  - Implemented linear-time $\mathcal{O}(V + E)$ core percolation decomposition using Batagelj & Zaveršnik (2003) bucket sort.
+  - Outputs maximum coreness $k_{\max}$, shell distribution tables, and actor-level coreness values.
+  - Desktop: **Analysis ▸ Clustering & Cohesion ▸ k-Core Decomposition...**.
+  - CLI: `agna analyse FILE --metric kcore`.
+- **Davis & Leinhardt / Holland & Leinhardt 16 Triad Census & Dyad Census (`com.bentza.sna.census`)**:
+  - Full dyadic census (Mutual, Asymmetric, Null) and dyadic reciprocity rate $2M / (2M + A)$.
+  - Exhaustive enumeration of all 16 directed triad configurations ($003, 012, 102, 021D, 021U, 021C, 111D, 111U, 030T, 030C, 201, 120D, 120U, 120C, 210, 300$).
+  - Triad transitivity ratio and balance diagnostics.
+  - Desktop: **Analysis ▸ Clustering & Cohesion ▸ Triad & Dyad Census...**.
+  - CLI: `agna analyse FILE --metric triads`.
+- **Ronald Burt's Social Capital & Structural Holes (`com.bentza.sna.capital.StructuralHoles`)**:
+  - Implemented Burt's (1992) network constraint $C_i = \sum_j c_{ij}$, dyadic constraint $c_{ij}$, effective size of ego network $S_i$, efficiency $E_i = S_i / k_i$, and constraint hierarchy $H_i$.
+  - Desktop: **Analysis ▸ Social Capital & Structural Holes (Burt)...**.
+  - CLI: `agna analyse FILE --metric holes`.
+- **Connectivity, Articulation Points (Cut-Vertices) & Bridges (`com.bentza.sna.connectivity.ConnectivityAnalysis`)**:
+  - Weakly connected components (undirected BFS) and strongly connected components via Tarjan's linear $\mathcal{O}(V+E)$ algorithm.
+  - Hopcroft-Tarjan articulation point and bridge detection finding single structural points of failure.
+  - Giant component size and share analysis.
+  - Desktop: **Analysis ▸ Distance ▸ Connectivity & Articulation Points...**.
+  - CLI: `agna analyse FILE --metric components`.
+- **Spectral & Power Centrality Suite (`com.bentza.sna.spectral.SpectralCentrality`)**:
+  - **Eigenvector Centrality**: Bonacich (1972) shifted power iteration $(A + I)$ guaranteeing strict Perron-Frobenius convergence without bipartite oscillations.
+  - **Bonacich Power Centrality**: $c(\alpha, \beta)$ with user-tunable attenuation parameter $\beta$ (distinguishing influence $\beta > 0$ vs. exchange bargaining power $\beta < 0$).
+  - **PageRank Centrality**: Page et al. (1999) random walk stationary distribution with configurable damping factor $d = 0.85$.
+  - Desktop: **Analysis ▸ Centrality ▸ Eigenvector Centrality...**, **Bonacich Power Centrality...**, and **PageRank Centrality...**.
+  - CLI: `agna analyse FILE --metric eigenvector|bonacich|pagerank`.
+- **Network Transformation & Sociomatrix Editing Service (`com.bentza.sna.transform.NetworkTransformService`)**:
+  - **Flexible Symmetrization Dialog**: Selectable Max (Union), Min (Intersection), Average (Mean), or Sum (Aggregate).
+  - **Dichotomize & Threshold Ties**: User-defined cut-off threshold ($w \ge \theta$).
+  - **Diagonal Operations**: Clean zeroing of self-loops or setting diagonal to scalar.
+  - **Ego-Network Extraction**: Extracts 1-hop or 2-hop induced ego subnetworks with alter-alter ties into a new active dataset.
+  - **Network Matrix Algebra**: Combine two loaded networks via Addition ($A + B$), Difference ($A - B$), Intersection Minimum ($\min(A, B)$), or Hadamard Product ($A \odot B$).
+  - **Sociomatrix Permutation / Reordering**: Sorts rows and columns by Name (A-Z/Z-A), Total Degree, In-Degree, or Out-Degree with immediate viewer and grid synchronization.
+  - Desktop: Integrated under **Data** menu (`Data ▸ Symmetrize Options...`, `Data ▸ Dichotomize / Threshold Ties...`, `Data ▸ Zero Diagonal`, `Data ▸ Set Diagonal...`, `Data ▸ Extract Ego Network...`, `Data ▸ Network Algebra...`, `Data ▸ Reorder Sociomatrix...`).
+
 ## [2.1.5] - 2026-10-30
 
 ### Added

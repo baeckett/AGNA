@@ -5,10 +5,17 @@
 
 package com.bentza.sna.report;
 
+import com.bentza.sna.capital.StructuralHoles;
+import com.bentza.sna.census.DyadCensus;
+import com.bentza.sna.census.TriadCensus;
+import com.bentza.sna.clustering.ClusteringMetrics;
+import com.bentza.sna.clustering.KCoreDecomposition;
+import com.bentza.sna.connectivity.ConnectivityAnalysis;
 import com.bentza.sna.core.AppRuntime;
 import com.bentza.sna.net.Actor;
 import com.bentza.sna.net.AgnaLib;
 import com.bentza.sna.net.Network;
+import com.bentza.sna.spectral.SpectralCentrality;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -775,6 +782,333 @@ public final class AnalysisReportFactory {
         report.addFootnote("Full analysis battery compiles all centralities, degree distributions, distance metrics, and entropy indices.");
         report.addFootnote("Matrix diagonal values (self-loops) are excluded across all actor-level metrics.");
 
+        return report;
+    }
+
+    public static AnalysisReport createLocalClusteringReport(Network src, AgnaLib lib, String legacy) {
+        ClusteringMetrics.LocalClusteringSummary sum = ClusteringMetrics.computeLocalClustering(src);
+        AnalysisReport report = new AnalysisReport("Watts-Strogatz Local Clustering", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Mean Local Clustering <C>", String.format(Locale.ROOT, "%.4f", sum.meanClustering));
+        report.addProperty("Total Unique Triangles", String.valueOf(sum.totalTriangles));
+        report.addProperty("Actors with Degree < 2", String.valueOf(sum.isolatedOrSingleDegreeCount));
+
+        TableData.Builder b = TableData.builder("Distribution of Local Clustering in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Degree (k)", "Triangles (T_i)", "Max Triangles", "Clustering (C_i)")
+                .isNumeric(false, true, true, true, true);
+
+        float[] cVals = new float[sum.actorResults.length];
+        for (int i = 0; i < sum.actorResults.length; i++) {
+            ClusteringMetrics.LocalClusteringResult r = sum.actorResults[i];
+            cVals[i] = (float) r.clusteringCoefficient;
+            b.addRow(r.actorName, r.degree, r.triangles, r.maxTriangles, String.format(Locale.ROOT, "%.4f", r.clusteringCoefficient));
+        }
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        float[] statVals = lib.statistics(cVals);
+        TableData st = createStatisticsTable("Local Clustering Statistics", src.getName(), statVals);
+        if (st != null) report.addTable(st);
+
+        report.addFootnote("Watts-Strogatz local clustering coefficient C_i = 2 * T_i / (k_i * (k_i - 1)) measures neighbor cliquishness.");
+        report.addFootnote("Actors with degree k_i < 2 cannot form triangles and are assigned C_i = 0 by standard convention.");
+        report.addFootnote("Reference: Watts, D. J., & Strogatz, S. H. (1998). Collective dynamics of 'small-world' networks. Nature, 393(6684), 440-442.");
+        return report;
+    }
+
+    public static AnalysisReport createTransitivityReport(Network src, AgnaLib lib, String legacy) {
+        ClusteringMetrics.TransitivityResult res = ClusteringMetrics.computeTransitivity(src);
+        AnalysisReport report = new AnalysisReport("Global Network Transitivity", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Transitivity Ratio T", String.format(Locale.ROOT, "%.4f", res.transitivity));
+        report.addProperty("Closed Triplets (3 * Triangles)", String.valueOf(res.closedTriplets));
+        report.addProperty("Connected Triplets (Paths of length 2)", String.valueOf(res.connectedTriplets));
+        report.addProperty("Total Triangles", String.valueOf(res.totalTriangles));
+
+        TableData.Builder b = TableData.builder("Transitivity Indices of " + src.getName())
+                .network(src.getName())
+                .columns("Triad Metric", "Value", "Theoretical Definition")
+                .isNumeric(false, true, false);
+
+        b.addRow("Global Transitivity T", String.format(Locale.ROOT, "%.4f", res.transitivity), "Ratio: 3 * Triangles / Connected Triplets");
+        b.addRow("Closed Triplets", String.valueOf(res.closedTriplets), "Triangles counted from each of 3 vertices (3 * T)");
+        b.addRow("Connected Triplets", String.valueOf(res.connectedTriplets), "All 2-star paths sum_i k_i(k_i - 1)/2");
+        b.addRow("Unique Triangles", String.valueOf(res.totalTriangles), "Total distinct 3-cliques in network");
+
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        report.addFootnote("Global transitivity measures the fraction of two-step paths that are closed into triads across the whole graph.");
+        report.addFootnote("Reference: Newman, M. E. (2003). The structure and function of complex networks. SIAM Review, 45(2), 167-256.");
+        return report;
+    }
+
+    public static AnalysisReport createKCoreReport(Network src, AgnaLib lib, String legacy) {
+        KCoreDecomposition.KCoreResult res = KCoreDecomposition.decompose(src);
+        AnalysisReport report = new AnalysisReport("k-Core Decomposition", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Max Coreness (k_max)", String.valueOf(res.maxCore));
+        report.addProperty("Actors in Maximum Core", String.valueOf(res.coreMembers.getOrDefault(res.maxCore, List.of()).size()));
+
+        TableData.Builder distBuilder = TableData.builder("Core Shell Distribution of " + src.getName())
+                .network(src.getName())
+                .columns("Core Level (k)", "Actor Count", "Proportion (%)", "Member Nodes Preview")
+                .isNumeric(true, true, true, false);
+
+        int totalN = src.getSize();
+        for (int k = 0; k <= res.maxCore; k++) {
+            int count = res.coreDistribution.getOrDefault(k, 0);
+            double pct = totalN > 0 ? (100.0 * count / totalN) : 0.0;
+            List<String> mems = res.coreMembers.getOrDefault(k, List.of());
+            String preview = mems.size() > 5 ? (String.join(", ", mems.subList(0, 5)) + " ... (" + mems.size() + " total)") : String.join(", ", mems);
+            distBuilder.addRow(k, count, String.format(Locale.ROOT, "%.1f%%", pct), preview);
+        }
+        TableData distTable = distBuilder.build();
+        TableRegistry.register(distTable);
+        report.addTable(distTable);
+
+        TableData.Builder nodeBuilder = TableData.builder("Actor Coreness Values in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Coreness (k_i)")
+                .isNumeric(false, true);
+
+        for (int i = 0; i < totalN; i++) {
+            nodeBuilder.addRow(src.getActor(i).getName(), res.coreness[i]);
+        }
+        TableData nodeTable = nodeBuilder.build();
+        TableRegistry.register(nodeTable);
+        report.addTable(nodeTable);
+
+        report.addFootnote("A k-core is a maximal connected subgraph in which all vertices have degree at least k within the subgraph.");
+        report.addFootnote("Computed in linear O(V + E) time via the Batagelj-Zaveršnik bucket sorting peeling algorithm.");
+        report.addFootnote("Reference: Seidman, S. B. (1983). Network structure and minimum degree. Social Networks, 5(3), 269-287.");
+        return report;
+    }
+
+    public static AnalysisReport createTriadCensusReport(Network src, AgnaLib lib, String legacy) {
+        TriadCensus census = TriadCensus.compute(src);
+        AnalysisReport report = new AnalysisReport("Triad & Dyad Census (Holland-Leinhardt)", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Total Triads C(N, 3)", String.valueOf(census.totalTriads));
+        report.addProperty("Triad Transitivity Ratio", String.format(Locale.ROOT, "%.4f", census.transitivityRatio));
+        report.addProperty("Dyadic Reciprocity Rate", String.format(Locale.ROOT, "%.4f", census.dyadCensus.reciprocityRate));
+
+        TableData.Builder dyadB = TableData.builder("Dyad Census (M-A-N) of " + src.getName())
+                .network(src.getName())
+                .columns("Dyad State", "Notation", "Count", "Proportion (%)")
+                .isNumeric(false, false, true, true);
+
+        long totDyads = census.dyadCensus.totalDyads;
+        double pM = totDyads > 0 ? (100.0 * census.dyadCensus.mutual / totDyads) : 0;
+        double pA = totDyads > 0 ? (100.0 * census.dyadCensus.asymmetric / totDyads) : 0;
+        double pN = totDyads > 0 ? (100.0 * census.dyadCensus.nullDyads / totDyads) : 0;
+
+        dyadB.addRow("Mutual", "M (A <-> B)", census.dyadCensus.mutual, String.format(Locale.ROOT, "%.2f%%", pM));
+        dyadB.addRow("Asymmetric", "A (A -> B)", census.dyadCensus.asymmetric, String.format(Locale.ROOT, "%.2f%%", pA));
+        dyadB.addRow("Null", "N (A   B)", census.dyadCensus.nullDyads, String.format(Locale.ROOT, "%.2f%%", pN));
+
+        TableData dyadTable = dyadB.build();
+        TableRegistry.register(dyadTable);
+        report.addTable(dyadTable);
+
+        TableData.Builder triadB = TableData.builder("Holland & Leinhardt 16 Triad Census of " + src.getName())
+                .network(src.getName())
+                .columns("Type Code", "Classification Name", "Count", "Proportion (%)", "Configuration Description")
+                .isNumeric(false, false, true, true, false);
+
+        for (TriadCensus.TriadType t : TriadCensus.TriadType.values()) {
+            long count = census.getCount(t);
+            double pct = census.totalTriads > 0 ? (100.0 * count / census.totalTriads) : 0;
+            triadB.addRow(t.getCode(), t.getName(), count, String.format(Locale.ROOT, "%.3f%%", pct), t.getDescription());
+        }
+        TableData triadTable = triadB.build();
+        TableRegistry.register(triadTable);
+        report.addTable(triadTable);
+
+        report.addFootnote("Holland-Leinhardt triad census enumerates all 16 mutually exclusive directed triad configurations.");
+        report.addFootnote("Type codes indicate counts of Mutual, Asymmetric, and Null dyads (plus D=Down, U=Up, C=Cycle, T=Transitive).");
+        report.addFootnote("References: Davis & Leinhardt (1972); Holland & Leinhardt (1976).");
+        return report;
+    }
+
+    public static AnalysisReport createStructuralHolesReport(Network src, AgnaLib lib, String legacy) {
+        StructuralHoles holes = StructuralHoles.compute(src);
+        AnalysisReport report = new AnalysisReport("Social Capital & Structural Holes (Burt)", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Mean Constraint <C>", String.format(Locale.ROOT, "%.4f", holes.meanConstraint));
+        report.addProperty("Mean Effective Size <S>", String.format(Locale.ROOT, "%.4f", holes.meanEffectiveSize));
+        report.addProperty("Mean Efficiency <E>", String.format(Locale.ROOT, "%.4f", holes.meanEfficiency));
+
+        TableData.Builder b = TableData.builder("Structural Holes Metrics in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Degree (k)", "Effective Size", "Efficiency", "Constraint (C_i)", "Hierarchy (H_i)")
+                .isNumeric(false, true, true, true, true, true);
+
+        for (StructuralHoles.ActorHolesMetrics m : holes.actorMetrics) {
+            b.addRow(m.actorName, m.degree,
+                    String.format(Locale.ROOT, "%.3f", m.effectiveSize),
+                    String.format(Locale.ROOT, "%.3f", m.efficiency),
+                    String.format(Locale.ROOT, "%.4f", m.constraint),
+                    String.format(Locale.ROOT, "%.4f", m.hierarchy));
+        }
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        report.addFootnote("Low constraint indicates high structural autonomy and entrepreneurial social capital (brokerage).");
+        report.addFootnote("Effective size reflects the number of non-redundant contacts in the actor's ego network.");
+        report.addFootnote("Reference: Burt, R. S. (1992). Structural Holes: The Social Structure of Competition. Harvard University Press.");
+        return report;
+    }
+
+    public static AnalysisReport createConnectivityReport(Network src, AgnaLib lib, String legacy) {
+        ConnectivityAnalysis conn = ConnectivityAnalysis.analyze(src);
+        AnalysisReport report = new AnalysisReport("Connectivity & Structural Vulnerability", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Weak Components", String.valueOf(conn.weakComponents.size()));
+        report.addProperty("Strong Components", String.valueOf(conn.strongComponents.size()));
+        report.addProperty("Giant Component Size", conn.giantComponentSize + " nodes (" + String.format(Locale.ROOT, "%.1f%%", conn.giantComponentFraction * 100) + ")");
+        report.addProperty("Cut-Vertices (Articulation Points)", String.valueOf(conn.articulationPoints.size()));
+        report.addProperty("Bridges (Cut-Edges)", String.valueOf(conn.bridges.size()));
+
+        TableData.Builder compB = TableData.builder("Connected Components of " + src.getName())
+                .network(src.getName())
+                .columns("Component ID", "Size", "Share (%)", "Members Preview")
+                .isNumeric(true, true, true, false);
+
+        int n = src.getSize();
+        for (int i = 0; i < conn.weakComponents.size(); i++) {
+            List<Integer> comp = conn.weakComponents.get(i);
+            double pct = n > 0 ? (100.0 * comp.size() / n) : 0;
+            List<String> names = new ArrayList<>();
+            for (int idx : comp) names.add(src.getActor(idx).getName());
+            String prev = names.size() > 6 ? (String.join(", ", names.subList(0, 6)) + " ...") : String.join(", ", names);
+            compB.addRow(i + 1, comp.size(), String.format(Locale.ROOT, "%.1f%%", pct), prev);
+        }
+        TableData compTable = compB.build();
+        TableRegistry.register(compTable);
+        report.addTable(compTable);
+
+        TableData.Builder vulnB = TableData.builder("Structural Vulnerability (Cut-Points & Bridges)")
+                .network(src.getName())
+                .columns("Topology Element", "Node / Tie Identifier", "Vulnerability Impact")
+                .isNumeric(false, false, false);
+
+        for (int art : conn.articulationPoints) {
+            vulnB.addRow("Cut-Vertex (Articulation Point)", src.getActor(art).getName(), "Removal fragments the network into multiple components");
+        }
+        for (ConnectivityAnalysis.Bridge br : conn.bridges) {
+            vulnB.addRow("Bridge (Cut-Edge)", br.uName + " <-> " + br.vName, "Removal disconnects graph components");
+        }
+        if (conn.articulationPoints.isEmpty() && conn.bridges.isEmpty()) {
+            vulnB.addRow("Biconnected Robustness", "None detected", "Graph has 2-vertex connectivity (no single points of failure)");
+        }
+        TableData vulnTable = vulnB.build();
+        TableRegistry.register(vulnTable);
+        report.addTable(vulnTable);
+
+        report.addFootnote("Articulation points and bridges are single structural points of failure whose deletion fragments the network.");
+        report.addFootnote("References: Tarjan, R. E. (1972); Hopcroft, J., & Tarjan, R. (1973).");
+        return report;
+    }
+
+    public static AnalysisReport createEigenvectorReport(Network src, AgnaLib lib, String legacy) {
+        double[] ev = SpectralCentrality.computeEigenvector(src, 150, 1e-6);
+        AnalysisReport report = new AnalysisReport("Eigenvector Centrality", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Eigenvector Method", "Shifted Power Iteration (A + I)");
+        report.addProperty("Convergence Tolerance", "1e-6");
+        report.addProperty("Normalization", "Max score = 1.0");
+
+        TableData.Builder b = TableData.builder("Eigenvector Centrality in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Eigenvector Centrality")
+                .isNumeric(false, true);
+
+        float[] statVals = new float[src.getSize()];
+        for (int i = 0; i < src.getSize(); i++) {
+            statVals[i] = (float) ev[i];
+            b.addRow(src.getActor(i).getName(), String.format(Locale.ROOT, "%.4f", ev[i]));
+        }
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        TableData st = createStatisticsTable("Eigenvector Centrality Statistics", src.getName(), lib.statistics(statVals));
+        if (st != null) report.addTable(st);
+
+        report.addFootnote("Eigenvector centrality assigns relative scores to all nodes based on the principle that connections to high-scoring nodes contribute more to the score of the node.");
+        report.addFootnote("Reference: Bonacich, P. (1972). Factoring and weighting approaches to status scores. Journal of Mathematical Sociology, 2(1), 113-120.");
+        return report;
+    }
+
+    public static AnalysisReport createBonacichReport(Network src, double beta, AgnaLib lib, String legacy) {
+        double[] bon = SpectralCentrality.computeBonacich(src, beta, 100);
+        AnalysisReport report = new AnalysisReport("Bonacich Power Centrality", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Attenuation Parameter (Beta)", String.format(Locale.ROOT, "%.3f", beta));
+        report.addProperty("Power Model", beta >= 0 ? "Influence / Prestige (alters enhance power)" : "Exchange Theory / Bargaining (dependent alters enhance power)");
+
+        TableData.Builder b = TableData.builder("Bonacich Power Centrality (beta=" + beta + ") in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Bonacich Power Centrality")
+                .isNumeric(false, true);
+
+        float[] statVals = new float[src.getSize()];
+        for (int i = 0; i < src.getSize(); i++) {
+            statVals[i] = (float) bon[i];
+            b.addRow(src.getActor(i).getName(), String.format(Locale.ROOT, "%.4f", bon[i]));
+        }
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        TableData st = createStatisticsTable("Bonacich Power Statistics", src.getName(), lib.statistics(statVals));
+        if (st != null) report.addTable(st);
+
+        report.addFootnote("Bonacich power centrality generalizes degree centrality by weighting neighbors' centralities with parameter beta.");
+        report.addFootnote("Reference: Bonacich, P. (1987). Power and centrality: A family of measures. American Journal of Sociology, 92(5), 1170-1182.");
+        return report;
+    }
+
+    public static AnalysisReport createPageRankReport(Network src, double damping, AgnaLib lib, String legacy) {
+        double[] pr = SpectralCentrality.computePageRank(src, damping, 100);
+        AnalysisReport report = new AnalysisReport("PageRank Centrality", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Damping Factor (d)", String.format(Locale.ROOT, "%.2f", damping));
+        report.addProperty("Teleport Probability (1 - d)", String.format(Locale.ROOT, "%.2f", 1.0 - damping));
+
+        TableData.Builder b = TableData.builder("PageRank Centrality in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "PageRank Centrality")
+                .isNumeric(false, true);
+
+        float[] statVals = new float[src.getSize()];
+        for (int i = 0; i < src.getSize(); i++) {
+            statVals[i] = (float) pr[i];
+            b.addRow(src.getActor(i).getName(), String.format(Locale.ROOT, "%.6f", pr[i]));
+        }
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        TableData st = createStatisticsTable("PageRank Statistics", src.getName(), lib.statistics(statVals));
+        if (st != null) report.addTable(st);
+
+        report.addFootnote("PageRank measures the probability of finding a random walk at each node with random teleportation probability (1 - d).");
+        report.addFootnote("Reference: Page, L., Brin, S., Motwani, R., & Winograd, T. (1999). The PageRank citation ranking. Stanford InfoLab.");
         return report;
     }
 }
