@@ -2846,7 +2846,7 @@ import java.util.Vector;
             finarray[i] = 0f;
             for (int j = 0; j < size; j++)
                 {
-                if (src.getValue(i, j) != 0f)
+                if (j != i && src.getValue(i, j) != 0f)
                     {
                     finarray[i]++;
                     }

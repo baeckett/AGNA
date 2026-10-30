@@ -2598,6 +2598,8 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 newNet.setNetwork(netToTransform);
                 my_full_net = newNet;
                 }
+            my_full_net.setChanged(true);
+            refreshFrameTitle();
             updateNetwork();
             updateMatrix();
             grid_model.setReady(true);

@@ -82,4 +82,27 @@ public class DLFormatRoundTripTest {
         assertEquals(1.0f, imported.getValue(0, 1), 1e-4);
         assertEquals(5.5f, imported.getValue(1, 2), 1e-4);
     }
+
+    @Test
+    public void testParseNodeListDL() throws Exception {
+        String dlContent = "dl nr=3, format=nodelist1\n"
+                + "labels:\n"
+                + "\"Node One\", \"Node Two\", \"Node Three\"\n"
+                + "data:\n"
+                + "\"Node One\" \"Node Two\" \"Node Three\"\n"
+                + "\"Node Two\" \"Node Three\"\n";
+
+        BufferedReader reader = new BufferedReader(new StringReader(dlContent));
+        Network net = DLImporter.parseDL(reader, "NodeListDL");
+
+        assertNotNull(net);
+        assertEquals(3, net.getSize());
+        assertEquals("Node One", net.getActor(0).getName());
+        assertEquals("Node Two", net.getActor(1).getName());
+        assertEquals("Node Three", net.getActor(2).getName());
+
+        assertEquals(1.0f, net.getValue(0, 1), 1e-4);
+        assertEquals(1.0f, net.getValue(0, 2), 1e-4);
+        assertEquals(1.0f, net.getValue(1, 2), 1e-4);
+    }
 }

@@ -88,7 +88,7 @@ public final class StructuralEquivalenceService {
                 dist[i][j] = d;
                 dist[j][i] = d;
 
-                double r = computePearson(vecI, vecJ);
+                double r = computePearson(vecI, vecJ, d);
                 corr[i][j] = r;
                 corr[j][i] = r;
             }
@@ -110,9 +110,9 @@ public final class StructuralEquivalenceService {
         return new EquivalenceResult(n, dist, corr, blocks, targetBlocks, image, members);
     }
 
-    private static double computePearson(List<Double> x, List<Double> y) {
+    private static double computePearson(List<Double> x, List<Double> y, double dist) {
         int m = x.size();
-        if (m == 0) return 1.0;
+        if (m == 0 || dist < 1e-9) return 1.0;
         double sumX = 0, sumY = 0;
         for (int i = 0; i < m; i++) {
             sumX += x.get(i);
@@ -131,7 +131,7 @@ public final class StructuralEquivalenceService {
         }
 
         double denom = Math.sqrt(varX * varY);
-        if (denom < 1e-9) return 0.0;
+        if (denom < 1e-9) return (dist < 1e-9) ? 1.0 : 0.0;
         double r = cov / denom;
         if (r > 1.0) r = 1.0;
         if (r < -1.0) r = -1.0;

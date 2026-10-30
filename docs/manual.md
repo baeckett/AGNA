@@ -1,11 +1,11 @@
-# Agna User Manual — 2.1.3
+# Agna User Manual — 2.1.6
 
 ## 1. Quick start
 
 - **Open a network**: File ▸ Open Network (or use the toolbar). Agna reads
   its own format (`.agn`), text tables (`.txt`, `.csv`), Pajek (`.net`),
   Excel (`.xls` and `.xlsx`, including files saved by Apple Numbers),
-  GraphML (`.graphml`), GML (`.gml`) and GraphSON (`.json`). See
+  GraphML (`.graphml`), GML (`.gml`), GraphSON (`.json`), and UCINET DL (`.dl`). See
   [File formats](#6-file-formats).
 - **Enter data**: with a new network (File ▸ New Network) the sociomatrix
   grid appears; type tie values into the cells. A value of 0 means "no

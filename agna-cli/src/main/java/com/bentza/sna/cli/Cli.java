@@ -83,15 +83,16 @@ public final class Cli
                 + "                                  diameter, bavelas, "
                 + "closeness, fareness, betweenness, prestige, cliques,\n"
                 + "                                  clustering, transitivity, kcore, triads, holes, components, eigenvector, bonacich, pagerank,\n"
+                + "                                  assortativity, community, equivalence, weighted,\n"
                 + "                                  open-chain, full); --all "
                 + "runs every metric; --out saves the report\n"
                 + "  convert IN OUT [--in-format F] [--out-format F]\n"
                 + "                                  convert format "
-                + "(agn/txt/csv/net/graphml/gml/graphson/xls; xls needs a\n"
+                + "(agn/txt/csv/net/graphml/gml/graphson/dl/xls; xls needs a\n"
                 + "                                  real file, the rest "
-                + "accept '-' for stdout)"
+                + "accept '-' for stdout)\n"
                 + "  transform IN OUT --op OP       transpose | symmetrize-max "
-                + "| symmetrize-sum | symmetrize-below |\n"
+                + "| symmetrize-min | symmetrize-average | symmetrize-sum | symmetrize-union | symmetrize-intersect | symmetrize-below |\n"
                 + "                                  normalize-binary | "
                 + "normalize-threshold:V | add-scalar:V |\n"
                 + "                                  multiply-scalar:V | "
@@ -238,6 +239,9 @@ public final class Cli
             } else if ("graphson".equals(ext))
             {
             text = new GraphSONExporter().getGraphSON(full);
+            } else if ("dl".equals(ext))
+            {
+            text = com.bentza.sna.io.DLExporter.toDLString(full.getNetwork());
             }
         if ("-".equals(file))
             {
@@ -505,7 +509,10 @@ public final class Cli
                     "reception", "determination", "status", "geodesics",
                     "open-chain", "eccentricity", "diameter", "bavelas",
                     "closeness", "fareness", "betweenness", "prestige",
-                    "cliques", "full"));
+                    "cliques", "clustering", "transitivity", "kcore",
+                    "triads", "holes", "components", "eigenvector",
+                    "bonacich", "pagerank", "assortativity", "community",
+                    "equivalence", "weighted", "full"));
             }
 
         com.bentza.sna.report.TableRegistry.clear();
@@ -623,6 +630,22 @@ public final class Cli
             case "eigenvector": return lib.outEigenvector(net);
             case "bonacich": return lib.outBonacich(net, 0.1);
             case "pagerank": return lib.outPageRank(net, 0.85);
+            case "assortativity":
+            case "degree-assortativity": return lib.outDegreeAssortativity(net);
+            case "community":
+            case "louvain": return lib.outCommunityDetection(net, false);
+            case "girvan-newman": return lib.outCommunityDetection(net, true);
+            case "structural-equivalence":
+            case "equivalence":
+            case "blockmodel": return lib.outStructuralEquivalence(net, 2);
+            case "weighted":
+            case "weighted-metrics": return lib.outWeightedMetrics(net);
+            case "centrality":
+            case "centrality-battery": return lib.outCentralityBattery(net, null);
+            case "distance-battery": return lib.outDistanceBattery(net, null);
+            case "clustering-battery": return lib.outClusteringBattery(net, null);
+            case "sociometrics":
+            case "sociometrics-battery": return lib.outSociometricsBattery(net, null);
             case "open-chain": return lib.outOpenChainSummary(net);
             case "full": return lib.outFullAnalysis(net);
             default: return null;
@@ -707,9 +730,21 @@ public final class Cli
             } else if ("symmetrize-max".equals(op))
             {
             lib.symmetrizeMaximum(net);
+            } else if ("symmetrize-min".equals(op))
+            {
+            com.bentza.sna.transform.NetworkTransformService.symmetrize(net, com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.MIN);
+            } else if ("symmetrize-average".equals(op) || "symmetrize-mean".equals(op))
+            {
+            com.bentza.sna.transform.NetworkTransformService.symmetrize(net, com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.AVERAGE);
             } else if ("symmetrize-sum".equals(op))
             {
             lib.symmetrizeSum(net);
+            } else if ("symmetrize-union".equals(op) || "symmetrize-or".equals(op))
+            {
+            com.bentza.sna.transform.NetworkTransformService.symmetrize(net, com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.UNION);
+            } else if ("symmetrize-intersect".equals(op) || "symmetrize-and".equals(op))
+            {
+            com.bentza.sna.transform.NetworkTransformService.symmetrize(net, com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.INTERSECT);
             } else if ("symmetrize-below".equals(op))
             {
             lib.symmetrizeBelow(net);
@@ -1849,7 +1884,7 @@ public final class Cli
             }
         if (file == null || outFile == null)
             {
-            out.println("usage: agna symmetrize FILE [--mode below|sum|max] "
+            out.println("usage: agna symmetrize FILE [--mode below|sum|max|min|average|union|intersect] "
                     + "--out OUT");
             return 1;
             }

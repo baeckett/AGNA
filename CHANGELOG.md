@@ -50,6 +50,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Network Matrix Algebra**: Combine two loaded networks via Addition ($A + B$), Difference ($A - B$), Intersection Minimum ($\min(A, B)$), or Hadamard Product ($A \odot B$).
   - **Sociomatrix Permutation / Reordering**: Sorts rows and columns by Name (A-Z/Z-A), Total Degree, In-Degree, or Out-Degree with immediate viewer and grid synchronization.
   - Desktop: Integrated under **Data** menu (`Data ▸ Symmetrize Options...`, `Data ▸ Dichotomize / Threshold Ties...`, `Data ▸ Zero Diagonal`, `Data ▸ Set Diagonal...`, `Data ▸ Extract Ego Network...`, `Data ▸ Network Algebra...`, `Data ▸ Reorder Sociomatrix...`).
+- **Freeman (1979) Global Network Centralization Indices**:
+  - Implemented graph-level degree ($C_D$), betweenness ($C_B$), closeness ($C_C$), and Bavelas-Leavitt ($C_{\text{Bav}}$) centralization measures benchmarked against the star graph.
+  - Generates dedicated Freeman Centralization summary tables across individual reports and consolidated battery reports.
+- **Newman Degree Assortativity & Directed Mixing Patterns (`com.bentza.sna.stats.DegreeAssortativity`)**:
+  - Implemented Newman (2002/2003) total degree assortativity correlation coefficient $r$ and directed mixing patterns ($r_{\text{out-in}}, r_{\text{in-in}}, r_{\text{out-out}}, r_{\text{in-out}}$).
+  - CLI: `agna analyse FILE --metric assortativity`.
+- **Louvain & Girvan-Newman Community Detection (`com.bentza.sna.community.CommunityDetectionService`)**:
+  - Implemented multi-phase Louvain modularity optimization and Girvan-Newman edge-betweenness community partitioning with modularity $Q$ tracking and internal cluster density calculations.
+  - CLI: `agna analyse FILE --metric community|louvain|girvan-newman`.
+- **Structural Equivalence & Positional Blockmodeling (`com.bentza.sna.equivalence.StructuralEquivalenceService`)**:
+  - Implemented Burt profile Euclidean distance matrix, Pearson profile correlation matrix, hierarchical average-linkage positional clustering, and $K \times K$ blockmodel image density matrix.
+  - CLI: `agna analyse FILE --metric equivalence|blockmodel`.
+- **Valued & Weighted Network Metrics (`com.bentza.sna.stats.WeightedMetrics`)**:
+  - Node strength (in-strength, out-strength, total strength), valued network density $\Delta = W / (n(n-1))$, and Barrat et al. (2004) weighted local clustering coefficient $C_i^w$.
+  - CLI: `agna analyse FILE --metric weighted`.
+- **UCINET DL Data Format (`.dl`) Support (`com.bentza.sna.io`)**:
+  - Complete import and export for UCINET DL formats including `fullmatrix`, `edgelist1`, and `nodelist1`, with label quoting and header parsing.
+  - CLI: `agna convert in.agn out.dl` and `agna convert in.dl out.csv`.
+- **Consolidated Battery Dialogs & Configurable Full Analysis**:
+  - Consolidated scattered dialogs into clean, category-level battery dialogs: Centrality & Prestige Battery, Distances & Geodesics Battery, Clustering & Cohesion Battery, Sociometrics Battery, and Unified Symmetrization Dialog (15 rules).
+  - Fully configurable Full Analysis Battery (Option B) supporting selective execution across all 16 analytical modules with instant Presets (Standard / All / Clear).
 
 ## [2.1.5] - 2026-10-30
 

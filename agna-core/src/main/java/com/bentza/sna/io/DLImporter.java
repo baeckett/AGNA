@@ -65,15 +65,17 @@ public final class DLImporter {
                     int parsedN = extractN(lower);
                     if (parsedN > 0) n = parsedN;
                     if (lower.contains("edgelist")) format = "edgelist1";
+                    else if (lower.contains("nodelist")) format = "nodelist1";
                     continue;
                 }
-                if (lower.startsWith("n=") || lower.startsWith("n =") || lower.startsWith("n\t")) {
+                if (lower.startsWith("n=") || lower.startsWith("n =") || lower.startsWith("n\t") || lower.startsWith("nr=") || lower.startsWith("nr =")) {
                     int parsedN = extractN(lower);
                     if (parsedN > 0) n = parsedN;
                     continue;
                 }
                 if (lower.startsWith("format=") || lower.startsWith("format =")) {
                     if (lower.contains("edgelist")) format = "edgelist1";
+                    else if (lower.contains("nodelist")) format = "nodelist1";
                     else format = "fullmatrix";
                     continue;
                 }
@@ -108,46 +110,72 @@ public final class DLImporter {
             }
         }
 
-        // If N was not specified, infer from labels or edgelist
+        // If N was not specified, infer from labels or edgelist/nodelist
         if ("edgelist1".equals(format)) {
             return parseEdgeList(dataLines, labels, netName, n);
+        } else if ("nodelist1".equals(format)) {
+            return parseNodeList(dataLines, labels, netName, n);
         } else {
             return parseMatrixData(dataLines, labels, netName, n);
         }
     }
 
+    private static final java.util.regex.Pattern N_PATTERN =
+            java.util.regex.Pattern.compile("\\b(n|nr)\\s*=\\s*(\\d+)", java.util.regex.Pattern.CASE_INSENSITIVE);
+
     private static void parseHeaderTokens(String line, List<String> labels) {
-        String lower = line.toLowerCase();
-        int nIdx = lower.indexOf("n=");
-        if (nIdx < 0) nIdx = lower.indexOf("n =");
         // token parsing is handled by extractN
     }
 
     private static int extractN(String line) {
-        try {
-            int idx = line.indexOf("n");
-            if (idx >= 0) {
-                int eq = line.indexOf('=', idx);
-                if (eq >= 0) {
-                    String part = line.substring(eq + 1).trim();
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < part.length(); i++) {
-                        char c = part.charAt(i);
-                        if (Character.isDigit(c)) sb.append(c);
-                        else if (sb.length() > 0) break;
-                    }
-                    if (sb.length() > 0) return Integer.parseInt(sb.toString());
-                }
-            }
-        } catch (Exception ignored) {}
+        java.util.regex.Matcher m = N_PATTERN.matcher(line);
+        if (m.find()) {
+            try {
+                return Integer.parseInt(m.group(2));
+            } catch (Exception ignored) {}
+        }
         return -1;
     }
 
+    private static List<String> tokenizeQuotedLine(String line) {
+        List<String> tokens = new ArrayList<>();
+        if (line == null || line.trim().isEmpty()) return tokens;
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+        char quoteChar = 0;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (inQuotes) {
+                if (c == quoteChar) {
+                    inQuotes = false;
+                } else {
+                    current.append(c);
+                }
+            } else {
+                if (c == '"' || c == '\'') {
+                    inQuotes = true;
+                    quoteChar = c;
+                } else if (c == ',' || Character.isWhitespace(c)) {
+                    if (current.length() > 0) {
+                        tokens.add(current.toString().trim());
+                        current.setLength(0);
+                    }
+                } else {
+                    current.append(c);
+                }
+            }
+        }
+        if (current.length() > 0) {
+            tokens.add(current.toString().trim());
+        }
+        return tokens;
+    }
+
     private static void parseLabels(String text, List<String> labels) {
-        StringTokenizer st = new StringTokenizer(text, ", \t\r\n");
-        while (st.hasMoreTokens()) {
-            String tok = st.nextToken().trim();
-            if (!tok.isEmpty() && !tok.equalsIgnoreCase("data:")) {
+        List<String> tokens = tokenizeQuotedLine(text);
+        for (String tok : tokens) {
+            if (!tok.equalsIgnoreCase("data:")) {
                 labels.add(tok);
             }
         }
@@ -204,11 +232,11 @@ public final class DLImporter {
 
         List<String[]> parsedEdges = new ArrayList<>();
         for (String dl : dataLines) {
-            StringTokenizer st = new StringTokenizer(dl, " ,\t");
-            if (st.countTokens() >= 2) {
-                String from = st.nextToken();
-                String to = st.nextToken();
-                String weight = st.hasMoreTokens() ? st.nextToken() : "1.0";
+            List<String> tokens = tokenizeQuotedLine(dl);
+            if (tokens.size() >= 2) {
+                String from = tokens.get(0);
+                String to = tokens.get(1);
+                String weight = tokens.size() > 2 ? tokens.get(2) : "1.0";
                 parsedEdges.add(new String[]{from, to, weight});
 
                 if (!nameToIdx.containsKey(from)) {
@@ -241,6 +269,56 @@ public final class DLImporter {
                 w = Float.parseFloat(edge[2]);
             } catch (Exception ignored) {}
             net.setValue(w, u, v);
+        }
+        return net;
+    }
+
+    private static Network parseNodeList(List<String> dataLines, List<String> labels, String netName, int n) {
+        Map<String, Integer> nameToIdx = new HashMap<>();
+        List<String> actorNames = new ArrayList<>();
+
+        for (String lbl : labels) {
+            if (!nameToIdx.containsKey(lbl)) {
+                nameToIdx.put(lbl, actorNames.size());
+                actorNames.add(lbl);
+            }
+        }
+
+        List<String[]> parsedEdges = new ArrayList<>();
+        for (String dl : dataLines) {
+            List<String> tokens = tokenizeQuotedLine(dl);
+            if (tokens.size() >= 2) {
+                String from = tokens.get(0);
+                if (!nameToIdx.containsKey(from)) {
+                    nameToIdx.put(from, actorNames.size());
+                    actorNames.add(from);
+                }
+                for (int t = 1; t < tokens.size(); t++) {
+                    String to = tokens.get(t);
+                    if (!nameToIdx.containsKey(to)) {
+                        nameToIdx.put(to, actorNames.size());
+                        actorNames.add(to);
+                    }
+                    parsedEdges.add(new String[]{from, to, "1.0"});
+                }
+            }
+        }
+
+        int finalN = Math.max(n, actorNames.size());
+        Network net = new Network(finalN);
+        net.setName(netName);
+        for (int i = 0; i < finalN; i++) {
+            if (i < actorNames.size()) {
+                net.getActor(i).setName(actorNames.get(i));
+            } else {
+                net.getActor(i).setName(String.valueOf(i + 1));
+            }
+        }
+
+        for (String[] edge : parsedEdges) {
+            int u = nameToIdx.get(edge[0]);
+            int v = nameToIdx.get(edge[1]);
+            net.setValue(1.0f, u, v);
         }
         return net;
     }

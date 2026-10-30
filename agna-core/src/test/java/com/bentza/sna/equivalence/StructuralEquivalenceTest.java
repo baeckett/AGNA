@@ -44,5 +44,9 @@ public class StructuralEquivalenceTest {
         // Internal block densities should be 0.0 (no ties within blocks)
         assertEquals(0.0, res.blockmodelDensity[bA][bA], 1e-6);
         assertEquals(0.0, res.blockmodelDensity[bB][bB], 1e-6);
+
+        // Identical structural roles have correlation 1.0
+        assertEquals(1.0, res.pearsonCorrelation[0][1], 1e-6);
+        assertEquals(1.0, res.pearsonCorrelation[2][3], 1e-6);
     }
 }

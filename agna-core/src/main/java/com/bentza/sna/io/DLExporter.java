@@ -20,44 +20,43 @@ public final class DLExporter {
 
     private DLExporter() {}
 
+    public static String toDLString(Network net) {
+        StringBuilder sb = new StringBuilder();
+        int n = net.getSize();
+        sb.append("dl\n");
+        sb.append("n=").append(n).append("\n");
+        sb.append("format=fullmatrix\n");
+        sb.append("labels:\n");
+
+        for (int i = 0; i < n; i++) {
+            String name = net.getActor(i).getName().replaceAll("[ ,\\t\\r\\n]", "_");
+            sb.append(name);
+            if (i < n - 1) {
+                sb.append(", ");
+                if ((i + 1) % 10 == 0) sb.append("\n");
+            }
+        }
+        sb.append("\ndata:\n");
+
+        float[][] mat = net.getMatrix();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                float val = mat[i][j];
+                if (val == (long) val) {
+                    sb.append((long) val);
+                } else {
+                    sb.append(String.format(java.util.Locale.ROOT, "%.4f", val));
+                }
+                if (j < n - 1) sb.append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
     public static void exportDL(Network net, File file) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-            int n = net.getSize();
-            writer.write("dl");
-            writer.newLine();
-            writer.write("n=" + n);
-            writer.newLine();
-            writer.write("format=fullmatrix");
-            writer.newLine();
-            writer.write("labels:");
-            writer.newLine();
-
-            // Write labels comma-separated or space-separated
-            for (int i = 0; i < n; i++) {
-                String name = net.getActor(i).getName().replaceAll("[ ,\\t\\r\\n]", "_");
-                writer.write(name);
-                if (i < n - 1) {
-                    writer.write(", ");
-                    if ((i + 1) % 10 == 0) writer.newLine();
-                }
-            }
-            writer.newLine();
-            writer.write("data:");
-            writer.newLine();
-
-            float[][] mat = net.getMatrix();
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    float val = mat[i][j];
-                    if (val == (long) val) {
-                        writer.write(String.valueOf((long) val));
-                    } else {
-                        writer.write(String.format(java.util.Locale.ROOT, "%.4f", val));
-                    }
-                    if (j < n - 1) writer.write(" ");
-                }
-                writer.newLine();
-            }
+            writer.write(toDLString(net));
         }
     }
 }

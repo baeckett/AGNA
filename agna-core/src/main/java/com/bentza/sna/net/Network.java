@@ -80,14 +80,15 @@ public class Network
         {
         if (network_type == 1)
             {
-            symmetry = false;
+            symmetry = true;
             Actor tmp_node = null;
             net_name = "Star Network";
             all_nodes = new Vector(size);
 
-            // creating central node:
+            // creating central node (no self-loop on node 0):
             tmp_node = new Actor(String.valueOf(1), size);
-            for (int j = 0; j < size; j++)
+            tmp_node.setEmissionsValue(0f, 0);
+            for (int j = 1; j < size; j++)
                 {
                 tmp_node.setEmissionsValue(1f, j);
                 }
@@ -96,7 +97,6 @@ public class Network
             // creating all other nodes:
             for (int i = 1; i < size; i++)
                 {
-                tmp_node = null;
                 tmp_node = new Actor(String.valueOf(i + 1), size);
                 tmp_node.setEmissionsValue(1f, 0);
                 for (int j = 1; j < size; j++)

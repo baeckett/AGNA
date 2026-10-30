@@ -913,5 +913,36 @@ public class CliTest
 
         String pr = run("analyse", sample.getAbsolutePath(), "--metric", "pagerank");
         assertTrue(pr.contains("PageRank Centrality"), pr);
+
+        String assort = run("analyse", sample.getAbsolutePath(), "--metric", "assortativity");
+        assertTrue(assort.contains("Degree Assortativity"), assort);
+
+        String comm = run("analyse", sample.getAbsolutePath(), "--metric", "community");
+        assertTrue(comm.contains("Community Detection"), comm);
+
+        String eq = run("analyse", sample.getAbsolutePath(), "--metric", "equivalence");
+        assertTrue(eq.contains("Structural Equivalence"), eq);
+
+        String w = run("analyse", sample.getAbsolutePath(), "--metric", "weighted");
+        assertTrue(w.contains("Valued & Weighted Network Analysis"), w);
+        }
+
+    @Test
+    public void testDlFormatConversionAndRoundTripInCli() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+        File tempDl = File.createTempFile("agna_test_export", ".dl");
+        tempDl.deleteOnExit();
+
+        run("convert", sample.getAbsolutePath(), tempDl.getAbsolutePath());
+        assertTrue(tempDl.exists() && tempDl.length() > 0, "DL file was written");
+
+        String dlContent = new String(Files.readAllBytes(tempDl.toPath()), StandardCharsets.UTF_8);
+        assertTrue(dlContent.contains("format=fullmatrix"), "DL header present");
+
+        File tempCsv = File.createTempFile("agna_test_back", ".csv");
+        tempCsv.deleteOnExit();
+        run("convert", tempDl.getAbsolutePath(), tempCsv.getAbsolutePath());
+        assertTrue(tempCsv.exists() && tempCsv.length() > 0, "CSV converted from DL was written");
         }
     }
