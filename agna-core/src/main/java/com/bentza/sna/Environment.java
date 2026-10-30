@@ -36,7 +36,7 @@ public class Environment
     {
     private final static String application_name = "Agna";
 
-    private final static String application_version = "2.1.4";
+    private final static String application_version = "2.1.5";
 
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
@@ -201,44 +201,113 @@ public class Environment
 
         Path target_root = Paths.get(USER_ASSETS_ROOT + fs + "faces");
         URL faces_url = Environment.class.getResource("/faces");
-        if (faces_url == null)
+        if (faces_url != null)
             {
-            System.err
-                    .println("Agna: bundled faces not found on classpath (/faces).");
-            assets_extracted = true;
-            return;
-            }
-
-        try
-            {
-            if ("jar".equals(faces_url.getProtocol()))
+            try
                 {
-                // running from a jar: walk the zip filesystem
-                URI jar_uri = URI.create(faces_url.toString().substring(0,
-                        faces_url.toString().indexOf("!/")));
-                try (FileSystem jar_fs = FileSystems.newFileSystem(jar_uri,
-                        (java.util.Map) java.util.Collections.emptyMap()))
+                if ("jar".equals(faces_url.getProtocol()))
                     {
+                    // running from a jar: walk the zip filesystem
+                    URI jar_uri = URI.create(faces_url.toString().substring(0,
+                            faces_url.toString().indexOf("!/")));
+                    try (FileSystem jar_fs = FileSystems.newFileSystem(jar_uri,
+                            (java.util.Map) java.util.Collections.emptyMap()))
+                        {
+                        copyTree(Paths.get(faces_url.toURI()), target_root);
+                        }
+                    }
+                else
+                    {
+                    // running from an exploded class directory
                     copyTree(Paths.get(faces_url.toURI()), target_root);
                     }
+                removeLegacyMisspelledFaces(target_root);
                 }
-            else
+            catch (Exception e)
                 {
-                // running from an exploded class directory
-                copyTree(Paths.get(faces_url.toURI()), target_root);
+                AgnaLog.warn("Agna: could not extract bundled faces to "
+                        + target_root + ": " + e.getMessage());
                 }
-            removeLegacyMisspelledFaces(target_root);
             }
-        catch (Exception e)
+
+        // Also extract bundled samples if present on classpath
+        Path samples_target = Paths.get(USER_ASSETS_ROOT + fs + "samples");
+        URL samples_url = Environment.class.getResource("/samples");
+        if (samples_url != null)
             {
-            AgnaLog.warn("Agna: could not extract bundled faces to "
-                    + target_root + ": " + e.getMessage());
+            try
+                {
+                if ("jar".equals(samples_url.getProtocol()))
+                    {
+                    URI jar_uri = URI.create(samples_url.toString().substring(0,
+                            samples_url.toString().indexOf("!/")));
+                    try (FileSystem jar_fs = FileSystems.newFileSystem(jar_uri,
+                            (java.util.Map) java.util.Collections.emptyMap()))
+                        {
+                        copyTree(Paths.get(samples_url.toURI()), samples_target);
+                        }
+                    }
+                else
+                    {
+                    copyTree(Paths.get(samples_url.toURI()), samples_target);
+                    }
+                }
+            catch (Exception e)
+                {
+                AgnaLog.warn("Agna: could not extract bundled samples to "
+                        + samples_target + ": " + e.getMessage());
+                }
             }
-        finally
-            {
-            // extract at most once per JVM run, success or failure
-            assets_extracted = true;
-            }
+
+        assets_extracted = true;
+        }
+
+    /**
+     * Resolves the default directory for opening existing networks.
+     * Checks:
+     * 1. A local Samples folder relative to current working directory or application installation path.
+     * 2. The extracted user samples directory (~/.agna/samples).
+     * 3. The platform-specific standard user Documents directory (e.g. ~/Documents on Mac/Linux,
+     *    or Windows Documents if present).
+     * 4. The user's home directory.
+     */
+    public static File getDefaultOpenDirectory()
+        {
+        // 1. Check local "samples" or "Samples" in working directory or app install path
+        File cwdSamples = new File("samples");
+        if (cwdSamples.isDirectory() && cwdSamples.canRead())
+            return cwdSamples;
+        File cwdSamplesCap = new File("Samples");
+        if (cwdSamplesCap.isDirectory() && cwdSamplesCap.canRead())
+            return cwdSamplesCap;
+
+        // Check relative to executable / install location if launched from bundle
+        String userDir = System.getProperty("user.dir", ".");
+        File dirSamples = new File(userDir, "samples");
+        if (dirSamples.isDirectory() && dirSamples.canRead())
+            return dirSamples;
+
+        // 2. Check extracted ~/.agna/samples
+        ensureAssetsExtracted();
+        File userExtractedSamples = new File(USER_ASSETS_ROOT + fs + "samples");
+        if (userExtractedSamples.isDirectory() && userExtractedSamples.canRead())
+            return userExtractedSamples;
+
+        // 3. Fallback to Documents directory
+        String home = System.getProperty("user.home", ".");
+        File docs = new File(home, "Documents");
+        if (docs.isDirectory() && docs.canRead())
+            return docs;
+        File myDocs = new File(home, "My Documents");
+        if (myDocs.isDirectory() && myDocs.canRead())
+            return myDocs;
+
+        // 4. Fallback to user home
+        File homeDir = new File(home);
+        if (homeDir.isDirectory() && homeDir.canRead())
+            return homeDir;
+
+        return new File(".");
         }
 
     private static void copyTree(Path source_root, Path target_root)

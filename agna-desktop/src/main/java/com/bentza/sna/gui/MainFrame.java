@@ -644,89 +644,22 @@ public class MainFrame //
 
     private void doNewNetwork()
         {
-        int nnodes = getCurrentNetwork().getSize();
+        int currentSize = getCurrentNetwork() != null ? getCurrentNetwork().getSize() : 10;
         grid_model.setReady(false);
-        String tmp_str = (String) JOptionPane.showInputDialog(my_frame,
-                "Please enter number of nodes:", "Network size",
-                JOptionPane.QUESTION_MESSAGE, null, null, String
-                        .valueOf(nnodes));
-        my_frame.repaint();
-        if (tmp_str == null)
+
+        NewNetworkDialog dialog = new NewNetworkDialog(my_frame, currentSize);
+        dialog.setVisible(true);
+
+        Network created = dialog.getGeneratedNetwork();
+        if (created == null)
+            {
             return;
-        try
-            {
-            nnodes = Integer.parseInt(tmp_str);
-            } catch (Exception e)
-            {
-            try
-                {
-                nnodes = (int) Float.parseFloat(tmp_str);
-                } catch (Exception e1)
-                {
-                JOptionPane.showMessageDialog(my_frame, "Error reading value.",
-                        "Agna 2 Error Message", JOptionPane.ERROR_MESSAGE);
-                return;
-                }
             }
 
-        if (nnodes < 2)
-            nnodes = 2;
-        int confirm = 1;
-        while (nnodes > 300 && confirm == 1)
-            {
-            confirm = JOptionPane
-                    .showOptionDialog(
-                            my_frame,
-                            "Processing data from such a large network may result in very slow operations.\nAre you sure you want to continue?",
-                            "Agna 2 Message", JOptionPane.YES_NO_OPTION,
-                            JOptionPane.WARNING_MESSAGE, null, null, null);
-            if (confirm != 0)
-                {
-                tmp_str = (String) JOptionPane.showInputDialog(my_frame,
-                        "Enter number of nodes:", "Network size",
-                        JOptionPane.QUESTION_MESSAGE, null, null, String
-                                .valueOf(nnodes));
-                my_frame.repaint();
-                if (tmp_str == null)
-                    return;
-                try
-                    {
-                    nnodes = Integer.parseInt(tmp_str);
-                    } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
-                }
-            }
         saveChangedNetworks(true);
-        final int t_nnodes = nnodes;
-
-        // 2.1.3: the New Network flow now offers a network type
-        String[] netTypes = { "Default (random)", "Star" };
-        int chosenType = JOptionPane.showOptionDialog(my_frame,
-                "Network type:", "New Network",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, netTypes, netTypes[0]);
-        if (chosenType == JOptionPane.CLOSED_OPTION)
-            {
-            return;
-            }
 
         FullNet new_full_net = new FullNet();
-        if (chosenType == 1)
-            {
-            Network star = new Network(t_nnodes);
-            star.setName("Star Network");
-            for (int j = 1; j < t_nnodes; j++)
-                {
-                star.setValue(1f, 0, j);
-                star.setValue(1f, j, 0);
-                }
-            NetworkLayouts.apply(star, NetworkLayouts.STAR, 400, 400);
-            new_full_net.setNetwork(star);
-            } else
-            {
-            new_full_net.createDefaultNetwork(t_nnodes);
-            }
+        new_full_net.setNetwork(created);
 
         if (my_grafic != null)
             {
@@ -742,12 +675,11 @@ public class MainFrame //
 
         refreshFrameTitle();
 
-        appendOutputLog("Created a new network with " + t_nnodes
-                + " nodes.");
+        appendOutputLog("Created a new " + created.getName() + " with "
+                + created.getSize() + " nodes.");
         my_full_net.setChanged(false);
         my_frame.validate();
         my_frame.repaint();
-
         }
 
     public void saveNetwork(FullNet tmp_full_net, String tmp_file_name)
@@ -1271,20 +1203,7 @@ public class MainFrame //
             file = new File(my_full_net.getNetworkFileName());
             } else
             {
-            try
-                {
-                file = new File(MainFrame.getWorkingDirectory());
-                } catch (Exception e1)
-                {
-                try
-                    {
-                    file = new File(Environment.getCurrentDirectory()
-                            + Environment.fs + "Samples");
-                    } catch (Exception e2)
-                    {
-                    file = new File(".");
-                    }
-                }
+            file = Environment.getDefaultOpenDirectory();
             }
 
         JFileChooser chooser = new JFileChooser();
