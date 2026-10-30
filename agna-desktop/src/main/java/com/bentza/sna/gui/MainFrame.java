@@ -15,6 +15,7 @@ import com.bentza.sna.io.GraphMLExporter;
 import com.bentza.sna.io.GraphSONExporter;
 import com.bentza.sna.io.PajekExporter;
 import com.bentza.sna.net.*;
+import com.bentza.sna.report.FullAnalysisOptions;
 import com.bentza.sna.Agna;
 import com.bentza.sna.Environment;
 import com.bentza.sna.AgnaThread;
@@ -2920,7 +2921,22 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         private void doFullAnalysis()
         {
-        doAnalysis((byte) 22, "Running Full Analysis...", -1, -1);
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to run Full Analysis.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
+            return;
+            }
+        final AgnaLib agna_lib = new AgnaLib();
+        FullAnalysisDialog dlg = new FullAnalysisDialog(my_frame, my_full_net.getNetwork(), options ->
+            {
+            runAnalysisInBackground("Running Full Analysis Battery...", () ->
+                {
+                return agna_lib.getAgnaSignature() + agna_lib.outFullAnalysis(my_full_net.getNetwork(), options);
+                });
+            });
+        dlg.setVisible(true);
         }
 
     private void doArchetypeDiagnostic()

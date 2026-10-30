@@ -10,6 +10,7 @@ import com.bentza.sna.Environment;
 import com.bentza.sna.core.AppRuntime;
 import com.bentza.sna.report.AnalysisReport;
 import com.bentza.sna.report.AnalysisReportFactory;
+import com.bentza.sna.report.FullAnalysisOptions;
 import com.bentza.sna.report.TableRegistry;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1109,8 +1110,13 @@ import java.util.Vector;
      */
     public String outFullAnalysis(Network outsrc)
         {
-        String legacy = legacyOutFullAnalysis(outsrc);
-        AnalysisReport report = AnalysisReportFactory.createFullAnalysisReport(outsrc, this, legacy);
+        return outFullAnalysis(outsrc, FullAnalysisOptions.createStandard());
+        }
+
+    public String outFullAnalysis(Network outsrc, FullAnalysisOptions options)
+        {
+        String legacy = legacyOutFullAnalysis(outsrc, options);
+        AnalysisReport report = AnalysisReportFactory.createFullAnalysisReport(outsrc, this, options, legacy);
         if ("text/html".equals(AppRuntime.outputContentType()))
             return report.toHtmlReport();
         return report.toPlainText();
@@ -1118,39 +1124,97 @@ import java.util.Vector;
 
     public String legacyOutFullAnalysis(Network outsrc)
         {
+        return legacyOutFullAnalysis(outsrc, FullAnalysisOptions.createStandard());
+        }
+
+    public String legacyOutFullAnalysis(Network outsrc, FullAnalysisOptions options)
+        {
+        if (options == null)
+            options = FullAnalysisOptions.createStandard();
         StringBuffer out = new StringBuffer("");
         out.append(it + bold + "FULL ANALYSIS" + unbold + " of " + unit
                 + outsrc.getName() + lb);
-        out.append(outBasic(outsrc));
-        out.append(outDensity(outsrc));
-        out.append(outCohesion(outsrc));
-        out.append(outNodalDegree(outsrc));
-        out.append(outEmissionDegree(outsrc));
-        out.append(outReceptionDegree(outsrc));
-        out.append(outInDegree(outsrc));
-        out.append(outOutDegree(outsrc));
-        out.append(outSociometricStatus(outsrc));
-        out.append(outDeterminationDegree(outsrc));
-        out.append(outPrestige(outsrc));
-        out.append(outDiameter(outsrc));
-        if (isConnected(outsrc))
+        if (options.isIncludeBasicAndDensity())
             {
-            out.append(outBavelas(outsrc));
-            out.append(outFareness(outsrc));
-            out.append(outCloseness(outsrc));
-            out.append(outBetweenness(outsrc));
-            out.append(outEccentricity(outsrc));
-            out.append(outGeodesics(outsrc));
+            out.append(outBasic(outsrc));
+            out.append(outDensity(outsrc));
+            }
+        if (options.isIncludeClusteringAndCores())
+            {
+            out.append(outCohesion(outsrc));
+            }
+        if (options.isIncludeDegreeMetrics())
+            {
+            out.append(outNodalDegree(outsrc));
+            out.append(outEmissionDegree(outsrc));
+            out.append(outReceptionDegree(outsrc));
+            out.append(outInDegree(outsrc));
+            out.append(outOutDegree(outsrc));
+            }
+        if (options.isIncludePrestige())
+            {
+            out.append(outSociometricStatus(outsrc));
+            out.append(outDeterminationDegree(outsrc));
+            out.append(outPrestige(outsrc));
+            }
+        if (options.isIncludeGeodesicCentralities())
+            {
+            out.append(outDiameter(outsrc));
+            if (isConnected(outsrc))
+                {
+                out.append(outBavelas(outsrc));
+                out.append(outFareness(outsrc));
+                out.append(outCloseness(outsrc));
+                out.append(outBetweenness(outsrc));
+                out.append(outEccentricity(outsrc));
+                out.append(outGeodesics(outsrc));
+                } else
+                {
+                out.append(lb
+                        + it
+                        + "Centrality and geodesic measures skipped: the network "
+                        + "is disconnected (run each measure separately for "
+                        + "details)." + unit + lb);
+                }
+            }
+        if (options.isIncludeSpectralCentrality())
+            {
+            out.append(legacyOutEigenvector(outsrc));
+            }
+        if (options.isIncludeClusteringAndCores())
+            {
+            out.append(legacyOutLocalClustering(outsrc));
+            out.append(legacyOutTransitivity(outsrc));
+            out.append(legacyOutKCore(outsrc));
+            }
+        if (options.isIncludeStructuralHoles())
+            {
+            out.append(legacyOutStructuralHoles(outsrc));
+            }
+        if (options.isIncludeConnectivityAndDyad())
+            {
+            out.append(legacyOutConnectivity(outsrc));
+            }
+        if (options.isIncludeBonacich())
+            {
+            out.append(legacyOutBonacich(outsrc, options.getBonacichBeta()));
+            }
+        if (options.isIncludePageRank())
+            {
+            out.append(legacyOutPageRank(outsrc, options.getPageRankDamping()));
+            }
+        if (options.isIncludeTriadCensus())
+            {
+            out.append(legacyOutTriadCensus(outsrc));
+            }
+        if (options.isIncludeCliques())
+            {
+            out.append(outCliques(outsrc, options.getCliqueDiameter()));
             } else
             {
-            out.append(lb
-                    + it
-                    + "Centrality and geodesic measures skipped: the network "
-                    + "is disconnected (run each measure separately for "
-                    + "details)." + unit + lb);
+            out.append(lb + it + "Cliques: use Analysis > N-Cliques for the "
+                    + "clique report." + unit + lb);
             }
-        out.append(lb + it + "Cliques: use Analysis > N-Cliques for the "
-                + "clique report." + unit + lb);
         return out.toString();
         }
 

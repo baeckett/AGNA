@@ -743,43 +743,104 @@ public final class AnalysisReportFactory {
     }
 
     public static AnalysisReport createFullAnalysisReport(Network src, AgnaLib lib, String legacy) {
+        return createFullAnalysisReport(src, lib, FullAnalysisOptions.createStandard(), legacy);
+    }
+
+    public static AnalysisReport createFullAnalysisReport(Network src, AgnaLib lib, FullAnalysisOptions options, String legacy) {
+        if (options == null) {
+            options = FullAnalysisOptions.createStandard();
+        }
         AnalysisReport report = new AnalysisReport("FULL ANALYSIS Battery", src.getName());
         report.setRawPlainText(legacy);
         boolean connected = lib.isConnected(src);
 
-        // Build composite report
-        AnalysisReport basic = createBasicReport(src, lib, "");
-        for (TableData td : basic.getTables()) report.addTable(td);
+        // Build composite report based on selected options
+        if (options.isIncludeBasicAndDensity()) {
+            AnalysisReport basic = createBasicReport(src, lib, "");
+            for (TableData td : basic.getTables()) report.addTable(td);
 
-        AnalysisReport dens = createDensityReport(src, lib, "");
-        for (TableData td : dens.getTables()) report.addTable(td);
-
-        AnalysisReport nodal = createNodalDegreeReport(src, lib, "");
-        for (TableData td : nodal.getTables()) report.addTable(td);
-
-        AnalysisReport inDeg = createInDegreeReport(src, lib, "");
-        for (TableData td : inDeg.getTables()) report.addTable(td);
-
-        AnalysisReport outDeg = createOutDegreeReport(src, lib, "");
-        for (TableData td : outDeg.getTables()) report.addTable(td);
-
-        AnalysisReport prest = createPrestigeReport(src, lib, "");
-        for (TableData td : prest.getTables()) report.addTable(td);
-
-        if (connected) {
-            AnalysisReport betw = createBetweennessReport(src, lib, "");
-            for (TableData td : betw.getTables()) report.addTable(td);
-
-            AnalysisReport close = createClosenessReport(src, lib, "");
-            for (TableData td : close.getTables()) report.addTable(td);
-
-            AnalysisReport geo = createGeodesicsReport(src, lib, "");
-            for (TableData td : geo.getTables()) report.addTable(td);
-        } else {
-            report.setNote("Centrality and geodesic measures skipped: the network is disconnected (run each measure separately for details).", true);
+            AnalysisReport dens = createDensityReport(src, lib, "");
+            for (TableData td : dens.getTables()) report.addTable(td);
         }
 
-        report.addFootnote("Full analysis battery compiles all centralities, degree distributions, distance metrics, and entropy indices.");
+        if (options.isIncludeDegreeMetrics()) {
+            AnalysisReport nodal = createNodalDegreeReport(src, lib, "");
+            for (TableData td : nodal.getTables()) report.addTable(td);
+
+            AnalysisReport inDeg = createInDegreeReport(src, lib, "");
+            for (TableData td : inDeg.getTables()) report.addTable(td);
+
+            AnalysisReport outDeg = createOutDegreeReport(src, lib, "");
+            for (TableData td : outDeg.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludePrestige()) {
+            AnalysisReport prest = createPrestigeReport(src, lib, "");
+            for (TableData td : prest.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeGeodesicCentralities()) {
+            if (connected) {
+                AnalysisReport betw = createBetweennessReport(src, lib, "");
+                for (TableData td : betw.getTables()) report.addTable(td);
+
+                AnalysisReport close = createClosenessReport(src, lib, "");
+                for (TableData td : close.getTables()) report.addTable(td);
+
+                AnalysisReport geo = createGeodesicsReport(src, lib, "");
+                for (TableData td : geo.getTables()) report.addTable(td);
+            } else {
+                report.setNote("Centrality and geodesic measures skipped: the network is disconnected (run each measure separately for details).", true);
+            }
+        }
+
+        if (options.isIncludeSpectralCentrality()) {
+            AnalysisReport eigen = createEigenvectorReport(src, lib, "");
+            for (TableData td : eigen.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeClusteringAndCores()) {
+            AnalysisReport local = createLocalClusteringReport(src, lib, "");
+            for (TableData td : local.getTables()) report.addTable(td);
+
+            AnalysisReport trans = createTransitivityReport(src, lib, "");
+            for (TableData td : trans.getTables()) report.addTable(td);
+
+            AnalysisReport kcore = createKCoreReport(src, lib, "");
+            for (TableData td : kcore.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeStructuralHoles()) {
+            AnalysisReport holes = createStructuralHolesReport(src, lib, "");
+            for (TableData td : holes.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeConnectivityAndDyad()) {
+            AnalysisReport conn = createConnectivityReport(src, lib, "");
+            for (TableData td : conn.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeBonacich()) {
+            AnalysisReport bonacich = createBonacichReport(src, options.getBonacichBeta(), lib, "");
+            for (TableData td : bonacich.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludePageRank()) {
+            AnalysisReport pagerank = createPageRankReport(src, options.getPageRankDamping(), lib, "");
+            for (TableData td : pagerank.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeTriadCensus()) {
+            AnalysisReport triad = createTriadCensusReport(src, lib, "");
+            for (TableData td : triad.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeCliques()) {
+            AnalysisReport cliques = createCliquesReport(src, options.getCliqueDiameter(), lib, "");
+            for (TableData td : cliques.getTables()) report.addTable(td);
+        }
+
+        report.addFootnote("Full analysis battery compiles selected centrality, cohesion, structural capital, and connectivity metrics.");
         report.addFootnote("Matrix diagonal values (self-loops) are excluded across all actor-level metrics.");
 
         return report;
