@@ -473,6 +473,8 @@ public class NetworkGenerator
      * Starts with a ring lattice of n nodes where each node connects to k nearest neighbors (k/2 on each side).
      * With probability beta, each edge is rewired to a randomly chosen node without self-loops or duplicate edges.
      * Default layout: Circular layout displaying the perimeter ring and chord shortcuts.
+     *
+     * @see <a href="https://doi.org/10.1038/30918">Watts, D. J., &amp; Strogatz, S. H. (1998). Collective dynamics of 'small-world' networks. Nature, 393(6684), 440-442.</a>
      */
     public static Network createWattsStrogatz(int n, int k, double beta, long seed)
         {
@@ -547,6 +549,8 @@ public class NetworkGenerator
      * Starts with an initial clique seed of m+1 nodes, then iteratively adds nodes each connecting to m
      * existing nodes chosen proportionally to their degree.
      * Default layout: Concentric layout with highest-degree hubs in center.
+     *
+     * @see <a href="https://doi.org/10.1126/science.286.5439.509">Barabási, A.-L., &amp; Albert, R. (1999). Emergence of scaling in random networks. Science, 286(5439), 509-512.</a>
      */
     public static Network createBarabasiAlbert(int n, int m, long seed)
         {
@@ -605,6 +609,8 @@ public class NetworkGenerator
      * Vertices are partitioned into numBlocks communities with higher within-community density (pIn)
      * and lower cross-community density (pOut).
      * Default layout: Clustered community layout with visible group separation.
+     *
+     * @see <a href="https://doi.org/10.1016/0378-8733(83)90021-7">Holland, P. W., Laskey, K. B., &amp; Leinhardt, S. (1983). Stochastic blockmodels: First steps. Social Networks, 5(2), 109-137.</a>
      */
     public static Network createStochasticBlockModel(int n, int numBlocks, double pIn, double pOut, long seed)
         {
@@ -647,6 +653,9 @@ public class NetworkGenerator
      * Creates an Erdős-Rényi G(n, p) random graph.
      * Each pair of vertices is connected with independent probability p.
      * Default layout: Circular layout.
+     *
+     * @see <a href="https://doi.org/10.1214/aoms/1177706098">Gilbert, E. N. (1959). Random graphs. The Annals of Mathematical Statistics, 30(4), 1141-1144.</a>
+     * @see Erdős, P., &amp; Rényi, A. (1959). On random graphs. I. Publicationes Mathematicae (Debrecen), 6, 290-297.
      */
     public static Network createErdosRenyi(int n, double p, boolean symmetric, long seed)
         {
@@ -706,6 +715,9 @@ public class NetworkGenerator
      * Root node 0 sits at the top, branching down with branchingFactor children per node.
      * Optional lateral ties simulate informal cross-departmental peer connections.
      * Default layout: Hierarchical Tree Layout.
+     *
+     * @see Krackhardt, D. (1994). Graph theoretical dimensions of informal organizations. In Computational Organization Theory (pp. 89-111).
+     * @see Simon, H. A. (1962). The architecture of complexity. Proceedings of the American Philosophical Society, 106(6), 467-482.
      */
     public static Network createHierarchicalTree(int n, int branchingFactor, boolean includeLateralTies, boolean directed)
         {

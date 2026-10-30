@@ -27,6 +27,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     13. **Erdős–Rényi Random Graph $G(n, p)$**: Classical Bernoulli random graph model with independent edge probability $p$, selectable as symmetric (undirected) or directed, rendered in circular layout.
     14. **Linear / chain network**: $1\text{D}$ path / pipeline topology with configurable symmetry, laid out horizontally or in serpentine multi-row snake formation for larger node counts.
     15. **Hierarchical Tree / Corporate Hierarchy (Organigram)**: Configurable branching factor $b$ (subordinates per leader), selectable directionality (downward authority), and optional lateral peer ties within administrative levels.
+- **Academic Citations & Documentation Reference (§12 in Manual)**:
+  - Documented complete mathematical formulations and verified seminal academic literature citations for newly supported generative network models:
+    - **Watts–Strogatz Small-World**: Watts, D. J., & Strogatz, S. H. (1998). *Collective dynamics of 'small-world' networks*. *Nature*, 393(6684), 440–442. [doi:10.1038/30918](https://doi.org/10.1038/30918).
+    - **Barabási–Albert Scale-Free**: Barabási, A.-L., & Albert, R. (1999). *Emergence of scaling in random networks*. *Science*, 286(5439), 509–512. [doi:10.1126/science.286.5439.509](https://doi.org/10.1126/science.286.5439.509).
+    - **Stochastic Block Model (SBM)**: Holland, P. W., Laskey, K. B., & Leinhardt, S. (1983). *Stochastic blockmodels: First steps*. *Social Networks*, 5(2), 109–137. [doi:10.1016/0378-8733(83)90021-7](https://doi.org/10.1016/0378-8733(83)90021-7); Karrer, B., & Newman, M. E. J. (2011). *Physical Review E*, 83(1), 016107.
+    - **Erdős–Rényi Random Graph**: Gilbert, E. N. (1959). *Random graphs*. *The Annals of Mathematical Statistics*, 30(4), 1141–1144. [doi:10.1214/aoms/1177706098](https://doi.org/10.1214/aoms/1177706098); Erdős, P., & Rényi, A. (1959). *Publ. Math. Debrecen*, 6, 290–297.
+    - **Hierarchical Tree / Corporate Hierarchy**: Krackhardt, D. (1994). *Graph theoretical dimensions of informal organizations*. In *Computational Organization Theory* (pp. 89–111); Simon, H. A. (1962). *The architecture of complexity*. *Proc. Am. Philos. Soc.*, 106(6), 467–482.
 - **Hierarchical Layout Engine & Viewer Toolbar Action**:
   - Implemented BFS level decomposition algorithm in [`NetworkLayouts`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkLayouts.java) (`applyHierarchical`) to position tree and organizational structures top-down with root nodes centered at the top.
   - Added new **Hierarchical Layout** action to the Network Viewer menu (*Image | Layout | Hierarchical Layout*) and the Network Viewer layout toolbar.

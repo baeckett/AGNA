@@ -41,7 +41,7 @@
 Items that compute something link to their explanation; follow the link
 to read exactly what is calculated.
 
-- **File**: New Network; Open Network; [Merge Network...](#merge-network);
+- **File**: [New Network...](#12-pre-defined-network-models-and-academic-references); Open Network; [Merge Network...](#merge-network);
   Save Network As... (the format list is documented in
   [File formats](#6-file-formats)); Save Network; New From Chain...; Quit.
 - **Edit**: Cut / Copy / Paste / Delete / Select All (spreadsheet cell
@@ -378,3 +378,97 @@ used.
 
 Copyright 2001–2026 Marius Ion Bența. Website:
 https://www.netanalysis.co.uk
+
+## 12. Pre-defined network models and academic references
+
+Agna 2.1.5 introduces synthetic and empirical benchmark network generators
+accessible via **File ▸ New Network...**. Each model is constructed using
+established mathematical formulations and assigned a natural default layout in
+the Network Viewer.
+
+### Watts-Strogatz Small-World Model
+
+The Watts–Strogatz model interpolates between a regular lattice and a random
+graph. It begins with a regular ring lattice of $n$ vertices where each node is
+connected to its $k$ nearest neighbors ($k/2$ on each side, with $k$ even).
+With rewiring probability $\beta \in [0, 1]$, each edge is independently
+disconnected from its target and reconnected to a uniformly chosen node,
+preventing self-loops and duplicate edges. When $\beta = 0$, the network is a
+clustered regular lattice; as $\beta$ increases, small-world properties emerge
+(high clustering combined with very short average path lengths), and at
+$\beta = 1$ the network approaches a random graph.
+
+- **Parameters in Agna**: $N$ (nodes), $k$ (neighbors per node), $\beta$ (rewiring probability).
+- **Default layout**: Circular layout, displaying the ring boundary and transverse chord shortcuts.
+- **Reference**:
+  Watts, D. J., & Strogatz, S. H. (1998). Collective dynamics of 'small-world' networks. *Nature*, 393(6684), 440–442. https://doi.org/10.1038/30918
+- **Relevance**: Foundational paper introducing the $WS(n, k, \beta)$ model, quantifying clustering coefficients and characteristic path lengths across empirical social, neural, and power systems.
+
+### Barabasi-Albert Scale-Free Model
+
+The Barabási–Albert model generates networks with power-law degree
+distributions ($P(k) \sim k^{-\gamma}$, with $\gamma \approx 3$) through
+continuous network growth and preferential attachment ("the rich get richer").
+Starting from an initial seed clique of $m + 1$ vertices, each new incoming
+vertex connects to $m$ existing vertices with probability proportional to
+their current degree:
+$\Pi(i) = k_i / \sum_j k_j$. Nodes that enter early or acquire early ties
+develop into central hubs with disproportionately high degree centrality.
+
+- **Parameters in Agna**: $N$ (nodes), $m$ (attachment links per new node).
+- **Default layout**: Concentric layout, placing high-degree core hubs at the center and periphery nodes on outer rings.
+- **Reference**:
+  Barabási, A.-L., & Albert, R. (1999). Emergence of scaling in random networks. *Science*, 286(5439), 509–512. https://doi.org/10.1126/science.286.5439.509
+- **Relevance**: Seminal publication demonstrating that growth and preferential attachment account for scale-free degree distributions observed in social collaboration networks, citation networks, and the World Wide Web.
+
+### Stochastic Block Model (SBM) / Clustered Communities
+
+The Stochastic Block Model partitions a population of $n$ actors into $K$
+distinct community blocks. The probability of an edge existing between actor $i$
+and actor $j$ depends solely on their block memberships: $p_{\text{in}}$ if $i$
+and $j$ belong to the same block, and $p_{\text{out}}$ if they belong to
+different blocks. Setting $p_{\text{in}} > p_{\text{out}}$ generates modular,
+community-structured networks widely used to benchmark community detection,
+clustering coefficients, and structural hole algorithms.
+
+- **Parameters in Agna**: $N$ (nodes), $K$ (number of communities), $p_{\text{in}}$ (intra-community density), $p_{\text{out}}$ (inter-community density).
+- **Default layout**: Clustered Community layout, positioning the $K$ modules in distinct circular orbits around the canvas center.
+- **References**:
+  - Holland, P. W., Laskey, K. B., & Leinhardt, S. (1983). Stochastic blockmodels: First steps. *Social Networks*, 5(2), 109–137. https://doi.org/10.1016/0378-8733(83)90021-7
+  - Karrer, B., & Newman, M. E. J. (2011). Stochastic blockmodels and community structure in networks. *Physical Review E*, 83(1), 016107. https://doi.org/10.1103/PhysRevE.83.016107
+- **Relevance**: Holland et al. (1983) founded the mathematical framework of stochastic blockmodels in social network analysis, moving blockmodeling from deterministic matrices to probabilistic random graphs with explicit group parameters.
+
+### Erdos-Renyi Random Graph G(n, p)
+
+In the classic Bernoulli random graph model $G(n, p)$, a network of $n$
+vertices is formed by creating each of the possible $n(n - 1)/2$ edges
+independently with fixed probability $p$. In Agna, the generator can produce
+either undirected (symmetric) graphs or directed graphs (where ordered pairs
+$(i, j)$ are decided independently). Degree distributions follow a binomial
+distribution (approaching Poisson for large $n$ with constant mean degree
+$\lambda = n \cdot p$).
+
+- **Parameters in Agna**: $N$ (nodes), $p$ (connection probability), Symmetrical (undirected) / Directed.
+- **Default layout**: Circular layout, providing an unobstructed view of chord distribution across vertices.
+- **References**:
+  - Gilbert, E. N. (1959). Random graphs. *The Annals of Mathematical Statistics*, 30(4), 1141–1144. https://doi.org/10.1214/aoms/1177706098
+  - Erdős, P., & Rényi, A. (1959). On random graphs. I. *Publicationes Mathematicae (Debrecen)*, 6, 290–297.
+  - Erdős, P., & Rényi, A. (1960). On the evolution of random graphs. *Publications of the Mathematical Institute of the Hungarian Academy of Sciences*, 5, 17–61.
+- **Relevance**: Gilbert (1959) introduced the binomial $G(n, p)$ formulation where each edge occurs independently with probability $p$. Erdős and Rényi (1959, 1960) developed the rigorous mathematical foundations of random graph theory, identifying the emergence of giant components and connectivity thresholds.
+
+### Hierarchical Tree / Corporate Hierarchy (Organigram)
+
+The Hierarchical Tree model represents formal managerial authority and scalar
+chains of command in organizational sociology. Vertices are arranged in a
+$k$-ary out-tree (arborescence) with a single root executive (node 0) at the top,
+branching downwards with a configurable span of control (branching factor $b$).
+The model supports directed downward authority links ($i \to j$) or undirected
+relations, with an optional toggle to add horizontal lateral ties connecting
+peers within the same administrative branch.
+
+- **Parameters in Agna**: $N$ (nodes), $b$ (branching factor / span of control), Directed (downward hierarchy) / Undirected, Lateral ties within level.
+- **Default layout**: Hierarchical Tree Layout, using breadth-first level decomposition to place root managers at the top and subordinate teams cleanly below.
+- **References**:
+  - Krackhardt, D. (1994). Graph theoretical dimensions of informal organizations. In K. M. Carley & M. J. Prietula (Eds.), *Computational Organization Theory* (pp. 89–111). Hillsdale, NJ: Lawrence Erlbaum Associates.
+  - Simon, H. A. (1962). The architecture of complexity. *Proceedings of the American Philosophical Society*, 106(6), 467–482.
+- **Relevance**: Krackhardt (1994) formalizes the classical corporate hierarchy in social network analysis as a directed out-tree and measures organizational divergence using four graph-theoretic dimensions: Connectedness, Graph Hierarchy, Graph Efficiency, and Least Upper Bound. Simon (1962) analyzes why complex social and administrative organizations naturally decompose into hierarchic tree structures.
