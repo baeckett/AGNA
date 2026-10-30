@@ -1,0 +1,80 @@
+# Changelog
+
+All notable changes to the **AGNA** (Applied Graph and Network Analysis Open Source) project since version 2.1.3 are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [2.1.5] - 2026-10-30
+
+### Added
+- **Comprehensive "File | New Network..." Dialog (`NewNetworkDialog`)**:
+  - Replaced the previous single text prompt with a rich, interactive configuration dialog offering 8 distinct topologies:
+    1. **Empty network (isolated nodes)**: Generates $N$ isolated vertices in a circular ring layout.
+    2. **Star network**: Configurable as **Symmetrical** (undirected $0 \leftrightarrow j$) or **Asymmetrical** (directed $0 \to j$), with node 0 positioned at the center and peripheral nodes arranged on a surrounding orbit.
+    3. **Random binary connected network (no outsiders)**: Guarantees zero isolated nodes and full connectivity by generating a random spanning tree across all $N$ vertices, then populating additional edges to the chosen density.
+    4. **Random weighted network**: Generates edge weights strictly within the open interval $(0.0, 1.0)$ (i.e. $0.001 \le w \le 0.999$, without touching the boundary values $0.0$ or $1.0$), with user-selectable density and symmetry.
+    5. **Circular network**: Generates an undirected ring lattice with circular viewer coordinates.
+    6. **Full binary network (complete clique)**: Connects all distinct pairs with unit weights and positions vertices in a star-shaped layout around the central node.
+    7. **Square lattice network ($N \times N$)**: Generates a 2D regular square grid with 4-neighbor planar connectivity, with automated $L \times L$ node calculation and planar lattice coordinates.
+    8. **Hexagram lattice network (Star of David)**: Generates a 6-pointed star triangular lattice of order $k$, calculating the exact vertex count from dual overlapping triangular grids with planar hexagram coordinates.
+- **Topology Generation Engine (`NetworkGenerator`)**:
+  - Created [`com.bentza.sna.net.NetworkGenerator`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkGenerator.java) containing deterministic, mathematically validated topology constructors and layout coordinate initializers.
+- **On-the-Spot Input Validation & Safety Bounds**:
+  - Validates user input dynamically as typed: rejects non-natural numbers, decimals, and values $< 2$ with immediate visual feedback.
+  - Enforces a safety upper bound of **5,000 nodes** to guard against JVM `OutOfMemoryError` on large dense adjacency matrices.
+  - Displays non-blocking warnings for networks larger than 300 nodes.
+- **Smart Default Directory on Open Network**:
+  - When opening a network file via GUI (`File | Open Network...`), the file dialog automatically opens to the bundled `samples/` directory.
+  - Bundled sample networks are packaged as classpath resources and extracted on demand to `~/.agna/samples/`.
+  - If the samples folder is unavailable, gracefully falls back to the user's OS Documents directory (`~/Documents` on macOS/Linux, `My Documents` on Windows), or the user's home directory.
+- **Automated Test Coverage**:
+  - Added [`NetworkGeneratorTest`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/test/java/com/bentza/sna/net/NetworkGeneratorTest.java) covering all 8 topology algorithms, boundary conditions, edge weight intervals, and safety bounds (bringing total suite to 258 passing tests).
+
+---
+
+## [2.1.4] - 2026-10-30
+
+### Performance & Computation Optimizations
+- **Brandes Betweenness Centrality ($O(V \cdot E)$)**:
+  - Dropped betweenness computation time on 1,000-node networks from **12.0 seconds** to **2.3 seconds** (**5.13x speedup, -80.5% runtime**).
+  - Eliminated inner-loop dynamic heap allocations of `IntList` within the breadth-first search (BFS) queue.
+  - Replaced linked stack and queue traversals with contiguous primitive array stacks (`int[] order`) with index pointers ($O(1)$ push/pop with zero GC pressure).
+  - Hoisted common normalizing coefficients outside vertex iterations.
+- **Row-Major Degree Calculations**:
+  - Optimized `weightedReceptionDegree()` and `determinationDegree()` by replacing $O(N^2)$ column-major matrix access with single-pass row-major array accumulations (**1.5x to 4.3x speedup**), maximizing CPU L1/L2 data cache locality.
+- **Optimized `Network` Matrix Accessors**:
+  - Refactored `getMatrix()`, `getBooleanMatrix()`, `getIntegerMatrix()`, `getEdgesNumber()`, `getMin()`, `getMax()`, `isSymmetric()`, and `getValue()` to eliminate repetitive synchronized `Vector.elementAt(i)` lookups in inner loops.
+  - `getBooleanMatrix()` achieved a **3.5x to 8.1x speedup** across all graph sizes.
+  - `getMatrix()` now utilizes vectorized row-level `System.arraycopy()`.
+- **Linked List Modernization (`IntList`)**:
+  - Converted `IntList` into an augmented linked list tracking both `first` and `last` pointers, alongside a cached `size`.
+  - `appendValue()` and `getSize()` are now $O(1)$ instead of $O(N)$ list traversals.
+  - `getClone()` reduced from $O(N^2)$ to $O(N)$.
+  - Implemented `Iterable<Integer>` and `toArray()` for fast iteration without $O(k)$ repeated element lookups.
+
+### Security, Robustness & Fixes
+- **Malicious URL Scheme Injection Prevention (`BrowserControl`)**:
+  - Replaced raw shell invocation with URI scheme whitelisting (permitting only `http`, `https`, `mailto`, `file`) and adopted `java.awt.Desktop.browse(URI)`.
+- **XML External Entity (XXE) Hardening (`HTMLParser`)**:
+  - Hardened XML/HTML parsers with `FEATURE_SECURE_PROCESSING`, disabling external DTDs and entity expansion (`disallow-doctype-decl`, `external-general-entities`, `external-parameter-entities`).
+- **Excel Spreadsheet Bomb / Memory Exhaustion Defense (`XlsxReader`)**:
+  - Enforced a hard cell coordinate safety limit of 10,000 rows / 10,000 columns to prevent out-of-memory crashes on maliciously crafted or corrupt files.
+- **Path Traversal Protection (`IOUtils`)**:
+  - Sanitized filename extraction in `stripExtension()` to handle arbitrary dot placements in directory paths safely.
+- **Executable App Launcher Entry Point**:
+  - Corrected `jpackage` packaging manifest from `com.bentza.sna.gui.MainFrame` to the real application bootstrap `com.bentza.sna.Agna`.
+- **Repository Clean-Up**:
+  - Purged 47 MB of redundant precompiled binaries and bundled Linux test JRE in `AgnaSmoke/`.
+
+---
+
+## [2.1.3] - 2026-09-10
+
+- Initial open-source revival release of AGNA (modernized from original 2001–2005 codebase).
+- Maven multi-module structure (`agna-core`, `agna-cli`, `agna-desktop`).
+- FlatLaf cross-platform look and feel with dark/light themes.
+- Native packaging via `jpackage` for macOS, Linux, and Windows.
+- CLI subcommands for analysis, format conversions, and diagram rendering.
