@@ -889,6 +889,19 @@ public class Network
     // chosen policy; names only present in the other network are appended.
     // The diagonal (self-loops) always stays zero. Policies:
     //   MERGE_SUM (default) / MERGE_MAX / MERGE_KEEP_FIRST
+    public Network copy() {
+        final int n = getSize();
+        Network clone = new Network(n);
+        clone.setName(getName());
+        for (int i = 0; i < n; i++) {
+            clone.getActor(i).setName(getActor(i).getName());
+            for (int j = 0; j < n; j++) {
+                clone.setValue(getValue(i, j), i, j);
+            }
+        }
+        return clone;
+    }
+
     public static final int MERGE_SUM = 0;
     public static final int MERGE_MAX = 1;
     public static final int MERGE_KEEP_FIRST = 2;

@@ -746,6 +746,186 @@ public final class AnalysisReportFactory {
         return createFullAnalysisReport(src, lib, FullAnalysisOptions.createStandard(), legacy);
     }
 
+    public static AnalysisReport createCentralityBatteryReport(Network src, AgnaLib lib, CentralityOptions options) {
+        return createCentralityBatteryReport(src, lib, options, "");
+    }
+
+    public static AnalysisReport createCentralityBatteryReport(Network src, AgnaLib lib, CentralityOptions options, String legacy) {
+        if (options == null) options = CentralityOptions.createStandard();
+        AnalysisReport report = new AnalysisReport("Centrality & Prestige Battery", src.getName());
+        report.setRawPlainText(legacy);
+        boolean connected = lib.isConnected(src);
+
+        if (options.isIncludeNodalDegree()) {
+            for (TableData td : createNodalDegreeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeInDegree()) {
+            for (TableData td : createInDegreeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeOutDegree()) {
+            for (TableData td : createOutDegreeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeEmission()) {
+            for (TableData td : createEmissionReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeReception()) {
+            for (TableData td : createReceptionReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeDetermination()) {
+            for (TableData td : createDeterminationReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludePrestige()) {
+            for (TableData td : createPrestigeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeSociostatus()) {
+            for (TableData td : createSociometricStatusReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeBetweenness()) {
+            if (connected) {
+                for (TableData td : createBetweennessReport(src, lib, "").getTables()) report.addTable(td);
+            } else {
+                report.setNote("Betweenness centrality skipped: network is disconnected.", true);
+            }
+        }
+        if (options.isIncludeCloseness()) {
+            if (connected) {
+                for (TableData td : createClosenessReport(src, lib, "").getTables()) report.addTable(td);
+            } else {
+                report.setNote("Closeness centrality skipped: network is disconnected.", true);
+            }
+        }
+        if (options.isIncludeBavelas() && connected) {
+            for (TableData td : createBavelasReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeFareness() && connected) {
+            for (TableData td : createFarenessReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeEigenvector()) {
+            for (TableData td : createEigenvectorReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeBonacich()) {
+            for (TableData td : createBonacichReport(src, options.getBonacichBeta(), lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludePageRank()) {
+            for (TableData td : createPageRankReport(src, options.getPageRankDamping(), lib, "").getTables()) report.addTable(td);
+        }
+
+        report.addFootnote("Centrality battery compiles positional, structural, and spectral node prominence metrics.");
+        report.addFootnote("Self-loops are excluded from all centrality calculations.");
+        return report;
+    }
+
+    public static AnalysisReport createDistanceBatteryReport(Network src, AgnaLib lib, DistanceOptions options) {
+        return createDistanceBatteryReport(src, lib, options, "");
+    }
+
+    public static AnalysisReport createDistanceBatteryReport(Network src, AgnaLib lib, DistanceOptions options, String legacy) {
+        if (options == null) options = DistanceOptions.createStandard();
+        AnalysisReport report = new AnalysisReport("Distances & Geodesics Battery", src.getName());
+        report.setRawPlainText(legacy);
+        boolean connected = lib.isConnected(src);
+
+        if (connected) {
+            if (options.isIncludeGeodesicsMatrix()) {
+                for (TableData td : createGeodesicsReport(src, lib, "").getTables()) report.addTable(td);
+            }
+            if (options.isIncludeDiameter()) {
+                for (TableData td : createDiameterReport(src, lib, "").getTables()) report.addTable(td);
+            }
+            if (options.isIncludeEccentricity()) {
+                for (TableData td : createEccentricityReport(src, lib, "").getTables()) report.addTable(td);
+            }
+            if (options.isIncludeSpecificShortestPath()) {
+                for (TableData td : createShortestPathsReport(src, options.getFromNode(), options.getToNode(), lib, "").getTables()) report.addTable(td);
+            }
+        } else {
+            report.setNote("Network is disconnected. Infinite path lengths exist between isolated components.", true);
+        }
+
+        report.addFootnote("Geodesic distances are computed as the shortest path between node pairs.");
+        return report;
+    }
+
+    public static AnalysisReport createClusteringBatteryReport(Network src, AgnaLib lib, ClusteringOptions options) {
+        return createClusteringBatteryReport(src, lib, options, "");
+    }
+
+    public static AnalysisReport createClusteringBatteryReport(Network src, AgnaLib lib, ClusteringOptions options, String legacy) {
+        if (options == null) options = ClusteringOptions.createStandard();
+        AnalysisReport report = new AnalysisReport("Clustering & Cohesion Battery", src.getName());
+        report.setRawPlainText(legacy);
+
+        if (options.isIncludeLocalClustering()) {
+            for (TableData td : createLocalClusteringReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeTransitivity()) {
+            for (TableData td : createTransitivityReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeKCore()) {
+            for (TableData td : createKCoreReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeCohesion()) {
+            for (TableData td : createCohesionReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeOpenChains()) {
+            for (TableData td : createOpenChainReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeCliques()) {
+            for (TableData td : createCliquesReport(src, options.getCliqueDiameter(), lib, "").getTables()) report.addTable(td);
+        }
+
+        report.addFootnote("Clustering and cohesion metrics measure triad closure, core density, and subgraph cohesion.");
+        return report;
+    }
+
+    public static AnalysisReport createSociometricsBatteryReport(Network src, AgnaLib lib, SociometricsOptions options) {
+        return createSociometricsBatteryReport(src, lib, options, "");
+    }
+
+    public static AnalysisReport createSociometricsBatteryReport(Network src, AgnaLib lib, SociometricsOptions options, String legacy) {
+        if (options == null) options = SociometricsOptions.createStandard();
+        AnalysisReport report = new AnalysisReport("Sociometrics & Basic Battery", src.getName());
+        report.setRawPlainText(legacy);
+
+        if (options.isIncludeBasic()) {
+            for (TableData td : createBasicReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeDensity()) {
+            for (TableData td : createDensityReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeNodalDegree()) {
+            for (TableData td : createNodalDegreeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeInDegree()) {
+            for (TableData td : createInDegreeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeOutDegree()) {
+            for (TableData td : createOutDegreeReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeEmission()) {
+            for (TableData td : createEmissionReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeReception()) {
+            for (TableData td : createReceptionReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeDetermination()) {
+            for (TableData td : createDeterminationReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeSociostatus()) {
+            for (TableData td : createSociometricStatusReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeDyadCensus()) {
+            for (TableData td : createTriadCensusReport(src, lib, "").getTables()) {
+                if (td.getTitle().contains("Dyad Census")) {
+                    report.addTable(td);
+                }
+            }
+        }
+
+        report.addFootnote("Sociometrics battery details network density, tie volume, and degree distribution profiles.");
+        return report;
+    }
+
     public static AnalysisReport createFullAnalysisReport(Network src, AgnaLib lib, FullAnalysisOptions options, String legacy) {
         if (options == null) {
             options = FullAnalysisOptions.createStandard();

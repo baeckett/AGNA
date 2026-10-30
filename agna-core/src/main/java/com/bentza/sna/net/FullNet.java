@@ -2886,7 +2886,7 @@ tmp_node.setFace(tmpname);
                 "Minimum Non-Zero", "Below Diagonal", "Above Diagonal",
                 "Below Diagonal Non-Zero", "Above Diagonal Non-Zero", "Sum",
                 "Product", "Product Non-Zero", "Arithmetical Mean",
-                "Geometrical Mean" };
+                "Geometrical Mean", "Boolean OR (Union)", "Boolean AND (Intersection)" };
         String tmp_str = (String) JOptionPane.showInputDialog(tmp_frame,
                 "Symmetrize network by:", "Symmetrization Options",
                 JOptionPane.QUESTION_MESSAGE, null, values, "Maximum");
@@ -2931,6 +2931,14 @@ tmp_node.setFace(tmpname);
 
         else if (tmp_str.equals("Geometrical Mean"))
             agna_lib.symmetrizeGM(my_network);
+
+        else if (tmp_str.equals("Boolean OR (Union)"))
+            com.bentza.sna.transform.NetworkTransformService.symmetrize(my_network,
+                    com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.UNION);
+
+        else if (tmp_str.equals("Boolean AND (Intersection)"))
+            com.bentza.sna.transform.NetworkTransformService.symmetrize(my_network,
+                    com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.INTERSECT);
 
         if (isArea())
             net_area.updateArea(my_network);

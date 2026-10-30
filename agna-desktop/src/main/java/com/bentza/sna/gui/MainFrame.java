@@ -15,7 +15,11 @@ import com.bentza.sna.io.GraphMLExporter;
 import com.bentza.sna.io.GraphSONExporter;
 import com.bentza.sna.io.PajekExporter;
 import com.bentza.sna.net.*;
+import com.bentza.sna.report.CentralityOptions;
+import com.bentza.sna.report.ClusteringOptions;
+import com.bentza.sna.report.DistanceOptions;
 import com.bentza.sna.report.FullAnalysisOptions;
+import com.bentza.sna.report.SociometricsOptions;
 import com.bentza.sna.Agna;
 import com.bentza.sna.Environment;
 import com.bentza.sna.AgnaThread;
@@ -81,14 +85,14 @@ public class MainFrame //
     private ExcelAdapter my_adapter;
 
     private static JMenu mFile, mOutput, mEdit, mData, mAnalysis, mView, mHelp,
-            mPreferences, a_centrality, a_sociometrics, a_distance, a_clustering;
+            mPreferences;
 
     private static JMenuItem f_new, f_open, f_save, f_simply_save, f_create,
             f_quit, o_open, o_save, o_simply_save, o_clear, e_cut, e_copy,
             e_paste, e_delete, e_select_all, d_title, d_add_nodes,
             d_delete_nodes, d_add_scalar, d_multiply_scalar, d_transpose,
             d_symmetrize, d_normalize, d_remove_out, d_renumber_nodes, d_merge,
-            d_multiply_network, d_symmetrize_options, d_dichotomize, d_zero_diagonal,
+            d_multiply_network, d_dichotomize, d_zero_diagonal,
             d_set_diagonal, d_ego_network, d_network_algebra, d_sort_actors, a_basic,
             a_nodal_degree, a_indegree, a_outdegree, a_density, a_cohesion,
             a_emissions, a_receptions, a_determinations, a_sociostatus,
@@ -97,6 +101,7 @@ public class MainFrame //
             a_kcore, a_triad_census, a_structural_holes, a_connectivity,
             a_bavelas, a_closeness, a_fareness, a_betweenness, a_prestige,
             a_eigenvector, a_bonacich, a_pagerank, a_full_analysis,
+            a_centrality, a_sociometrics, a_distance, a_clustering,
             a_archetypes, a_hypothesis_testing, a_benchmarks, a_export_table, o_export_table, v_viewer,
             v_close, v_hide_output, v_view_output, p_working_directory,
             p_save_as_default, p_laf_native, p_laf_flatlaf,
@@ -504,6 +509,26 @@ public class MainFrame //
                     doFullAnalysis();
                     }
 
+                if (e.getSource() == a_sociometrics)
+                    {
+                    doSociometricsBattery();
+                    }
+
+                if (e.getSource() == a_centrality)
+                    {
+                    doCentralityBattery();
+                    }
+
+                if (e.getSource() == a_distance)
+                    {
+                    doDistanceBattery();
+                    }
+
+                if (e.getSource() == a_clustering)
+                    {
+                    doClusteringBattery();
+                    }
+
                 if (e.getSource() == a_archetypes)
                     {
                     doArchetypeDiagnostic();
@@ -562,11 +587,6 @@ public class MainFrame //
                 if (e.getSource() == a_pagerank)
                     {
                     doPageRank();
-                    }
-
-                if (e.getSource() == d_symmetrize_options)
-                    {
-                    doSymmetrizeOptions();
                     }
 
                 if (e.getSource() == d_dichotomize)
@@ -2527,34 +2547,74 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
     private void doSymmetrize()
         {
-        /*
-         * Thread runner = new Thread() { public void run() {
-         */
-        my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        setCurrentStatus("Symmetrizing current network's sociomatrix...");
-        if (checkAllValues())
-            updateNetwork();
-        else
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
             {
-            setCurrentStatus(default_status);
-            my_frame.setCursor(Cursor
-                    .getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to symmetrize.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
             return;
             }
-        grid_model.setReady(false);
-        String sym_choice = my_full_net.symmetrize(my_frame);
-        if (sym_choice != null)
+        if (!checkAllValues())
+            return;
+
+        SymmetrizeDialog dlg = new SymmetrizeDialog(my_frame, my_full_net.getNetwork(), res ->
             {
+            grid_model.setReady(false);
+            Network netToTransform = res.createNewNetwork ? my_full_net.getNetwork().copy() : my_full_net.getNetwork();
+            if (res.createNewNetwork)
+                {
+                netToTransform.setName(my_full_net.getNetwork().getName() + "_Symmetric");
+                }
+
+            applySymmetrizationRule(netToTransform, res.method);
+            if (res.zeroDiagonal)
+                {
+                com.bentza.sna.transform.NetworkTransformService.zeroDiagonal(netToTransform);
+                }
+
+            if (res.createNewNetwork)
+                {
+                FullNet newNet = new FullNet();
+                newNet.setNetwork(netToTransform);
+                my_full_net = newNet;
+                }
+            updateNetwork();
+            updateMatrix();
+            grid_model.setReady(true);
             appendOutputLog("Symmetrized " + currentNetworkLabel() + " by "
-                    + sym_choice + ".");
+                    + res.method + (res.zeroDiagonal ? " (zero diagonal)" : "") + ".");
+            });
+        dlg.setVisible(true);
+        }
+
+    private void applySymmetrizationRule(Network net, String method)
+        {
+        AgnaLib lib = new AgnaLib();
+        switch (method)
+            {
+            case "Maximum": lib.symmetrizeMaximum(net); break;
+            case "Minimum": lib.symmetrizeMinimum(net); break;
+            case "Maximum Non-Zero": lib.symmetrizeMaximumNonZero(net); break;
+            case "Minimum Non-Zero": lib.symmetrizeMinimumNonZero(net); break;
+            case "Below Diagonal (Lower to Upper)": lib.symmetrizeBelow(net); break;
+            case "Above Diagonal (Upper to Lower)": lib.symmetrizeAbove(net); break;
+            case "Below Diagonal Non-Zero": lib.symmetrizeBelowNonZero(net); break;
+            case "Above Diagonal Non-Zero": lib.symmetrizeAboveNonZero(net); break;
+            case "Arithmetic Mean": lib.symmetrizeAM(net); break;
+            case "Geometric Mean": lib.symmetrizeGM(net); break;
+            case "Sum": lib.symmetrizeSum(net); break;
+            case "Product": lib.symmetrizeProduct(net); break;
+            case "Product Non-Zero": lib.symmetrizeProductNonZero(net); break;
+            case "Boolean OR (Union)":
+                com.bentza.sna.transform.NetworkTransformService.symmetrize(net,
+                        com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.UNION);
+                break;
+            case "Boolean AND (Intersection)":
+                com.bentza.sna.transform.NetworkTransformService.symmetrize(net,
+                        com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.INTERSECT);
+                break;
+            default: lib.symmetrizeMaximum(net); break;
             }
-        updateMatrix();
-        grid_model.setReady(true);
-        setCurrentStatus(default_status);
-        my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        /*
-         * } }; //end of thread runner.start();
-         */
         }
 
     private void doNormalize()
@@ -2939,6 +2999,86 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         dlg.setVisible(true);
         }
 
+    private void doSociometricsBattery()
+        {
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to run Sociometrics.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
+            return;
+            }
+        final AgnaLib agna_lib = new AgnaLib();
+        SociometricsBatteryDialog dlg = new SociometricsBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
+            {
+            runAnalysisInBackground("Running Sociometrics Battery...", () ->
+                {
+                return agna_lib.getAgnaSignature() + agna_lib.outSociometricsBattery(my_full_net.getNetwork(), options);
+                });
+            });
+        dlg.setVisible(true);
+        }
+
+    private void doCentralityBattery()
+        {
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to run Centrality.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
+            return;
+            }
+        final AgnaLib agna_lib = new AgnaLib();
+        CentralityBatteryDialog dlg = new CentralityBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
+            {
+            runAnalysisInBackground("Running Centrality Battery...", () ->
+                {
+                return agna_lib.getAgnaSignature() + agna_lib.outCentralityBattery(my_full_net.getNetwork(), options);
+                });
+            });
+        dlg.setVisible(true);
+        }
+
+    private void doDistanceBattery()
+        {
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to run Distance calculations.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
+            return;
+            }
+        final AgnaLib agna_lib = new AgnaLib();
+        DistanceBatteryDialog dlg = new DistanceBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
+            {
+            runAnalysisInBackground("Running Distance Battery...", () ->
+                {
+                return agna_lib.getAgnaSignature() + agna_lib.outDistanceBattery(my_full_net.getNetwork(), options);
+                });
+            });
+        dlg.setVisible(true);
+        }
+
+    private void doClusteringBattery()
+        {
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to run Clustering.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
+            return;
+            }
+        final AgnaLib agna_lib = new AgnaLib();
+        ClusteringBatteryDialog dlg = new ClusteringBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
+            {
+            runAnalysisInBackground("Running Clustering Battery...", () ->
+                {
+                return agna_lib.getAgnaSignature() + agna_lib.outClusteringBattery(my_full_net.getNetwork(), options);
+                });
+            });
+        dlg.setVisible(true);
+        }
+
     private void doArchetypeDiagnostic()
         {
         if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 3)
@@ -3068,33 +3208,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(my_frame, "Damping factor must be between 0.0 and 1.0.", "Input Error", JOptionPane.ERROR_MESSAGE);
         }
-        }
-
-    private void doSymmetrizeOptions()
-        {
-        if (!requireActiveNetwork("Symmetrization", 2)) return;
-        Object[] choices = {
-            "Maximum (Union: max(a_ij, a_ji))",
-            "Minimum (Intersection: min(a_ij, a_ji))",
-            "Average (Mean: (a_ij + a_ji) / 2)",
-            "Sum (Aggregate: a_ij + a_ji)"
-        };
-        Object picked = JOptionPane.showInputDialog(my_frame,
-                "Select Symmetrization Rule:", "Symmetrize Sociomatrix",
-                JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
-        if (picked == null) return;
-        com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode mode;
-        if (picked.equals(choices[1])) mode = com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.MIN;
-        else if (picked.equals(choices[2])) mode = com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.AVERAGE;
-        else if (picked.equals(choices[3])) mode = com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.SUM;
-        else mode = com.bentza.sna.transform.NetworkTransformService.SymmetrizeMode.MAX;
-
-        updateNetwork();
-        grid_model.setReady(false);
-        com.bentza.sna.transform.NetworkTransformService.symmetrize(my_full_net.getNetwork(), mode);
-        updateMatrix();
-        grid_model.setReady(true);
-        appendOutputLog("Symmetrized " + currentNetworkLabel() + " using rule: " + mode.getLabel());
         }
 
     private void doDichotomize()
@@ -4414,7 +4527,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         d_remove_out = new JMenuItem("Remove Outsiders");
         d_renumber_nodes = new JMenuItem("Renumber Nodes...");
         d_multiply_network = new JMenuItem("Square Matrix");
-        d_symmetrize_options = new JMenuItem("Symmetrize Options (Max, Min, Mean, Sum)...");
         d_dichotomize = new JMenuItem("Dichotomize / Threshold Ties...");
         d_zero_diagonal = new JMenuItem("Zero Diagonal (Remove Self-Loops)");
         d_set_diagonal = new JMenuItem("Set Diagonal to Value...");
@@ -4450,7 +4562,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         d_remove_out.addActionListener(act_menu);
         d_merge.addActionListener(act_menu);
         d_multiply_network.addActionListener(act_menu);
-        d_symmetrize_options.addActionListener(act_menu);
         d_dichotomize.addActionListener(act_menu);
         d_zero_diagonal.addActionListener(act_menu);
         d_set_diagonal.addActionListener(act_menu);
@@ -4498,7 +4609,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mData.add(d_symmetrize);
         mData.add(d_normalize);
         mData.addSeparator();
-        mData.add(d_symmetrize_options);
         mData.add(d_dichotomize);
         mData.addSeparator();
         mData.add(d_zero_diagonal);
@@ -4512,7 +4622,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         // Submeniuri din ANALYSIS:
         a_basic = new JMenuItem("Basic Description");
-        a_sociometrics = new JMenu("Sociometrics");
+        a_sociometrics = new JMenuItem("Sociometrics & Basic Battery...");
         a_nodal_degree = new JMenuItem("Nodal Degree");
         a_indegree = new JMenuItem("Indegree");
         a_outdegree = new JMenuItem("Outdegree");
@@ -4522,21 +4632,21 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_receptions = new JMenuItem("Reception Degree");
         a_determinations = new JMenuItem("Determination Degree");
         a_sociostatus = new JMenuItem("Sociometric Status");
-        a_distance = new JMenu("Distance");
+        a_distance = new JMenuItem("Distances & Geodesics Battery...");
         a_eccentricity = new JMenuItem("Eccentricity");
         a_diameter = new JMenuItem("Diameter");
         a_geodesics = new JMenuItem("Geodesic Matrix");
         a_shortest_paths = new JMenuItem("Shortest Paths...");
         a_all_shortest_paths = new JMenuItem("All Shortest Paths");
         a_cliques = new JMenuItem("N-Cliques");
-        a_centrality = new JMenu("Centrality");
+        a_centrality = new JMenuItem("Centrality & Prestige Battery...");
         a_bavelas = new JMenuItem("Bavelas-Leavitt");
         a_closeness = new JMenuItem("Closeness");
         a_fareness = new JMenuItem("Fareness");
         a_betweenness = new JMenuItem("Betweenness");
         a_prestige = new JMenuItem("Prestige");
-        a_full_analysis = new JMenuItem("Full Analysis");
-        a_clustering = new JMenu("Clustering & Cohesion");
+        a_full_analysis = new JMenuItem("Full Analysis Battery...");
+        a_clustering = new JMenuItem("Clustering & Cohesion Battery...");
         a_local_clustering = new JMenuItem("Local Clustering (Watts-Strogatz)...");
         a_transitivity = new JMenuItem("Global Transitivity (Triads)...");
         a_kcore = new JMenuItem("k-Core Decomposition...");
@@ -4670,57 +4780,26 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_betweenness.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                 ActionEvent.ALT_MASK));
 
-        a_sociometrics.add(a_nodal_degree);
-        a_sociometrics.add(a_outdegree);
-        a_sociometrics.add(a_indegree);
-        a_sociometrics.addSeparator();
-        a_sociometrics.add(a_density);
-        a_sociometrics.add(a_cohesion);
-        a_sociometrics.addSeparator();
-        a_sociometrics.add(a_emissions);
-        a_sociometrics.add(a_receptions);
-        a_sociometrics.add(a_determinations);
-        a_sociometrics.add(a_sociostatus);
+        a_sociometrics.addActionListener(act_menu);
+        a_centrality.addActionListener(act_menu);
+        a_distance.addActionListener(act_menu);
+        a_clustering.addActionListener(act_menu);
+        a_structural_holes.addActionListener(act_menu);
+        a_connectivity.addActionListener(act_menu);
+        a_full_analysis.addActionListener(act_menu);
+        a_archetypes.addActionListener(act_menu);
+        a_hypothesis_testing.addActionListener(act_menu);
+        a_benchmarks.addActionListener(act_menu);
+        a_export_table.addActionListener(act_menu);
 
-        a_distance.add(a_diameter);
-        a_distance.add(a_eccentricity);
-        a_distance.addSeparator();
-        a_distance.add(a_geodesics);
-        a_distance.addSeparator();
-        a_distance.add(a_shortest_paths);
-        a_distance.add(a_all_shortest_paths);
-        a_distance.addSeparator();
-        a_distance.add(a_connectivity);
-
-        a_centrality.add(a_bavelas);
-        a_centrality.addSeparator();
-        a_centrality.add(a_closeness);
-        a_centrality.add(a_fareness);
-        a_centrality.addSeparator();
-        a_centrality.add(a_betweenness);
-        a_centrality.addSeparator();
-        a_centrality.add(a_prestige);
-        a_centrality.addSeparator();
-        a_centrality.add(a_eigenvector);
-        a_centrality.add(a_bonacich);
-        a_centrality.add(a_pagerank);
-
-        a_clustering.add(a_local_clustering);
-        a_clustering.add(a_transitivity);
-        a_clustering.addSeparator();
-        a_clustering.add(a_kcore);
-        a_clustering.add(a_cliques);
-        a_clustering.addSeparator();
-        a_clustering.add(a_triad_census);
-
-        mAnalysis.add(a_basic);
+        mAnalysis.add(a_full_analysis);
         mAnalysis.addSeparator();
-        mAnalysis.add(a_distance);
-        mAnalysis.add(a_clustering);
         mAnalysis.add(a_sociometrics);
         mAnalysis.add(a_centrality);
+        mAnalysis.add(a_distance);
+        mAnalysis.add(a_clustering);
         mAnalysis.add(a_structural_holes);
-        mAnalysis.add(a_full_analysis);
+        mAnalysis.add(a_connectivity);
         mAnalysis.addSeparator();
         mAnalysis.add(a_archetypes);
         mAnalysis.add(a_hypothesis_testing);

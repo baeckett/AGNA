@@ -10,7 +10,11 @@ import com.bentza.sna.Environment;
 import com.bentza.sna.core.AppRuntime;
 import com.bentza.sna.report.AnalysisReport;
 import com.bentza.sna.report.AnalysisReportFactory;
+import com.bentza.sna.report.CentralityOptions;
+import com.bentza.sna.report.ClusteringOptions;
+import com.bentza.sna.report.DistanceOptions;
 import com.bentza.sna.report.FullAnalysisOptions;
+import com.bentza.sna.report.SociometricsOptions;
 import com.bentza.sna.report.TableRegistry;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -3532,6 +3536,83 @@ import java.util.Vector;
 
     public String legacyOutPageRank(Network outsrc, double damping) {
         return it + bold + "PageRank Centrality (d=" + damping + ")" + unbold + " of " + unit + outsrc.getName() + lb;
+    }
+
+    public String outCentralityBattery(Network outsrc, CentralityOptions options) {
+        String legacy = legacyOutCentralityBattery(outsrc, options);
+        AnalysisReport report = AnalysisReportFactory.createCentralityBatteryReport(outsrc, this, options, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutCentralityBattery(Network outsrc, CentralityOptions options) {
+        if (options == null) options = CentralityOptions.createStandard();
+        StringBuffer out = new StringBuffer(it + bold + "Centrality & Prestige Battery" + unbold + " of " + unit + outsrc.getName() + lb);
+        if (options.isIncludeNodalDegree()) out.append(outNodalDegree(outsrc));
+        if (options.isIncludeInDegree()) out.append(outInDegree(outsrc));
+        if (options.isIncludeOutDegree()) out.append(outOutDegree(outsrc));
+        if (options.isIncludePrestige()) out.append(outPrestige(outsrc));
+        if (isConnected(outsrc)) {
+            if (options.isIncludeBetweenness()) out.append(outBetweenness(outsrc));
+            if (options.isIncludeCloseness()) out.append(outCloseness(outsrc));
+        }
+        if (options.isIncludeEigenvector()) out.append(legacyOutEigenvector(outsrc));
+        if (options.isIncludeBonacich()) out.append(legacyOutBonacich(outsrc, options.getBonacichBeta()));
+        if (options.isIncludePageRank()) out.append(legacyOutPageRank(outsrc, options.getPageRankDamping()));
+        return out.toString();
+    }
+
+    public String outDistanceBattery(Network outsrc, DistanceOptions options) {
+        String legacy = legacyOutDistanceBattery(outsrc, options);
+        AnalysisReport report = AnalysisReportFactory.createDistanceBatteryReport(outsrc, this, options, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutDistanceBattery(Network outsrc, DistanceOptions options) {
+        if (options == null) options = DistanceOptions.createStandard();
+        StringBuffer out = new StringBuffer(it + bold + "Distances & Geodesics Battery" + unbold + " of " + unit + outsrc.getName() + lb);
+        if (isConnected(outsrc)) {
+            if (options.isIncludeGeodesicsMatrix()) out.append(outGeodesics(outsrc));
+            if (options.isIncludeDiameter()) out.append(outDiameter(outsrc));
+            if (options.isIncludeEccentricity()) out.append(outEccentricity(outsrc));
+        } else {
+            out.append(lb + it + "Network is disconnected." + unit + lb);
+        }
+        return out.toString();
+    }
+
+    public String outClusteringBattery(Network outsrc, ClusteringOptions options) {
+        String legacy = legacyOutClusteringBattery(outsrc, options);
+        AnalysisReport report = AnalysisReportFactory.createClusteringBatteryReport(outsrc, this, options, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutClusteringBattery(Network outsrc, ClusteringOptions options) {
+        if (options == null) options = ClusteringOptions.createStandard();
+        StringBuffer out = new StringBuffer(it + bold + "Clustering & Cohesion Battery" + unbold + " of " + unit + outsrc.getName() + lb);
+        if (options.isIncludeLocalClustering()) out.append(legacyOutLocalClustering(outsrc));
+        if (options.isIncludeTransitivity()) out.append(legacyOutTransitivity(outsrc));
+        if (options.isIncludeKCore()) out.append(legacyOutKCore(outsrc));
+        if (options.isIncludeCohesion()) out.append(outCohesion(outsrc));
+        if (options.isIncludeOpenChains()) out.append(outOpenChainSummary(outsrc));
+        if (options.isIncludeCliques()) out.append(outCliques(outsrc, options.getCliqueDiameter()));
+        return out.toString();
+    }
+
+    public String outSociometricsBattery(Network outsrc, SociometricsOptions options) {
+        String legacy = legacyOutSociometricsBattery(outsrc, options);
+        AnalysisReport report = AnalysisReportFactory.createSociometricsBatteryReport(outsrc, this, options, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutSociometricsBattery(Network outsrc, SociometricsOptions options) {
+        if (options == null) options = SociometricsOptions.createStandard();
+        StringBuffer out = new StringBuffer(it + bold + "Sociometrics & Basic Battery" + unbold + " of " + unit + outsrc.getName() + lb);
+        if (options.isIncludeBasic()) out.append(outBasic(outsrc));
+        if (options.isIncludeDensity()) out.append(outDensity(outsrc));
+        if (options.isIncludeNodalDegree()) out.append(outNodalDegree(outsrc));
+        if (options.isIncludeInDegree()) out.append(outInDegree(outsrc));
+        if (options.isIncludeOutDegree()) out.append(outOutDegree(outsrc));
+        return out.toString();
     }
 
     }

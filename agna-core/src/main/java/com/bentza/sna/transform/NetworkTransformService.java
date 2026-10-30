@@ -29,7 +29,9 @@ public final class NetworkTransformService {
         MAX("Maximum (Union: max(a_ij, a_ji))"),
         MIN("Minimum (Intersection: min(a_ij, a_ji))"),
         AVERAGE("Average (Arithmetic mean: (a_ij + a_ji) / 2)"),
-        SUM("Sum (Aggregate: a_ij + a_ji)");
+        SUM("Sum (Aggregate: a_ij + a_ji)"),
+        UNION("Boolean OR (Union: 1 if either > 0)"),
+        INTERSECT("Boolean AND (Intersection: 1 if both > 0)");
 
         private final String label;
 
@@ -99,6 +101,12 @@ public final class NetworkTransformService {
                         break;
                     case SUM:
                         symVal = a + b;
+                        break;
+                    case UNION:
+                        symVal = (a > 0.0f || b > 0.0f) ? 1.0f : 0.0f;
+                        break;
+                    case INTERSECT:
+                        symVal = (a > 0.0f && b > 0.0f) ? 1.0f : 0.0f;
                         break;
                     case MAX:
                     default:
