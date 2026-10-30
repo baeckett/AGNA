@@ -494,4 +494,28 @@ public class NetworkLayoutsTest
         assertTrue(Math.abs(egoX - 400) <= 2, "ego centered horizontally");
         assertTrue(Math.abs(egoY - 400) <= 2, "ego centered vertically");
         }
+
+    @Test
+    public void communityLayoutClustersNodesRatherThanFallingBackToCircle() throws Exception
+        {
+        Network net = sample();
+        int w = 800;
+        int h = 800;
+        NetworkLayouts.apply(net, NetworkLayouts.COMMUNITY, w, h);
+        double cx = 400.0;
+        double cy = 400.0;
+        double minDist = Double.MAX_VALUE;
+        double maxDist = Double.MIN_VALUE;
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            int x = px(net.getActor(i), w);
+            int y = py(net.getActor(i), h);
+            double dist = Math.hypot(x - cx, y - cy);
+            if (dist < minDist)
+                minDist = dist;
+            if (dist > maxDist)
+                maxDist = dist;
+            }
+        assertTrue(maxDist - minDist > 50, "community layout clusters have varying distance to center, span=" + (maxDist - minDist));
+        }
     }

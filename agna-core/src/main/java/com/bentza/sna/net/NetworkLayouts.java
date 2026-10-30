@@ -962,58 +962,133 @@ public class NetworkLayouts
             return;
             }
 
-        // Deterministic label propagation (up to 10 iterations)
-        int[] comm = new int[n];
+        // Build symmetrized adjacency matrix, node degrees, and total weight
+        double[][] adj = new double[n][n];
+        double[] deg = new double[n];
+        double totalWeight = 0.0;
         for (int i = 0; i < n; i++)
             {
-            comm[i] = i;
+            for (int j = i + 1; j < n; j++)
+                {
+                double w = Math.max(Math.abs(net.getValue(i, j)), Math.abs(net.getValue(j, i)));
+                if (w > 0)
+                    {
+                    adj[i][j] = w;
+                    adj[j][i] = w;
+                    deg[i] += w;
+                    deg[j] += w;
+                    totalWeight += 2.0 * w;
+                    }
+                }
             }
 
-        for (int iter = 0; iter < 10; iter++)
+        if (totalWeight <= 0)
             {
-            boolean changed = false;
-            for (int i = 0; i < n; i++)
+            applyGrid(net, width, height);
+            return;
+            }
+
+        // Newman (2004) Greedy Modularity Optimization (agglomerative Q-maximization)
+        java.util.Map<Integer, java.util.List<Integer>> comms = new java.util.LinkedHashMap<>();
+        for (int i = 0; i < n; i++)
+            {
+            java.util.List<Integer> list = new java.util.ArrayList<>();
+            list.add(i);
+            comms.put(i, list);
+            }
+
+        // Track the partition that achieves the maximum modularity Q
+        java.util.List<java.util.List<Integer>> bestPartition = new java.util.ArrayList<>();
+        for (java.util.List<Integer> c : comms.values())
+            {
+            bestPartition.add(new java.util.ArrayList<>(c));
+            }
+
+        double currentQ = 0.0;
+        for (int i = 0; i < n; i++)
+            {
+            double a_i = deg[i] / totalWeight;
+            currentQ -= a_i * a_i;
+            }
+        double bestQ = currentQ;
+
+        while (comms.size() > 1)
+            {
+            double maxDeltaQ = Double.NEGATIVE_INFINITY;
+            int bestA = -1;
+            int bestB = -1;
+
+            java.util.List<Integer> commKeys = new java.util.ArrayList<>(comms.keySet());
+            int numComm = commKeys.size();
+
+            for (int i = 0; i < numComm; i++)
                 {
-                java.util.Map<Integer, Integer> freq = new java.util.HashMap<>();
-                for (int j = 0; j < n; j++)
+                int a = commKeys.get(i);
+                java.util.List<Integer> membersA = comms.get(a);
+                double degA = 0;
+                for (int u : membersA)
+                    degA += deg[u];
+
+                for (int j = i + 1; j < numComm; j++)
                     {
-                    if (i != j && (net.getValue(i, j) != 0f || net.getValue(j, i) != 0f))
+                    int b = commKeys.get(j);
+                    java.util.List<Integer> membersB = comms.get(b);
+
+                    // Compute total tie weight between community a and b
+                    double edgesAB = 0.0;
+                    for (int u : membersA)
                         {
-                        int c = comm[j];
-                        freq.put(c, freq.getOrDefault(c, 0) + 1);
-                        }
-                    }
-                if (!freq.isEmpty())
-                    {
-                    int bestComm = comm[i];
-                    int bestCount = freq.getOrDefault(comm[i], 0);
-                    for (java.util.Map.Entry<Integer, Integer> entry : freq.entrySet())
-                        {
-                        if (entry.getValue() > bestCount || (entry.getValue() == bestCount && entry.getKey() < bestComm))
+                        for (int v : membersB)
                             {
-                            bestCount = entry.getValue();
-                            bestComm = entry.getKey();
+                            edgesAB += adj[u][v];
                             }
                         }
-                    if (comm[i] != bestComm)
+
+                    if (edgesAB > 0)
                         {
-                        comm[i] = bestComm;
-                        changed = true;
+                        double degB = 0;
+                        for (int v : membersB)
+                            degB += deg[v];
+
+                        double deltaQ = 2.0 * (edgesAB / totalWeight - (degA * degB) / (totalWeight * totalWeight));
+                        if (deltaQ > maxDeltaQ)
+                            {
+                            maxDeltaQ = deltaQ;
+                            bestA = a;
+                            bestB = b;
+                            }
                         }
                     }
                 }
-            if (!changed)
+
+            if (bestA == -1 || maxDeltaQ == Double.NEGATIVE_INFINITY)
+                {
+                // No remaining edges between communities (separate connected components)
                 break;
+                }
+
+            // Merge bestB into bestA
+            comms.get(bestA).addAll(comms.get(bestB));
+            comms.remove(bestB);
+            currentQ += maxDeltaQ;
+
+            if (currentQ > bestQ && comms.size() >= 2)
+                {
+                bestQ = currentQ;
+                bestPartition.clear();
+                for (java.util.List<Integer> c : comms.values())
+                    {
+                    bestPartition.add(new java.util.ArrayList<>(c));
+                    }
+                }
+            else if (maxDeltaQ <= 0 && bestPartition.size() >= 2)
+                {
+                // Modularity reached peak and started declining; stop merging
+                break;
+                }
             }
 
-        // Group nodes by community
-        java.util.Map<Integer, java.util.List<Integer>> commGroups = new java.util.LinkedHashMap<>();
-        for (int i = 0; i < n; i++)
-            {
-            commGroups.computeIfAbsent(comm[i], k -> new java.util.ArrayList<>()).add(i);
-            }
-
-        java.util.List<java.util.List<Integer>> clusterList = new java.util.ArrayList<>(commGroups.values());
+        java.util.List<java.util.List<Integer>> clusterList = bestPartition;
         clusterList.sort((a, b) -> Integer.compare(b.size(), a.size()));
         int numClusters = clusterList.size();
 
@@ -1022,14 +1097,8 @@ public class NetworkLayouts
 
         if (numClusters == 1)
             {
-            // Fall back to circular if single dense community
-            double radius = Math.min(width, height) * 0.40;
-            for (int i = 0; i < n; i++)
-                {
-                double a = 2.0 * Math.PI * i / n;
-                net.getActor(i).setX((int) Math.round(cx + radius * Math.cos(a)), width);
-                net.getActor(i).setY((int) Math.round(cy + radius * Math.sin(a)), height);
-                }
+            // Single unpartitionable cluster: organic force-directed spring layout
+            apply(net, SPRING, width, height, 40);
             return;
             }
 
@@ -1043,7 +1112,7 @@ public class NetworkLayouts
             double clX = cx + orbitRadius * Math.cos(cAngle);
             double clY = cy + orbitRadius * Math.sin(cAngle);
 
-            double subRadius = Math.min(width, height) * 0.13 * Math.min(1.0, 0.4 + 0.6 * Math.sqrt(mSize / (double) n));
+            double subRadius = Math.min(width, height) * 0.14 * Math.min(1.0, 0.4 + 0.6 * Math.sqrt(mSize / (double) n));
             if (mSize == 1)
                 {
                 int node = members.get(0);
