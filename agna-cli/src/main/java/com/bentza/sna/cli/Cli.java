@@ -20,6 +20,10 @@ import com.bentza.sna.net.NetworkGenerator;
 import com.bentza.sna.net.NetworkLayouts;
 import com.bentza.sna.net.NetworkRenderer;
 import com.bentza.sna.net.NodeArea;
+import com.bentza.sna.stats.HypothesisTestResult;
+import com.bentza.sna.stats.NetworkHypothesisTester;
+import com.bentza.sna.stats.NetworkMetric;
+import com.bentza.sna.stats.NullModel;
 import java.awt.Color;
 import java.io.File;
 import java.io.InputStream;
@@ -122,6 +126,8 @@ public final class Cli
                 + "                                  shortest path between "
                 + "two nodes\n"
                 + "  diff A B [--out FILE.csv]       structural comparison\n"
+                + "  test-null FILE [--metric M] [--model NULL_MODEL] [-r N] [--seed S] [--format text|json|csv|html]\n"
+                + "                                  Monte Carlo hypothesis test (degree-preserving, erdos-renyi, dyad-census)\n"
                 + "network commands (each saves a new file via --out):\n"
                 + "  add-scalar FILE V --out OUT     add V to every cell\n"
                 + "  multiply-scalar FILE V --out OUT\n"
@@ -311,6 +317,10 @@ public final class Cli
         if ("diff".equals(cmd))
             {
             return diff(args);
+            }
+        if ("test-null".equals(cmd) || "null-model".equals(cmd) || "hypothesis-test".equals(cmd))
+            {
+            return testNull(args);
             }
         if ("add-scalar".equals(cmd))
             {
@@ -2263,5 +2273,101 @@ public final class Cli
             }
         String s = String.valueOf(v);
         return s.endsWith(".0") ? s.substring(0, s.length() - 2) : s;
+        }
+
+    private int testNull(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        String format = "text";
+        String metricName = "transitivity";
+        String modelName = "degree-preserving";
+        int replications = 1000;
+        long seed = 20261030L;
+        boolean userSeed = false;
+
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                }
+            else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i].toLowerCase();
+                }
+            else if ("--metric".equals(a) && i + 1 < args.length)
+                {
+                metricName = args[++i];
+                }
+            else if ("--model".equals(a) && i + 1 < args.length)
+                {
+                modelName = args[++i];
+                }
+            else if (("-r".equals(a) || "--replications".equals(a)) && i + 1 < args.length)
+                {
+                replications = Integer.parseInt(args[++i]);
+                }
+            else if ("--seed".equals(a) && i + 1 < args.length)
+                {
+                seed = Long.parseLong(args[++i]);
+                userSeed = true;
+                }
+            else if (file == null)
+                {
+                file = a;
+                }
+            }
+
+        if (file == null)
+            {
+            out.println("usage: agna test-null FILE [--metric M] [--model NULL_MODEL] [-r N] [--seed S] [--format text|json|csv|html] [--out OUT]");
+            return 1;
+            }
+
+        if (!userSeed)
+            seed = System.currentTimeMillis();
+
+        FullNet full = open(file);
+        NetworkMetric metric = NetworkMetric.fromString(metricName);
+        NullModel model = NullModel.fromString(modelName);
+
+        HypothesisTestResult result = NetworkHypothesisTester.runTest(
+                full.getNetwork(), metric, model, replications, seed);
+
+        String outputText;
+        if ("json".equals(format))
+            {
+            outputText = result.toJson();
+            }
+        else if ("csv".equals(format))
+            {
+            outputText = "network,metric,null_model,replications,observed,null_mean,null_std,z_score,p_value_two_tailed,p_greater,p_less,ci_025,ci_975\n"
+                    + String.format(Locale.ROOT, "\"%s\",\"%s\",\"%s\",%d,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f\n",
+                    result.getNetworkName(), result.getMetric().name(), result.getNullModel().name(),
+                    result.getReplications(), result.getObservedValue(), result.getNullMean(),
+                    result.getNullStdDev(), result.getZScore(), result.getPValueTwoTailed(),
+                    result.getPValueGreater(), result.getPValueLess(), result.getCiLower95(), result.getCiUpper95());
+            }
+        else if ("html".equals(format))
+            {
+            outputText = result.toHtmlReport();
+            }
+        else
+            {
+            outputText = result.toTextReport();
+            }
+
+        if (outFile != null)
+            {
+            Files.writeString(new File(outFile).toPath(), outputText, StandardCharsets.UTF_8);
+            out.println("test-null -> " + outFile);
+            }
+        else
+            {
+            out.print(outputText);
+            }
+        return 0;
         }
     }

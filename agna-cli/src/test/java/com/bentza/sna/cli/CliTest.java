@@ -792,4 +792,28 @@ public class CliTest
         byte[] bytes = Files.readAllBytes(png.toPath());
         assertTrue(bytes.length > 500, "rendered png has content");
         }
+
+    @Test
+    public void testNullModelSubcommand() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+        // Test text format
+        String outText = run("test-null", sample.getAbsolutePath(), "--metric", "transitivity",
+                "--model", "degree-preserving", "-r", "50", "--seed", "42");
+        assertTrue(outText.contains("AGNA STATISTICAL HYPOTHESIS TEST"), outText);
+        assertTrue(outText.contains("Null Distribution Histogram"), outText);
+
+        // Test JSON format
+        String outJson = run("test-null", sample.getAbsolutePath(), "--metric", "reciprocity",
+                "--model", "erdos-renyi", "-r", "50", "--seed", "42", "--format", "json");
+        assertTrue(outJson.contains("\"metric\": \"RECIPROCITY\""), outJson);
+        assertTrue(outJson.contains("\"null_model\": \"ERDOS_RENYI\""), outJson);
+        assertTrue(outJson.contains("\"z_score\":"), outJson);
+
+        // Test CSV format
+        String outCsv = run("test-null", sample.getAbsolutePath(), "--metric", "density",
+                "--model", "dyad-census", "-r", "50", "--seed", "42", "--format", "csv");
+        assertTrue(outCsv.contains("network,metric,null_model,replications"), outCsv);
+        assertTrue(outCsv.contains("DYAD_CENSUS"), outCsv);
+        }
     }

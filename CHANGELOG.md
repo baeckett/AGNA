@@ -65,11 +65,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Validates user input dynamically as typed: rejects non-natural numbers, decimals, and values $< 2$ with immediate visual feedback.
   - Enforces a safety upper bound of **5,000 nodes** to guard against JVM `OutOfMemoryError` on large dense adjacency matrices.
   - Displays non-blocking warnings for networks larger than 300 nodes.
-- **Smart Default Directory on Open Network, Merge Network, and New from Chain**:
-  - When opening a file via GUI (`File | Open Network...`, `File | Merge Network...`, or `File | New From Chain...`), the file dialog automatically opens to the bundled `samples/` directory if no file is currently active.
-  - Bundled sample networks are packaged as classpath resources and extracted on demand to `~/.agna/samples/`.
-  - If the samples folder is unavailable, gracefully falls back to the user's OS Documents directory (`~/Documents` on macOS/Linux, `My Documents` on Windows), or the user's home directory.
+- **Smart Default Directory on Open Network, Merge Network, New from Chain, Save As, and Output Operations**:
+  - Uniformly applies the smart directory rule across all file operations: `File | Open Network...`, `File | Merge Network...`, `File | New From Chain...`, `File | Save Network As...`, `File | Open Output File`, `File | Save Output As...`, and `Image | Export Image As...`.
+  - Automatically resolves relative to the active file's existing directory, the active network's directory, or `Environment.getDefaultOpenDirectory()` (bundled `samples/`, `~/.agna/samples/`, or user `Documents`).
   - Also active in CLI `open`, resolving sample files when not present in the current working directory.
+- **Monte Carlo Statistical Hypothesis Testing against Null Models**:
+  - Implemented the [`com.bentza.sna.stats`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/stats/) package for non-parametric network hypothesis testing:
+    - **Null Models (`NullModel`)**:
+      - `DEGREE_PRESERVING`: Maslov–Sneppen (2002) / Rao–Jana–Bandyopadhyay (1996) MCMC Double Edge Swap algorithm, preserving the exact in-degree and out-degree sequence of every node.
+      - `ERDOS_RENYI`: Bernoulli $G(n, m)$ density-preserving random graph model.
+      - `DYAD_CENSUS`: Holland–Leinhardt (1976) $U \mid MAN$ model preserving exact mutual, asymmetric, and null dyad counts.
+      - `WEIGHT_PERMUTATION`: Preserves binary topology while permuting tie weights.
+    - **Evaluated SNA Metrics (`NetworkMetric`)**: Global Transitivity (Clustering Coefficient), Dyadic Reciprocity, Network Density, Freeman Degree Centralization, Betweenness Centralization, Closeness Centralization, Average Geodesic Distance, and Modularity (Newman $Q$).
+    - **Hypothesis Engine (`NetworkHypothesisTester`)**: Multi-core parallel Monte Carlo simulation with Davison–Hinkley exact empirical $p$-values ($p_{\text{two-tailed}}, p_{\text{greater}}, p_{\text{less}}$), standardized $Z$-scores, and 95% confidence intervals.
+  - **Desktop GUI Integration (`HypothesisTestingDialog`)**: Added **Analysis ▸ Hypothesis Testing (Null Models)...** dialog with interactive metric/model selection, configurable replications (100–5,000), progress bar, ASCII distribution histogram with observed value marker, and automated appending of rich HTML report tables to the Output tab.
+  - **CLI Full Parity**: Added `agna test-null FILE [--metric M] [--model NULL_MODEL] [-r N] [--seed S] [--format text|json|csv|html] [--out OUT]`.
+- **Automated Source Backup Snapshots**:
+  - Added project [`backup/`](file:///Volumes/MacAPFS/Antigravity/Agna/backup/) directory for timestamped source-only zip archives (`agna-<version>-<date>-<time>.zip`), configured in `.gitignore`.
 - **Automated Test Coverage**:
   - Added [`NetworkGeneratorTest`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/test/java/com/bentza/sna/net/NetworkGeneratorTest.java) covering all 8 topology algorithms, boundary conditions, edge weight intervals, and safety bounds (bringing total suite to 258 passing tests).
 
