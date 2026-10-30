@@ -56,10 +56,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Validates user input dynamically as typed: rejects non-natural numbers, decimals, and values $< 2$ with immediate visual feedback.
   - Enforces a safety upper bound of **5,000 nodes** to guard against JVM `OutOfMemoryError` on large dense adjacency matrices.
   - Displays non-blocking warnings for networks larger than 300 nodes.
-- **Smart Default Directory on Open Network**:
-  - When opening a network file via GUI (`File | Open Network...`), the file dialog automatically opens to the bundled `samples/` directory.
+- **Smart Default Directory on Open Network, Merge Network, and New from Chain**:
+  - When opening a file via GUI (`File | Open Network...`, `File | Merge Network...`, or `File | New From Chain...`), the file dialog automatically opens to the bundled `samples/` directory if no file is currently active.
   - Bundled sample networks are packaged as classpath resources and extracted on demand to `~/.agna/samples/`.
   - If the samples folder is unavailable, gracefully falls back to the user's OS Documents directory (`~/Documents` on macOS/Linux, `My Documents` on Windows), or the user's home directory.
+  - Also active in CLI `open`, resolving sample files when not present in the current working directory.
 - **Automated Test Coverage**:
   - Added [`NetworkGeneratorTest`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/test/java/com/bentza/sna/net/NetworkGeneratorTest.java) covering all 8 topology algorithms, boundary conditions, edge weight intervals, and safety bounds (bringing total suite to 258 passing tests).
 

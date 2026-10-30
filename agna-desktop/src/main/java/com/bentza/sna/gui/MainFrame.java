@@ -1256,19 +1256,12 @@ public class MainFrame //
     private void doCreateFromChain()
         {
         File file = null;
-        try
+        if (my_full_net.getNetworkFileName().length() > 0)
             {
-            file = new File(MainFrame.getWorkingDirectory());
-            } catch (Exception e1)
+            file = new File(my_full_net.getNetworkFileName());
+            } else
             {
-            try
-                {
-                file = new File(Environment.getCurrentDirectory()
-                        + Environment.fs + "Samples");
-                } catch (Exception e2)
-                {
-                file = new File(".");
-                }
+            file = Environment.getDefaultOpenDirectory();
             }
 
         JFileChooser chooser = new JFileChooser();
@@ -2516,9 +2509,18 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             return;
 
         // 2.1.3: pick the second network file, then the conflict policy
+        File file = null;
+        if (my_full_net.getNetworkFileName().length() > 0)
+            {
+            file = new File(my_full_net.getNetworkFileName());
+            } else
+            {
+            file = Environment.getDefaultOpenDirectory();
+            }
+
         final javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
         chooser.setDialogTitle("Merge With Network File");
-        chooser.setCurrentDirectory(new File(MainFrame.getWorkingDirectory()));
+        chooser.setCurrentDirectory(file);
         chooser.addChoosableFileFilter(new CommaTextFilesFilter());
         chooser.addChoosableFileFilter(new TabTextFilesFilter());
         chooser.addChoosableFileFilter(new AgnaFilesFilter());
