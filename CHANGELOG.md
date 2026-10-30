@@ -11,17 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Comprehensive "File | New Network..." Dialog (`NewNetworkDialog`)**:
-  - Replaced the previous single text prompt with a rich, interactive configuration dialog offering 8 distinct topologies:
+  - Replaced the previous single text prompt with a rich, interactive configuration dialog offering 9 distinct topologies:
     1. **Empty network (isolated nodes)**: Generates $N$ isolated vertices in a circular ring layout.
     2. **Star network**: Configurable as **Symmetrical** (undirected $0 \leftrightarrow j$) or **Asymmetrical** (directed $0 \to j$), with node 0 positioned at the center and peripheral nodes arranged on a surrounding orbit.
     3. **Random binary connected network (no outsiders)**: Guarantees zero isolated nodes and full connectivity by generating a random spanning tree across all $N$ vertices, then populating additional edges to the chosen density.
     4. **Random weighted network**: Generates edge weights strictly within the open interval $(0.0, 1.0)$ (i.e. $0.001 \le w \le 0.999$, without touching the boundary values $0.0$ or $1.0$), with user-selectable density and symmetry.
     5. **Circular network**: Generates an undirected ring lattice with circular viewer coordinates.
     6. **Full binary network (complete clique)**: Connects all distinct pairs with unit weights and positions vertices in a star-shaped layout around the central node.
-    7. **Square lattice network ($N \times N$)**: Generates a 2D regular square grid with 4-neighbor planar connectivity, with automated $L \times L$ node calculation and planar lattice coordinates.
-    8. **Hexagram lattice network (Star of David)**: Generates a 6-pointed star triangular lattice of order $k$, calculating the exact vertex count from dual overlapping triangular grids with planar hexagram coordinates.
+    7. **Square lattice network ($N \times N$)**: Generates a 2D regular square grid with 4-neighbor planar connectivity, with automated $L \times L$ node calculation and an immediate planar square lattice layout in the Network Viewer.
+    8. **Hexagonal lattice network (bee-hive)**: Generates a true honeycomb / bee-hive network of concentric rings of regular hexagonal cells ($6 R^2$ nodes, degree 3 interior), immediately assigned to a planar bee-hive layout in the Network Viewer.
+    9. **Hexagram lattice network (Star of David)**: Generates a 6-pointed star triangular lattice of order $k$, calculating the exact vertex count from dual overlapping triangular grids with planar hexagram coordinates.
 - **Topology Generation Engine (`NetworkGenerator`)**:
-  - Created [`com.bentza.sna.net.NetworkGenerator`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkGenerator.java) containing deterministic, mathematically validated topology constructors and layout coordinate initializers.
+  - Created [`com.bentza.sna.net.NetworkGenerator`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkGenerator.java) containing deterministic, mathematically validated topology constructors and layout coordinate initializers (`createSquareLattice`, `createBeeHiveLattice`, `createHexagonalLattice`, `createHexagramLattice`, etc.).
+- **Immediate Layout Preservation in Network Viewer**:
+  - Resolved an issue in [`NodeArea`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NodeArea.java) where opening the Network Viewer unconditionally wiped out preset actor coordinates with `setCircleLayout()` and random positions.
+  - Network Viewer now detects preset coordinates, preserves the exact topological layout (Square Lattice grid, Bee-hive honeycomb, Star, Circular, etc.), and renders the network in its natural geometry.
+  - Implemented isotropic aspect-ratio preserving coordinate fitting (`adjustNodesCoordinates`) with divide-by-zero protection.
+  - Connected `MainFrame.doNewNetwork` to attach the viewer area immediately upon generation and automatically refresh an active viewer window.
 - **On-the-Spot Input Validation & Safety Bounds**:
   - Validates user input dynamically as typed: rejects non-natural numbers, decimals, and values $< 2$ with immediate visual feedback.
   - Enforces a safety upper bound of **5,000 nodes** to guard against JVM `OutOfMemoryError` on large dense adjacency matrices.

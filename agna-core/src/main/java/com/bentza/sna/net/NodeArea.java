@@ -121,6 +121,17 @@ public class NodeArea extends JButton implements MouseListener,
         my_nodes = new Actor[nodes_count];
         edges_mat = new int[nodes_count][nodes_count];
 
+        boolean hasPresetCoords = true;
+        for (int k = 0; k < nodes_count; k++)
+            {
+            Actor a = tmp_network.getActor(k);
+            my_nodes[k] = a;
+            if (a == null || !a.hasCoordinates())
+                {
+                hasPresetCoords = false;
+                }
+            }
+
         addMouseMotionListener(this);
         addMouseListener(this);
         edges_image = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
@@ -143,7 +154,15 @@ public class NodeArea extends JButton implements MouseListener,
         title = tmp_network.getName();
         this.updateArea(tmp_network);
         edges_gr = edges_image.createGraphics();
-        setImageLayout(default_image_layout);
+        if (!hasPresetCoords)
+            {
+            setImageLayout(default_image_layout);
+            }
+        else
+            {
+            adjustNodesCoordinates();
+            paintEdges();
+            }
         }
 
     public void setInitialSettings()
@@ -195,7 +214,8 @@ public class NodeArea extends JButton implements MouseListener,
         else
             for (int i = 0; i < nodes_count; i++)
                 {
-                my_nodes[i].createCoordinates();
+                if (my_nodes[i] != null)
+                    my_nodes[i].createCoordinatesIfMissing();
                 }
         }
 
@@ -213,7 +233,8 @@ public class NodeArea extends JButton implements MouseListener,
         for (int i = 0; i < nodes_count; i++)
             {
             my_nodes[i] = tmp_network.getActor(i);
-            my_nodes[i].createCoordinates();
+            if (my_nodes[i] != null)
+                my_nodes[i].createCoordinatesIfMissing();
             }
         }
 
@@ -310,9 +331,11 @@ public class NodeArea extends JButton implements MouseListener,
             }
         }
 
-    // bring all node coordinates inside the interval [1, 99]
+    // bring all node coordinates inside the interval [10, 90] preserving aspect ratio
     private void adjustNodesCoordinates()
         {
+        if (nodes_count <= 0)
+            return;
         float max_x, max_y, min_x, min_y;
         max_x = Float.NEGATIVE_INFINITY;
         max_y = Float.NEGATIVE_INFINITY;
@@ -321,6 +344,8 @@ public class NodeArea extends JButton implements MouseListener,
 
         for (int i = 0; i < nodes_count; i++)
             {
+            if (my_nodes[i] == null)
+                continue;
             if (my_nodes[i].getX() > max_x)
                 max_x = my_nodes[i].getX();
             if (my_nodes[i].getY() > max_y)
@@ -330,14 +355,35 @@ public class NodeArea extends JButton implements MouseListener,
             if (my_nodes[i].getY() < min_y)
                 min_y = my_nodes[i].getY();
             }
-        for (int i = 0; i < nodes_count; i++)
-            {
-            my_nodes[i].setX(10 + 80f * (my_nodes[i].getX() - min_x)
-                    / (max_x - min_x));
-            my_nodes[i].setY(10 + 80f * (my_nodes[i].getY() - min_y)
-                    / (max_y - min_y));
-            }
 
+        float spanX = max_x - min_x;
+        float spanY = max_y - min_y;
+        float maxSpan = Math.max(spanX, spanY);
+
+        if (maxSpan > 0.001f)
+            {
+            float offsetX = 10f + (80f - 80f * spanX / maxSpan) / 2f;
+            float offsetY = 10f + (80f - 80f * spanY / maxSpan) / 2f;
+            for (int i = 0; i < nodes_count; i++)
+                {
+                if (my_nodes[i] != null)
+                    {
+                    my_nodes[i].setX(offsetX + 80f * (my_nodes[i].getX() - min_x) / maxSpan);
+                    my_nodes[i].setY(offsetY + 80f * (my_nodes[i].getY() - min_y) / maxSpan);
+                    }
+                }
+            }
+        else
+            {
+            for (int i = 0; i < nodes_count; i++)
+                {
+                if (my_nodes[i] != null)
+                    {
+                    my_nodes[i].setX(50f);
+                    my_nodes[i].setY(50f);
+                    }
+                }
+            }
         }
 
     public void setLagrangeLayout()

@@ -145,6 +145,75 @@ public class NetworkGeneratorTest
         // In 4x4 grid: corners have deg 2 (4*2=8), edges have deg 3 (8*3=24), interior have deg 4 (4*4=16)
         // Total directed edges = 8 + 24 + 16 = 48 (or 24 undirected edges)
         assertEquals(48, grid.getEdgesNumber());
+
+        // Verify layout coordinates preserved in NodeArea
+        FullNet fn = new FullNet();
+        fn.setNetwork(grid);
+        fn.attachArea();
+        NodeArea area = fn.getArea();
+        assertNotNull(area);
+
+        // Nodes in the same row should share same Y; nodes in same column share same X
+        // Corner (0,0) top-left, corner (3,3) bottom-right
+        Actor a00 = grid.getActor(0);
+        Actor a01 = grid.getActor(1);
+        Actor a10 = grid.getActor(4);
+        Actor a33 = grid.getActor(15);
+        assertEquals(a00.getY(), a01.getY(), 0.01f, "Row 0 nodes should have identical Y");
+        assertEquals(a00.getX(), a10.getX(), 0.01f, "Col 0 nodes should have identical X");
+        assertTrue(a01.getX() > a00.getX(), "Col 1 should be to the right of Col 0");
+        assertTrue(a10.getY() > a00.getY(), "Row 1 should be below Row 0");
+        assertTrue(a33.getX() > a00.getX());
+        assertTrue(a33.getY() > a00.getY());
+        }
+
+    @Test
+    public void createBeeHiveLattice()
+        {
+        // R=1: 1 hexagon, 6 nodes, 6 edges (12 directed)
+        Network b1 = NetworkGenerator.createBeeHiveLattice(1);
+        assertEquals(6, b1.getSize());
+        assertEquals(12, b1.getEdgesNumber());
+        assertTrue(b1.isSymmetric());
+
+        // R=2: 7 hexagons, 24 nodes, 30 edges (60 directed)
+        Network b2 = NetworkGenerator.createBeeHiveLattice(2);
+        assertEquals(24, b2.getSize());
+        assertEquals(60, b2.getEdgesNumber());
+        assertTrue(b2.isSymmetric());
+
+        // Verify degree constraints:
+        // In bee-hive, interior nodes have degree 3, boundary nodes have degree 2
+        for (int i = 0; i < 24; i++)
+            {
+            int deg = 0;
+            for (int j = 0; j < 24; j++)
+                {
+                if (b2.getValue(i, j) > 0.0f)
+                    deg++;
+                }
+            assertTrue(deg == 2 || deg == 3, "Bee-hive node degree must be 2 or 3, got: " + deg);
+            }
+
+        // R=3: 19 hexagons, 54 nodes, 72 edges (144 directed)
+        Network b3 = NetworkGenerator.createBeeHiveLattice(3);
+        assertEquals(54, b3.getSize());
+        assertEquals(144, b3.getEdgesNumber());
+        assertTrue(b3.isSymmetric());
+
+        // Verify layout coordinates preserved in NodeArea
+        FullNet fn = new FullNet();
+        fn.setNetwork(b2);
+        fn.attachArea();
+        NodeArea area = fn.getArea();
+        assertNotNull(area);
+        for (int i = 0; i < b2.getSize(); i++)
+            {
+            Actor a = b2.getActor(i);
+            assertTrue(a.hasCoordinates());
+            assertTrue(a.getX() >= 9.0f && a.getX() <= 91.0f);
+            assertTrue(a.getY() >= 9.0f && a.getY() <= 91.0f);
+            }
         }
 
     @Test

@@ -658,15 +658,18 @@ public class MainFrame //
 
         saveChangedNetworks(true);
 
-        FullNet new_full_net = new FullNet();
-        new_full_net.setNetwork(created);
-
+        boolean wasViewerOpen = (my_grafic != null && my_grafic.getCurrentFrame() != null
+                && my_grafic.getCurrentFrame().isVisible());
         if (my_grafic != null)
             {
             if (my_grafic.getCurrentFrame() != null)
                 my_grafic.getCurrentFrame().dispose();
             my_grafic = null;
             }
+
+        FullNet new_full_net = new FullNet();
+        new_full_net.setNetwork(created);
+        new_full_net.attachArea();
 
         my_full_net.cleaning();
         my_full_net = new_full_net;
@@ -680,6 +683,11 @@ public class MainFrame //
         my_full_net.setChanged(false);
         my_frame.validate();
         my_frame.repaint();
+
+        if (wasViewerOpen)
+            {
+            view_graph();
+            }
         }
 
     public void saveNetwork(FullNet tmp_full_net, String tmp_file_name)

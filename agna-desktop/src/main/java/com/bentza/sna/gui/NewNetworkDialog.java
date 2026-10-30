@@ -62,6 +62,7 @@ public class NewNetworkDialog extends JDialog
     public static final String TYPE_CIRCULAR = "Circular network";
     public static final String TYPE_FULL = "Full binary network (complete)";
     public static final String TYPE_SQUARE_LATTICE = "Square lattice network (N x N)";
+    public static final String TYPE_HEXAGONAL_LATTICE = "Hexagonal lattice network (bee-hive)";
     public static final String TYPE_HEXAGRAM_LATTICE = "Hexagram lattice network (Star of David)";
 
     private static final String[] TYPES = {
@@ -72,6 +73,7 @@ public class NewNetworkDialog extends JDialog
             TYPE_CIRCULAR,
             TYPE_FULL,
             TYPE_SQUARE_LATTICE,
+            TYPE_HEXAGONAL_LATTICE,
             TYPE_HEXAGRAM_LATTICE
     };
 
@@ -86,6 +88,7 @@ public class NewNetworkDialog extends JDialog
     private JCheckBox weightedSymmetricCheck;
     private JSpinner weightedDensitySpinner;
     private JSpinner squareSideSpinner;
+    private JSpinner beehiveRadiusSpinner;
     private JSpinner hexagramOrderSpinner;
 
     private JButton okButton;
@@ -152,6 +155,7 @@ public class NewNetworkDialog extends JDialog
         weightedSymmetricCheck = new JCheckBox("Symmetrical (undirected)", true);
         weightedDensitySpinner = new JSpinner(new SpinnerNumberModel(0.20, 0.01, 1.00, 0.05));
         squareSideSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 50, 1));
+        beehiveRadiusSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 15, 1));
         hexagramOrderSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 10, 1));
 
         estimatedNodesLabel = new JLabel("");
@@ -198,6 +202,17 @@ public class NewNetworkDialog extends JDialog
                 {
                 int side = (Integer) squareSideSpinner.getValue();
                 nodeCountField.setText(String.valueOf(side * side));
+                validateInput();
+                }
+            });
+
+        beehiveRadiusSpinner.addChangeListener(new ChangeListener()
+            {
+            @Override
+            public void stateChanged(ChangeEvent e)
+                {
+                int radius = (Integer) beehiveRadiusSpinner.getValue();
+                nodeCountField.setText(String.valueOf(6 * radius * radius));
                 validateInput();
                 }
             });
@@ -263,6 +278,15 @@ public class NewNetworkDialog extends JDialog
             int side = (Integer) squareSideSpinner.getValue();
             nodeCountField.setText(String.valueOf(side * side));
             nodeCountField.setEnabled(false); // Driven by side length
+            }
+        else if (TYPE_HEXAGONAL_LATTICE.equals(type))
+            {
+            dynamicOptionsPanel.add(new JLabel("Bee-hive radius (rings):"));
+            dynamicOptionsPanel.add(beehiveRadiusSpinner);
+            int radius = (Integer) beehiveRadiusSpinner.getValue();
+            int total = 6 * radius * radius;
+            nodeCountField.setText(String.valueOf(total));
+            nodeCountField.setEnabled(false); // Driven by radius
             }
         else if (TYPE_HEXAGRAM_LATTICE.equals(type))
             {
@@ -397,6 +421,11 @@ public class NewNetworkDialog extends JDialog
                 {
                 int side = (Integer) squareSideSpinner.getValue();
                 generatedNetwork = NetworkGenerator.createSquareLattice(side);
+                }
+            else if (TYPE_HEXAGONAL_LATTICE.equals(type))
+                {
+                int radius = (Integer) beehiveRadiusSpinner.getValue();
+                generatedNetwork = NetworkGenerator.createBeeHiveLattice(radius);
                 }
             else if (TYPE_HEXAGRAM_LATTICE.equals(type))
                 {

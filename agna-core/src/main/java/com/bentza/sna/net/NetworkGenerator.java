@@ -233,6 +233,161 @@ public class NetworkGenerator
         }
 
     /**
+     * Creates a Hexagonal (bee-hive / honeycomb) lattice network of radius R.
+     * Radius R corresponds to concentric rings of regular hexagonal cells around a central hexagon:
+     * - R=1: 1 hexagon, 6 nodes
+     * - R=2: 7 hexagons, 24 nodes
+     * - R=3: 19 hexagons, 54 nodes
+     * - R=4: 37 hexagons, 96 nodes
+     * - R=5: 61 hexagons, 150 nodes
+     * Total nodes = 6 * R^2.
+     * Edges follow the hexagonal cell boundaries (each interior node has degree 3).
+     * By default assigns positions in the Network Viewer in a bee-hive layout.
+     */
+    public static Network createBeeHiveLattice(int radius)
+        {
+        if (radius < 1)
+            {
+            throw new IllegalArgumentException("Bee-hive lattice radius must be at least 1.");
+            }
+        double S = 100.0;
+        List<HexPoint> hexes = new ArrayList<>();
+        for (int q = -radius; q <= radius; q++)
+            {
+            for (int r = -radius; r <= radius; r++)
+                {
+                if (Math.max(Math.max(Math.abs(q), Math.abs(r)), Math.abs(q + r)) < radius)
+                    {
+                    hexes.add(new HexPoint(q, r));
+                    }
+                }
+            }
+
+        List<Point2D> vertices = new ArrayList<>();
+        List<int[]> edges = new ArrayList<>();
+
+        for (HexPoint hp : hexes)
+            {
+            double xc = S * Math.sqrt(3.0) * (hp.q + hp.r / 2.0);
+            double yc = S * 1.5 * hp.r;
+            int[] hexV = new int[6];
+            for (int k = 0; k < 6; k++)
+                {
+                double angle = Math.PI / 6.0 + k * Math.PI / 3.0;
+                double vx = xc + S * Math.cos(angle);
+                double vy = yc + S * Math.sin(angle);
+                hexV[k] = getOrCreateVertex(vertices, vx, vy, 0.1 * S);
+                }
+            for (int k = 0; k < 6; k++)
+                {
+                int u = hexV[k];
+                int v = hexV[(k + 1) % 6];
+                if (u != v)
+                    {
+                    edges.add(new int[]{ Math.min(u, v), Math.max(u, v) });
+                    }
+                }
+            }
+
+        int n = vertices.size();
+        checkNodeCount(n);
+        Network net = new Network(n);
+        net.setName("Hexagonal Bee-Hive Lattice (" + n + " nodes, " + hexes.size() + " cells)");
+
+        for (int[] e : edges)
+            {
+            net.setValue(1.0f, e[0], e[1]);
+            net.setValue(1.0f, e[1], e[0]);
+            }
+        net.setSymmetry(true);
+        applyBeeHiveLayout(net, vertices, 600, 600);
+        return net;
+        }
+
+    /**
+     * Alias for createBeeHiveLattice.
+     */
+    public static Network createHexagonalLattice(int radius)
+        {
+        return createBeeHiveLattice(radius);
+        }
+
+    private static int getOrCreateVertex(List<Point2D> vertices, double x, double y, double eps)
+        {
+        for (int i = 0; i < vertices.size(); i++)
+            {
+            Point2D p = vertices.get(i);
+            if (Math.hypot(p.x - x, p.y - y) < eps)
+                {
+                return i;
+                }
+            }
+        vertices.add(new Point2D(x, y));
+        return vertices.size() - 1;
+        }
+
+    public static void applyBeeHiveLayout(Network net, List<Point2D> points, int width, int height)
+        {
+        int n = points.size();
+        double minX = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+
+        for (int i = 0; i < n; i++)
+            {
+            Point2D p = points.get(i);
+            minX = Math.min(minX, p.x);
+            maxX = Math.max(maxX, p.x);
+            minY = Math.min(minY, p.y);
+            maxY = Math.max(maxY, p.y);
+            }
+
+        double spanX = Math.max(1e-4, maxX - minX);
+        double spanY = Math.max(1e-4, maxY - minY);
+        double maxSpan = Math.max(spanX, spanY);
+
+        int margin = 50;
+        double usableSize = Math.min(width, height) - 2 * margin;
+        double scale = usableSize / maxSpan;
+
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+
+        for (int i = 0; i < n; i++)
+            {
+            Point2D p = points.get(i);
+            int x = (int) Math.round(cx + (p.x - (minX + spanX / 2.0)) * scale);
+            int y = (int) Math.round(cy + (p.y - (minY + spanY / 2.0)) * scale);
+            net.getActor(i).createCoordinatesIfMissing();
+            net.getActor(i).setX(x, width);
+            net.getActor(i).setY(y, height);
+            }
+        }
+
+    public static void applySquareLatticeLayout(Network net, int L, int width, int height)
+        {
+        int margin = 50;
+        int usableW = width - 2 * margin;
+        int usableH = height - 2 * margin;
+        double stepX = L > 1 ? (double) usableW / (L - 1) : 0;
+        double stepY = L > 1 ? (double) usableH / (L - 1) : 0;
+
+        for (int r = 0; r < L; r++)
+            {
+            for (int c = 0; c < L; c++)
+                {
+                int idx = r * L + c;
+                int x = (int) Math.round(margin + c * stepX);
+                int y = (int) Math.round(margin + r * stepY);
+                net.getActor(idx).createCoordinatesIfMissing();
+                net.getActor(idx).setX(x, width);
+                net.getActor(idx).setY(y, height);
+                }
+            }
+        }
+
+    /**
      * Creates a Hexagram (Star-of-David) lattice network.
      * Order k creates a 6-pointed star triangular lattice:
      * - k=1: central hexagon + 6 outer tips (12 vertices, 13 points total or perimeter ring)
@@ -313,25 +468,15 @@ public class NetworkGenerator
             }
         }
 
-    private static void applySquareLatticeLayout(Network net, int L, int width, int height)
+    public static class Point2D
         {
-        int margin = 50;
-        int usableW = width - 2 * margin;
-        int usableH = height - 2 * margin;
-        double stepX = L > 1 ? (double) usableW / (L - 1) : 0;
-        double stepY = L > 1 ? (double) usableH / (L - 1) : 0;
+        public final double x;
+        public final double y;
 
-        for (int r = 0; r < L; r++)
+        public Point2D(double x, double y)
             {
-            for (int c = 0; c < L; c++)
-                {
-                int idx = r * L + c;
-                int x = (int) Math.round(margin + c * stepX);
-                int y = (int) Math.round(margin + r * stepY);
-                net.getActor(idx).createCoordinatesIfMissing();
-                net.getActor(idx).setX(x, width);
-                net.getActor(idx).setY(y, height);
-                }
+            this.x = x;
+            this.y = y;
             }
         }
 
