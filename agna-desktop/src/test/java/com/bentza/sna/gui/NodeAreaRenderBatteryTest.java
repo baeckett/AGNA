@@ -210,6 +210,37 @@ public class NodeAreaRenderBatteryTest
         assertTrue(face != null && face.length() > 0, "a face source");
         }
 
+    @Test
+    public void layeredDagAutoScalesCanvasForDeepHierarchies()
+        {
+        FullNet full = new FullNet();
+        full.createDefaultNetwork(10);
+        Network net = full.getNetwork();
+        // 10-node chain 0 -> 1 -> ... -> 9
+        for (int i = 0; i < 9; i++)
+            net.setValue(1.0f, i, i + 1);
+
+        Supplier<FullNet> prevFull = AppRuntime.currentFullNetSupplier();
+        Supplier<Network> prevNet = AppRuntime.currentNetworkSupplier();
+        try
+            {
+            full.attachArea();
+            AppRuntime.setCurrentFullNetSupplier(() -> full);
+            AppRuntime.setCurrentNetworkSupplier(() -> net);
+            NodeArea area = full.getArea();
+            area.setWidthSimply(400);
+            int initialWidth = area.getWidth();
+            area.setLayeredDagLayout();
+            assertTrue(area.getWidth() > initialWidth, "canvas width auto-scaled for deep 10-layer DAG");
+            assertTrue(area.getWidth() >= 11 * 75, "canvas width accommodates 10 layers with >= 75px per layer");
+            }
+        finally
+            {
+            AppRuntime.setCurrentFullNetSupplier(prevFull);
+            AppRuntime.setCurrentNetworkSupplier(prevNet);
+            }
+        }
+
     private static void assertEqualsPixel(int expected, int actual)
         {
         if (expected != actual)

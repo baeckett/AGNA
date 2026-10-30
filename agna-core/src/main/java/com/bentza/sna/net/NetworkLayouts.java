@@ -1132,9 +1132,112 @@ public class NetworkLayouts
             }
         }
 
+    // Computes topological DAG layers for any network (directed, undirected, or cyclic).
+    // Uses source-priority BFS with forward propagation and dense layer normalization (no gaps).
+    public static int[] computeDagLayers(Network net)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return new int[0];
+        if (n == 1)
+            return new int[] { 0 };
+
+        int[] inDeg = new int[n];
+        int[] outDeg = new int[n];
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = 0; j < n; j++)
+                {
+                if (i != j && (net.getValue(i, j) != 0f || net.getValue(j, i) != 0f))
+                    {
+                    if (net.getValue(i, j) != 0f)
+                        outDeg[i]++;
+                    if (net.getValue(j, i) != 0f)
+                        inDeg[i]++;
+                    }
+                }
+            }
+
+        // Identify source nodes (nodes with minimum in-degree)
+        int minIn = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++)
+            {
+            if (inDeg[i] < minIn)
+                minIn = inDeg[i];
+            }
+
+        int[] level = new int[n];
+        java.util.Arrays.fill(level, -1);
+        java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+
+        for (int i = 0; i < n; i++)
+            {
+            if (inDeg[i] == minIn)
+                {
+                level[i] = 0;
+                queue.add(i);
+                }
+            }
+
+        // BFS / topological DAG level assignment
+        while (!queue.isEmpty())
+            {
+            int u = queue.poll();
+            int nextL = level[u] + 1;
+            for (int v = 0; v < n; v++)
+                {
+                if (u != v && (net.getValue(u, v) != 0f || net.getValue(v, u) != 0f))
+                    {
+                    if (level[v] == -1)
+                        {
+                        level[v] = nextL;
+                        queue.add(v);
+                        }
+                    else if (net.getValue(u, v) != 0f && level[v] < nextL && nextL < n)
+                        {
+                        level[v] = nextL;
+                        queue.add(v);
+                        }
+                    }
+                }
+            }
+
+        // Assign any disconnected components
+        int maxL = 0;
+        for (int i = 0; i < n; i++)
+            {
+            if (level[i] > maxL)
+                maxL = level[i];
+            }
+        for (int i = 0; i < n; i++)
+            {
+            if (level[i] == -1)
+                {
+                maxL++;
+                level[i] = maxL;
+                }
+            }
+
+        // Dense layer normalization: eliminate gaps so every layer 0..L_max is populated
+        java.util.TreeSet<Integer> distinct = new java.util.TreeSet<>();
+        for (int i = 0; i < n; i++)
+            distinct.add(level[i]);
+
+        java.util.Map<Integer, Integer> map = new java.util.HashMap<>();
+        int idx = 0;
+        for (int d : distinct)
+            map.put(d, idx++);
+
+        int[] normalized = new int[n];
+        for (int i = 0; i < n; i++)
+            normalized[i] = map.get(level[i]);
+
+        return normalized;
+        }
+
     // Layered / Sugiyama DAG Layout:
     // Hierarchical multi-layer layout with topological layering and barycenter ordering
-    // to minimize edge crossings.
+    // to minimize edge crossings. Automatically scales vertical spacing to prevent compressed chain artifacts.
     public static void applyLayeredDag(Network net, int width, int height)
         {
         int n = net.getSize();
@@ -1151,45 +1254,7 @@ public class NetworkLayouts
             return;
             }
 
-        int[] inDeg = new int[n];
-        int[] outDeg = new int[n];
-        for (int i = 0; i < n; i++)
-            {
-            for (int j = 0; j < n; j++)
-                {
-                if (i != j && net.getValue(i, j) != 0f)
-                    {
-                    outDeg[i]++;
-                    inDeg[j]++;
-                    }
-                }
-            }
-
-        int[] layer = new int[n];
-        java.util.Arrays.fill(layer, 0);
-
-        // Longest-path layering relaxation (Bellman-Ford style, capped at n iterations)
-        for (int iter = 0; iter < n; iter++)
-            {
-            boolean updated = false;
-            for (int u = 0; u < n; u++)
-                {
-                for (int v = 0; v < n; v++)
-                    {
-                    if (u != v && net.getValue(u, v) != 0f)
-                        {
-                        if (layer[v] < layer[u] + 1 && layer[u] + 1 < n)
-                            {
-                            layer[v] = layer[u] + 1;
-                            updated = true;
-                            }
-                        }
-                    }
-                }
-            if (!updated)
-                break;
-            }
-
+        int[] layer = computeDagLayers(net);
         int maxL = 0;
         for (int i = 0; i < n; i++)
             {
@@ -1238,27 +1303,77 @@ public class NetworkLayouts
             });
             }
 
-        int marginX = Math.max(30, width / 12);
-        int marginY = Math.max(30, height / 12);
+        int marginX = Math.max(35, width / 10);
+        int marginY = Math.max(35, height / 10);
         int usableW = width - 2 * marginX;
         int usableH = height - 2 * marginY;
+
+        // Check if all or most layers have only 1 node (narrow chain topology)
+        boolean mostlySingle = true;
+        for (int l = 0; l <= maxL; l++)
+            {
+            if (byLayer.get(l).size() > 1)
+                {
+                mostlySingle = false;
+                break;
+                }
+            }
+
+        // Calibrate vertical spacing:
+        // Capped at 115px so few layers don't stretch into tall skinny poles,
+        // centered vertically in the canvas.
+        double layerGap;
+        int startY;
+        if (maxL == 0)
+            {
+            layerGap = 0;
+            startY = height / 2;
+            }
+        else
+            {
+            double naturalGap = (double) usableH / maxL;
+            if (naturalGap > 115.0)
+                {
+                layerGap = 115.0;
+                double totalH = maxL * layerGap;
+                startY = (int) Math.round((height - totalH) / 2.0);
+                }
+            else
+                {
+                layerGap = naturalGap;
+                startY = marginY;
+                }
+            }
 
         for (int l = 0; l <= maxL; l++)
             {
             java.util.ArrayList<Integer> nodes = byLayer.get(l);
             int count = nodes.size();
-            int y = maxL > 0 ? (int) Math.round(marginY + (double) l * usableH / maxL) : height / 2;
+            int y = maxL > 0 ? (int) Math.round(startY + (double) l * layerGap) : height / 2;
+
             for (int k = 0; k < count; k++)
                 {
                 int node = nodes.get(k);
                 int x;
                 if (count == 1)
                     {
-                    x = width / 2;
+                    boolean prevSingle = (l > 0 && byLayer.get(l - 1).size() == 1);
+                    boolean nextSingle = (l < maxL && byLayer.get(l + 1).size() == 1);
+                    if (mostlySingle || prevSingle || nextSingle)
+                        {
+                        // Stagger single-node layers horizontally so consecutive single nodes
+                        // don't collapse into a 1D vertical pole/chain
+                        double offset = (l % 2 == 0 ? -1 : 1) * Math.min(usableW * 0.22, 85.0);
+                        x = (int) Math.round(width / 2.0 + offset);
+                        }
+                    else
+                        {
+                        x = width / 2;
+                        }
                     }
                 else
                     {
-                    x = (int) Math.round(marginX + (double) k * usableW / (count - 1));
+                    x = (int) Math.round(marginX + (k + 1.0) * usableW / (count + 1.0));
                     }
                 net.getActor(node).setX(x, width);
                 net.getActor(node).setY(y, height);

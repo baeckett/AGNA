@@ -5,6 +5,7 @@
 
 package com.bentza.sna.net;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -517,5 +518,46 @@ public class NetworkLayoutsTest
                 maxDist = dist;
             }
         assertTrue(maxDist - minDist > 50, "community layout clusters have varying distance to center, span=" + (maxDist - minDist));
+        }
+
+    @Test
+    public void layeredDagDenseLayerNormalizationAndStaggering() throws Exception
+        {
+        // 5-node linear chain A -> B -> C -> D -> E
+        Network net = new Network(5);
+        for (int i = 0; i < 5; i++)
+            net.getActor(i).setName("N" + i);
+        net.setValue(1.0f, 0, 1);
+        net.setValue(1.0f, 1, 2);
+        net.setValue(1.0f, 2, 3);
+        net.setValue(1.0f, 3, 4);
+
+        int[] layers = NetworkLayouts.computeDagLayers(net);
+        assertEquals(5, layers.length);
+        // Verify dense sequential layers without gaps
+        for (int i = 0; i < 5; i++)
+            assertEquals(i, layers[i], "node " + i + " at layer " + i);
+
+        int w = 800;
+        int h = 600;
+        NetworkLayouts.apply(net, NetworkLayouts.LAYERED_DAG, w, h);
+
+        // Nodes should have vertical separation and horizontal staggering (spanX > 0)
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        for (int i = 0; i < 5; i++)
+            {
+            int x = px(net.getActor(i), w);
+            int y = py(net.getActor(i), h);
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (i > 0)
+                {
+                int prevY = py(net.getActor(i - 1), h);
+                assertTrue(y > prevY, "layer " + i + " placed below layer " + (i - 1));
+                assertTrue(y - prevY >= 50, "vertical separation at least 50px between consecutive layers");
+                }
+            }
+        assertTrue(maxX - minX >= 50, "single-node chain staggered horizontally (span=" + (maxX - minX) + "), not a flat 1D line");
         }
     }

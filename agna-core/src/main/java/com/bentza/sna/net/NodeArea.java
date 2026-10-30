@@ -559,9 +559,30 @@ public class NodeArea extends JButton implements MouseListener,
 
     public void setLayeredDagLayout()
         {
-        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
-                NetworkLayouts.LAYERED_DAG, area_width, area_width);
-        adjustNodesCoordinates();
+        Network net = AppRuntime.getCurrentNetwork();
+        if (net == null || net.getSize() == 0)
+            return;
+
+        int[] layers = NetworkLayouts.computeDagLayers(net);
+        int maxL = 0;
+        for (int l : layers)
+            {
+            if (l > maxL)
+                maxL = l;
+            }
+        int numLayers = maxL + 1;
+
+        // Auto-scale canvas vertically when necessary:
+        // Ensure each layer has ample vertical spacing (at least 75px per layer).
+        // If the current area_width is too small for the number of layers,
+        // expand the canvas dimension up to 2400px.
+        int neededSize = Math.max(area_width, Math.min(2400, (numLayers + 1) * 75));
+        if (neededSize > area_width)
+            {
+            setWidthSimply(neededSize);
+            }
+
+        NetworkLayouts.apply(net, NetworkLayouts.LAYERED_DAG, area_width, area_width);
         paintEdges();
         repaint();
         }

@@ -2239,9 +2239,25 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     private void doLayeredDagLayout()
         {
         my_area.setLayeredDagLayout();
+        int new_width = my_area.getWidth();
+        Dimension new_dimension = new Dimension(new_width, new_width);
+        my_area.setPreferredSize(new_dimension);
+        if (area_panel != null)
+            {
+            area_panel.setPreferredSize(new Dimension(new_width + 10, new_width + 10));
+            area_panel.revalidate();
+            }
+        if (scroll_graph != null)
+            {
+            scroll_graph.revalidate();
+            }
         gr_full_net.setChanged(true);
         my_area.paintEdges();
         my_area.repaint();
+        if (gr_frame != null)
+            {
+            gr_frame.repaint();
+            }
         }
 
     private void doLinearLayout()
