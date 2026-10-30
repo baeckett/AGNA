@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Comprehensive "File | New Network..." Dialog (`NewNetworkDialog`)**:
-  - Replaced the previous single text prompt with a rich, interactive configuration dialog offering 9 distinct topologies:
+  - Replaced the previous single text prompt with a rich, interactive configuration dialog offering 15 distinct topologies:
     1. **Empty network (isolated nodes)**: Generates $N$ isolated vertices in a circular ring layout.
     2. **Star network**: Configurable as **Symmetrical** (undirected $0 \leftrightarrow j$) or **Asymmetrical** (directed $0 \to j$), with node 0 positioned at the center and peripheral nodes arranged on a surrounding orbit.
     3. **Random binary connected network (no outsiders)**: Guarantees zero isolated nodes and full connectivity by generating a random spanning tree across all $N$ vertices, then populating additional edges to the chosen density.
@@ -21,8 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     7. **Square lattice network ($N \times N$)**: Generates a 2D regular square grid with 4-neighbor planar connectivity, with automated $L \times L$ node calculation and an immediate planar square lattice layout in the Network Viewer.
     8. **Hexagonal lattice network (bee-hive)**: Generates a true honeycomb / bee-hive network of concentric rings of regular hexagonal cells ($6 R^2$ nodes, degree 3 interior), immediately assigned to a planar bee-hive layout in the Network Viewer.
     9. **Hexagram lattice network (Star of David)**: Generates a 6-pointed star triangular lattice of order $k$, calculating the exact vertex count from dual overlapping triangular grids with planar hexagram coordinates.
+    10. **Watts–Strogatz Small-World network**: Regular ring lattice with degree $k$ and tunable shortcut rewiring probability $\beta \in [0, 1]$, displaying high clustering and small average path lengths, rendered in circular ring layout.
+    11. **Barabási–Albert Scale-Free network**: Preferential attachment growth model with parameter $m$, producing power-law degree distributions ($P(k) \sim k^{-3}$), rendered in a concentric layout with high-degree core hubs at the center.
+    12. **Stochastic Block Model (SBM) / Clustered Communities**: Generates modular network structures with $K$ distinct community blocks, intra-community tie probability $p_{\text{in}}$, and inter-community bridge probability $p_{\text{out}}$, automatically positioned in clustered community orbit layouts.
+    13. **Erdős–Rényi Random Graph $G(n, p)$**: Classical Bernoulli random graph model with independent edge probability $p$, selectable as symmetric (undirected) or directed, rendered in circular layout.
+    14. **Linear / chain network**: $1\text{D}$ path / pipeline topology with configurable symmetry, laid out horizontally or in serpentine multi-row snake formation for larger node counts.
+    15. **Hierarchical Tree / Corporate Hierarchy (Organigram)**: Configurable branching factor $b$ (subordinates per leader), selectable directionality (downward authority), and optional lateral peer ties within administrative levels.
+- **Hierarchical Layout Engine & Viewer Toolbar Action**:
+  - Implemented BFS level decomposition algorithm in [`NetworkLayouts`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkLayouts.java) (`applyHierarchical`) to position tree and organizational structures top-down with root nodes centered at the top.
+  - Added new **Hierarchical Layout** action to the Network Viewer menu (*Image | Layout | Hierarchical Layout*) and the Network Viewer layout toolbar.
+  - Designed vector icon for Hierarchical Layout in [`ModernIcons`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-desktop/src/main/java/com/bentza/sna/gui/ModernIcons.java) matching Agna's native vector look.
+- **Dynamic Canvas Dimension Enlargement**:
+  - Automatically scales the drawing canvas in [`NodeArea`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NodeArea.java) based on network size ($N \le 30 \to 450\,\text{px}$, $N \le 75 \to 650\,\text{px}$, $N \le 150 \to 800\,\text{px}$, $N \le 300 \to 1200\,\text{px}$, $N > 300 \to 1600\,\text{px}$) to avoid visual overlap while preventing excessive memory overhead on large graphs.
 - **Topology Generation Engine (`NetworkGenerator`)**:
-  - Created [`com.bentza.sna.net.NetworkGenerator`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkGenerator.java) containing deterministic, mathematically validated topology constructors and layout coordinate initializers (`createSquareLattice`, `createBeeHiveLattice`, `createHexagonalLattice`, `createHexagramLattice`, etc.).
+  - Created [`com.bentza.sna.net.NetworkGenerator`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NetworkGenerator.java) containing deterministic, mathematically validated topology constructors and layout coordinate initializers (`createSquareLattice`, `createBeeHiveLattice`, `createHexagonalLattice`, `createHexagramLattice`, `createWattsStrogatz`, `createBarabasiAlbert`, `createStochasticBlockModel`, `createErdosRenyi`, `createLinearChain`, `createHierarchicalTree`, etc.).
 - **Immediate Layout Preservation in Network Viewer**:
   - Resolved an issue in [`NodeArea`](file:///Volumes/MacAPFS/Antigravity/Agna/agna-core/src/main/java/com/bentza/sna/net/NodeArea.java) where opening the Network Viewer unconditionally wiped out preset actor coordinates with `setCircleLayout()` and random positions.
   - Network Viewer now detects preset coordinates, preserves the exact topological layout (Square Lattice grid, Bee-hive honeycomb, Star, Circular, etc.), and renders the network in its natural geometry.

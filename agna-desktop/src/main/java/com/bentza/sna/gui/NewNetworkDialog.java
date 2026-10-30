@@ -64,6 +64,12 @@ public class NewNetworkDialog extends JDialog
     public static final String TYPE_SQUARE_LATTICE = "Square lattice network (N x N)";
     public static final String TYPE_HEXAGONAL_LATTICE = "Hexagonal lattice network (bee-hive)";
     public static final String TYPE_HEXAGRAM_LATTICE = "Hexagram lattice network (Star of David)";
+    public static final String TYPE_WATTS_STROGATZ = "Watts–Strogatz Small-World network";
+    public static final String TYPE_BARABASI_ALBERT = "Barabási–Albert Scale-Free network";
+    public static final String TYPE_SBM = "Stochastic Block Model (clustered communities)";
+    public static final String TYPE_ERDOS_RENYI = "Erdős–Rényi Random Graph G(n, p)";
+    public static final String TYPE_LINEAR_CHAIN = "Linear / chain network";
+    public static final String TYPE_HIERARCHICAL_TREE = "Hierarchical Tree / Corporate Hierarchy";
 
     private static final String[] TYPES = {
             TYPE_EMPTY,
@@ -74,7 +80,13 @@ public class NewNetworkDialog extends JDialog
             TYPE_FULL,
             TYPE_SQUARE_LATTICE,
             TYPE_HEXAGONAL_LATTICE,
-            TYPE_HEXAGRAM_LATTICE
+            TYPE_HEXAGRAM_LATTICE,
+            TYPE_WATTS_STROGATZ,
+            TYPE_BARABASI_ALBERT,
+            TYPE_SBM,
+            TYPE_ERDOS_RENYI,
+            TYPE_LINEAR_CHAIN,
+            TYPE_HIERARCHICAL_TREE
     };
 
     private JComboBox<String> typeCombo;
@@ -90,6 +102,18 @@ public class NewNetworkDialog extends JDialog
     private JSpinner squareSideSpinner;
     private JSpinner beehiveRadiusSpinner;
     private JSpinner hexagramOrderSpinner;
+    private JSpinner wsNeighborsSpinner;
+    private JSpinner wsBetaSpinner;
+    private JSpinner baMSpinner;
+    private JSpinner sbmBlocksSpinner;
+    private JSpinner sbmPInSpinner;
+    private JSpinner sbmPOutSpinner;
+    private JSpinner erProbSpinner;
+    private JCheckBox erSymmetricCheck;
+    private JCheckBox linearSymmetricCheck;
+    private JSpinner treeBranchingSpinner;
+    private JCheckBox treeLateralCheck;
+    private JCheckBox treeDirectedCheck;
 
     private JButton okButton;
     private JButton cancelButton;
@@ -157,6 +181,19 @@ public class NewNetworkDialog extends JDialog
         squareSideSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 50, 1));
         beehiveRadiusSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 15, 1));
         hexagramOrderSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 10, 1));
+
+        wsNeighborsSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 50, 2));
+        wsBetaSpinner = new JSpinner(new SpinnerNumberModel(0.10, 0.0, 1.0, 0.05));
+        baMSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 20, 1));
+        sbmBlocksSpinner = new JSpinner(new SpinnerNumberModel(3, 2, 20, 1));
+        sbmPInSpinner = new JSpinner(new SpinnerNumberModel(0.40, 0.0, 1.0, 0.05));
+        sbmPOutSpinner = new JSpinner(new SpinnerNumberModel(0.05, 0.0, 1.0, 0.01));
+        erProbSpinner = new JSpinner(new SpinnerNumberModel(0.15, 0.0, 1.0, 0.02));
+        erSymmetricCheck = new JCheckBox("Symmetrical (undirected)", true);
+        linearSymmetricCheck = new JCheckBox("Symmetrical (undirected)", true);
+        treeBranchingSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 10, 1));
+        treeLateralCheck = new JCheckBox("Lateral ties within level", false);
+        treeDirectedCheck = new JCheckBox("Directed (downward hierarchy)", true);
 
         estimatedNodesLabel = new JLabel("");
         mainPanel.add(dynamicOptionsPanel, gbc);
@@ -297,6 +334,44 @@ public class NewNetworkDialog extends JDialog
             nodeCountField.setText(String.valueOf(count));
             nodeCountField.setEnabled(false); // Driven by order
             }
+        else if (TYPE_WATTS_STROGATZ.equals(type))
+            {
+            dynamicOptionsPanel.add(new JLabel("Neighbors per node (k):"));
+            dynamicOptionsPanel.add(wsNeighborsSpinner);
+            dynamicOptionsPanel.add(new JLabel("Rewiring prob (β):"));
+            dynamicOptionsPanel.add(wsBetaSpinner);
+            }
+        else if (TYPE_BARABASI_ALBERT.equals(type))
+            {
+            dynamicOptionsPanel.add(new JLabel("Edges per new node (m):"));
+            dynamicOptionsPanel.add(baMSpinner);
+            }
+        else if (TYPE_SBM.equals(type))
+            {
+            dynamicOptionsPanel.add(new JLabel("Communities:"));
+            dynamicOptionsPanel.add(sbmBlocksSpinner);
+            dynamicOptionsPanel.add(new JLabel("Within (p_in):"));
+            dynamicOptionsPanel.add(sbmPInSpinner);
+            dynamicOptionsPanel.add(new JLabel("Between (p_out):"));
+            dynamicOptionsPanel.add(sbmPOutSpinner);
+            }
+        else if (TYPE_ERDOS_RENYI.equals(type))
+            {
+            dynamicOptionsPanel.add(erSymmetricCheck);
+            dynamicOptionsPanel.add(new JLabel("Edge prob (p):"));
+            dynamicOptionsPanel.add(erProbSpinner);
+            }
+        else if (TYPE_LINEAR_CHAIN.equals(type))
+            {
+            dynamicOptionsPanel.add(linearSymmetricCheck);
+            }
+        else if (TYPE_HIERARCHICAL_TREE.equals(type))
+            {
+            dynamicOptionsPanel.add(new JLabel("Branching factor:"));
+            dynamicOptionsPanel.add(treeBranchingSpinner);
+            dynamicOptionsPanel.add(treeDirectedCheck);
+            dynamicOptionsPanel.add(treeLateralCheck);
+            }
         else
             {
             dynamicOptionsPanel.add(new JLabel("Standard options apply."));
@@ -431,6 +506,40 @@ public class NewNetworkDialog extends JDialog
                 {
                 int order = (Integer) hexagramOrderSpinner.getValue();
                 generatedNetwork = NetworkGenerator.createHexagramLattice(order);
+                }
+            else if (TYPE_WATTS_STROGATZ.equals(type))
+                {
+                int k = (Integer) wsNeighborsSpinner.getValue();
+                double beta = (Double) wsBetaSpinner.getValue();
+                generatedNetwork = NetworkGenerator.createWattsStrogatz(n, k, beta, 0);
+                }
+            else if (TYPE_BARABASI_ALBERT.equals(type))
+                {
+                int m = (Integer) baMSpinner.getValue();
+                generatedNetwork = NetworkGenerator.createBarabasiAlbert(n, m, 0);
+                }
+            else if (TYPE_SBM.equals(type))
+                {
+                int blocks = (Integer) sbmBlocksSpinner.getValue();
+                double pIn = (Double) sbmPInSpinner.getValue();
+                double pOut = (Double) sbmPOutSpinner.getValue();
+                generatedNetwork = NetworkGenerator.createStochasticBlockModel(n, blocks, pIn, pOut, 0);
+                }
+            else if (TYPE_ERDOS_RENYI.equals(type))
+                {
+                double p = (Double) erProbSpinner.getValue();
+                generatedNetwork = NetworkGenerator.createErdosRenyi(n, p, erSymmetricCheck.isSelected(), 0);
+                }
+            else if (TYPE_LINEAR_CHAIN.equals(type))
+                {
+                generatedNetwork = NetworkGenerator.createLinearChain(n, linearSymmetricCheck.isSelected());
+                }
+            else if (TYPE_HIERARCHICAL_TREE.equals(type))
+                {
+                int b = (Integer) treeBranchingSpinner.getValue();
+                boolean lateral = treeLateralCheck.isSelected();
+                boolean directed = treeDirectedCheck.isSelected();
+                generatedNetwork = NetworkGenerator.createHierarchicalTree(n, b, lateral, directed);
                 }
             return true;
             }

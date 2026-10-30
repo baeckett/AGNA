@@ -102,6 +102,30 @@ public class NodeArea extends JButton implements MouseListener,
 
     final double cos15 = 0.9659258262;
 
+    public static int recommendedCanvasSize(int nodeCount)
+        {
+        if (nodeCount <= 30)
+            {
+            return 450;
+            }
+        else if (nodeCount <= 75)
+            {
+            return 650;
+            }
+        else if (nodeCount <= 150)
+            {
+            return 800;
+            }
+        else if (nodeCount <= 300)
+            {
+            return 1200;
+            }
+        else
+            {
+            return 1600;
+            }
+        }
+
     NodeArea()
         {
         setInitialSettings();
@@ -117,6 +141,7 @@ public class NodeArea extends JButton implements MouseListener,
         small_x = 0;
         small_y = 0;
         nodes_count = tmp_network.getSize(); //
+        area_width = recommendedCanvasSize(nodes_count);
         scale_factor = 1f;
         my_nodes = new Actor[nodes_count];
         edges_mat = new int[nodes_count][nodes_count];
@@ -134,7 +159,7 @@ public class NodeArea extends JButton implements MouseListener,
 
         addMouseMotionListener(this);
         addMouseListener(this);
-        edges_image = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
+        edges_image = new BufferedImage(area_width, area_width, BufferedImage.TYPE_INT_RGB);
         setInitialSettings(); // settings generated;
         // ini file exists?
         if (Environment.getSettingsFile().exists())
@@ -169,7 +194,7 @@ public class NodeArea extends JButton implements MouseListener,
         {
         selected_node = -1; //
         second_selected = -1;//
-        area_width = 400; //
+        area_width = recommendedCanvasSize(nodes_count); //
         names_x = 3; //
         names_y = -2; //
         title_x = (int) ((float) area_width / 15); //
@@ -491,6 +516,15 @@ public class NodeArea extends JButton implements MouseListener,
         {
         NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
                 NetworkLayouts.SPRING, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
+    public void setHierarchicalLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.HIERARCHICAL, area_width, area_width);
         adjustNodesCoordinates();
         paintEdges();
         repaint();

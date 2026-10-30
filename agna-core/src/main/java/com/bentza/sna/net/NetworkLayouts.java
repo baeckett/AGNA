@@ -21,6 +21,7 @@ public class NetworkLayouts
     public static final int GRID = 3;
     public static final int CONCENTRIC = 4;
     public static final int STAR = 5;
+    public static final int HIERARCHICAL = 6;
 
     public static final int SPRING_ITERATIONS = 60;
     public static final int SPRING_BH_ABOVE = 256;
@@ -61,6 +62,11 @@ public class NetworkLayouts
         if (layout == STAR)
             {
             applyStar(net, width, height);
+            return;
+            }
+        if (layout == HIERARCHICAL)
+            {
+            applyHierarchical(net, width, height);
             return;
             }
         if (layout == CIRCULAR)
@@ -586,6 +592,131 @@ public class NetworkLayouts
                     width);
             net.getActor(i).setY((int) Math.round(cy + radius * Math.sin(a)),
                     height);
+            }
+        }
+
+    // Top-down tree / organigram layout: root node at top, descendants on successive levels
+    public static void applyHierarchical(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return;
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
+            }
+        if (n == 1)
+            {
+            net.getActor(0).setX(width / 2, width);
+            net.getActor(0).setY(height / 2, height);
+            return;
+            }
+
+        // Determine in-degree and out-degree of each node
+        int[] inDeg = new int[n];
+        int[] outDeg = new int[n];
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = 0; j < n; j++)
+                {
+                if (i != j && net.getValue(i, j) != 0f)
+                    {
+                    outDeg[i]++;
+                    inDeg[j]++;
+                    }
+                }
+            }
+
+        // Find candidate root: prioritize in-degree 0 with max out-degree, else max (outDeg - inDeg)
+        int root = 0;
+        int bestScore = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++)
+            {
+            int score = (inDeg[i] == 0 ? 10000 : 0) + (outDeg[i] - inDeg[i]);
+            if (score > bestScore)
+                {
+                bestScore = score;
+                root = i;
+                }
+            }
+
+        // Compute level (depth) of each node using BFS
+        int[] level = new int[n];
+        java.util.Arrays.fill(level, -1);
+        java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+        level[root] = 0;
+        queue.add(root);
+
+        while (!queue.isEmpty())
+            {
+            int u = queue.poll();
+            int nextLevel = level[u] + 1;
+            for (int v = 0; v < n; v++)
+                {
+                if (u != v && (net.getValue(u, v) != 0f || net.getValue(v, u) != 0f))
+                    {
+                    if (level[v] == -1)
+                        {
+                        level[v] = nextLevel;
+                        queue.add(v);
+                        }
+                    }
+                }
+            }
+
+        // Assign any remaining unvisited nodes
+        int maxL = 0;
+        for (int i = 0; i < n; i++)
+            {
+            if (level[i] > maxL)
+                maxL = level[i];
+            }
+        for (int i = 0; i < n; i++)
+            {
+            if (level[i] == -1)
+                {
+                maxL++;
+                level[i] = maxL;
+                }
+            }
+
+        // Group nodes by level
+        java.util.ArrayList<java.util.ArrayList<Integer>> byLevel = new java.util.ArrayList<>();
+        for (int l = 0; l <= maxL; l++)
+            {
+            byLevel.add(new java.util.ArrayList<Integer>());
+            }
+        for (int i = 0; i < n; i++)
+            {
+            byLevel.get(level[i]).add(i);
+            }
+
+        // Assign coordinates
+        int marginX = Math.max(30, width / 12);
+        int marginY = Math.max(30, height / 12);
+        int usableW = width - 2 * marginX;
+        int usableH = height - 2 * marginY;
+
+        for (int l = 0; l <= maxL; l++)
+            {
+            java.util.ArrayList<Integer> nodes = byLevel.get(l);
+            int count = nodes.size();
+            int y = maxL > 0 ? (int) Math.round(marginY + (double) l * usableH / maxL) : height / 2;
+            for (int k = 0; k < count; k++)
+                {
+                int node = nodes.get(k);
+                int x;
+                if (count == 1)
+                    {
+                    x = width / 2;
+                    }
+                else
+                    {
+                    x = (int) Math.round(marginX + (double) k * usableW / (count - 1));
+                    }
+                net.getActor(node).setX(x, width);
+                net.getActor(node).setY(y, height);
+                }
             }
         }
     }

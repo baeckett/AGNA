@@ -71,8 +71,9 @@ public class ModernIcons
     public static final int GRID_LAYOUT = 36;
     public static final int CONCENTRIC_LAYOUT = 37;
     public static final int SPRING_LAYOUT = 38;
+    public static final int HIERARCHICAL_LAYOUT = 39;
 
-    public static final int KIND_COUNT = 39;
+    public static final int KIND_COUNT = 40;
 
     public static Color accent()
         {
@@ -464,6 +465,23 @@ public class ModernIcons
                     g.fill(new Ellipse2D.Float(sNodes[i][0] * s - snd / 2,
                             sNodes[i][1] * s - snd / 2, snd, snd));
                     }
+                break;
+            case HIERARCHICAL_LAYOUT:
+                g.setColor(accent);
+                int rsize = Math.max(3, Math.round(s * 0.16f));
+                g.fillRect(Math.round(s * 0.50f - rsize / 2f), Math.round(s * 0.18f), rsize, rsize);
+                g.setColor(line);
+                int csize = Math.max(3, Math.round(s * 0.14f));
+                g.drawRect(Math.round(s * 0.22f), Math.round(s * 0.65f), csize, csize);
+                g.drawRect(Math.round(s * 0.78f - csize), Math.round(s * 0.65f), csize, csize);
+                g.drawLine(Math.round(s * 0.50f), Math.round(s * 0.18f + rsize),
+                        Math.round(s * 0.50f), Math.round(s * 0.45f));
+                g.drawLine(Math.round(s * 0.22f + csize / 2f), Math.round(s * 0.45f),
+                        Math.round(s * 0.78f - csize / 2f), Math.round(s * 0.45f));
+                g.drawLine(Math.round(s * 0.22f + csize / 2f), Math.round(s * 0.45f),
+                        Math.round(s * 0.22f + csize / 2f), Math.round(s * 0.65f));
+                g.drawLine(Math.round(s * 0.78f - csize / 2f), Math.round(s * 0.45f),
+                        Math.round(s * 0.78f - csize / 2f), Math.round(s * 0.65f));
                 break;
             case SELECT_NEXT:
                 g.setColor(line);

@@ -468,6 +468,373 @@ public class NetworkGenerator
             }
         }
 
+    /**
+     * Creates a Watts-Strogatz small-world network.
+     * Starts with a ring lattice of n nodes where each node connects to k nearest neighbors (k/2 on each side).
+     * With probability beta, each edge is rewired to a randomly chosen node without self-loops or duplicate edges.
+     * Default layout: Circular layout displaying the perimeter ring and chord shortcuts.
+     */
+    public static Network createWattsStrogatz(int n, int k, double beta, long seed)
+        {
+        checkNodeCount(n);
+        if (k < 2 || k >= n || k % 2 != 0)
+            {
+            throw new IllegalArgumentException("Nearest neighbor degree k must be an even integer with 2 <= k < n.");
+            }
+        beta = Math.max(0.0, Math.min(1.0, beta));
+        Network net = new Network(n);
+        net.setName("Watts-Strogatz Small-World (N=" + n + ", k=" + k + ", p=" + String.format(java.util.Locale.US, "%.2f", beta) + ")");
+        Random rng = seed != 0 ? new Random(seed) : new Random();
+
+        boolean[][] adj = new boolean[n][n];
+        // 1. Regular ring lattice
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = 1; j <= k / 2; j++)
+                {
+                int target = (i + j) % n;
+                adj[i][target] = true;
+                adj[target][i] = true;
+                }
+            }
+
+        // 2. Rewire edges
+        for (int j = 1; j <= k / 2; j++)
+            {
+            for (int i = 0; i < n; i++)
+                {
+                int oldTarget = (i + j) % n;
+                if (rng.nextDouble() < beta)
+                    {
+                    java.util.ArrayList<Integer> candidates = new java.util.ArrayList<>();
+                    for (int w = 0; w < n; w++)
+                        {
+                        if (w != i && !adj[i][w])
+                            {
+                            candidates.add(w);
+                            }
+                        }
+                    if (!candidates.isEmpty())
+                        {
+                        adj[i][oldTarget] = false;
+                        adj[oldTarget][i] = false;
+                        int newTarget = candidates.get(rng.nextInt(candidates.size()));
+                        adj[i][newTarget] = true;
+                        adj[newTarget][i] = true;
+                        }
+                    }
+                }
+            }
+
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = 0; j < n; j++)
+                {
+                if (adj[i][j])
+                    {
+                    net.setValue(1.0f, i, j);
+                    }
+                }
+            }
+        net.setSymmetry(true);
+        int canvasSize = NodeArea.recommendedCanvasSize(n);
+        NetworkLayouts.apply(net, NetworkLayouts.CIRCULAR, canvasSize, canvasSize);
+        return net;
+        }
+
+    /**
+     * Creates a Barabási-Albert scale-free network via preferential attachment.
+     * Starts with an initial clique seed of m+1 nodes, then iteratively adds nodes each connecting to m
+     * existing nodes chosen proportionally to their degree.
+     * Default layout: Concentric layout with highest-degree hubs in center.
+     */
+    public static Network createBarabasiAlbert(int n, int m, long seed)
+        {
+        checkNodeCount(n);
+        if (m < 1 || m >= n)
+            {
+            throw new IllegalArgumentException("Attachment edges m must satisfy 1 <= m < n.");
+            }
+        Network net = new Network(n);
+        net.setName("Barabási-Albert Scale-Free (N=" + n + ", m=" + m + ")");
+        Random rng = seed != 0 ? new Random(seed) : new Random();
+
+        int m0 = m + 1;
+        java.util.ArrayList<Integer> repeatedNodes = new java.util.ArrayList<>();
+
+        // Initial connected clique seed of m0 nodes
+        for (int i = 0; i < m0; i++)
+            {
+            for (int j = i + 1; j < m0; j++)
+                {
+                net.setValue(1.0f, i, j);
+                net.setValue(1.0f, j, i);
+                repeatedNodes.add(i);
+                repeatedNodes.add(j);
+                }
+            }
+
+        // Preferential attachment growth
+        for (int i = m0; i < n; i++)
+            {
+            java.util.HashSet<Integer> chosen = new java.util.HashSet<>();
+            while (chosen.size() < m)
+                {
+                int pick = repeatedNodes.get(rng.nextInt(repeatedNodes.size()));
+                if (pick != i)
+                    {
+                    chosen.add(pick);
+                    }
+                }
+            for (int target : chosen)
+                {
+                net.setValue(1.0f, i, target);
+                net.setValue(1.0f, target, i);
+                repeatedNodes.add(i);
+                repeatedNodes.add(target);
+                }
+            }
+        net.setSymmetry(true);
+        int canvasSize = NodeArea.recommendedCanvasSize(n);
+        NetworkLayouts.apply(net, NetworkLayouts.CONCENTRIC, canvasSize, canvasSize);
+        return net;
+        }
+
+    /**
+     * Creates a Stochastic Block Model (SBM) network with clustered communities.
+     * Vertices are partitioned into numBlocks communities with higher within-community density (pIn)
+     * and lower cross-community density (pOut).
+     * Default layout: Clustered community layout with visible group separation.
+     */
+    public static Network createStochasticBlockModel(int n, int numBlocks, double pIn, double pOut, long seed)
+        {
+        checkNodeCount(n);
+        if (numBlocks < 2 || numBlocks > n)
+            {
+            throw new IllegalArgumentException("Number of community blocks must satisfy 2 <= numBlocks <= n.");
+            }
+        pIn = Math.max(0.0, Math.min(1.0, pIn));
+        pOut = Math.max(0.0, Math.min(1.0, pOut));
+        Network net = new Network(n);
+        net.setName("Stochastic Block Model (" + n + " nodes, " + numBlocks + " Communities)");
+        Random rng = seed != 0 ? new Random(seed) : new Random();
+
+        int[] community = new int[n];
+        for (int i = 0; i < n; i++)
+            {
+            community[i] = (int) Math.min(numBlocks - 1, (long) i * numBlocks / n);
+            }
+
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = i + 1; j < n; j++)
+                {
+                double p = (community[i] == community[j]) ? pIn : pOut;
+                if (rng.nextDouble() < p)
+                    {
+                    net.setValue(1.0f, i, j);
+                    net.setValue(1.0f, j, i);
+                    }
+                }
+            }
+        net.setSymmetry(true);
+        int canvasSize = NodeArea.recommendedCanvasSize(n);
+        applyClusteredCommunityLayout(net, numBlocks, canvasSize, canvasSize);
+        return net;
+        }
+
+    /**
+     * Creates an Erdős-Rényi G(n, p) random graph.
+     * Each pair of vertices is connected with independent probability p.
+     * Default layout: Circular layout.
+     */
+    public static Network createErdosRenyi(int n, double p, boolean symmetric, long seed)
+        {
+        checkNodeCount(n);
+        p = Math.max(0.0, Math.min(1.0, p));
+        Network net = new Network(n);
+        net.setName("Erdős-Rényi G(n, p) (N=" + n + ", p=" + String.format(java.util.Locale.US, "%.2f", p) + ")");
+        Random rng = seed != 0 ? new Random(seed) : new Random();
+
+        for (int i = 0; i < n; i++)
+            {
+            int startJ = symmetric ? i + 1 : 0;
+            for (int j = startJ; j < n; j++)
+                {
+                if (i != j && rng.nextDouble() < p)
+                    {
+                    net.setValue(1.0f, i, j);
+                    if (symmetric)
+                        {
+                        net.setValue(1.0f, j, i);
+                        }
+                    }
+                }
+            }
+        net.setSymmetry(symmetric);
+        int canvasSize = NodeArea.recommendedCanvasSize(n);
+        NetworkLayouts.apply(net, NetworkLayouts.CIRCULAR, canvasSize, canvasSize);
+        return net;
+        }
+
+    /**
+     * Creates a linear chain / pathway network.
+     * Nodes 0 <-> 1 <-> 2 <-> ... <-> n-1.
+     * Default layout: Linear pathway layout (horizontal or snake multi-row for large n).
+     */
+    public static Network createLinearChain(int n, boolean symmetric)
+        {
+        checkNodeCount(n);
+        Network net = new Network(n);
+        net.setName(symmetric ? "Linear Chain Network (" + n + " nodes)" : "Directed Path Network (" + n + " nodes)");
+        for (int i = 0; i < n - 1; i++)
+            {
+            net.setValue(1.0f, i, i + 1);
+            if (symmetric)
+                {
+                net.setValue(1.0f, i + 1, i);
+                }
+            }
+        net.setSymmetry(symmetric);
+        int canvasSize = NodeArea.recommendedCanvasSize(n);
+        applyLinearChainLayout(net, canvasSize, canvasSize);
+        return net;
+        }
+
+    /**
+     * Creates a Hierarchical Tree / Corporate Hierarchy (Organigram) network.
+     * Root node 0 sits at the top, branching down with branchingFactor children per node.
+     * Optional lateral ties simulate informal cross-departmental peer connections.
+     * Default layout: Hierarchical Tree Layout.
+     */
+    public static Network createHierarchicalTree(int n, int branchingFactor, boolean includeLateralTies, boolean directed)
+        {
+        checkNodeCount(n);
+        if (branchingFactor < 2)
+            {
+            throw new IllegalArgumentException("Branching factor must be at least 2.");
+            }
+        Network net = new Network(n);
+        net.setName("Hierarchical Tree / Organigram (" + n + " nodes, b=" + branchingFactor + ")");
+
+        for (int i = 0; i < n; i++)
+            {
+            int firstChild = i * branchingFactor + 1;
+            int lastChild = Math.min(n - 1, (i + 1) * branchingFactor);
+            for (int c = firstChild; c <= lastChild; c++)
+                {
+                net.setValue(1.0f, i, c);
+                if (!directed)
+                    {
+                    net.setValue(1.0f, c, i);
+                    }
+                }
+            }
+
+        if (includeLateralTies)
+            {
+            // Connect horizontal peers sharing same parent
+            for (int i = 0; i < n; i++)
+                {
+                int firstChild = i * branchingFactor + 1;
+                int lastChild = Math.min(n - 1, (i + 1) * branchingFactor);
+                for (int c = firstChild; c < lastChild; c++)
+                    {
+                    net.setValue(1.0f, c, c + 1);
+                    net.setValue(1.0f, c + 1, c);
+                    }
+                }
+            }
+        net.setSymmetry(!directed);
+        int canvasSize = NodeArea.recommendedCanvasSize(n);
+        NetworkLayouts.apply(net, NetworkLayouts.HIERARCHICAL, canvasSize, canvasSize);
+        return net;
+        }
+
+    public static void applyLinearChainLayout(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0) return;
+        for (int i = 0; i < n; i++) net.getActor(i).createCoordinatesIfMissing();
+        if (n == 1)
+            {
+            net.getActor(0).setX(width / 2, width);
+            net.getActor(0).setY(height / 2, height);
+            return;
+            }
+        int margin = Math.max(40, width / 12);
+        if (n <= 20)
+            {
+            int y = height / 2;
+            for (int i = 0; i < n; i++)
+                {
+                int x = (int) Math.round(margin + (double) i * (width - 2 * margin) / (n - 1));
+                net.getActor(i).setX(x, width);
+                net.getActor(i).setY(y, height);
+                }
+            }
+        else
+            {
+            int cols = Math.min(20, (int) Math.ceil(Math.sqrt(n * 2.5)));
+            int rows = (int) Math.ceil((double) n / cols);
+            int usableW = width - 2 * margin;
+            int usableH = height - 2 * margin;
+            for (int i = 0; i < n; i++)
+                {
+                int r = i / cols;
+                int colInRow = (r % 2 == 0) ? (i % cols) : ((cols - 1) - (i % cols));
+                int x = (cols > 1) ? (int) Math.round(margin + (double) colInRow * usableW / (cols - 1)) : width / 2;
+                int y = (rows > 1) ? (int) Math.round(margin + (double) r * usableH / (rows - 1)) : height / 2;
+                net.getActor(i).setX(x, width);
+                net.getActor(i).setY(y, height);
+                }
+            }
+        }
+
+    public static void applyClusteredCommunityLayout(Network net, int numBlocks, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0) return;
+        for (int i = 0; i < n; i++) net.getActor(i).createCoordinatesIfMissing();
+        if (numBlocks < 2 || n <= numBlocks)
+            {
+            NetworkLayouts.apply(net, NetworkLayouts.CIRCULAR, width, height);
+            return;
+            }
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+        double mainRadius = Math.min(width, height) * 0.35;
+        double clusterRadius = mainRadius * Math.sin(Math.PI / numBlocks) * 0.85;
+
+        java.util.ArrayList<java.util.ArrayList<Integer>> communities = new java.util.ArrayList<>();
+        for (int c = 0; c < numBlocks; c++) communities.add(new java.util.ArrayList<Integer>());
+        for (int i = 0; i < n; i++)
+            {
+            int comm = (int) Math.min(numBlocks - 1, (long) i * numBlocks / n);
+            communities.get(comm).add(i);
+            }
+
+        for (int c = 0; c < numBlocks; c++)
+            {
+            double angleC = 2 * Math.PI * c / numBlocks - Math.PI / 2.0;
+            double commCenterX = cx + mainRadius * Math.cos(angleC);
+            double commCenterY = cy + mainRadius * Math.sin(angleC);
+
+            java.util.ArrayList<Integer> members = communities.get(c);
+            int mCount = members.size();
+            for (int k = 0; k < mCount; k++)
+                {
+                int node = members.get(k);
+                double angleM = 2 * Math.PI * k / Math.max(1, mCount);
+                double rLocal = (mCount > 1) ? clusterRadius * (0.35 + 0.65 * (k % 2)) : 0.0;
+                int x = (int) Math.round(commCenterX + rLocal * Math.cos(angleM));
+                int y = (int) Math.round(commCenterY + rLocal * Math.sin(angleM));
+                net.getActor(node).setX(x, width);
+                net.getActor(node).setY(y, height);
+                }
+            }
+        }
+
     public static class Point2D
         {
         public final double x;

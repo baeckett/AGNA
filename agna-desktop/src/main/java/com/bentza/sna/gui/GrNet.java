@@ -73,6 +73,7 @@ import com.bentza.sna.io.JpegUtils;
             d_isolate_node, d_delete_node, d_transpose, d_symmetrize,
             d_remove_outsiders, n_set_x, n_set_y, e_random_layout,
             e_circular_layout, e_grid_layout, e_concentric_layout, e_spring_layout,
+            e_hierarchical_layout,
             n_change_name, n_face_width, n_change_face,
             e_change_faces_width, n_no_face, n_default_face,
             n_select_next_node, n_select_next_arrow, e_names_x, e_names_y,
@@ -92,7 +93,7 @@ import com.bentza.sna.io.JpegUtils;
             gtool_allow_edge_selection, gtool_show_connection_value,
             gtool_add_nodes, gtool_delete_nodes, gtool_circular_layout,
             gtool_random_layout, gtool_grid_layout, gtool_concentric_layout,
-            gtool_spring_layout, border_button;
+            gtool_spring_layout, gtool_hierarchical_layout, border_button;
 
     private Dimension dim_tool;
 
@@ -460,6 +461,13 @@ import com.bentza.sna.io.JpegUtils;
                         || e.getSource() == gtool_spring_layout)
                     {
                     doSpringLayout();
+                    }
+
+                // sets hierarchical tree layout
+                if (e.getSource() == e_hierarchical_layout
+                        || e.getSource() == gtool_hierarchical_layout)
+                    {
+                    doHierarchicalLayout();
                     }
 
                 // select next node
@@ -2156,6 +2164,14 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         my_area.repaint();
         }
 
+    private void doHierarchicalLayout()
+        {
+        my_area.setHierarchicalLayout();
+        gr_full_net.setChanged(true);
+        my_area.paintEdges();
+        my_area.repaint();
+        }
+
     
     /**
      * static method allowing to change the selected actor; not to be placed in
@@ -3386,6 +3402,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_grid_layout = new JMenuItem("Grid Layout");
         e_concentric_layout = new JMenuItem("Concentric Layout");
         e_spring_layout = new JMenuItem("Force-Directed Layout");
+        e_hierarchical_layout = new JMenuItem("Hierarchical Tree Layout");
         JMenu e_background_i = new JMenu("Background Picture");
         e_background_color = new JMenuItem("Background Color...");
         e_background_image = new JMenuItem("From File...");
@@ -3441,6 +3458,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_grid_layout.setToolTipText("Arrange all nodes in a grid");
         e_concentric_layout.setToolTipText("Arrange nodes in concentric circles by degree");
         e_spring_layout.setToolTipText("Arrange nodes with a force-directed spring embedder");
+        e_hierarchical_layout.setToolTipText("Arrange nodes in a top-down hierarchical tree / organigram");
         e_background_i.setToolTipText("Background image settings");
         e_background_color.setToolTipText("Change background color");
         e_background_image
@@ -3509,6 +3527,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_grid_layout.setMnemonic('g');
         e_concentric_layout.setMnemonic('o');
         e_spring_layout.setMnemonic('f');
+        e_hierarchical_layout.setMnemonic('h');
         e_background_i.setMnemonic('b');
         e_background_color.setMnemonic('k');
         e_background_image.setMnemonic('f');
@@ -3619,6 +3638,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_grid_layout.addActionListener(act_change_image);
         e_concentric_layout.addActionListener(act_change_image);
         e_spring_layout.addActionListener(act_change_image);
+        e_hierarchical_layout.addActionListener(act_change_image);
         e_background_color.addActionListener(act_change_image);
         e_background_image.addActionListener(act_change_image);
         e_background_x.addActionListener(act_change_image);
@@ -3728,6 +3748,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gImage.add(e_grid_layout);
         gImage.add(e_concentric_layout);
         gImage.add(e_spring_layout);
+        gImage.add(e_hierarchical_layout);
         gImage.addSeparator();
         gImage.add(e_title);
         gImage.add(e_grid);
@@ -4035,6 +4056,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ModernIcons.CONCENTRIC_LAYOUT, 22));
         gtool_spring_layout = new JButton(ModernIcons.get(
                 ModernIcons.SPRING_LAYOUT, 22));
+        gtool_hierarchical_layout = new JButton(ModernIcons.get(
+                ModernIcons.HIERARCHICAL_LAYOUT, 22));
         gtool_select_next = new JButton(gi_select_next);
         gtool_export_image = new JButton(gi_export_image);
         gtool_insert_in_output = new JButton(gi_insert_in_output);
@@ -4114,6 +4137,8 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ModernIcons.CONCENTRIC_LAYOUT, 22, true));
         gtool_spring_layout.setRolloverIcon(ModernIcons.get(
                 ModernIcons.SPRING_LAYOUT, 22, true));
+        gtool_hierarchical_layout.setRolloverIcon(ModernIcons.get(
+                ModernIcons.HIERARCHICAL_LAYOUT, 22, true));
         gtool_select_next.setRolloverIcon(gir_select_next);
         gtool_export_image.setRolloverIcon(gir_export_image);
         gtool_insert_in_output.setRolloverIcon(gir_insert_in_output);
@@ -4137,6 +4162,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_grid_layout.setBorder(null);
         gtool_concentric_layout.setBorder(null);
         gtool_spring_layout.setBorder(null);
+        gtool_hierarchical_layout.setBorder(null);
         gtool_select_next.setBorder(null);
         gtool_export_image.setBorder(null);
         gtool_insert_in_output.setBorder(null);
@@ -4159,6 +4185,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_grid_layout.setPreferredSize(dim_tool);
         gtool_concentric_layout.setPreferredSize(dim_tool);
         gtool_spring_layout.setPreferredSize(dim_tool);
+        gtool_hierarchical_layout.setPreferredSize(dim_tool);
 
         gtool_edge_color.setMaximumSize(dim_tool);
         gtool_view_names.setMaximumSize(dim_tool);
@@ -4174,6 +4201,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_grid_layout.setMaximumSize(dim_tool);
         gtool_concentric_layout.setMaximumSize(dim_tool);
         gtool_spring_layout.setMaximumSize(dim_tool);
+        gtool_hierarchical_layout.setMaximumSize(dim_tool);
 
         gtool_separator.setPreferredSize(dim_tool);
         gtool_edge_value.setPreferredSize(dim_tool);
@@ -4226,6 +4254,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_grid_layout.setToolTipText("Grid Layout");
         gtool_concentric_layout.setToolTipText("Concentric Layout");
         gtool_spring_layout.setToolTipText("Force-Directed Layout");
+        gtool_hierarchical_layout.setToolTipText("Hierarchical Tree Layout");
         gfield_separator.setToolTipText("Edge separation (px)");
         gfield_edge_value.setToolTipText("Edge value");
         gtool_separator.up_button
@@ -4273,6 +4302,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtool_grid_layout.addActionListener(act_change_image);
         gtool_concentric_layout.addActionListener(act_change_image);
         gtool_spring_layout.addActionListener(act_change_image);
+        gtool_hierarchical_layout.addActionListener(act_change_image);
         gfield_separator.addActionListener(act_change_image);
         gfield_edge_value.addActionListener(act_change_node);
         gtool_edge_value.up_button.addActionListener(act_change_node);
@@ -4347,6 +4377,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gtools.add(gtool_grid_layout);
         gtools.add(gtool_concentric_layout);
         gtools.add(gtool_spring_layout);
+        gtools.add(gtool_hierarchical_layout);
         gtools.addSeparator();
         gtools.add(gtool_add_nodes);
         gtools.add(gtool_delete_nodes);

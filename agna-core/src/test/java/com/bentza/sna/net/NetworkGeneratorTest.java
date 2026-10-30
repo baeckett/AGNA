@@ -229,6 +229,149 @@ public class NetworkGeneratorTest
         }
 
     @Test
+    public void createWattsStrogatz()
+        {
+        // When beta = 0.0, exact regular ring lattice of degree k
+        Network wsRegular = NetworkGenerator.createWattsStrogatz(20, 4, 0.0, 42);
+        assertEquals(20, wsRegular.getSize());
+        assertTrue(wsRegular.isSymmetric());
+        // Each node connects to 4 neighbors -> 20 * 4 = 80 directed edges
+        assertEquals(80, wsRegular.getEdgesNumber());
+        for (int i = 0; i < 20; i++)
+            {
+            int deg = 0;
+            for (int j = 0; j < 20; j++)
+                {
+                if (wsRegular.getValue(i, j) > 0.0f) deg++;
+                }
+            assertEquals(4, deg, "Regular ring node must have degree 4");
+            }
+
+        // When beta > 0, rewired small-world
+        Network wsSmallWorld = NetworkGenerator.createWattsStrogatz(30, 4, 0.2, 42);
+        assertEquals(30, wsSmallWorld.getSize());
+        assertTrue(wsSmallWorld.isSymmetric());
+        assertTrue(wsSmallWorld.getEdgesNumber() > 0);
+        }
+
+    @Test
+    public void createBarabasiAlbert()
+        {
+        Network ba = NetworkGenerator.createBarabasiAlbert(30, 2, 42);
+        assertEquals(30, ba.getSize());
+        assertTrue(ba.isSymmetric());
+        assertTrue(ba.getEdgesNumber() >= (30 - 2) * 2 * 2); // At least (n-m)*m undirected edges
+        // Degree of early hubs should exceed degree of late nodes
+        int earlyDeg = 0;
+        for (int j = 0; j < 30; j++)
+            {
+            if (ba.getValue(0, j) > 0.0f) earlyDeg++;
+            }
+        int lateDeg = 0;
+        for (int j = 0; j < 30; j++)
+            {
+            if (ba.getValue(29, j) > 0.0f) lateDeg++;
+            }
+        assertTrue(earlyDeg >= lateDeg, "Early hub node 0 should have degree >= late node 29");
+        }
+
+    @Test
+    public void createStochasticBlockModel()
+        {
+        Network sbm = NetworkGenerator.createStochasticBlockModel(30, 3, 0.8, 0.02, 42);
+        assertEquals(30, sbm.getSize());
+        assertTrue(sbm.isSymmetric());
+        int withinEdges = 0;
+        int betweenEdges = 0;
+        for (int i = 0; i < 30; i++)
+            {
+            for (int j = i + 1; j < 30; j++)
+                {
+                if (sbm.getValue(i, j) > 0.0f)
+                    {
+                    if (i / 10 == j / 10) withinEdges++;
+                    else betweenEdges++;
+                    }
+                }
+            }
+        assertTrue(withinEdges > betweenEdges, "Within-community ties (" + withinEdges + ") should dominate between-community ties (" + betweenEdges + ")");
+        }
+
+    @Test
+    public void createErdosRenyi()
+        {
+        Network erSym = NetworkGenerator.createErdosRenyi(20, 0.2, true, 42);
+        assertEquals(20, erSym.getSize());
+        assertTrue(erSym.isSymmetric());
+        assertTrue(erSym.getEdgesNumber() > 0);
+
+        Network erAsym = NetworkGenerator.createErdosRenyi(20, 0.2, false, 42);
+        assertEquals(20, erAsym.getSize());
+        assertTrue(erAsym.getEdgesNumber() > 0);
+        }
+
+    @Test
+    public void createLinearChain()
+        {
+        Network chain = NetworkGenerator.createLinearChain(6, true);
+        assertEquals(6, chain.getSize());
+        assertTrue(chain.isSymmetric());
+        // Endpoints have deg 1, internal nodes have deg 2: 1 + 2 + 2 + 2 + 2 + 1 = 10 directed edges (5 undirected)
+        assertEquals(10, chain.getEdgesNumber());
+        assertEquals(1.0f, chain.getValue(0, 1));
+        assertEquals(0.0f, chain.getValue(0, 2));
+        assertEquals(1.0f, chain.getValue(1, 2));
+        assertEquals(1.0f, chain.getValue(4, 5));
+        }
+
+    @Test
+    public void createHierarchicalTree()
+        {
+        // Binary tree (branching factor 2), 7 nodes: root=0, level1=1,2, level2=3,4,5,6
+        Network treeDirected = NetworkGenerator.createHierarchicalTree(7, 2, false, true);
+        assertEquals(7, treeDirected.getSize());
+        assertFalse(treeDirected.isSymmetric());
+        assertEquals(6, treeDirected.getEdgesNumber()); // 6 parent->child directed edges
+        assertEquals(1.0f, treeDirected.getValue(0, 1));
+        assertEquals(1.0f, treeDirected.getValue(0, 2));
+        assertEquals(1.0f, treeDirected.getValue(1, 3));
+        assertEquals(1.0f, treeDirected.getValue(1, 4));
+
+        // Lateral ties within level
+        Network treeLateral = NetworkGenerator.createHierarchicalTree(7, 2, true, true);
+        assertTrue(treeLateral.getEdgesNumber() > 6);
+        // Level 1 nodes (1 and 2) should be connected laterally
+        assertEquals(1.0f, treeLateral.getValue(1, 2));
+        }
+
+    @Test
+    public void recommendedCanvasSizeScaling()
+        {
+        assertEquals(450, NodeArea.recommendedCanvasSize(10));
+        assertEquals(450, NodeArea.recommendedCanvasSize(30));
+        assertEquals(650, NodeArea.recommendedCanvasSize(50));
+        assertEquals(650, NodeArea.recommendedCanvasSize(75));
+        assertEquals(800, NodeArea.recommendedCanvasSize(100));
+        assertEquals(800, NodeArea.recommendedCanvasSize(150));
+        assertEquals(1200, NodeArea.recommendedCanvasSize(200));
+        assertEquals(1200, NodeArea.recommendedCanvasSize(300));
+        assertEquals(1600, NodeArea.recommendedCanvasSize(500));
+        }
+
+    @Test
+    public void hierarchicalLayoutAlgorithm()
+        {
+        Network tree = NetworkGenerator.createHierarchicalTree(7, 2, false, true);
+        NetworkLayouts.apply(tree, NetworkLayouts.HIERARCHICAL, 650, 650);
+        // Root (0) should have lowest Y (near top)
+        Actor root = tree.getActor(0);
+        Actor child1 = tree.getActor(1);
+        Actor grandChild = tree.getActor(3);
+        assertTrue(root.getY() < child1.getY(), "Root must be higher than child: rootY=" + root.getY() + ", childY=" + child1.getY());
+        assertTrue(child1.getY() < grandChild.getY(), "Child must be higher than grandChild");
+        }
+
+    @Test
     public void validationBoundsCheck()
         {
         assertThrows(IllegalArgumentException.class, () -> NetworkGenerator.createEmpty(1));

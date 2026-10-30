@@ -98,4 +98,45 @@ public class NewNetworkDialogTest
         assertEquals(50f, avgX, 1.0f, "Bee-hive should be horizontally centered near 50%");
         assertEquals(50f, avgY, 1.0f, "Bee-hive should be vertically centered near 50%");
         }
+
+    @Test
+    public void hierarchicalTreeViewerLayout()
+        {
+        Network tree = NetworkGenerator.createHierarchicalTree(7, 2, false, true);
+        assertEquals(7, tree.getSize());
+
+        FullNet fn = new FullNet();
+        fn.setNetwork(tree);
+        fn.attachArea();
+
+        NodeArea area = fn.getArea();
+        assertNotNull(area);
+
+        // In hierarchical layout, root is at top, children at lower tiers
+        Actor root = tree.getActor(0);
+        Actor child1 = tree.getActor(1);
+        Actor grandChild = tree.getActor(3);
+        assertTrue(root.getY() < child1.getY());
+        assertTrue(child1.getY() < grandChild.getY());
+        }
+
+    @Test
+    public void linearChainViewerLayout()
+        {
+        Network chain = NetworkGenerator.createLinearChain(5, true);
+        FullNet fn = new FullNet();
+        fn.setNetwork(chain);
+        fn.attachArea();
+
+        NodeArea area = fn.getArea();
+        assertNotNull(area);
+
+        for (int i = 0; i < 4; i++)
+            {
+            Actor cur = chain.getActor(i);
+            Actor next = chain.getActor(i + 1);
+            assertEquals(cur.getY(), next.getY(), 0.001f, "Single row chain nodes share Y coordinate");
+            assertTrue(next.getX() > cur.getX(), "Chain nodes ordered left-to-right");
+            }
+        }
     }
