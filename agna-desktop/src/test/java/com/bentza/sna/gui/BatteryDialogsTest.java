@@ -58,5 +58,11 @@ public class BatteryDialogsTest {
         SociometricsBatteryDialog socDlg = new SociometricsBatteryDialog(null, net, socRef::set);
         assertNotNull(socDlg);
         assertTrue(socDlg.getTitle().contains("Sociometrics"));
+
+        // FullAnalysisDialog with new modules
+        AtomicReference<com.bentza.sna.report.FullAnalysisOptions> fullRef = new AtomicReference<>();
+        FullAnalysisDialog fullDlg = new FullAnalysisDialog(null, net, fullRef::set);
+        assertNotNull(fullDlg);
+        assertTrue(fullDlg.getTitle().contains("Full Analysis"));
     }
 }

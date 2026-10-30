@@ -66,6 +66,10 @@ public class FullAnalysisOptions implements Serializable {
         opt.setIncludePageRank(true);
         opt.setIncludeTriadCensus(true);
         opt.setIncludeCliques(true);
+        opt.setIncludeAssortativity(true);
+        opt.setIncludeCommunityDetection(true);
+        opt.setIncludeStructuralEquivalence(true);
+        opt.setIncludeWeightedMetrics(true);
         return opt;
     }
 
