@@ -16,6 +16,7 @@ import com.bentza.sna.io.PajekExporter;
 import com.bentza.sna.net.AgnaLib;
 import com.bentza.sna.net.FullNet;
 import com.bentza.sna.net.Network;
+import com.bentza.sna.net.NetworkGenerator;
 import com.bentza.sna.net.NetworkLayouts;
 import com.bentza.sna.net.NetworkRenderer;
 import com.bentza.sna.net.NodeArea;
@@ -89,13 +90,18 @@ public final class Cli
                 + "                                  merge-nodes:N1,N2,.. | "
                 + "remove-outsiders | renumber | add-nodes:N | clone-node:N\n"
                 + "  draw IN --out PNG --layout L   L = circular | random | "
-                + "spring | grid | concentric; --size WxH; --labels;\n"
+                + "spring | grid | concentric | star | hierarchical; --size WxH; --labels;\n"
                 + "                                  --background #rrggbb; "
                 + "--no-faces; --edge-values; prints the used layout\n"
                 + "                                  coordinates (index, "
                 + "name, x, y) to stdout\n"
-                + "  generate --nodes N --out FILE  random (--seed S, "
-                + "--degree D) | star | circular\n"
+                + "  generate --nodes N --out FILE [--type TYPE] [options]\n"
+                + "                                  generate synthetic network. Types:\n"
+                + "                                  empty | star | circular | full |\n"
+                + "                                  random-connected | random-weighted |\n"
+                + "                                  square-lattice | beehive | hexagram |\n"
+                + "                                  watts-strogatz | barabasi-albert |\n"
+                + "                                  sbm | erdos-renyi | linear | tree\n"
                 + "  matrix FILE [--format csv|tsv] [--out FILE]\n"
                 + "                                  print the matrix\n"
                 + "  nodes FILE [--out FILE]         node table (degrees + "
@@ -130,7 +136,7 @@ public final class Cli
                 + "chain file\n"
                 + "  layout FILE --layout L --out OUT\n"
                 + "                                  apply a layout "
-                + "(circular|random|spring|grid|concentric|star) and save\n"
+                + "(circular|random|spring|grid|concentric|star|hierarchical) and save\n"
                 + "                                  the new coordinates "
                 + "without rendering\n"
                 + "  set FILE --out OUT [--flag VALUE ...]\n"
@@ -153,12 +159,25 @@ public final class Cli
             full.readNetwork(IOUtils.utf8BytesToText(bytes), stdinFormat);
             return full;
             }
+        File targetFile = new File(file);
+        if (!targetFile.exists())
+            {
+            File defaultDir = Environment.getDefaultOpenDirectory();
+            if (defaultDir != null && defaultDir.isDirectory())
+                {
+                File candidate = new File(defaultDir, file);
+                if (candidate.exists())
+                    {
+                    targetFile = candidate;
+                    }
+                }
+            }
         if ("xls".equals(ext) || "xlsx".equals(ext))
             {
-            full.readExcelFile(new File(file), ext);
+            full.readExcelFile(targetFile, ext);
             } else
             {
-            byte[] bytes = Files.readAllBytes(new File(file).toPath());
+            byte[] bytes = Files.readAllBytes(targetFile.toPath());
             full.readNetwork(IOUtils.utf8BytesToText(bytes), ext);
             }
         return full;
@@ -802,6 +821,12 @@ public final class Cli
                     } else if ("concentric".equals(l))
                     {
                     layout = NetworkLayouts.CONCENTRIC;
+                    } else if ("star".equals(l))
+                    {
+                    layout = NetworkLayouts.STAR;
+                    } else if ("hierarchical".equals(l) || "tree".equals(l))
+                    {
+                    layout = NetworkLayouts.HIERARCHICAL;
                     } else if (!"circular".equals(l))
                     {
                     out.println("unknown layout: " + l);
@@ -884,6 +909,14 @@ public final class Cli
             {
             return "concentric";
             }
+        if (layout == NetworkLayouts.STAR)
+            {
+            return "star";
+            }
+        if (layout == NetworkLayouts.HIERARCHICAL)
+            {
+            return "hierarchical";
+            }
         return "circular";
         }
 
@@ -893,7 +926,23 @@ public final class Cli
         String type = "random";
         int nodes = 10;
         long seed = 20260910L;
-        int degree = 2;
+        Double density = null;
+        Integer degree = null;
+        boolean symmetric = true;
+        boolean directed = false;
+        boolean symmetricExplicitlySet = false;
+        Integer side = null;
+        Integer radius = null;
+        Integer order = null;
+        int k = 4;
+        double beta = 0.10;
+        int m = 2;
+        int blocks = 3;
+        double pIn = 0.40;
+        double pOut = 0.05;
+        int branching = 2;
+        boolean lateral = false;
+
         for (int i = 1; i < args.length; i++)
             {
             String a = args[i];
@@ -905,67 +954,143 @@ public final class Cli
                 outFile = args[++i];
                 } else if ("--type".equals(a) && i + 1 < args.length)
                 {
-                type = args[++i];
+                type = args[++i].toLowerCase();
                 } else if ("--seed".equals(a) && i + 1 < args.length)
                 {
                 seed = Long.parseLong(args[++i]);
                 } else if ("--degree".equals(a) && i + 1 < args.length)
                 {
                 degree = Integer.parseInt(args[++i]);
+                } else if (("--density".equals(a) || "-d".equals(a) || "--prob".equals(a) || "-p".equals(a)) && i + 1 < args.length)
+                {
+                density = Double.parseDouble(args[++i]);
+                } else if ("--symmetric".equals(a))
+                {
+                symmetric = true;
+                directed = false;
+                symmetricExplicitlySet = true;
+                } else if ("--directed".equals(a) || "--asymmetric".equals(a))
+                {
+                symmetric = false;
+                directed = true;
+                symmetricExplicitlySet = true;
+                } else if ("--undirected".equals(a))
+                {
+                symmetric = true;
+                directed = false;
+                symmetricExplicitlySet = true;
+                } else if ("--side".equals(a) && i + 1 < args.length)
+                {
+                side = Integer.parseInt(args[++i]);
+                } else if ("--radius".equals(a) && i + 1 < args.length)
+                {
+                radius = Integer.parseInt(args[++i]);
+                } else if ("--order".equals(a) && i + 1 < args.length)
+                {
+                order = Integer.parseInt(args[++i]);
+                } else if (("-k".equals(a) || "--k".equals(a) || "--neighbors".equals(a)) && i + 1 < args.length)
+                {
+                k = Integer.parseInt(args[++i]);
+                } else if ("--beta".equals(a) && i + 1 < args.length)
+                {
+                beta = Double.parseDouble(args[++i]);
+                } else if (("-m".equals(a) || "--m".equals(a) || "--attachments".equals(a)) && i + 1 < args.length)
+                {
+                m = Integer.parseInt(args[++i]);
+                } else if (("--blocks".equals(a) || "--communities".equals(a)) && i + 1 < args.length)
+                {
+                blocks = Integer.parseInt(args[++i]);
+                } else if ("--p-in".equals(a) && i + 1 < args.length)
+                {
+                pIn = Double.parseDouble(args[++i]);
+                } else if ("--p-out".equals(a) && i + 1 < args.length)
+                {
+                pOut = Double.parseDouble(args[++i]);
+                } else if (("-b".equals(a) || "--branching".equals(a)) && i + 1 < args.length)
+                {
+                branching = Integer.parseInt(args[++i]);
+                } else if ("--lateral".equals(a))
+                {
+                lateral = true;
                 }
             }
         if (outFile == null)
             {
-            out.println("usage: agna generate --nodes N --out FILE "
-                    + "[--type random|star|circular] [--seed S] [--degree D]");
+            out.println("usage: agna generate --nodes N --out FILE [--type TYPE] [options]");
             return 1;
             }
-        if (nodes < 1)
+        if (nodes < 1 && !"square-lattice".equals(type) && !"square".equals(type)
+                && !"beehive".equals(type) && !"hexagonal".equals(type) && !"hexagram".equals(type))
             {
             out.println("--nodes must be >= 1");
             return 1;
             }
-        FullNet full = new FullNet();
-        if ("star".equals(type))
+
+        Network net;
+        if ("empty".equals(type) || "isolated".equals(type))
             {
-            Network net = new Network(nodes);
-            net.setName("Star Network");
-            for (int j = 1; j < nodes; j++)
-                {
-                net.setValue(1f, 0, j);
-                net.setValue(1f, j, 0);
-                }
-            NetworkLayouts.apply(net, NetworkLayouts.STAR, 800, 600);
-            full.setNetwork(net);
-            } else if ("circular".equals(type))
+            net = NetworkGenerator.createEmpty(Math.max(2, nodes));
+            } else if ("star".equals(type))
             {
-            Network net = new Network(nodes);
-            net.setName("Circular Network");
-            NetworkLayouts.apply(net, NetworkLayouts.CIRCULAR, 800, 600);
-            full.setNetwork(net);
+            net = NetworkGenerator.createStar(Math.max(2, nodes), symmetric);
+            } else if ("circular".equals(type) || "ring".equals(type))
+            {
+            net = NetworkGenerator.createCircular(Math.max(2, nodes));
+            } else if ("full".equals(type) || "clique".equals(type))
+            {
+            net = NetworkGenerator.createFullBinary(Math.max(2, nodes));
+            } else if ("random-connected".equals(type) || "connected".equals(type))
+            {
+            double dens = density != null ? density : 0.15;
+            net = NetworkGenerator.createRandomConnected(Math.max(2, nodes), dens, seed);
+            } else if ("random-weighted".equals(type) || "weighted".equals(type))
+            {
+            double dens = density != null ? density : 0.20;
+            net = NetworkGenerator.createRandomWeighted(Math.max(2, nodes), dens, symmetric, seed);
+            } else if ("square-lattice".equals(type) || "square".equals(type) || "grid".equals(type))
+            {
+            int s = side != null ? side : (int) Math.max(2, Math.round(Math.sqrt(nodes)));
+            net = NetworkGenerator.createSquareLattice(s);
+            } else if ("beehive".equals(type) || "hexagonal".equals(type) || "hexagonal-lattice".equals(type) || "honeycomb".equals(type))
+            {
+            int r = radius != null ? radius : (int) Math.max(1, Math.round(Math.sqrt((double) nodes / 6.0)));
+            net = NetworkGenerator.createBeeHiveLattice(r);
+            } else if ("hexagram".equals(type) || "hexagram-lattice".equals(type) || "star-of-david".equals(type))
+            {
+            int ord = order != null ? order : 2;
+            net = NetworkGenerator.createHexagramLattice(ord);
+            } else if ("watts-strogatz".equals(type) || "small-world".equals(type) || "ws".equals(type))
+            {
+            net = NetworkGenerator.createWattsStrogatz(Math.max(2, nodes), k, beta, seed);
+            } else if ("barabasi-albert".equals(type) || "scale-free".equals(type) || "ba".equals(type))
+            {
+            net = NetworkGenerator.createBarabasiAlbert(Math.max(2, nodes), m, seed);
+            } else if ("sbm".equals(type) || "stochastic-block-model".equals(type) || "community".equals(type))
+            {
+            net = NetworkGenerator.createStochasticBlockModel(Math.max(2, nodes), blocks, pIn, pOut, seed);
+            } else if ("linear".equals(type) || "chain".equals(type) || "path".equals(type))
+            {
+            net = NetworkGenerator.createLinearChain(Math.max(2, nodes), symmetric);
+            } else if ("tree".equals(type) || "hierarchical".equals(type) || "organigram".equals(type))
+            {
+            boolean dir = symmetricExplicitlySet ? directed : true;
+            net = NetworkGenerator.createHierarchicalTree(Math.max(2, nodes), branching, lateral, dir);
+            } else if ("erdos-renyi".equals(type) || "er".equals(type))
+            {
+            double p = density != null ? density : (degree != null ? (double) degree / Math.max(1, nodes - 1) : 0.15);
+            net = NetworkGenerator.createErdosRenyi(Math.max(2, nodes), p, symmetric, seed);
             } else
             {
-            // random: seeded Erdos-Renyi, reproducible with --seed
-            Network net = new Network(nodes);
-            net.setName("Random Network");
-            Random rnd = new Random(seed);
-            for (int i = 0; i < nodes; i++)
-                {
-                for (int j = i + 1; j < nodes; j++)
-                    {
-                    if (rnd.nextDouble() < (double) degree
-                            / Math.max(1, nodes - 1))
-                        {
-                        net.setValue(1f, i, j);
-                        net.setValue(1f, j, i);
-                        }
-                    }
-                }
-            NetworkLayouts.apply(net, NetworkLayouts.SPRING, 800, 600);
-            full.setNetwork(net);
+            // default / "random": seeded Erdos-Renyi reproducible with --seed and --degree
+            double p = density != null ? density : (degree != null ? (double) degree / Math.max(1, nodes - 1) : 2.0 / Math.max(1, nodes - 1));
+            net = NetworkGenerator.createErdosRenyi(Math.max(2, nodes), p, true, seed);
             }
+
+        FullNet full = new FullNet();
+        full.setNetwork(net);
+        full.attachArea();
         write(full, outFile);
-        out.println("generated " + type + " network with " + nodes
+        out.println("generated " + type + " network with " + net.getSize()
                 + " nodes -> " + outFile);
         return 0;
         }
@@ -1858,6 +1983,9 @@ public final class Cli
             } else if ("star".equals(layoutName))
             {
             layoutInt = NetworkLayouts.STAR;
+            } else if ("hierarchical".equals(layoutName) || "tree".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.HIERARCHICAL;
             } else
             {
             out.println("unknown layout: " + layoutName);

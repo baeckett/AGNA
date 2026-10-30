@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     13. **Erdős–Rényi Random Graph $G(n, p)$**: Classical Bernoulli random graph model with independent edge probability $p$, selectable as symmetric (undirected) or directed, rendered in circular layout.
     14. **Linear / chain network**: $1\text{D}$ path / pipeline topology with configurable symmetry, laid out horizontally or in serpentine multi-row snake formation for larger node counts.
     15. **Hierarchical Tree / Corporate Hierarchy (Organigram)**: Configurable branching factor $b$ (subordinates per leader), selectable directionality (downward authority), and optional lateral peer ties within administrative levels.
+- **Agna CLI Full Parity with Core & Desktop Enhancements**:
+  - Expanded `agna generate` command to support all 15 network topologies with specific tuning parameters (`--type empty|star|circular|full|random-connected|random-weighted|square-lattice|beehive|hexagram|watts-strogatz|barabasi-albert|sbm|erdos-renyi|linear|tree`, `--density`, `--symmetric/--directed`, `--side`, `--radius`, `--order`, `-k`, `--beta`, `-m`, `--blocks`, `--p-in`, `--p-out`, `-b`, `--lateral`, `--seed`).
+  - Added `hierarchical` and `star` layout support to `agna draw --layout` and `agna layout --layout`.
+  - Upgraded CLI file loader (`open`) to automatically resolve network files against `Environment.getDefaultOpenDirectory()` (e.g. `~/.agna/samples/`) when relative paths are not in the current working directory.
+  - Updated command-line manual page (`docs/agna.1`), CLI guide (`docs/cli.md`), and shell tab-completions for Bash (`docs/agnacompletion.bash`) and Zsh (`docs/agnacompletion.zsh`).
 - **Academic Citations & Documentation Reference (§12 in Manual)**:
   - Documented complete mathematical formulations and verified seminal academic literature citations for newly supported generative network models:
     - **Watts–Strogatz Small-World**: Watts, D. J., & Strogatz, S. H. (1998). *Collective dynamics of 'small-world' networks*. *Nature*, 393(6684), 440–442. [doi:10.1038/30918](https://doi.org/10.1038/30918).

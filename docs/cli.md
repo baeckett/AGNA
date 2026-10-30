@@ -22,8 +22,8 @@ Command summary:
 | `analyse FILE [--all\|NAME...\|cliques:N] [--out FILE]` | the full analysis battery |
 | `convert IN OUT [--in-format F] [--out-format F]` | format conversion |
 | `transform IN OUT --op OP` | network operations (see below) |
-| `draw IN --out PNG [--layout L] [--size WxH] [--labels] [--background #rrggbb] [--no-faces] [--edge-values]` | headless visualisation |
-| `generate --nodes N --out FILE [--type ...] [--seed S] [--degree D]` | seeded synthetic networks |
+| `draw IN --out PNG [--layout L] [--size WxH] [--labels] [--background #rrggbb] [--no-faces] [--edge-values]` | headless visualisation (circular, random, spring, grid, concentric, star, hierarchical) |
+| `generate --nodes N --out FILE [--type ...] [options]` | seeded synthetic networks (empty, star, circular, full, random-connected, random-weighted, square-lattice, beehive, hexagram, watts-strogatz, barabasi-albert, sbm, erdos-renyi, linear, tree) |
 | `matrix FILE [--format csv\|tsv] [--out FILE]` | raw matrix table |
 | `nodes FILE [--out FILE]` | node table (degrees + coordinates) |
 | `ego FILE --node NAME --out OUT` | 1-hop ego network extraction |
@@ -33,7 +33,7 @@ Command summary:
 | `diff A B [--out FILE.csv]` | structural comparison |
 | `add-scalar FILE V --out OUT` … `renumber FILE --out OUT` | desktop Network-menu commands (see below) |
 | `from-chain FILE --out OUT` | create a network from a chain file |
-| `layout FILE --layout L --out OUT` | apply coordinates without rendering |
+| `layout FILE --layout L --out OUT` | apply coordinates (circular|random|spring|grid|concentric|star|hierarchical) without rendering |
 | `set FILE --out OUT [--flag VALUE ...]` | edit viewer attributes |
 | `--help` | this text |
 
@@ -170,7 +170,7 @@ agna draw IN --out PNG [--layout L] [--size WxH] [--labels]
 Renders the network headlessly with the same visual language as the
 desktop viewer (node faces, tie colours and transparency, grid),
 deterministically. Layouts: `circular` (default), `random`, `spring`,
-`grid`, `concentric`. Default canvas 1200x900 (any `--size WxH` works; a
+`grid`, `concentric`, `star`, `hierarchical`. Default canvas 1200x900 (any `--size WxH` works; a
 rectangular canvas is scaled from the viewer's internal square).
 
 - `--labels` draws node names
@@ -193,17 +193,30 @@ index	name	x	y
 ### generate
 
 ```
-agna generate --nodes N --out FILE [--type T] [--seed S] [--degree D]
+agna generate --nodes N --out FILE [--type T] [options]
 ```
 
 Generates a synthetic network (default type `random`, default degree 2).
-Types:
+Supported types:
 
-| type | shape |
+| type | shape & parameters |
 |---|---|
-| `random` | seeded Erdős–Rényi, average degree D |
-| `star` | one hub connected to every other node, laid out hub-and-ring |
-| `circular` | an edgeless ring of nodes (right for benchmarks and empty matrices) |
+| `empty` | $N$ isolated vertices in a circular ring layout |
+| `star` | central hub with surrounding orbit nodes (`--symmetric` / `--directed`) |
+| `circular` | undirected ring lattice with circular viewer coordinates |
+| `full` | complete binary network (clique) connecting all distinct pairs |
+| `random-connected` | random spanning tree guaranteed to have no isolates (`--density D`, `--seed S`) |
+| `random-weighted` | weights strictly in $(0.0, 1.0)$ (`--density D`, `--symmetric` / `--directed`, `--seed S`) |
+| `square-lattice` | 2D regular square grid with 4-neighbor planar connectivity (`--side S`) |
+| `beehive` | concentric regular hexagonal rings honeycomb (`--radius R`) |
+| `hexagram` | Star-of-David triangular lattice of order $k$ (`--order O`) |
+| `watts-strogatz` | small-world network with shortcut rewiring (`-k K`, `--beta B`, `--seed S`) |
+| `barabasi-albert` | scale-free network with preferential attachment (`-m M`, `--seed S`) |
+| `sbm` | modular community blocks (`--blocks B`, `--p-in P`, `--p-out P`, `--seed S`) |
+| `erdos-renyi` | classic $G(n, p)$ random graph (`-p P`, `--symmetric` / `--directed`, `--seed S`) |
+| `linear` | 1D pathway / pipeline chain (`--symmetric` / `--directed`) |
+| `tree` | hierarchical tree / organigram (`-b B`, `--lateral`, `--directed` / `--undirected`) |
+| `random` | seeded Erdős–Rényi with average degree (`--degree D`, `--seed S`) |
 
 The same `--seed` always produces byte-identical output — the basis for
 reproducible test data:

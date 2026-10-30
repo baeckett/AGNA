@@ -207,7 +207,7 @@ public class CliTest
         {
         File f = File.createTempFile("agna_cli_comp", ".agn");
         f.deleteOnExit();
-        run("generate", "--nodes", "6", "--type", "circular", "--out",
+        run("generate", "--nodes", "6", "--type", "empty", "--out",
                 f.getAbsolutePath());
         String text = run("components", f.getAbsolutePath());
         assertTrue(text.contains("6 components"), text);
@@ -242,7 +242,7 @@ public class CliTest
         {
         File f = File.createTempFile("agna_cli_out", ".agn");
         f.deleteOnExit();
-        run("generate", "--nodes", "6", "--type", "circular", "--out",
+        run("generate", "--nodes", "6", "--type", "empty", "--out",
                 f.getAbsolutePath());
         File out = File.createTempFile("agna_cli_out2", ".agn");
         out.deleteOnExit();
@@ -684,5 +684,94 @@ public class CliTest
         assertTrue(text.contains("index\tname\tx\ty"), text);
         assertTrue(text.lines().count() == 11, "1 header + 9 coords");
         assertTrue(text.contains("(layout grid"), text);
+        }
+
+    @Test
+    public void generateCircularProducesConnectedRing() throws Exception
+        {
+        File f = File.createTempFile("agna_cli_circ", ".agn");
+        f.deleteOnExit();
+        run("generate", "--nodes", "8", "--type", "circular", "--out", f.getAbsolutePath());
+        String info = run("info", f.getAbsolutePath());
+        assertTrue(info.contains("nodes:  8"));
+        assertTrue(info.contains("edges:  16")); // 8 undirected = 16 directed
+        String comp = run("components", f.getAbsolutePath());
+        assertTrue(comp.contains("1 components") || comp.contains("1 component"), comp);
+        }
+
+    @Test
+    public void generateTopologies215() throws Exception
+        {
+        File f = File.createTempFile("agna_cli_topos", ".agn");
+        f.deleteOnExit();
+
+        // 1. Watts-Strogatz
+        run("generate", "--nodes", "20", "--type", "watts-strogatz", "-k", "4", "--beta", "0.1", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  20"));
+
+        // 2. Barabasi-Albert
+        run("generate", "--nodes", "25", "--type", "barabasi-albert", "-m", "2", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  25"));
+
+        // 3. SBM
+        run("generate", "--nodes", "30", "--type", "sbm", "--blocks", "3", "--p-in", "0.6", "--p-out", "0.05", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  30"));
+
+        // 4. Erdos-Renyi
+        run("generate", "--nodes", "15", "--type", "erdos-renyi", "-p", "0.3", "--directed", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  15"));
+
+        // 5. Linear Chain
+        run("generate", "--nodes", "10", "--type", "linear", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  10"));
+
+        // 6. Hierarchical Tree
+        run("generate", "--nodes", "13", "--type", "tree", "-b", "3", "--lateral", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  13"));
+
+        // 7. Square lattice
+        run("generate", "--type", "square-lattice", "--side", "4", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  16"));
+
+        // 8. Beehive
+        run("generate", "--type", "beehive", "--radius", "2", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  24"));
+
+        // 9. Hexagram
+        run("generate", "--type", "hexagram", "--order", "2", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:"));
+
+        // 10. Random connected
+        run("generate", "--nodes", "12", "--type", "random-connected", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  12"));
+
+        // 11. Random weighted
+        run("generate", "--nodes", "10", "--type", "random-weighted", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  10"));
+
+        // 12. Full binary
+        run("generate", "--nodes", "5", "--type", "full", "--out", f.getAbsolutePath());
+        assertTrue(run("info", f.getAbsolutePath()).contains("nodes:  5"));
+        assertTrue(run("info", f.getAbsolutePath()).contains("edges:  20"));
+        }
+
+    @Test
+    public void drawAndLayoutHierarchical() throws Exception
+        {
+        File tree = File.createTempFile("agna_cli_tree", ".agn");
+        File laidOut = File.createTempFile("agna_cli_tree_lay", ".agn");
+        File png = File.createTempFile("agna_cli_tree_png", ".png");
+        tree.deleteOnExit();
+        laidOut.deleteOnExit();
+        png.deleteOnExit();
+
+        run("generate", "--nodes", "7", "--type", "tree", "-b", "2", "--out", tree.getAbsolutePath());
+        run("layout", tree.getAbsolutePath(), "--layout", "hierarchical", "--out", laidOut.getAbsolutePath());
+        assertTrue(laidOut.exists());
+
+        String text = run("draw", tree.getAbsolutePath(), "--out", png.getAbsolutePath(), "--layout", "hierarchical");
+        assertTrue(text.contains("hierarchical"), text);
+        byte[] bytes = Files.readAllBytes(png.toPath());
+        assertTrue(bytes.length > 500, "rendered png has content");
         }
     }
