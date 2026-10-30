@@ -10,12 +10,16 @@ import com.bentza.sna.census.DyadCensus;
 import com.bentza.sna.census.TriadCensus;
 import com.bentza.sna.clustering.ClusteringMetrics;
 import com.bentza.sna.clustering.KCoreDecomposition;
+import com.bentza.sna.community.CommunityDetectionService;
 import com.bentza.sna.connectivity.ConnectivityAnalysis;
 import com.bentza.sna.core.AppRuntime;
+import com.bentza.sna.equivalence.StructuralEquivalenceService;
 import com.bentza.sna.net.Actor;
 import com.bentza.sna.net.AgnaLib;
 import com.bentza.sna.net.Network;
 import com.bentza.sna.spectral.SpectralCentrality;
+import com.bentza.sna.stats.DegreeAssortativity;
+import com.bentza.sna.stats.WeightedMetrics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -266,6 +270,10 @@ public final class AnalysisReportFactory {
         AnalysisReport report = new AnalysisReport("Distribution of Nodal Degree", src.getName());
         report.setRawPlainText(legacy);
         report.setNote("* relative to number of all other nodes (self excluded)", false);
+        if (deg != null && size > 2) {
+            float cent = lib.freemanGeneralIndex(deg, lib.nodalDegree(new Network(size, 1)));
+            report.addProperty("Freeman Network Centralization (Degree)", String.format(Locale.ROOT, "%.4f", cent));
+        }
 
         TableData.Builder b = TableData.builder("Distribution of Nodal Degree in " + src.getName())
                 .network(src.getName())
@@ -483,6 +491,10 @@ public final class AnalysisReportFactory {
         }
 
         float[] fare = lib.fareness(src);
+        if (connected && fare != null && size > 2) {
+            float cent = lib.freemanGeneralIndex(fare, lib.fareness(new Network(size, 1)));
+            report.addProperty("Freeman Network Centralization", String.format(Locale.ROOT, "%.4f", cent));
+        }
         TableData.Builder b = TableData.builder("Distribution of Fareness in " + src.getName())
                 .network(src.getName())
                 .columns("Node", "Fareness")
@@ -631,6 +643,10 @@ public final class AnalysisReportFactory {
         }
 
         float[] bav = lib.bavelas(src);
+        if (connected && bav != null && size > 2) {
+            float cent = lib.freemanGeneralIndex(bav, lib.bavelas(new Network(size, 1)));
+            report.addProperty("Freeman Network Centralization", String.format(Locale.ROOT, "%.4f", cent));
+        }
         TableData.Builder b = TableData.builder("Bavelas-Leavitt Centrality in " + src.getName())
                 .network(src.getName())
                 .columns("Node", "Bavelas Centrality")
@@ -800,6 +816,10 @@ public final class AnalysisReportFactory {
         if (options.isIncludeFareness() && connected) {
             for (TableData td : createFarenessReport(src, lib, "").getTables()) report.addTable(td);
         }
+        if (options.isIncludeNodalDegree() || options.isIncludeBetweenness() || options.isIncludeCloseness()) {
+            TableData freemanTable = createFreemanCentralizationSummaryTable(src, lib);
+            if (freemanTable != null) report.addTable(freemanTable);
+        }
         if (options.isIncludeEigenvector()) {
             for (TableData td : createEigenvectorReport(src, lib, "").getTables()) report.addTable(td);
         }
@@ -873,6 +893,12 @@ public final class AnalysisReportFactory {
         if (options.isIncludeCliques()) {
             for (TableData td : createCliquesReport(src, options.getCliqueDiameter(), lib, "").getTables()) report.addTable(td);
         }
+        if (options.isIncludeCommunities()) {
+            for (TableData td : createCommunityDetectionReport(src, options.isUseGirvanNewman(), lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeStructuralEquivalence()) {
+            for (TableData td : createStructuralEquivalenceReport(src, options.getTargetBlocks(), lib, "").getTables()) report.addTable(td);
+        }
 
         report.addFootnote("Clustering and cohesion metrics measure triad closure, core density, and subgraph cohesion.");
         return report;
@@ -920,6 +946,12 @@ public final class AnalysisReportFactory {
                     report.addTable(td);
                 }
             }
+        }
+        if (options.isIncludeAssortativity()) {
+            for (TableData td : createDegreeAssortativityReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeWeightedMetrics()) {
+            for (TableData td : createWeightedMetricsReport(src, lib, "").getTables()) report.addTable(td);
         }
 
         report.addFootnote("Sociometrics battery details network density, tie volume, and degree distribution profiles.");
@@ -974,6 +1006,11 @@ public final class AnalysisReportFactory {
             }
         }
 
+        if (options.isIncludeDegreeMetrics() || options.isIncludeGeodesicCentralities()) {
+            TableData freemanSummary = createFreemanCentralizationSummaryTable(src, lib);
+            if (freemanSummary != null) report.addTable(freemanSummary);
+        }
+
         if (options.isIncludeSpectralCentrality()) {
             AnalysisReport eigen = createEigenvectorReport(src, lib, "");
             for (TableData td : eigen.getTables()) report.addTable(td);
@@ -1018,6 +1055,26 @@ public final class AnalysisReportFactory {
         if (options.isIncludeCliques()) {
             AnalysisReport cliques = createCliquesReport(src, options.getCliqueDiameter(), lib, "");
             for (TableData td : cliques.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeAssortativity()) {
+            AnalysisReport assort = createDegreeAssortativityReport(src, lib, "");
+            for (TableData td : assort.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeCommunityDetection()) {
+            AnalysisReport comm = createCommunityDetectionReport(src, options.isUseGirvanNewman(), lib, "");
+            for (TableData td : comm.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeStructuralEquivalence()) {
+            AnalysisReport equiv = createStructuralEquivalenceReport(src, options.getTargetBlocks(), lib, "");
+            for (TableData td : equiv.getTables()) report.addTable(td);
+        }
+
+        if (options.isIncludeWeightedMetrics()) {
+            AnalysisReport weighted = createWeightedMetricsReport(src, lib, "");
+            for (TableData td : weighted.getTables()) report.addTable(td);
         }
 
         report.addFootnote("Full analysis battery compiles selected centrality, cohesion, structural capital, and connectivity metrics.");
@@ -1350,6 +1407,202 @@ public final class AnalysisReportFactory {
 
         report.addFootnote("PageRank measures the probability of finding a random walk at each node with random teleportation probability (1 - d).");
         report.addFootnote("Reference: Page, L., Brin, S., Motwani, R., & Winograd, T. (1999). The PageRank citation ranking. Stanford InfoLab.");
+        return report;
+    }
+
+    public static TableData createFreemanCentralizationSummaryTable(Network src, AgnaLib lib) {
+        int size = src.getSize();
+        if (size <= 2) return null;
+        boolean connected = lib.isConnected(src);
+
+        float[] deg = lib.nodalDegree(src);
+        float degCent = (deg != null) ? lib.freemanGeneralIndex(deg, lib.nodalDegree(new Network(size, 1))) : 0f;
+
+        float betwCent = 0f;
+        float closeCent = 0f;
+        float bavCent = 0f;
+        if (connected) {
+            float[] betw = lib.betweenness(src);
+            if (betw != null) betwCent = lib.freemanGeneralIndex(betw, lib.betweenness(new Network(size, 1)));
+            float[] close = lib.closeness(src);
+            if (close != null) closeCent = lib.freemanGeneralIndex(close, lib.closeness(new Network(size, 1)));
+            float[] bav = lib.bavelas(src);
+            if (bav != null) bavCent = lib.freemanGeneralIndex(bav, lib.bavelas(new Network(size, 1)));
+        }
+
+        TableData.Builder b = TableData.builder("Freeman Network Centralization Indices of " + src.getName())
+                .network(src.getName())
+                .subtitle("Graph-level centralization measures compared to the maximally centralized star graph of size N=" + size)
+                .columns("Centrality Measure", "Network Centralization Index", "Theoretical Range", "Benchmark Graph")
+                .isNumeric(false, true, false, false);
+
+        b.addRow("Freeman Degree Centralization (C_D)", String.format(Locale.ROOT, "%.4f", degCent), "[0, 1]", "Star Network (N=" + size + ")");
+        if (connected) {
+            b.addRow("Freeman Betweenness Centralization (C_B)", String.format(Locale.ROOT, "%.4f", betwCent), "[0, 1]", "Star Network (N=" + size + ")");
+            b.addRow("Freeman Closeness Centralization (C_C)", String.format(Locale.ROOT, "%.4f", closeCent), "[0, 1]", "Star Network (N=" + size + ")");
+            b.addRow("Bavelas-Leavitt Centralization (C_Bav)", String.format(Locale.ROOT, "%.4f", bavCent), "[0, 1]", "Star Network (N=" + size + ")");
+        } else {
+            b.addRow("Freeman Betweenness Centralization (C_B)", "N/A (Disconnected)", "[0, 1]", "Requires single component");
+            b.addRow("Freeman Closeness Centralization (C_C)", "N/A (Disconnected)", "[0, 1]", "Requires single component");
+            b.addRow("Bavelas-Leavitt Centralization (C_Bav)", "N/A (Disconnected)", "[0, 1]", "Requires single component");
+        }
+
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        return dt;
+    }
+
+    public static AnalysisReport createDegreeAssortativityReport(Network src, AgnaLib lib, String legacy) {
+        DegreeAssortativity.AssortativityResult res = DegreeAssortativity.compute(src);
+        AnalysisReport report = new AnalysisReport("Degree Assortativity & Mixing Patterns", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Total Degree Assortativity (r)", Double.isNaN(res.totalDegreeAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.totalDegreeAssortativity));
+        report.addProperty("Directed Out-In Assortativity (r_out_in)", Double.isNaN(res.outInAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.outInAssortativity));
+        report.addProperty("Mixing Regime", res.mixingRegime);
+        report.addProperty("Evaluated Edges (M)", String.valueOf(res.edgeCount));
+
+        TableData.Builder b = TableData.builder("Degree Assortativity Coefficients of " + src.getName())
+                .network(src.getName())
+                .columns("Degree Mixing Type", "Correlation (r)", "Theoretical Range", "Structural Interpretation")
+                .isNumeric(false, true, false, false);
+
+        b.addRow("Total Degree Assortativity (r)", Double.isNaN(res.totalDegreeAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.totalDegreeAssortativity), "[-1, 1]", res.mixingRegime);
+        b.addRow("Out-Degree to In-Degree (r_out_in)", Double.isNaN(res.outInAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.outInAssortativity), "[-1, 1]", "Source emission vs. target reception correlation");
+        b.addRow("In-Degree to In-Degree (r_in_in)", Double.isNaN(res.inInAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.inInAssortativity), "[-1, 1]", "Popularity-popularity mixing");
+        b.addRow("Out-Degree to Out-Degree (r_out_out)", Double.isNaN(res.outOutAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.outOutAssortativity), "[-1, 1]", "Activity-activity mixing");
+        b.addRow("In-Degree to Out-Degree (r_in_out)", Double.isNaN(res.inOutAssortativity) ? "N/A" : String.format(Locale.ROOT, "%.4f", res.inOutAssortativity), "[-1, 1]", "Popularity to activity mixing");
+
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        report.addFootnote("Degree assortativity measures Pearson correlation of degrees between connected node pairs across all edges.");
+        report.addFootnote("Positive assortativity indicates homophilic mixing (typical of social networks); negative assortativity indicates disassortative hub-spoke hierarchy.");
+        report.addFootnote("References: Newman, M. E. J. (2002). Assortative mixing in networks. Phys. Rev. Lett., 89(20), 208701; Foster et al. (2010). PNAS, 107(24), 10815-10820.");
+        return report;
+    }
+
+    public static AnalysisReport createCommunityDetectionReport(Network src, boolean useGirvanNewman, AgnaLib lib, String legacy) {
+        CommunityDetectionService.CommunityResult res = useGirvanNewman ? CommunityDetectionService.detectGirvanNewman(src) : CommunityDetectionService.detectLouvain(src);
+        AnalysisReport report = new AnalysisReport("Community Detection & Modularity Partitioning", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Algorithm", res.algorithm);
+        report.addProperty("Newman Modularity (Q)", String.format(Locale.ROOT, "%.4f", res.modularityQ));
+        report.addProperty("Number of Communities (K)", String.valueOf(res.communityCount));
+        report.addProperty("Modularity Quality", res.modularityQ > 0.3 ? "Strong Community Structure (Q > 0.3)" : "Weak / Diffuse Community Structure (Q <= 0.3)");
+
+        TableData.Builder sumB = TableData.builder("Community Subgraph Summary in " + src.getName())
+                .network(src.getName())
+                .columns("Community ID", "Node Count", "Internal Density", "Members Preview")
+                .isNumeric(true, true, true, false);
+
+        for (CommunityDetectionService.CommunityInfo info : res.communities) {
+            String prev = info.memberNames.size() > 6 ? String.join(", ", info.memberNames.subList(0, 6)) + " ..." : String.join(", ", info.memberNames);
+            sumB.addRow(info.communityId, info.memberCount, String.format(Locale.ROOT, "%.4f", info.internalDensity), prev);
+        }
+        TableData sumTable = sumB.build();
+        TableRegistry.register(sumTable);
+        report.addTable(sumTable);
+
+        TableData.Builder nodeB = TableData.builder("Actor Community Affiliation in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Community ID")
+                .isNumeric(false, true);
+
+        for (int i = 0; i < src.getSize(); i++) {
+            nodeB.addRow(src.getActor(i).getName(), res.nodeAssignments[i] + 1);
+        }
+        TableData nodeTable = nodeB.build();
+        TableRegistry.register(nodeTable);
+        report.addTable(nodeTable);
+
+        report.addFootnote("Modularity Q measures the fraction of ties falling within communities minus the expected fraction in a degree-equivalent null model.");
+        report.addFootnote("Values above 0.3 typically indicate significant modular community organization (Newman & Girvan, 2004).");
+        report.addFootnote("References: Blondel et al. (2008). J. Stat. Mech., P10008; Girvan & Newman (2002). PNAS, 99(12), 7821-7826.");
+        return report;
+    }
+
+    public static AnalysisReport createStructuralEquivalenceReport(Network src, int targetBlocks, AgnaLib lib, String legacy) {
+        StructuralEquivalenceService.EquivalenceResult res = StructuralEquivalenceService.analyze(src, targetBlocks);
+        AnalysisReport report = new AnalysisReport("Structural Equivalence & Blockmodeling", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Target Positions / Blocks (K)", String.valueOf(res.blockCount));
+        report.addProperty("Clustering Method", "Average-Linkage Agglomerative Clustering on Euclidean Distance");
+
+        TableData.Builder imageB = TableData.builder("Blockmodel Image Matrix (Inter-Block Tie Density)")
+                .network(src.getName())
+                .subtitle("Density of directed ties from Block P (row) to Block Q (column)");
+        List<String> cols = new ArrayList<>();
+        cols.add("Position / Block");
+        boolean[] isNum = new boolean[res.blockCount + 1];
+        for (int b = 0; b < res.blockCount; b++) {
+            cols.add("Block " + (b + 1));
+            isNum[b + 1] = true;
+        }
+        imageB.columns(cols.toArray(new String[0])).isNumeric(isNum);
+
+        for (int p = 0; p < res.blockCount; p++) {
+            List<Object> rowVals = new ArrayList<>();
+            rowVals.add("Block " + (p + 1));
+            for (int q = 0; q < res.blockCount; q++) {
+                rowVals.add(String.format(Locale.ROOT, "%.4f", res.blockmodelDensity[p][q]));
+            }
+            imageB.addRow(rowVals.toArray());
+        }
+        TableData imageTable = imageB.build();
+        TableRegistry.register(imageTable);
+        report.addTable(imageTable);
+
+        TableData.Builder memB = TableData.builder("Structural Role / Block Assignments in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "Assigned Block / Position")
+                .isNumeric(false, true);
+
+        for (int i = 0; i < src.getSize(); i++) {
+            memB.addRow(src.getActor(i).getName(), "Block " + (res.blockAssignments[i] + 1));
+        }
+        TableData memTable = memB.build();
+        TableRegistry.register(memTable);
+        report.addTable(memTable);
+
+        report.addFootnote("Two actors are structurally equivalent if they hold identical relational profiles to all other network participants (Burt, 1976).");
+        report.addFootnote("Blockmodel image matrix shows empirical inter-position tie density, revealing core-periphery or reciprocal structural roles.");
+        report.addFootnote("References: Burt, R. S. (1976). Social Forces, 55(1), 93-122; Wasserman & Faust (1994). Social Network Analysis, Chapter 9.");
+        return report;
+    }
+
+    public static AnalysisReport createWeightedMetricsReport(Network src, AgnaLib lib, String legacy) {
+        WeightedMetrics.WeightedSummary sum = WeightedMetrics.compute(src);
+        AnalysisReport report = new AnalysisReport("Valued & Weighted Network Analysis", src.getName());
+        report.setRawPlainText(legacy);
+
+        report.addProperty("Binary Density (Unweighted)", String.format(Locale.ROOT, "%.4f", sum.binaryDensity));
+        report.addProperty("Valued Density (Mean Potential Tie)", String.format(Locale.ROOT, "%.4f", sum.valuedDensity));
+        report.addProperty("Average Edge Weight (Existing Ties)", String.format(Locale.ROOT, "%.4f", sum.meanTieWeight));
+        report.addProperty("Mean Barrat Weighted Clustering", String.format(Locale.ROOT, "%.4f", sum.meanWeightedClustering));
+
+        TableData.Builder b = TableData.builder("Node Strengths & Weighted Clustering in " + src.getName())
+                .network(src.getName())
+                .columns("Node", "In-Strength (s_in)", "Out-Strength (s_out)", "Total Strength (s)", "Barrat Clustering (C^w)")
+                .isNumeric(false, true, true, true, true);
+
+        for (int i = 0; i < src.getSize(); i++) {
+            b.addRow(src.getActor(i).getName(),
+                    String.format(Locale.ROOT, "%.2f", sum.inStrength[i]),
+                    String.format(Locale.ROOT, "%.2f", sum.outStrength[i]),
+                    String.format(Locale.ROOT, "%.2f", sum.totalStrength[i]),
+                    String.format(Locale.ROOT, "%.4f", sum.weightedClustering[i]));
+        }
+        TableData dt = b.build();
+        TableRegistry.register(dt);
+        report.addTable(dt);
+
+        report.addFootnote("Node strength generalizes degree by summing the weights of adjacent incident ties (Barrat et al., 2004).");
+        report.addFootnote("Barrat weighted clustering normalizes local triangle weight by node strength and unweighted degree.");
+        report.addFootnote("Reference: Barrat, A., et al. (2004). The architecture of complex weighted networks. PNAS, 101(11), 3747-3752.");
         return report;
     }
 }

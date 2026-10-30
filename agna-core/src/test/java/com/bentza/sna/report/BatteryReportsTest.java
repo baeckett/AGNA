@@ -63,6 +63,7 @@ public class BatteryReportsTest {
         assertTrue(html.contains("Eigenvector Centrality"));
         assertTrue(html.contains("PageRank Centrality"));
         assertTrue(html.contains("Bonacich"));
+        assertTrue(html.contains("Freeman Network Centralization Indices"));
         assertFalse(report.getTables().isEmpty());
 
         String legacy = lib.legacyOutCentralityBattery(testNet, opts);
@@ -113,6 +114,7 @@ public class BatteryReportsTest {
         assertTrue(html.contains("Transitivity Indices"));
         assertTrue(html.contains("Core Shell Distribution"));
         assertTrue(html.contains("Cohesion Summary"));
+        assertTrue(html.contains("Community Subgraph Summary"));
         assertFalse(report.getTables().isEmpty());
 
         String legacy = lib.legacyOutClusteringBattery(testNet, opts);
@@ -138,6 +140,7 @@ public class BatteryReportsTest {
         assertTrue(html.contains("Density Summary"));
         assertTrue(html.contains("Dyad Census"));
         assertTrue(html.contains("Distribution of Indegree"));
+        assertTrue(html.contains("Degree Assortativity Coefficients"));
         assertFalse(report.getTables().isEmpty());
 
         String legacy = lib.legacyOutSociometricsBattery(testNet, opts);

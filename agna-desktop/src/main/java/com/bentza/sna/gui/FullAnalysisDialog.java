@@ -49,6 +49,8 @@ public class FullAnalysisDialog extends JDialog {
     private JCheckBox cbClustering;
     private JCheckBox cbHoles;
     private JCheckBox cbConnectivity;
+    private JCheckBox cbAssortativity;
+    private JCheckBox cbCommunities;
 
     // Extended checkboxes & inputs
     private JCheckBox cbBonacich;
@@ -58,6 +60,8 @@ public class FullAnalysisDialog extends JDialog {
     private JCheckBox cbTriad;
     private JCheckBox cbCliques;
     private JSpinner spCliqueDiameter;
+    private JCheckBox cbEquivalence;
+    private JCheckBox cbWeighted;
 
     public FullAnalysisDialog(Frame owner, Network network, Consumer<FullAnalysisOptions> onRun) {
         super(owner, "Full Analysis Battery Configuration", true);
@@ -124,6 +128,8 @@ public class FullAnalysisDialog extends JDialog {
         cbClustering = new JCheckBox("Clustering & Cohesion (Watts-Strogatz Local Clustering, Transitivity, k-Cores)", true);
         cbHoles = new JCheckBox("Social Capital & Structural Holes (Burt's Constraint, Effective Size, Efficiency)", true);
         cbConnectivity = new JCheckBox("Connectivity & Dyads (Components, Cut-Vertices, Bridges, MAN Dyad Census)", true);
+        cbAssortativity = new JCheckBox("Degree Assortativity & Mixing Patterns (Newman r)", true);
+        cbCommunities = new JCheckBox("Community Detection & Modularity Partitioning (Louvain Q)", true);
 
         stdPanel.add(cbBasic);
         stdPanel.add(cbDegree);
@@ -133,6 +139,8 @@ public class FullAnalysisDialog extends JDialog {
         stdPanel.add(cbClustering);
         stdPanel.add(cbHoles);
         stdPanel.add(cbConnectivity);
+        stdPanel.add(cbAssortativity);
+        stdPanel.add(cbCommunities);
         contentPanel.add(stdPanel);
         contentPanel.add(Box.createVerticalStrut(6));
 
@@ -179,8 +187,16 @@ public class FullAnalysisDialog extends JDialog {
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
         extPanel.add(clqP, gbc);
 
-        JLabel clqWarn = new JLabel("<html><small style='color:#a04000;'>⚠️ <i>Warning: Clique enumeration is NP-hard and may be slow on dense networks.</i></small></html>");
+        cbEquivalence = new JCheckBox("Structural Equivalence & Blockmodeling (Burt profile correlation / distance)");
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
+        extPanel.add(cbEquivalence, gbc);
+
+        cbWeighted = new JCheckBox("Valued & Weighted Analysis (Node Strength & Valued Density)");
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
+        extPanel.add(cbWeighted, gbc);
+
+        JLabel clqWarn = new JLabel("<html><small style='color:#a04000;'>⚠️ <i>Warning: Clique enumeration is NP-hard and may be slow on dense networks.</i></small></html>");
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
         extPanel.add(clqWarn, gbc);
 
         contentPanel.add(extPanel);
@@ -220,11 +236,15 @@ public class FullAnalysisDialog extends JDialog {
         cbClustering.setSelected(true);
         cbHoles.setSelected(true);
         cbConnectivity.setSelected(true);
+        cbAssortativity.setSelected(true);
+        cbCommunities.setSelected(true);
 
         cbBonacich.setSelected(false);
         cbPageRank.setSelected(false);
         cbTriad.setSelected(false);
         cbCliques.setSelected(false);
+        cbEquivalence.setSelected(false);
+        cbWeighted.setSelected(false);
     }
 
     private void setAllPreset(boolean selected) {
@@ -236,10 +256,14 @@ public class FullAnalysisDialog extends JDialog {
         cbClustering.setSelected(selected);
         cbHoles.setSelected(selected);
         cbConnectivity.setSelected(selected);
+        cbAssortativity.setSelected(selected);
+        cbCommunities.setSelected(selected);
         cbBonacich.setSelected(selected);
         cbPageRank.setSelected(selected);
         cbTriad.setSelected(selected);
         cbCliques.setSelected(selected);
+        cbEquivalence.setSelected(selected);
+        cbWeighted.setSelected(selected);
     }
 
     private void onRunClicked() {
@@ -247,7 +271,9 @@ public class FullAnalysisDialog extends JDialog {
         boolean anySelected = cbBasic.isSelected() || cbDegree.isSelected() || cbPrestige.isSelected()
                 || cbCentrality.isSelected() || cbSpectral.isSelected() || cbClustering.isSelected()
                 || cbHoles.isSelected() || cbConnectivity.isSelected() || cbBonacich.isSelected()
-                || cbPageRank.isSelected() || cbTriad.isSelected() || cbCliques.isSelected();
+                || cbPageRank.isSelected() || cbTriad.isSelected() || cbCliques.isSelected()
+                || cbAssortativity.isSelected() || cbCommunities.isSelected()
+                || cbEquivalence.isSelected() || cbWeighted.isSelected();
 
         if (!anySelected) {
             JOptionPane.showMessageDialog(this,
@@ -311,6 +337,11 @@ public class FullAnalysisDialog extends JDialog {
 
         options.setIncludeCliques(cbCliques.isSelected());
         options.setCliqueDiameter(diameter);
+
+        options.setIncludeAssortativity(cbAssortativity.isSelected());
+        options.setIncludeCommunityDetection(cbCommunities.isSelected());
+        options.setIncludeStructuralEquivalence(cbEquivalence.isSelected());
+        options.setIncludeWeightedMetrics(cbWeighted.isSelected());
 
         dispose();
         if (onRun != null) {

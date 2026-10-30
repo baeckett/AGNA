@@ -20,6 +20,10 @@ public class ClusteringOptions implements Serializable {
     private boolean includeOpenChains = false;
     private boolean includeCliques = false;
     private int cliqueDiameter = 1;
+    private boolean includeCommunities = true;
+    private boolean useGirvanNewman = false;
+    private boolean includeStructuralEquivalence = false;
+    private int targetBlocks = 2;
 
     public ClusteringOptions() {
     }
@@ -36,6 +40,8 @@ public class ClusteringOptions implements Serializable {
         opt.setIncludeCohesion(true);
         opt.setIncludeOpenChains(true);
         opt.setIncludeCliques(true);
+        opt.setIncludeCommunities(true);
+        opt.setIncludeStructuralEquivalence(true);
         return opt;
     }
 
@@ -59,4 +65,16 @@ public class ClusteringOptions implements Serializable {
 
     public int getCliqueDiameter() { return cliqueDiameter; }
     public void setCliqueDiameter(int cliqueDiameter) { this.cliqueDiameter = cliqueDiameter; }
+
+    public boolean isIncludeCommunities() { return includeCommunities; }
+    public void setIncludeCommunities(boolean includeCommunities) { this.includeCommunities = includeCommunities; }
+
+    public boolean isUseGirvanNewman() { return useGirvanNewman; }
+    public void setUseGirvanNewman(boolean useGirvanNewman) { this.useGirvanNewman = useGirvanNewman; }
+
+    public boolean isIncludeStructuralEquivalence() { return includeStructuralEquivalence; }
+    public void setIncludeStructuralEquivalence(boolean includeStructuralEquivalence) { this.includeStructuralEquivalence = includeStructuralEquivalence; }
+
+    public int getTargetBlocks() { return targetBlocks; }
+    public void setTargetBlocks(int targetBlocks) { this.targetBlocks = targetBlocks; }
 }

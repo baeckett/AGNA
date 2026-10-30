@@ -23,6 +23,8 @@ public class SociometricsOptions implements Serializable {
     private boolean includeReception = false;
     private boolean includeDetermination = false;
     private boolean includeSociostatus = false;
+    private boolean includeAssortativity = true;
+    private boolean includeWeightedMetrics = false;
 
     public SociometricsOptions() {
     }
@@ -43,6 +45,8 @@ public class SociometricsOptions implements Serializable {
         opt.setIncludeReception(true);
         opt.setIncludeDetermination(true);
         opt.setIncludeSociostatus(true);
+        opt.setIncludeAssortativity(true);
+        opt.setIncludeWeightedMetrics(true);
         return opt;
     }
 
@@ -75,4 +79,10 @@ public class SociometricsOptions implements Serializable {
 
     public boolean isIncludeSociostatus() { return includeSociostatus; }
     public void setIncludeSociostatus(boolean includeSociostatus) { this.includeSociostatus = includeSociostatus; }
+
+    public boolean isIncludeAssortativity() { return includeAssortativity; }
+    public void setIncludeAssortativity(boolean includeAssortativity) { this.includeAssortativity = includeAssortativity; }
+
+    public boolean isIncludeWeightedMetrics() { return includeWeightedMetrics; }
+    public void setIncludeWeightedMetrics(boolean includeWeightedMetrics) { this.includeWeightedMetrics = includeWeightedMetrics; }
 }

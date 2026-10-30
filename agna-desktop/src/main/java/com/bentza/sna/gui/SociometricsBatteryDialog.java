@@ -44,6 +44,8 @@ public class SociometricsBatteryDialog extends JDialog {
     private JCheckBox cbReception;
     private JCheckBox cbDetermination;
     private JCheckBox cbSociostatus;
+    private JCheckBox cbAssortativity;
+    private JCheckBox cbWeighted;
 
     public SociometricsBatteryDialog(Frame owner, Network network, Consumer<SociometricsOptions> onRun) {
         super(owner, "Sociometrics & Basic Battery", true);
@@ -90,9 +92,13 @@ public class SociometricsBatteryDialog extends JDialog {
         cbBasic = new JCheckBox("Basic Structural Parameters (Nodes, Ties, Directedness, Weighted)", true);
         cbDensity = new JCheckBox("Network Density & Completeness", true);
         cbDyad = new JCheckBox("Reciprocity & MAN Dyad Census (Mutual, Asymmetric, Null)", true);
+        cbAssortativity = new JCheckBox("Newman Degree Assortativity & Mixing Coefficients (r)", true);
+        cbWeighted = new JCheckBox("Valued & Weighted Analysis (Node Strength & Valued Density)", false);
         macroPanel.add(cbBasic);
         macroPanel.add(cbDensity);
         macroPanel.add(cbDyad);
+        macroPanel.add(cbAssortativity);
+        macroPanel.add(cbWeighted);
         contentPanel.add(macroPanel);
         contentPanel.add(Box.createVerticalStrut(6));
 
@@ -138,7 +144,7 @@ public class SociometricsBatteryDialog extends JDialog {
         boolean any = cbBasic.isSelected() || cbDensity.isSelected() || cbDyad.isSelected()
                 || cbNodal.isSelected() || cbIn.isSelected() || cbOut.isSelected()
                 || cbEmission.isSelected() || cbReception.isSelected() || cbDetermination.isSelected()
-                || cbSociostatus.isSelected();
+                || cbSociostatus.isSelected() || cbAssortativity.isSelected() || cbWeighted.isSelected();
 
         if (!any) {
             JOptionPane.showMessageDialog(this, "Please select at least one sociometric measure.",
@@ -157,6 +163,8 @@ public class SociometricsBatteryDialog extends JDialog {
         opt.setIncludeReception(cbReception.isSelected());
         opt.setIncludeDetermination(cbDetermination.isSelected());
         opt.setIncludeSociostatus(cbSociostatus.isSelected());
+        opt.setIncludeAssortativity(cbAssortativity.isSelected());
+        opt.setIncludeWeightedMetrics(cbWeighted.isSelected());
 
         dispose();
         if (onRun != null) onRun.accept(opt);

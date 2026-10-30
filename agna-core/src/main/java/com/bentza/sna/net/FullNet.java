@@ -676,6 +676,8 @@ import javax.swing.JTextPane;
             parseGMLFile(str);
         else if (extension.equals("graphson") || extension.equals("json")) // GraphSON
             parseGraphSONFile(str);
+        else if (extension.equals("dl")) // UCINET DL file
+            parseDLString(str);
         else if (extension.equals("ana")) // Ana file
             parseAnaTextFile(str);
         else
@@ -1058,6 +1060,19 @@ import javax.swing.JTextPane;
             } catch (Exception e)
             {
             AgnaLog.warn("GraphSON import failed: " + e);
+            }
+        }
+
+    public void parseDLString(String str)
+        {
+        try
+            {
+            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.StringReader(str));
+            Network net = com.bentza.sna.io.DLImporter.parseDL(reader, "UCINET Network");
+            setNetwork(net);
+            } catch (Exception e)
+            {
+            AgnaLog.warn("UCINET DL import failed: " + e);
             }
         }
 

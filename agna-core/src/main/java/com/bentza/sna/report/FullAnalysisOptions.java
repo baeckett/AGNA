@@ -26,6 +26,12 @@ public class FullAnalysisOptions implements Serializable {
     private boolean includeClusteringAndCores = true;
     private boolean includeStructuralHoles = true;
     private boolean includeConnectivityAndDyad = true;
+    private boolean includeAssortativity = true;
+    private boolean includeCommunityDetection = true;
+    private boolean useGirvanNewman = false;
+    private boolean includeStructuralEquivalence = false;
+    private int targetBlocks = 2;
+    private boolean includeWeightedMetrics = false;
 
     // Extended / Parameterized batteries (Disabled by default)
     private boolean includeBonacich = false;
@@ -198,5 +204,53 @@ public class FullAnalysisOptions implements Serializable {
 
     public void setCliqueDiameter(int cliqueDiameter) {
         this.cliqueDiameter = cliqueDiameter;
+    }
+
+    public boolean isIncludeAssortativity() {
+        return includeAssortativity;
+    }
+
+    public void setIncludeAssortativity(boolean includeAssortativity) {
+        this.includeAssortativity = includeAssortativity;
+    }
+
+    public boolean isIncludeCommunityDetection() {
+        return includeCommunityDetection;
+    }
+
+    public void setIncludeCommunityDetection(boolean includeCommunityDetection) {
+        this.includeCommunityDetection = includeCommunityDetection;
+    }
+
+    public boolean isUseGirvanNewman() {
+        return useGirvanNewman;
+    }
+
+    public void setUseGirvanNewman(boolean useGirvanNewman) {
+        this.useGirvanNewman = useGirvanNewman;
+    }
+
+    public boolean isIncludeStructuralEquivalence() {
+        return includeStructuralEquivalence;
+    }
+
+    public void setIncludeStructuralEquivalence(boolean includeStructuralEquivalence) {
+        this.includeStructuralEquivalence = includeStructuralEquivalence;
+    }
+
+    public int getTargetBlocks() {
+        return targetBlocks;
+    }
+
+    public void setTargetBlocks(int targetBlocks) {
+        this.targetBlocks = targetBlocks;
+    }
+
+    public boolean isIncludeWeightedMetrics() {
+        return includeWeightedMetrics;
+    }
+
+    public void setIncludeWeightedMetrics(boolean includeWeightedMetrics) {
+        this.includeWeightedMetrics = includeWeightedMetrics;
     }
 }

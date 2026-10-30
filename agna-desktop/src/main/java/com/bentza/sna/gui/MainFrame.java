@@ -878,6 +878,17 @@ public class MainFrame //
             // igraph, R SNA packages)
             GraphMLExporter graphml_exporter = new GraphMLExporter();
             writestr = graphml_exporter.getGraphML(tmp_full_net);
+            } else if (filestr.equals("dl"))
+            {
+            // UCINET DL format
+            try
+                {
+                com.bentza.sna.io.DLExporter.exportDL(tmp_full_net.getNetwork(), new File(file_name));
+                return;
+                } catch (Exception ex)
+                {
+                AgnaLog.warn("UCINET DL export failed: " + ex);
+                }
             } else
             {
             // agn file
@@ -992,6 +1003,7 @@ public class MainFrame //
         chooser.addChoosableFileFilter(new GraphMLFilesFilter());
         chooser.addChoosableFileFilter(new GMLFilesFilter());
         chooser.addChoosableFileFilter(new GraphSONFilesFilter());
+        chooser.addChoosableFileFilter(new DLFilesFilter());
         chooser.addChoosableFileFilter(new AgnaFilesFilter());
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             {
@@ -1045,7 +1057,7 @@ public class MainFrame //
         javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
         int chosen_format = -1;
         final String[] format_extensions = { "agn", "txt", "csv", "net",
-                "xls", "graphml", "gml", "graphson" };
+                "xls", "graphml", "gml", "graphson", "dl" };
         if (ff instanceof AgnaFilesFilter)
             chosen_format = 0;
         else if (ff instanceof TabTextFilesFilter)
@@ -1060,6 +1072,8 @@ public class MainFrame //
             chosen_format = 6;
         else if (ff instanceof GraphSONFilesFilter)
             chosen_format = 7;
+        else if (ff instanceof DLFilesFilter)
+            chosen_format = 8;
         if (chosen_format < 0)
             {
             int default_format = getRememberedExportFormat();
@@ -1208,6 +1222,11 @@ public class MainFrame //
                             excel_error = t_new_full_net.readExcelFile(t_file,
                                     file_ext);
                             tmp_pane = null;
+                            } else if ("dl".equals(file_ext))
+                            {
+                            Network parsedDL = com.bentza.sna.io.DLImporter.importDL(t_file);
+                            t_new_full_net.setNetwork(parsedDL);
+                            tmp_pane = null;
                             } else
                             {
                             t_new_full_net.readNetwork(
@@ -1347,6 +1366,7 @@ public class MainFrame //
         chooser.addChoosableFileFilter(new GraphMLFilesFilter());
         chooser.addChoosableFileFilter(new GMLFilesFilter());
         chooser.addChoosableFileFilter(new GraphSONFilesFilter());
+        chooser.addChoosableFileFilter(new DLFilesFilter());
 
         int return_val = chooser.showOpenDialog(my_frame);
         my_frame.repaint();
@@ -2718,6 +2738,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         chooser.addChoosableFileFilter(new GraphMLFilesFilter());
         chooser.addChoosableFileFilter(new GMLFilesFilter());
         chooser.addChoosableFileFilter(new GraphSONFilesFilter());
+        chooser.addChoosableFileFilter(new DLFilesFilter());
         if (chooser.showOpenDialog(my_frame) != javax.swing.JFileChooser.APPROVE_OPTION)
             {
             return;
@@ -3488,7 +3509,8 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         {
         final String[] labels = { "Agna (.agn)", "Tab-separated (.txt)",
                 "Comma-separated (.csv)", "Pajek (.net)", "Excel (.xls)",
-                "GraphML (.graphml)", "GML (.gml)", "GraphSON (.json)" };
+                "GraphML (.graphml)", "GML (.gml)", "GraphSON (.json)",
+                "UCINET DL (.dl)" };
         final String[] vector_options = { "Emission Degree",
                 "Reception Degree", "Weighted Emission Degree",
                 "Sociometric Status", "Nodal Degree", "Betweenness",

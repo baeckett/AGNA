@@ -45,6 +45,10 @@ public class ClusteringBatteryDialog extends JDialog {
     private JCheckBox cbOpenChains;
     private JCheckBox cbCliques;
     private JSpinner spCliqueDiameter;
+    private JCheckBox cbCommunities;
+    private JCheckBox cbGirvanNewman;
+    private JCheckBox cbEquivalence;
+    private JSpinner spTargetBlocks;
 
     public ClusteringBatteryDialog(Frame owner, Network network, Consumer<ClusteringOptions> onRun) {
         super(owner, "Clustering & Cohesion Battery", true);
@@ -129,6 +133,27 @@ public class ClusteringBatteryDialog extends JDialog {
         clqPanel.add(clqWarn, gbc);
 
         contentPanel.add(clqPanel);
+        contentPanel.add(Box.createVerticalStrut(6));
+
+        // Community Detection & Modularity Panel
+        JPanel commPanel = new JPanel(new GridLayout(0, 1, 4, 4));
+        commPanel.setBorder(BorderFactory.createTitledBorder("Community Detection & Modularity"));
+        cbCommunities = new JCheckBox("Community Detection & Newman Modularity Q (Macro-partition)", true);
+        cbGirvanNewman = new JCheckBox("  Use Girvan-Newman edge-betweenness (instead of Louvain)", false);
+        commPanel.add(cbCommunities);
+        commPanel.add(cbGirvanNewman);
+        contentPanel.add(commPanel);
+        contentPanel.add(Box.createVerticalStrut(6));
+
+        // Structural Equivalence & Positional Analysis Panel
+        JPanel eqPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
+        eqPanel.setBorder(BorderFactory.createTitledBorder("Structural Equivalence & Blockmodeling"));
+        cbEquivalence = new JCheckBox("Structural Equivalence (Burt profile correlation / distance)", false);
+        spTargetBlocks = new JSpinner(new SpinnerNumberModel(2, 2, 20, 1));
+        eqPanel.add(cbEquivalence);
+        eqPanel.add(new JLabel("  Target Blocks (K):"));
+        eqPanel.add(spTargetBlocks);
+        contentPanel.add(eqPanel);
 
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setBorder(null);
@@ -150,7 +175,8 @@ public class ClusteringBatteryDialog extends JDialog {
 
     private void onRunClicked() {
         boolean any = cbLocal.isSelected() || cbTransitivity.isSelected() || cbKCore.isSelected()
-                || cbCohesion.isSelected() || cbOpenChains.isSelected() || cbCliques.isSelected();
+                || cbCohesion.isSelected() || cbOpenChains.isSelected() || cbCliques.isSelected()
+                || cbCommunities.isSelected() || cbEquivalence.isSelected();
 
         if (!any) {
             JOptionPane.showMessageDialog(this, "Please select at least one clustering measure.",
@@ -166,6 +192,10 @@ public class ClusteringBatteryDialog extends JDialog {
         opt.setIncludeOpenChains(cbOpenChains.isSelected());
         opt.setIncludeCliques(cbCliques.isSelected());
         opt.setCliqueDiameter(((Number) spCliqueDiameter.getValue()).intValue());
+        opt.setIncludeCommunities(cbCommunities.isSelected());
+        opt.setUseGirvanNewman(cbGirvanNewman.isSelected());
+        opt.setIncludeStructuralEquivalence(cbEquivalence.isSelected());
+        opt.setTargetBlocks(((Number) spTargetBlocks.getValue()).intValue());
 
         dispose();
         if (onRun != null) onRun.accept(opt);

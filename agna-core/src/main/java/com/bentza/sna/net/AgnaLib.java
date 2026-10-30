@@ -3615,4 +3615,71 @@ import java.util.Vector;
         return out.toString();
     }
 
+    public String outDegreeAssortativity(Network outsrc) {
+        String legacy = legacyOutDegreeAssortativity(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createDegreeAssortativityReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutDegreeAssortativity(Network outsrc) {
+        com.bentza.sna.stats.DegreeAssortativity.AssortativityResult res = com.bentza.sna.stats.DegreeAssortativity.compute(outsrc);
+        StringBuffer out = new StringBuffer(it + bold + "Degree Assortativity & Mixing Patterns" + unbold + " of " + unit + outsrc.getName() + lb);
+        out.append("Total Degree Assortativity (r): ").append(String.valueOf(res.totalDegreeAssortativity)).append(lb);
+        out.append("Directed Out-In Assortativity: ").append(String.valueOf(res.outInAssortativity)).append(lb);
+        out.append("Mixing Regime: ").append(res.mixingRegime).append(lb);
+        return out.toString();
+    }
+
+    public String outCommunityDetection(Network outsrc, boolean useGirvanNewman) {
+        String legacy = legacyOutCommunityDetection(outsrc, useGirvanNewman);
+        AnalysisReport report = AnalysisReportFactory.createCommunityDetectionReport(outsrc, useGirvanNewman, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutCommunityDetection(Network outsrc, boolean useGirvanNewman) {
+        com.bentza.sna.community.CommunityDetectionService.CommunityResult res = useGirvanNewman ?
+                com.bentza.sna.community.CommunityDetectionService.detectGirvanNewman(outsrc) :
+                com.bentza.sna.community.CommunityDetectionService.detectLouvain(outsrc);
+        StringBuffer out = new StringBuffer(it + bold + "Community Detection (" + res.algorithm + ")" + unbold + " of " + unit + outsrc.getName() + lb);
+        out.append("Modularity Q: ").append(String.valueOf(res.modularityQ)).append(lb);
+        out.append("Communities: ").append(String.valueOf(res.communityCount)).append(lb);
+        for (com.bentza.sna.community.CommunityDetectionService.CommunityInfo info : res.communities) {
+            out.append("Community ").append(info.communityId).append(" (n=").append(info.memberCount).append("): ")
+                    .append(String.join(", ", info.memberNames)).append(lb);
+        }
+        return out.toString();
+    }
+
+    public String outStructuralEquivalence(Network outsrc, int targetBlocks) {
+        String legacy = legacyOutStructuralEquivalence(outsrc, targetBlocks);
+        AnalysisReport report = AnalysisReportFactory.createStructuralEquivalenceReport(outsrc, targetBlocks, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutStructuralEquivalence(Network outsrc, int targetBlocks) {
+        com.bentza.sna.equivalence.StructuralEquivalenceService.EquivalenceResult res =
+                com.bentza.sna.equivalence.StructuralEquivalenceService.analyze(outsrc, targetBlocks);
+        StringBuffer out = new StringBuffer(it + bold + "Structural Equivalence & Blockmodeling" + unbold + " of " + unit + outsrc.getName() + lb);
+        out.append("Positions / Blocks: ").append(res.blockCount).append(lb);
+        for (int b = 0; b < res.blockCount; b++) {
+            out.append("Block ").append(b + 1).append(": ").append(String.join(", ", res.blockMembers.get(b))).append(lb);
+        }
+        return out.toString();
+    }
+
+    public String outWeightedMetrics(Network outsrc) {
+        String legacy = legacyOutWeightedMetrics(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createWeightedMetricsReport(outsrc, this, legacy);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
+    public String legacyOutWeightedMetrics(Network outsrc) {
+        com.bentza.sna.stats.WeightedMetrics.WeightedSummary sum = com.bentza.sna.stats.WeightedMetrics.compute(outsrc);
+        StringBuffer out = new StringBuffer(it + bold + "Valued & Weighted Network Analysis" + unbold + " of " + unit + outsrc.getName() + lb);
+        out.append("Binary Density: ").append(String.valueOf(sum.binaryDensity)).append(lb);
+        out.append("Valued Density: ").append(String.valueOf(sum.valuedDensity)).append(lb);
+        out.append("Mean Barrat Weighted Clustering: ").append(String.valueOf(sum.meanWeightedClustering)).append(lb);
+        return out.toString();
+    }
+
     }
