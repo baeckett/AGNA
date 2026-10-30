@@ -76,6 +76,7 @@ public class ComprehensiveFunctionalityBatteryTest {
             float[] deg = lib.nodalDegree(star);
             float cD = lib.freemanGeneralIndex(deg, lib.nodalDegree(new Network(n, 1)));
             assertEquals(1.0f, cD, 1e-4);
+            assertEquals(1.0f, lib.freemanDegreeCentralization(star), 1e-4);
 
             float[] betw = lib.betweenness(star);
             float cB = lib.freemanGeneralIndex(betw, lib.betweenness(new Network(n, 1)));
@@ -100,6 +101,7 @@ public class ComprehensiveFunctionalityBatteryTest {
             float[] deg = lib.nodalDegree(circle);
             float cD = lib.freemanGeneralIndex(deg, lib.nodalDegree(new Network(n, 1)));
             assertEquals(0.0f, cD, 1e-4);
+            assertEquals(0.0f, lib.freemanDegreeCentralization(circle), 1e-4);
 
             float[] betw = lib.betweenness(circle);
             float cB = lib.freemanGeneralIndex(betw, lib.betweenness(new Network(n, 1)));
@@ -140,6 +142,32 @@ public class ComprehensiveFunctionalityBatteryTest {
             }
             assertTrue(foundDegree);
             assertTrue(foundBetweennessNA);
+        }
+
+        @Test
+        @DisplayName("Outputs use standardized Freeman (1979) Centralization nomenclature, no Freeman General Coefficient")
+        public void testStandardizedCentralizationLabelsInOutputs() {
+            Network star = new Network(5, 1);
+            star.setName("Star5");
+
+            // Nodal degree report
+            AnalysisReport degReport = AnalysisReportFactory.createNodalDegreeReport(star, lib, "");
+            String degHtml = degReport.toHtmlReport();
+            assertTrue(degHtml.contains("Freeman (1979) Degree Centralization (C_D)"));
+            assertFalse(degHtml.contains("Freeman General Coefficient"));
+
+            // Legacy output strings
+            String legacyDeg = lib.legacyOutNodalDegree(star);
+            assertTrue(legacyDeg.contains("Freeman (1979) Degree Centralization (C_D) = 1.0000"));
+            assertFalse(legacyDeg.contains("Freeman General Coefficient"));
+
+            String legacyBetw = lib.legacyOutBetweenness(star);
+            assertTrue(legacyBetw.contains("Freeman (1979) Betweenness Centralization (C_B) = 1.0"));
+            assertFalse(legacyBetw.contains("Freeman General Coefficient"));
+
+            String legacyClose = lib.legacyOutCloseness(star);
+            assertTrue(legacyClose.contains("Freeman (1979) Closeness Centralization (C_C) = 1.0"));
+            assertFalse(legacyClose.contains("Freeman General Coefficient"));
         }
     }
 

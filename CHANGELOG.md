@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Freeman (1979) Global Network Centralization Indices**:
   - Implemented graph-level degree ($C_D$), betweenness ($C_B$), closeness ($C_C$), and Bavelas-Leavitt ($C_{\text{Bav}}$) centralization measures benchmarked against the star graph.
   - Generates dedicated Freeman Centralization summary tables across individual reports and consolidated battery reports.
+  - Retired ambiguous legacy "Freeman General Coefficient" label; standardized all text and HTML reports on canonical Freeman (1979) centralization nomenclature ($C_D, C_B, C_C, C_{\text{Bav}}$) with $O(n)$ closed-form degree centralization.
 - **Newman Degree Assortativity & Directed Mixing Patterns (`com.bentza.sna.stats.DegreeAssortativity`)**:
   - Implemented Newman (2002/2003) total degree assortativity correlation coefficient $r$ and directed mixing patterns ($r_{\text{out-in}}, r_{\text{in-in}}, r_{\text{out-out}}, r_{\text{in-out}}$).
   - CLI: `agna analyse FILE --metric assortativity`.

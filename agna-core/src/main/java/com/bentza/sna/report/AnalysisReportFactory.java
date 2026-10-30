@@ -271,8 +271,8 @@ public final class AnalysisReportFactory {
         report.setRawPlainText(legacy);
         report.setNote("* relative to number of all other nodes (self excluded)", false);
         if (deg != null && size > 2) {
-            float cent = lib.freemanGeneralIndex(deg, lib.nodalDegree(new Network(size, 1)));
-            report.addProperty("Freeman Network Centralization (Degree)", String.format(Locale.ROOT, "%.4f", cent));
+            float cent = lib.freemanDegreeCentralization(src);
+            report.addProperty("Freeman (1979) Degree Centralization (C_D)", String.format(Locale.ROOT, "%.4f", cent));
         }
 
         TableData.Builder b = TableData.builder("Distribution of Nodal Degree in " + src.getName())
@@ -413,7 +413,7 @@ public final class AnalysisReportFactory {
         float[] betw = lib.betweenness(src);
         float cent = (betw != null) ? lib.freemanGeneralIndex(betw, lib.betweenness(new Network(size, 1))) : 0f;
 
-        report.addProperty("Freeman Network Centralization", String.format(Locale.ROOT, "%.4f", cent));
+        report.addProperty("Freeman (1979) Betweenness Centralization (C_B)", String.format(Locale.ROOT, "%.4f", cent));
 
         TableData.Builder b = TableData.builder("Distribution of Betweenness in " + src.getName())
                 .network(src.getName())
@@ -453,7 +453,7 @@ public final class AnalysisReportFactory {
         float[] closeness = lib.closeness(src);
         float cent = (closeness != null) ? lib.freemanGeneralIndex(closeness, lib.closeness(new Network(size, 1))) : 0f;
 
-        report.addProperty("Freeman Network Centralization", String.format(Locale.ROOT, "%.4f", cent));
+        report.addProperty("Freeman (1979) Closeness Centralization (C_C)", String.format(Locale.ROOT, "%.4f", cent));
 
         TableData.Builder b = TableData.builder("Distribution of Closeness in " + src.getName())
                 .network(src.getName())
@@ -493,7 +493,7 @@ public final class AnalysisReportFactory {
         float[] fare = lib.fareness(src);
         if (connected && fare != null && size > 2) {
             float cent = lib.freemanGeneralIndex(fare, lib.fareness(new Network(size, 1)));
-            report.addProperty("Freeman Network Centralization", String.format(Locale.ROOT, "%.4f", cent));
+            report.addProperty("Freeman (1979) Fareness Centralization", String.format(Locale.ROOT, "%.4f", cent));
         }
         TableData.Builder b = TableData.builder("Distribution of Fareness in " + src.getName())
                 .network(src.getName())
@@ -645,7 +645,7 @@ public final class AnalysisReportFactory {
         float[] bav = lib.bavelas(src);
         if (connected && bav != null && size > 2) {
             float cent = lib.freemanGeneralIndex(bav, lib.bavelas(new Network(size, 1)));
-            report.addProperty("Freeman Network Centralization", String.format(Locale.ROOT, "%.4f", cent));
+            report.addProperty("Bavelas-Leavitt Centralization (C_Bav)", String.format(Locale.ROOT, "%.4f", cent));
         }
         TableData.Builder b = TableData.builder("Bavelas-Leavitt Centrality in " + src.getName())
                 .network(src.getName())
@@ -1416,7 +1416,7 @@ public final class AnalysisReportFactory {
         boolean connected = lib.isConnected(src);
 
         float[] deg = lib.nodalDegree(src);
-        float degCent = (deg != null) ? lib.freemanGeneralIndex(deg, lib.nodalDegree(new Network(size, 1))) : 0f;
+        float degCent = (deg != null) ? lib.freemanDegreeCentralization(src) : 0f;
 
         float betwCent = 0f;
         float closeCent = 0f;

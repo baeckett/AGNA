@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
         public class AgnaLib
@@ -1460,9 +1461,9 @@ import java.util.Vector;
             }
         out.append(untable);
 
-        // freeman generalization:
+        // freeman centralization:
         out
-                .append(it + bold + "Freeman General Coefficient = " + unbold
+                .append(it + bold + "Freeman (1979) Fareness Centralization = " + unbold
                         + unit);
         out.append(String.valueOf(freemanGeneralIndex(outarray,
                 fareness(new Network(size, 1)))));
@@ -1528,9 +1529,9 @@ import java.util.Vector;
             }
         out.append(untable);
 
-        // freeman generalization:
+        // freeman centralization:
         out
-                .append(it + bold + "Freeman General Coefficient = " + unbold
+                .append(it + bold + "Freeman (1979) Closeness Centralization (C_C) = " + unbold
                         + unit);
         out.append(String.valueOf(freemanGeneralIndex(outarray,
                 closeness(new Network(size, 1)))));
@@ -1821,9 +1822,9 @@ import java.util.Vector;
             }
         out.append(untable);
 
-        // freeman generalization:
+        // freeman centralization:
         out
-                .append(it + bold + "Freeman General Coefficient = " + unbold
+                .append(it + bold + "Freeman (1979) Betweenness Centralization (C_B) = " + unbold
                         + unit);
         out.append(String.valueOf(freemanGeneralIndex(outdet,
                 betweenness(new Network(size, 1)))));
@@ -2033,9 +2034,9 @@ import java.util.Vector;
 
         out.append(untable);
 
-        // freeman generalization:
+        // bavelas centralization:
         out
-                .append(it + bold + "Freeman General Coefficient = " + unbold
+                .append(it + bold + "Bavelas-Leavitt Centralization (C_Bav) = " + unbold
                         + unit);
         out.append(String.valueOf(freemanGeneralIndex(outarray,
                 bavelas(new Network(size, 1)))));
@@ -2996,6 +2997,14 @@ import java.util.Vector;
 
         out.append(untable);
 
+        if (size > 2)
+            {
+            out.append(it + bold + "Freeman (1979) Degree Centralization (C_D) = "
+                    + unbold + unit);
+            out.append(String.format(Locale.ROOT, "%.4f", freemanDegreeCentralization(outsrc)));
+            out.append(lb + lb);
+            }
+
         out.append(it + bold + "Degree Statistics" + unbold + unit);
         out.append(lb + outStatistics(outrec, false));
 
@@ -3233,8 +3242,32 @@ import java.util.Vector;
         return out.toString();
         }
 
-    // returns freeman's general index;
-    // star_network_index are the centrality indexes of the corresponding star
+    /**
+     * Computes the Freeman (1979) Degree Centralization index C_D of a network.
+     * <p>
+     * Defined for non-directed or symmetrized networks as:
+     * C_D = \sum_{i=1}^n [ max_j(d_j) - d_i ] / [ (n - 1) * (n - 2) ]
+     * where the denominator is the theoretical maximum difference achieved by a star graph S_n.
+     * Returns 0.0 for n &le; 2 or when the network has no degree variation.
+     *
+     * @param net network to evaluate
+     * @return Freeman degree centralization index in [0.0, 1.0]
+     */
+    public float freemanDegreeCentralization(Network net)
+        {
+        if (net == null || net.getSize() < 3)
+            return 0f;
+        return (float) com.bentza.sna.stats.NetworkMetric.DEGREE_CENTRALIZATION.compute(net);
+        }
+
+    /**
+     * Legacy helper for Freeman general star-benchmark comparison.
+     * Star_network_index are the centrality indexes of the corresponding star network.
+     *
+     * @deprecated Prefer {@link #freemanDegreeCentralization(Network)} or {@link com.bentza.sna.stats.NetworkMetric}
+     *             centralization indices.
+     */
+    @Deprecated
     public float freemanGeneralIndex(float[] a, float[] star_network_index)
         {
         int nn = a.length;
