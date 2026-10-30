@@ -444,7 +444,7 @@ public final class Cli
         if (args.length < 2)
             {
             out.println("usage: agna analyse FILE [--all|NAME...] "
-                    + "[--out FILE]");
+                    + "[--format text|json|csv|html] [--out FILE]");
             return 1;
             }
         FullNet full = open(args[1]);
@@ -452,6 +452,7 @@ public final class Cli
         AgnaLib lib = new AgnaLib();
         boolean all = false;
         String outFile = null;
+        String format = "text";
         java.util.List<String> names = new java.util.ArrayList<>();
         for (int i = 2; i < args.length; i++)
             {
@@ -461,6 +462,9 @@ public final class Cli
                 } else if ("--out".equals(args[i]) && i + 1 < args.length)
                 {
                 outFile = args[++i];
+                } else if ("--format".equals(args[i]) && i + 1 < args.length)
+                {
+                format = args[++i].toLowerCase(Locale.ROOT);
                 } else
                 {
                 names.add(args[i]);
@@ -480,6 +484,8 @@ public final class Cli
                     "closeness", "fareness", "betweenness", "prestige",
                     "cliques", "full"));
             }
+
+        com.bentza.sna.report.TableRegistry.clear();
         StringBuilder report = new StringBuilder();
         for (String name : names)
             {
@@ -500,15 +506,59 @@ public final class Cli
             report.append(text);
             report.append('\n');
             }
-        report.append('\n').append(citationBlock());
+
+        String finalOutput;
+        if ("json".equals(format))
+            {
+            java.util.List<com.bentza.sna.report.TableData> tables =
+                    com.bentza.sna.report.TableRegistry.getRecentTables();
+            StringBuilder jsonSb = new StringBuilder();
+            jsonSb.append("[\n");
+            for (int k = 0; k < tables.size(); k++)
+                {
+                jsonSb.append("  ").append(tables.get(k).toJson().replace("\n", "\n  "));
+                if (k < tables.size() - 1)
+                    jsonSb.append(",\n");
+                }
+            jsonSb.append("\n]\n");
+            finalOutput = jsonSb.toString();
+            } else if ("csv".equals(format))
+            {
+            java.util.List<com.bentza.sna.report.TableData> tables =
+                    com.bentza.sna.report.TableRegistry.getRecentTables();
+            StringBuilder csvSb = new StringBuilder();
+            for (com.bentza.sna.report.TableData td : tables)
+                {
+                csvSb.append("# Table: ").append(td.getTitle()).append("\n");
+                csvSb.append(td.toCsv()).append("\n");
+                }
+            finalOutput = csvSb.toString();
+            } else if ("html".equals(format))
+            {
+            java.util.List<com.bentza.sna.report.TableData> tables =
+                    com.bentza.sna.report.TableRegistry.getRecentTables();
+            StringBuilder htmlSb = new StringBuilder();
+            htmlSb.append("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>AGNA Analysis Report</title></head><body>\n");
+            for (com.bentza.sna.report.TableData td : tables)
+                {
+                htmlSb.append(td.toHtmlTable(false)).append("\n");
+                }
+            htmlSb.append("</body></html>\n");
+            finalOutput = htmlSb.toString();
+            } else
+            {
+            report.append('\n').append(citationBlock());
+            finalOutput = report.toString();
+            }
+
         if (outFile != null)
             {
-            Files.write(new File(outFile).toPath(), report.toString()
+            Files.write(new File(outFile).toPath(), finalOutput
                     .getBytes(StandardCharsets.UTF_8));
             out.println("wrote analysis report to " + outFile);
             } else
             {
-            out.print(report);
+            out.print(finalOutput);
             }
         return 0;
         }

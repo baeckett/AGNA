@@ -8,7 +8,11 @@ package com.bentza.sna.net;
 import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
 import com.bentza.sna.core.AppRuntime;
+import com.bentza.sna.report.AnalysisReport;
+import com.bentza.sna.report.AnalysisReportFactory;
+import com.bentza.sna.report.TableRegistry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -748,6 +752,25 @@ import java.util.Vector;
         return cliques;
         }
 
+    public List<List<Integer>> getCliquesList(Network src, int cdiam)
+        {
+        List<IntList> raw = cliquesMain(src, cdiam);
+        if (raw == null)
+            return Collections.emptyList();
+        List<List<Integer>> result = new ArrayList<>(raw.size());
+        for (IntList il : raw)
+            {
+            int[] arr = il.toArray();
+            List<Integer> list = new ArrayList<>(arr.length);
+            for (int val : arr)
+                {
+                list.add(val);
+                }
+            result.add(list);
+            }
+        return result;
+        }
+
     /**
      * Bron-Kerbosch maximal clique enumeration on the derived graph (ordered
      * variant, so every maximal clique is reported exactly once).
@@ -1010,7 +1033,7 @@ import java.util.Vector;
             }
         }
 
-    private boolean isConnected(Network src)
+    public boolean isConnected(Network src)
         {
         int size = src.getSize();
         int[][] geod = geodesics(src);
@@ -1027,7 +1050,7 @@ import java.util.Vector;
         return true;
         }
 
-    private int[][] geodesics(Network src)
+    public int[][] geodesics(Network src)
         {
         int size = src.getSize();
         int i, j, k;
@@ -1086,6 +1109,15 @@ import java.util.Vector;
      */
     public String outFullAnalysis(Network outsrc)
         {
+        String legacy = legacyOutFullAnalysis(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createFullAnalysisReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutFullAnalysis(Network outsrc)
+        {
         StringBuffer out = new StringBuffer("");
         out.append(it + bold + "FULL ANALYSIS" + unbold + " of " + unit
                 + outsrc.getName() + lb);
@@ -1123,6 +1155,15 @@ import java.util.Vector;
         }
 
     public String outGeodesics(Network outsrc)
+        {
+        String legacy = legacyOutGeodesics(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createGeodesicsReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutGeodesics(Network outsrc)
         {
         AgnaLib.initAjna();
         int size = outsrc.getSize();
@@ -1209,6 +1250,15 @@ import java.util.Vector;
 
     public String outEccentricity(Network outsrc)
         {
+        String legacy = legacyOutEccentricity(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createEccentricityReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutEccentricity(Network outsrc)
+        {
         // 2.1.3: refuse disconnected networks (0 = no path
         // would silently corrupt the result)
         if (!isConnected(outsrc))
@@ -1245,6 +1295,15 @@ import java.util.Vector;
 
     public String outDiameter(Network outsrc)
         {
+        String legacy = legacyOutDiameter(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createDiameterReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutDiameter(Network outsrc)
+        {
         String out = new String("");
         out = it + bold + "Diameter" + unbold + " of " + unit
                 + outsrc.getName();
@@ -1254,7 +1313,7 @@ import java.util.Vector;
         return out;
         }
 
-    private float[] eccentricity(Network src)
+    public float[] eccentricity(Network src)
         {
         int size = src.getSize();
         int i, j;
@@ -1279,7 +1338,7 @@ import java.util.Vector;
         }
 
     // sum of all elements of row i in the geodesics matrix
-    private float[] fareness(Network src)
+    public float[] fareness(Network src)
         {
         int size = src.getSize();
         int i, j;
@@ -1297,6 +1356,15 @@ import java.util.Vector;
         }
 
     public String outFareness(Network outsrc)
+        {
+        String legacy = legacyOutFareness(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createFarenessReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutFareness(Network outsrc)
         {
         // 2.1.3: refuse disconnected networks (0 = no path)
         if (!isConnected(outsrc))
@@ -1352,6 +1420,15 @@ import java.util.Vector;
         }
 
     public String outCloseness(Network outsrc)
+        {
+        String legacy = legacyOutCloseness(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createClosenessReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutCloseness(Network outsrc)
         {
         // 2.1.3: refuse disconnected networks (0 = no path
         // would silently corrupt the result)
@@ -1504,6 +1581,15 @@ import java.util.Vector;
 
     public String outShortestPaths(Network outsrc, int i_from, int i_to)
         {
+        String legacy = legacyOutShortestPaths(outsrc, i_from, i_to);
+        AnalysisReport report = AnalysisReportFactory.createShortestPathsReport(outsrc, i_from, i_to, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutShortestPaths(Network outsrc, int i_from, int i_to)
+        {
         StringBuffer out = new StringBuffer("");
         IntList path;
         int size = outsrc.getSize();
@@ -1563,6 +1649,15 @@ import java.util.Vector;
 
     public String outCliques(Network outsrc, int clique_diameter)
         {
+        String legacy = legacyOutCliques(outsrc, clique_diameter);
+        AnalysisReport report = AnalysisReportFactory.createCliquesReport(outsrc, clique_diameter, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutCliques(Network outsrc, int clique_diameter)
+        {
         StringBuffer out = new StringBuffer("");
 
         IntList clique;
@@ -1619,6 +1714,15 @@ import java.util.Vector;
         }
 
     public String outBetweenness(Network outsrc)
+        {
+        String legacy = legacyOutBetweenness(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createBetweennessReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutBetweenness(Network outsrc)
         {
         // 2.1.3: refuse disconnected networks (0 = no path
         // would silently corrupt the result)
@@ -1697,6 +1801,15 @@ import java.util.Vector;
 
     public String outPrestige(Network outsrc)
         {
+        String legacy = legacyOutPrestige(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createPrestigeReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutPrestige(Network outsrc)
+        {
         // 2.1.3: the 2.1.2 body was an unimplemented stub returning null
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
@@ -1722,7 +1835,7 @@ import java.util.Vector;
     // binary (boolean) bavelas:
     // = the total length of all geodesic paths starting or ending in node i
     // divided by the sum of all geodesic paths in the network
-    private float[] bavelas(Network src)
+    public float[] bavelas(Network src)
         {
         int size = src.getSize();
         int i, j;
@@ -1789,6 +1902,15 @@ import java.util.Vector;
         }
 
     public String outBavelas(Network outsrc)
+        {
+        String legacy = legacyOutBavelas(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createBavelasReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutBavelas(Network outsrc)
         {
         // 2.1.3: refuse disconnected networks (0 = no path)
         if (!isConnected(outsrc))
@@ -1933,7 +2055,7 @@ import java.util.Vector;
 
 
 
-    private int getOusidersNumber(Network src)
+    public int getOusidersNumber(Network src)
         {
         int finval = 0;
         int size = src.getSize();
@@ -1946,6 +2068,15 @@ import java.util.Vector;
         }
 
     public String outBasic(Network src)
+        {
+        String legacy = legacyOutBasic(src);
+        AnalysisReport report = AnalysisReportFactory.createBasicReport(src, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutBasic(Network src)
         {
         // initial values
         final int size = src.getSize();
@@ -2100,6 +2231,15 @@ import java.util.Vector;
     // generates a description of the newly opened chain:
     public String outOpenChainSummary(Network outsrc)
         {
+        String legacy = legacyOutOpenChainSummary(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createOpenChainReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutOpenChainSummary(Network outsrc)
+        {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         int[][] frequencies = new int[2][size];
@@ -2160,7 +2300,7 @@ import java.util.Vector;
     // computes the network cohesion index:
     // divides the number of mutual choices in a binary directed matrix
     // by the maximum possible number of such choices (Knoke)
-    private float cohesion(Network src)
+    public float cohesion(Network src)
         {
         int size = src.getSize();
         double finval = 0;
@@ -2179,6 +2319,15 @@ import java.util.Vector;
         }
 
     public String outCohesion(Network outsrc)
+        {
+        String legacy = legacyOutCohesion(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createCohesionReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutCohesion(Network outsrc)
         {
         String out = new String("");
         float val = cohesion(outsrc);
@@ -2236,6 +2385,15 @@ import java.util.Vector;
 
     public String outEmissionDegree(Network outsrc)
         {
+        String legacy = legacyOutEmissionDegree(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createEmissionReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutEmissionDegree(Network outsrc)
+        {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outemis =  weightedEmissionDegree(outsrc);
@@ -2257,6 +2415,15 @@ import java.util.Vector;
         }
 
     public String outOutDegree(Network outsrc)
+        {
+        String legacy = legacyOutOutDegree(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createOutDegreeReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutOutDegree(Network outsrc)
         {
         int size = outsrc.getSize();
         int i;
@@ -2396,6 +2563,15 @@ import java.util.Vector;
     // returns a string (publicable) version of receptionDegree()
     public String outReceptionDegree(Network outsrc)
         {
+        String legacy = legacyOutReceptionDegree(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createReceptionReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutReceptionDegree(Network outsrc)
+        {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outrec =  weightedReceptionDegree(outsrc);
@@ -2417,6 +2593,15 @@ import java.util.Vector;
         }
 
     public String outInDegree(Network outsrc)
+        {
+        String legacy = legacyOutInDegree(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createInDegreeReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutInDegree(Network outsrc)
         {
         int size = outsrc.getSize();
         int i;
@@ -2634,6 +2819,15 @@ import java.util.Vector;
     // makes sense for non-directed networks only!
     public String outNodalDegree(Network outsrc)
         {
+        String legacy = legacyOutNodalDegree(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createNodalDegreeReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutNodalDegree(Network outsrc)
+        {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outrec = new float[size];
@@ -2783,7 +2977,7 @@ import java.util.Vector;
         return out.toString();
         }
 
-    private float density(Network src) // binary data
+    public float density(Network src) // binary data
         {
         int size = src.getSize();
         double dens = 0;
@@ -2798,7 +2992,7 @@ import java.util.Vector;
         return (float) dens;
         }
 
-    private float weightedDensity(Network src) // weighted data
+    public float weightedDensity(Network src) // weighted data
         {
         int size = src.getSize();
         double dens = 0;
@@ -2812,6 +3006,15 @@ import java.util.Vector;
         }
 
     public String outDensity(Network outsrc)
+        {
+        String legacy = legacyOutDensity(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createDensityReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutDensity(Network outsrc)
         {
         String out = new String("");
         out = it + bold + "Density" + unbold + " of " + unit + outsrc.getName();
@@ -2843,7 +3046,7 @@ import java.util.Vector;
         }
 
     // considers data as weighted:
-    private float[] determinationDegree(Network src)
+    public float[] determinationDegree(Network src)
         {
         int size = src.getSize();
         if (size <= 1)
@@ -2877,6 +3080,15 @@ import java.util.Vector;
         }
 
     public String outDeterminationDegree(Network outsrc)
+        {
+        String legacy = legacyOutDeterminationDegree(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createDeterminationReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutDeterminationDegree(Network outsrc)
         {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
@@ -2923,6 +3135,15 @@ import java.util.Vector;
 
     public String outSociometricStatus(Network outsrc)
         {
+        String legacy = legacyOutSociometricStatus(outsrc);
+        AnalysisReport report = AnalysisReportFactory.createSociometricStatusReport(outsrc, this, legacy);
+        if ("text/html".equals(AppRuntime.outputContentType()))
+            return report.toHtmlReport();
+        return report.toPlainText();
+        }
+
+    public String legacyOutSociometricStatus(Network outsrc)
+        {
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
         float[] outss =  sociometricStatus(outsrc);
@@ -2946,7 +3167,7 @@ import java.util.Vector;
 
     // returns freeman's general index;
     // star_network_index are the centrality indexes of the corresponding star
-    private float freemanGeneralIndex(float[] a, float[] star_network_index)
+    public float freemanGeneralIndex(float[] a, float[] star_network_index)
         {
         int nn = a.length;
         int i = 0;
@@ -2999,7 +3220,7 @@ import java.util.Vector;
      * entr (ln), [7] max entr (ln), [8] rel entr (log-independent), [9] abs
      * entr (log2), [10] max entr (log2)
      */
-    private float[] statistics(float[] a)
+    public float[] statistics(float[] a)
         {
         int nn = a.length;
         int i;

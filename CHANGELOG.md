@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.5] - 2026-10-30
 
 ### Added
+- **Modern Analysis Output Rendering & Unified Table Reporting Framework (`com.bentza.sna.report`)**:
+  - Engineered an enterprise-grade reporting system featuring `TableData`, `TableRegistry`, `AnalysisReport`, and `AnalysisReportFactory`.
+  - Modernized all 22 network analysis routines in `AgnaLib` (`outBasic`, `outDensity`, `outCohesion`, `outInDegree`, `outOutDegree`, `outNodalDegree`, `outEmissionDegree`, `outReceptionDegree`, `outDeterminationDegree`, `outSociometricStatus`, `outBetweenness`, `outCloseness`, `outFareness`, `outEccentricity`, `outDiameter`, `outGeodesics`, `outBavelas`, `outPrestige`, `outCliques`, `outShortestPaths`, `outOpenChainSummary`, `outFullAnalysis`).
+  - Output displays formatted HTML report cards in Swing Desktop mode with styled metadata headers, KPI badges, alternating row highlights, and clean typography, while preserving 100% plain text fidelity in headless CLI and test executions.
+  - Embedded one-click action links (`[Export Table (CSV/JSON)]`) in output HTML above all analytical tables.
+  - Added dedicated **Export Table Dialog (`ExportTableDialog`)** accessible via the embedded links, `Output ▸ Export Analysis Table...` (`mFile`), or `Analysis ▸ Export Table...` (`mAnalysis`). Supports live preview, column metadata, clipboard copying, and export to RFC 4180 CSV, formatted JSON, TSV, or HTML.
+  - Upgraded CLI `analyse` command with `--format text|json|csv|html` to output individual metrics or full reports in machine-readable or styled formats.
+- **Statistical Hypothesis Testing with Null Models (`NetworkHypothesisTester`, `HypothesisTestingDialog`)**:
+  - Implemented empirical Monte Carlo hypothesis testing against 4 canonical null models: Bernoulli $G(N, p)$, Configuration Model (degree sequence preserving stub rewiring), Uniform Edge Shuffling, and Degree-Preserving Double-Edge Swaps (Masclov–Sneppen).
+  - Evaluates observed network statistics (Density, Average Degree, Global Clustering, Reciprocity, Transitivity, Diameter, Average Path Length) against empirical null distributions, calculating mean, standard deviation, Z-score, and empirical two-tailed p-values.
+  - Interactive Desktop Dialog (`Analysis ▸ Hypothesis Testing (Null Models)...`) with parameter tuning, null distribution summaries, and integrated table export.
+- **Universal Smart Directory Defaults Across File Operations**:
+  - Extended smart directory navigation (`Environment.getDefaultOpenDirectory()`) to **Merge Network**, **New from Chain**, **Save Network As**, **Save Output As**, and **Open Output File**, ensuring seamless navigation relative to the user's active workspace and samples directory.
 - **Comprehensive "File | New Network..." Dialog (`NewNetworkDialog`)**:
   - Replaced the previous single text prompt with a rich, interactive configuration dialog offering 15 distinct topologies:
     1. **Empty network (isolated nodes)**: Generates $N$ isolated vertices in a circular ring layout.

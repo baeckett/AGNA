@@ -5,6 +5,8 @@
 
 package com.bentza.sna.stats;
 
+import com.bentza.sna.report.TableData;
+import com.bentza.sna.report.TableRegistry;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -222,10 +224,20 @@ public class HypothesisTestResult
 
     public String toHtmlReport()
         {
+        TableData td = TableData.builder("Null Model Comparison: " + metric.getDisplayName())
+                .network(networkName)
+                .columns("Network", "Tested Metric", "Null Model", "Replications", "Observed Value", "Null Mean", "Null Std Dev", "Z-Score", "p-value (two-tailed)", "95% CI Lower", "95% CI Upper")
+                .isNumeric(false, false, false, true, true, true, true, true, true, true, true)
+                .addRow(networkName, metric.getDisplayName(), nullModel.getDisplayName(), replications, observedValue, nullMean, nullStdDev, zScore, pValueTwoTailed, ciLower95, ciUpper95)
+                .build();
+        TableRegistry.register(td);
+
         StringBuilder sb = new StringBuilder();
         sb.append("<div style='font-family:sans-serif; margin:15px; color:#222;'>");
-        sb.append("<h2 style='color:#004080; border-bottom:2px solid #004080; padding-bottom:5px;'>")
-          .append("AGNA Hypothesis Test: Null Model Comparison</h2>");
+        sb.append("<table style='width:100%; border:none; margin-bottom:4px;'><tr>");
+        sb.append("<td style='border:none; padding:0; text-align:left;'><h2 style='color:#004080; border-bottom:2px solid #004080; padding-bottom:5px; margin:0;'>AGNA Hypothesis Test: Null Model Comparison</h2></td>");
+        sb.append("<td style='border:none; padding:0; text-align:right;'><a href='export:").append(td.getId()).append("' style='font-size:11px; color:#0055aa; text-decoration:none;'><b>[Export Table (CSV/JSON)]</b></a></td>");
+        sb.append("</tr></table>");
         sb.append("<table style='border-collapse:collapse; width:100%; max-width:650px; font-size:13px;'>");
         sb.append("<tr style='background:#f4f6f9;'><td style='padding:6px; font-weight:bold; border:1px solid #ddd;'>Network</td>")
           .append("<td style='padding:6px; border:1px solid #ddd;'>").append(networkName).append("</td></tr>");

@@ -816,4 +816,25 @@ public class CliTest
         assertTrue(outCsv.contains("network,metric,null_model,replications"), outCsv);
         assertTrue(outCsv.contains("DYAD_CENSUS"), outCsv);
         }
+
+    @Test
+    public void testAnalyseFormats() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+
+        // Test CSV format
+        String csvOut = run("analyse", sample.getAbsolutePath(), "indegree", "--format", "csv");
+        assertTrue(csvOut.contains("# Table:"), csvOut);
+        assertTrue(csvOut.contains("Node,Indegree*,Indegree**"), csvOut);
+
+        // Test JSON format
+        String jsonOut = run("analyse", sample.getAbsolutePath(), "indegree", "--format", "json");
+        assertTrue(jsonOut.contains("\"title\":"), jsonOut);
+        assertTrue(jsonOut.contains("\"columns\":"), jsonOut);
+
+        // Test HTML format
+        String htmlOut = run("analyse", sample.getAbsolutePath(), "density", "--format", "html");
+        assertTrue(htmlOut.contains("<!DOCTYPE html>"), htmlOut);
+        assertTrue(htmlOut.contains("border-collapse:collapse"), htmlOut);
+        }
     }
