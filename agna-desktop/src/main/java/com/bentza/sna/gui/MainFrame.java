@@ -819,19 +819,21 @@ public class MainFrame //
                 && !(new java.io.File(network_file_name).isDirectory());
         java.io.File stored_parent = stored_name_usable ? new java.io.File(
                 network_file_name).getParentFile() : null;
-        if (!stored_name_usable
-                || stored_parent == null
-                || !stored_parent.exists())
+
+        java.io.File chooser_dir = null;
+        if (stored_name_usable && stored_parent != null && stored_parent.exists())
             {
+            chooser_dir = stored_parent;
+            file = new File(network_file_name);
+            } else
+            {
+            chooser_dir = Environment.getDefaultOpenDirectory();
             String net_name = (my_full_net.getNetwork() != null
                     && my_full_net.getNetwork().getName() != null
                     && my_full_net.getNetwork().getName().length() > 0) ? my_full_net
                     .getNetwork().getName() : "network";
-            String working_dir = MainFrame.getWorkingDirectory();
-            file = new File((working_dir != null ? working_dir : "") + net_name
-                    + ".agn");
-            } else
-            file = new File(network_file_name);
+            file = new File(chooser_dir, net_name + ".agn");
+            }
         AgnaLog.info("Save As: stored name '" + network_file_name
                 + "' -> using '" + file.getAbsolutePath() + "'");
 
@@ -839,22 +841,14 @@ public class MainFrame //
         // 2.1.3: the Save As name is shown WITHOUT an extension; the chosen
         // format (dialog or remembered setting) appends it afterwards, so
         // the user never fights a stale extension in the name field
-        String stripped_name = IOUtils.getNameWithoutExtension(file
-                .getAbsolutePath());
+        String stripped_name = IOUtils.getNameWithoutExtension(file.getName());
         if (stripped_name == null || stripped_name.length() == 0)
             {
             stripped_name = "network";
             }
-        java.io.File selection = new File(stripped_name);
-        if (selection.isDirectory())
-            {
-            selection = new File("network");
-            }
+        java.io.File selection = new File(chooser_dir, stripped_name);
+        chooser.setCurrentDirectory(chooser_dir);
         chooser.setSelectedFile(selection);
-        java.io.File chooser_dir = file.isDirectory() ? file : file
-                .getParentFile();
-        chooser.setCurrentDirectory(chooser_dir != null ? chooser_dir
-                : new java.io.File(System.getProperty("user.dir")));
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
 
@@ -1372,18 +1366,29 @@ public class MainFrame //
         {
         // setting name of file:
         File file = null;
-        if (output_edit.getFileName().length() < 1)
+        if (output_edit.getFileName() != null && output_edit.getFileName().length() > 0)
             {
-            try
+            File existing = new File(output_edit.getFileName());
+            if (existing.exists() || (existing.getParentFile() != null && existing.getParentFile().exists()))
                 {
-                file = new File(MainFrame.getWorkingDirectory());
-                } catch (Exception e1)
-                {
-                file = new File(".");
+                file = existing.isDirectory() ? existing : existing.getParentFile();
                 }
-            } else
+            }
+        if (file == null)
             {
-            file = new File(output_edit.getFileName());
+            String netName = my_full_net.getNetworkFileName();
+            if (netName != null && netName.length() > 0)
+                {
+                File netFile = new File(netName);
+                if (netFile.getParentFile() != null && netFile.getParentFile().exists())
+                    {
+                    file = netFile.getParentFile();
+                    }
+                }
+            }
+        if (file == null)
+            {
+            file = Environment.getDefaultOpenDirectory();
             }
 
         final JFileChooser chooser = new JFileChooser();
@@ -1541,25 +1546,42 @@ public class MainFrame //
         JFileChooser chooser = new JFileChooser();
 
         File file = null;
-        // setting name of output file:
-        if (output_edit.getFileName().equals(""))
+        File dir = null;
+        String outFileName = output_edit.getFileName();
+        if (outFileName != null && outFileName.length() > 0)
             {
-            try
+            File existing = new File(outFileName);
+            if (existing.getParentFile() != null && existing.getParentFile().exists())
                 {
-                file = new File(MainFrame.getWorkingDirectory()
-                        + my_full_net.getNetwork().getName() + "_output.html");
-                } catch (Exception e1)
-                {
-                file = new File(my_full_net.getNetwork().getName()
-                        + "_output.html");
+                dir = existing.getParentFile();
                 }
-            } else
+            }
+        if (dir == null)
             {
-            file = new File(output_edit.getFileName());
+            String netFileName = my_full_net.getNetworkFileName();
+            if (netFileName != null && netFileName.length() > 0)
+                {
+                File netFile = new File(netFileName);
+                if (netFile.getParentFile() != null && netFile.getParentFile().exists())
+                    {
+                    dir = netFile.getParentFile();
+                    }
+                }
+            }
+        if (dir == null)
+            {
+            dir = Environment.getDefaultOpenDirectory();
             }
 
+        String defaultName = (my_full_net.getNetwork() != null
+                && my_full_net.getNetwork().getName() != null
+                && my_full_net.getNetwork().getName().length() > 0)
+                ? my_full_net.getNetwork().getName() + "_output.html"
+                : "output.html";
+        file = new File(dir, defaultName);
+
         chooser.setDialogTitle("Save Current Output");
-        chooser.setCurrentDirectory(file);
+        chooser.setCurrentDirectory(dir);
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setSelectedFile(file);
         chooser.setMultiSelectionEnabled(false);

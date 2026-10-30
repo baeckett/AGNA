@@ -21,3 +21,4 @@ __MACOSX/
 dependency-reduced-pom.xml
 __pycache__/
 installers-out/
+backup/

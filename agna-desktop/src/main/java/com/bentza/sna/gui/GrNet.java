@@ -711,22 +711,43 @@ import com.bentza.sna.io.JpegUtils;
         JFileChooser chooser = new JFileChooser();
 
         File file = null;
-        // setting name of output file:
-        if (gr_output_pane.getFileName().equals(""))
+        File dir = null;
+        String outFileName = gr_output_pane.getFileName();
+        if (outFileName != null && outFileName.length() > 0)
             {
-            try
+            File existing = new File(outFileName);
+            if (existing.getParentFile() != null && existing.getParentFile().exists())
                 {
-                file = new File(MainFrame.getWorkingDirectory() + "Output.html");
-                } catch (Exception e1)
-                {
-                file = new File("Output.html");
+                dir = existing.getParentFile();
                 }
-            } else
-            file = new File(gr_output_pane.getFileName());
+            }
+        if (dir == null)
+            {
+            String netFileName = gr_full_net != null ? gr_full_net.getNetworkFileName() : null;
+            if (netFileName != null && netFileName.length() > 0)
+                {
+                File netFile = new File(netFileName);
+                if (netFile.getParentFile() != null && netFile.getParentFile().exists())
+                    {
+                    dir = netFile.getParentFile();
+                    }
+                }
+            }
+        if (dir == null)
+            {
+            dir = Environment.getDefaultOpenDirectory();
+            }
+
+        String defaultName = (gr_full_net != null && gr_full_net.getNetwork() != null
+                && gr_full_net.getNetwork().getName() != null
+                && gr_full_net.getNetwork().getName().length() > 0)
+                ? gr_full_net.getNetwork().getName() + "_output.html"
+                : "output.html";
+        file = new File(dir, defaultName);
 
         chooser.setSelectedFile(file);
         chooser.setDialogTitle("Save Current Output");
-        chooser.setCurrentDirectory(file);
+        chooser.setCurrentDirectory(dir);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
         chooser.addChoosableFileFilter(new PlainTextFilesFilter());
@@ -984,20 +1005,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             file = new File(MainFrame.getCurrentFullNet().getNetworkFileName());
             } else
             {
-            try
-                {
-                file = new File(MainFrame.getWorkingDirectory());
-                } catch (Exception e1)
-                {
-                try
-                    {
-                    file = new File(Environment.getCurrentDirectory()
-                            + Environment.fs + "Samples");
-                    } catch (Exception e2)
-                    {
-                    file = new File(".");
-                    }
-                }
+            file = Environment.getDefaultOpenDirectory();
             }
 
         JFileChooser chooser = new JFileChooser();
@@ -1043,11 +1051,24 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         JFileChooser chooser = new JFileChooser();
         String filestr = null;
         chooser.setDialogTitle("Export Image As");
-        File file = new File(MainFrame.getWorkingDirectory()
-                + gr_full_net.getNetwork().getName() + " image");
+        File dir = null;
+        String netFileName = gr_full_net != null ? gr_full_net.getNetworkFileName() : null;
+        if (netFileName != null && netFileName.length() > 0)
+            {
+            File netFile = new File(netFileName);
+            if (netFile.getParentFile() != null && netFile.getParentFile().exists())
+                {
+                dir = netFile.getParentFile();
+                }
+            }
+        if (dir == null)
+            {
+            dir = Environment.getDefaultOpenDirectory();
+            }
+        File file = new File(dir, gr_full_net.getNetwork().getName() + " image");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setSelectedFile(file);
-        chooser.setCurrentDirectory(file);
+        chooser.setCurrentDirectory(dir);
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
