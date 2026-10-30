@@ -163,10 +163,14 @@ public class NetworkHypothesisTesterTest
         String text = res.toTextReport();
         assertTrue(text.contains("AGNA STATISTICAL HYPOTHESIS TEST"));
         assertTrue(text.contains("Null Distribution Histogram"));
+        assertTrue(text.contains("Notes:"));
+        assertTrue(text.contains("a. Empirical p-values"));
 
         String html = res.toHtmlReport();
         assertTrue(html.contains("AGNA Hypothesis Test"));
         assertTrue(html.contains("Observed Value"));
+        assertTrue(html.contains("Notes / Methodological Remarks"));
+        assertTrue(html.contains("Empirical p-values estimated via Monte Carlo simulation"));
 
         String json = res.toJson();
         assertTrue(json.contains("\"metric\": \"TRANSITIVITY\""));

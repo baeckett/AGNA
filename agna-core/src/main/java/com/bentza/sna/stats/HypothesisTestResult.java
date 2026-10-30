@@ -218,6 +218,12 @@ public class HypothesisTestResult
         sb.append("--------------------------------------------------------------------------------\n");
         sb.append("Verdict: ").append(getSignificanceInterpretation()).append("\n\n");
         sb.append(toAsciiHistogram(12, 25));
+        sb.append("--------------------------------------------------------------------------------\n");
+        sb.append("Notes:\n");
+        sb.append(String.format(Locale.ROOT, "a. Empirical p-values estimated via Monte Carlo simulation across N = %d null graph realizations.\n", replications));
+        sb.append("b. Two-tailed p-value calculated as 2 * min(P(M_null >= M_obs), P(M_null <= M_obs)).\n");
+        sb.append("c. Standardized Z-Score represents (M_obs - mu_null) / sigma_null.\n");
+        sb.append(String.format(Locale.ROOT, "d. Null model reference: %s (%s).\n", nullModel.getDisplayName(), nullModel.getDescription()));
         sb.append("================================================================================\n");
         return sb.toString();
         }
@@ -281,6 +287,37 @@ public class HypothesisTestResult
         sb.append("<div style='margin-top:15px;'><pre style='background:#f8f9fa; border:1px solid #e1e4e8; padding:10px; font-size:11px; border-radius:4px;'>")
           .append(toAsciiHistogram(12, 30))
           .append("</pre></div>");
+
+        // SPSS-style Notes / Methodological Remarks Block
+        sb.append("<table style='width:100%; max-width:650px; border-collapse:collapse; margin-top:14px; font-size:11px; background:#fafbfc; border:1px solid #d0d7de;'>\n");
+        sb.append("  <tr style='background:#f3f4f6; border-bottom:1px solid #d0d7de;'>\n");
+        sb.append("    <td colspan='2' style='padding:5px 8px; font-weight:bold; color:#24292f; text-transform:uppercase; letter-spacing:0.5px;'>\n");
+        sb.append("      <b>Notes / Methodological Remarks</b>\n");
+        sb.append("    </td>\n");
+        sb.append("  </tr>\n");
+        sb.append("  <tr>\n");
+        sb.append("    <td style='width:24px; padding:3px 4px 3px 8px; vertical-align:top; font-weight:bold; color:#57606a;'>a.</td>\n");
+        sb.append("    <td style='padding:3px 8px; vertical-align:top; color:#57606a;'>Empirical p-values estimated via Monte Carlo simulation across N = ").append(replications).append(" null graph realizations.</td>\n");
+        sb.append("  </tr>\n");
+        sb.append("  <tr>\n");
+        sb.append("    <td style='width:24px; padding:3px 4px 3px 8px; vertical-align:top; font-weight:bold; color:#57606a;'>b.</td>\n");
+        sb.append("    <td style='padding:3px 8px; vertical-align:top; color:#57606a;'>Two-tailed p-value calculated as 2 &times; min(P(M<sub>null</sub> &ge; M<sub>obs</sub>), P(M<sub>null</sub> &le; M<sub>obs</sub>)).</td>\n");
+        sb.append("  </tr>\n");
+        sb.append("  <tr>\n");
+        sb.append("    <td style='width:24px; padding:3px 4px 3px 8px; vertical-align:top; font-weight:bold; color:#57606a;'>c.</td>\n");
+        sb.append("    <td style='padding:3px 8px; vertical-align:top; color:#57606a;'>Standardized Z-Score represents (M<sub>obs</sub> - &mu;<sub>null</sub>) / &sigma;<sub>null</sub>.</td>\n");
+        sb.append("  </tr>\n");
+        sb.append("  <tr>\n");
+        sb.append("    <td style='width:24px; padding:3px 4px 3px 8px; vertical-align:top; font-weight:bold; color:#57606a;'>d.</td>\n");
+        sb.append("    <td style='padding:3px 8px; vertical-align:top; color:#57606a;'>Null model reference: ").append(nullModel.getDisplayName()).append(" (").append(nullModel.getDescription()).append(").</td>\n");
+        sb.append("  </tr>\n");
+        sb.append("  <tr style='border-top:1px dashed #e1e4e8; background:#ffffff;'>\n");
+        sb.append("    <td colspan='2' style='padding:4px 8px; font-size:10px; color:#8c959f; font-style:italic;'>\n");
+        sb.append("      Active Dataset: ").append(networkName).append(" &bull; AGNA 2.1.5 Hypothesis Testing Engine &bull; Table available for export above\n");
+        sb.append("    </td>\n");
+        sb.append("  </tr>\n");
+        sb.append("</table>\n");
+
         sb.append("</div>");
         return sb.toString();
         }

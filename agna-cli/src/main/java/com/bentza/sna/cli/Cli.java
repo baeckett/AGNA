@@ -28,6 +28,8 @@ import com.bentza.sna.report.AnalysisReport;
 import com.bentza.sna.report.TableData;
 import com.bentza.sna.theory.ArchetypeClassifier;
 import com.bentza.sna.theory.ArchetypeMetrics;
+import com.bentza.sna.benchmark.AlgorithmBenchmarkSuite;
+import com.bentza.sna.benchmark.BenchmarkResult;
 import java.awt.Color;
 import java.io.File;
 import java.io.InputStream;
@@ -133,6 +135,8 @@ public final class Cli
                 + "  archetype FILE [--format text|json|csv|html] [--out OUT]\n"
                 + "                                  diagnose classic social theory archetypes (small-world,\n"
                 + "                                  preferential attachment, homophily, hierarchy)\n"
+                + "  benchmark FILE [--iterations N] [--format text|json|csv|html] [--out OUT]\n"
+                + "                                  benchmark centrality, clustering, and path algorithm performance\n"
                 + "  test-null FILE [--metric M] [--model NULL_MODEL] [-r N] [--seed S] [--format text|json|csv|html]\n"
                 + "                                  Monte Carlo hypothesis test (degree-preserving, erdos-renyi, dyad-census)\n"
                 + "network commands (each saves a new file via --out):\n"
@@ -332,6 +336,10 @@ public final class Cli
         if ("archetype".equals(cmd) || "diagnose-archetype".equals(cmd) || "archetypes".equals(cmd))
             {
             return diagnoseArchetype(args);
+            }
+        if ("benchmark".equals(cmd) || "bench".equals(cmd))
+            {
+            return benchmark(args);
             }
         if ("add-scalar".equals(cmd))
             {
@@ -2500,6 +2508,87 @@ public final class Cli
             {
             Files.writeString(new File(outFile).toPath(), outputText, StandardCharsets.UTF_8);
             out.println("archetype -> " + outFile);
+            }
+        else
+            {
+            out.print(outputText);
+            }
+        return 0;
+        }
+
+    private int benchmark(String[] args) throws Exception
+        {
+        String file = null;
+        String format = "text";
+        String outFile = null;
+        int iterations = 5;
+
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i].toLowerCase(Locale.ROOT);
+                }
+            else if (("--iterations".equals(a) || "-i".equals(a)) && i + 1 < args.length)
+                {
+                iterations = Integer.parseInt(args[++i]);
+                }
+            else if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                }
+            else if (!a.startsWith("--") && file == null)
+                {
+                file = a;
+                }
+            }
+
+        if (file == null)
+            {
+            out.println("usage: agna benchmark FILE [--iterations N] [--format text|json|csv|html] [--out OUT]");
+            return 1;
+            }
+
+        FullNet full = open(file);
+        List<BenchmarkResult> results = AlgorithmBenchmarkSuite.runBenchmark(full.getNetwork(), iterations);
+        AnalysisReport report = AlgorithmBenchmarkSuite.createBenchmarkReport(full.getNetwork(), results, iterations);
+
+        String outputText;
+        if ("json".equals(format))
+            {
+            StringBuilder sb = new StringBuilder("[\n");
+            for (int t = 0; t < report.getTables().size(); t++)
+                {
+                if (t > 0) sb.append(",\n");
+                sb.append(report.getTables().get(t).toJson());
+                }
+            sb.append("\n]");
+            outputText = sb.toString();
+            }
+        else if ("csv".equals(format))
+            {
+            StringBuilder sb = new StringBuilder();
+            for (TableData td : report.getTables())
+                {
+                sb.append("# ").append(td.getTitle()).append("\n");
+                sb.append(td.toCsv()).append("\n\n");
+                }
+            outputText = sb.toString();
+            }
+        else if ("html".equals(format))
+            {
+            outputText = report.toHtmlReport();
+            }
+        else
+            {
+            outputText = report.toPlainText();
+            }
+
+        if (outFile != null)
+            {
+            Files.writeString(new File(outFile).toPath(), outputText, StandardCharsets.UTF_8);
+            out.println("benchmark -> " + outFile);
             }
         else
             {

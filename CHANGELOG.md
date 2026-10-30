@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.5] - 2026-10-30
 
 ### Added
+- **Algorithm Benchmarking Suite (`com.bentza.sna.benchmark`)**:
+  - Engineered an empirical benchmarking engine (`AlgorithmBenchmarkSuite`, `BenchmarkResult`, `BenchmarkCategory`) for measuring execution runtime (ms), operational throughput (ops/sec), algorithmic complexity scaling, and mathematical invariant validation across 10 foundational graph algorithms:
+    - **Centrality**: Freeman Closeness $\mathcal{O}(V^2)$, Brandes Betweenness $\mathcal{O}(VE)$, Degree Centrality suite $\mathcal{O}(V^2)$, Bavelas-Leavitt index $\mathcal{O}(V^2)$.
+    - **Clustering**: Watts-Strogatz Local Clustering $\mathcal{O}(V \langle k \rangle^2)$, Newman Global Transitivity $\mathcal{O}(V \langle k \rangle^2)$, Bron-Kerbosch Maximal Cliques $\mathcal{O}(3^{V/3})$.
+    - **Paths & Distances**: All-Pairs Geodesic Distances $\mathcal{O}(V^3)$, Graph Diameter & Extremes $\mathcal{O}(V^2)$, Shortest Path Routing $\mathcal{O}(V+E)$.
+  - Generates an SPSS-style analytical report complete with benchmark performance metrics, Big-O reference annotations, correctness checkmarks, and methodological notes.
+  - CLI support: `agna benchmark FILE [--iterations N] [--format text|json|csv|html] [--out OUT]`.
+  - Desktop GUI support: **Analysis ▸ Algorithm Benchmarks (Centrality, Clustering, Paths)...** in main menu.
+- **SPSS-Style Methodological Footnotes for Hypothesis Testing**:
+  - Enhanced `HypothesisTestResult` with formatted lettered SPSS notes block (in both modern HTML cards and ASCII text reports) explaining Monte Carlo empirical p-value interpretation, null model generation constraints, degree sequence preservation, and statistical significance criteria.
 - **Structural Archetypes Diagnostic Framework (`com.bentza.sna.theory`)**:
   - Implemented analytical diagnostic classifier (`ArchetypeClassifier`, `ArchetypeMetrics`, `StructuralArchetype`) evaluating empirical networks against 4 classic sociological theories:
     1. **Small-World / Strength of Weak Ties** (Watts & Strogatz, 1998; Humphries & Gurney, 2008): Measures Small-World quotient $\sigma = (C / C_{\text{rand}}) / (L / L_{\text{rand}})$, clustering coefficient $C$, and characteristic path length $L$.

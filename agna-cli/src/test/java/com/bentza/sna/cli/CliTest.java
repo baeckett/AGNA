@@ -858,4 +858,27 @@ public class CliTest
         assertTrue(htmlOut.contains("Theoretical Structural Archetypes Diagnostic"), htmlOut);
         assertTrue(htmlOut.contains("Notes / Methodological Remarks"), htmlOut);
         }
+
+    @Test
+    public void testBenchmarkCommand() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+
+        // Test text format
+        String textOut = run("benchmark", sample.getAbsolutePath(), "--iterations", "2");
+        assertTrue(textOut.contains("Algorithm Benchmark Results"), textOut);
+        assertTrue(textOut.contains("Brandes Betweenness"), textOut);
+        assertTrue(textOut.contains("Watts-Strogatz Clustering"), textOut);
+        assertTrue(textOut.contains("All-Pairs Geodesics"), textOut);
+        assertTrue(textOut.contains("Notes:"), textOut);
+
+        // Test JSON format
+        String jsonOut = run("benchmark", sample.getAbsolutePath(), "--iterations", "2", "--format", "json");
+        assertTrue(jsonOut.contains("\"title\": \"Algorithm Benchmark Results\""), jsonOut);
+
+        // Test HTML format
+        String htmlOut = run("benchmark", sample.getAbsolutePath(), "--iterations", "2", "--format", "html");
+        assertTrue(htmlOut.contains("Algorithm Performance"), htmlOut);
+        assertTrue(htmlOut.contains("Notes / Methodological Remarks"), htmlOut);
+        }
     }
