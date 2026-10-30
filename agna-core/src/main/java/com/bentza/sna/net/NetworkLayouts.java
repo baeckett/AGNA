@@ -22,6 +22,11 @@ public class NetworkLayouts
     public static final int CONCENTRIC = 4;
     public static final int STAR = 5;
     public static final int HIERARCHICAL = 6;
+    public static final int CORE_PERIPHERY = 7;
+    public static final int EGO_RADIAL = 8;
+    public static final int COMMUNITY = 9;
+    public static final int LAYERED_DAG = 10;
+    public static final int LINEAR = 11;
 
     public static final int SPRING_ITERATIONS = 60;
     public static final int SPRING_BH_ABOVE = 256;
@@ -67,6 +72,31 @@ public class NetworkLayouts
         if (layout == HIERARCHICAL)
             {
             applyHierarchical(net, width, height);
+            return;
+            }
+        if (layout == CORE_PERIPHERY)
+            {
+            applyCorePeriphery(net, width, height);
+            return;
+            }
+        if (layout == EGO_RADIAL)
+            {
+            applyEgoRadial(net, width, height);
+            return;
+            }
+        if (layout == COMMUNITY)
+            {
+            applyCommunity(net, width, height);
+            return;
+            }
+        if (layout == LAYERED_DAG)
+            {
+            applyLayeredDag(net, width, height);
+            return;
+            }
+        if (layout == LINEAR)
+            {
+            applyLinear(net, width, height);
             return;
             }
         if (layout == CIRCULAR)
@@ -714,6 +744,550 @@ public class NetworkLayouts
                     {
                     x = (int) Math.round(marginX + (double) k * usableW / (count - 1));
                     }
+                net.getActor(node).setX(x, width);
+                net.getActor(node).setY(y, height);
+                }
+            }
+        }
+
+    // Core–Periphery Layout (Borgatti & Everett 1999):
+    // Dense core actors placed in inner circle; peripheral actors placed on outer ring
+    // oriented near their core attachments.
+    public static void applyCorePeriphery(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return;
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
+            }
+        if (n == 1)
+            {
+            net.getActor(0).setX(width / 2, width);
+            net.getActor(0).setY(height / 2, height);
+            return;
+            }
+
+        // Rank nodes by total degree
+        Integer[] order = new Integer[n];
+        for (int i = 0; i < n; i++)
+            {
+            order[i] = i;
+            }
+        java.util.Arrays.sort(order, (a, b) -> Integer.compare(degree(net, b), degree(net, a)));
+
+        int coreCount = Math.max(1, Math.min((int) Math.round(n * 0.25), 8));
+        if (n <= 4)
+            coreCount = 1;
+
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+        double rCore = Math.min(width, height) * 0.16;
+        double rPeriph = Math.min(width, height) * 0.40;
+
+        // Place core nodes
+        double[] nodeAngles = new double[n];
+        for (int i = 0; i < coreCount; i++)
+            {
+            int u = order[i];
+            double angle = coreCount == 1 ? 0.0 : (2.0 * Math.PI * i / coreCount) - Math.PI / 2.0;
+            nodeAngles[u] = angle;
+            double x = coreCount == 1 ? cx : cx + rCore * Math.cos(angle);
+            double y = coreCount == 1 ? cy : cy + rCore * Math.sin(angle);
+            net.getActor(u).setX((int) Math.round(x), width);
+            net.getActor(u).setY((int) Math.round(y), height);
+            }
+
+        // Place periphery nodes
+        int periphCount = n - coreCount;
+        for (int i = 0; i < periphCount; i++)
+            {
+            int u = order[coreCount + i];
+            // Compute preferred angle from core neighbors if any
+            double sumSin = 0.0;
+            double sumCos = 0.0;
+            int coreNeighbors = 0;
+            for (int c = 0; c < coreCount; c++)
+                {
+                int v = order[c];
+                if (net.getValue(u, v) != 0f || net.getValue(v, u) != 0f)
+                    {
+                    sumSin += Math.sin(nodeAngles[v]);
+                    sumCos += Math.cos(nodeAngles[v]);
+                    coreNeighbors++;
+                    }
+                }
+            double angle;
+            if (coreNeighbors > 0)
+                {
+                angle = Math.atan2(sumSin, sumCos) + (i % 3 - 1) * 0.12;
+                }
+            else
+                {
+                angle = (2.0 * Math.PI * i / periphCount) - Math.PI / 2.0;
+                }
+            double x = cx + rPeriph * Math.cos(angle);
+            double y = cy + rPeriph * Math.sin(angle);
+            net.getActor(u).setX((int) Math.round(x), width);
+            net.getActor(u).setY((int) Math.round(y), height);
+            }
+        }
+
+    // Radial Geodesic / Ego-Centric Layout:
+    // Focal hub (ego) placed in the center; alters positioned on concentric rings
+    // by geodesic distance (hop count) from ego.
+    public static void applyEgoRadial(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return;
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
+            }
+        if (n == 1)
+            {
+            net.getActor(0).setX(width / 2, width);
+            net.getActor(0).setY(height / 2, height);
+            return;
+            }
+
+        // Find focal ego (highest total degree)
+        int ego = 0;
+        int maxDeg = -1;
+        for (int i = 0; i < n; i++)
+            {
+            int d = degree(net, i);
+            if (d > maxDeg)
+                {
+                maxDeg = d;
+                ego = i;
+                }
+            }
+
+        // BFS shortest paths from ego
+        int[] dist = new int[n];
+        java.util.Arrays.fill(dist, -1);
+        dist[ego] = 0;
+        java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<>();
+        q.add(ego);
+
+        while (!q.isEmpty())
+            {
+            int u = q.poll();
+            for (int v = 0; v < n; v++)
+                {
+                if (u != v && (net.getValue(u, v) != 0f || net.getValue(v, u) != 0f))
+                    {
+                    if (dist[v] == -1)
+                        {
+                        dist[v] = dist[u] + 1;
+                        q.add(v);
+                        }
+                    }
+                }
+            }
+
+        int maxD = 0;
+        for (int i = 0; i < n; i++)
+            {
+            if (dist[i] > maxD)
+                maxD = dist[i];
+            }
+        // Disconnected nodes placed in outer ring
+        int unreachedRing = maxD + 1;
+        for (int i = 0; i < n; i++)
+            {
+            if (dist[i] == -1)
+                dist[i] = unreachedRing;
+            }
+        int totalRings = Math.max(1, (maxD == 0 ? 1 : (dist[ego] == -1 ? unreachedRing : Math.max(maxD, 1))));
+        for (int i = 0; i < n; i++)
+            {
+            if (dist[i] > totalRings)
+                totalRings = dist[i];
+            }
+
+        // Group nodes by ring
+        java.util.ArrayList<java.util.ArrayList<Integer>> rings = new java.util.ArrayList<>();
+        for (int r = 0; r <= totalRings; r++)
+            {
+            rings.add(new java.util.ArrayList<Integer>());
+            }
+        for (int i = 0; i < n; i++)
+            {
+            rings.get(dist[i]).add(i);
+            }
+
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+        double maxRadius = Math.min(width, height) * 0.42;
+
+        net.getActor(ego).setX((int) Math.round(cx), width);
+        net.getActor(ego).setY((int) Math.round(cy), height);
+
+        for (int r = 1; r <= totalRings; r++)
+            {
+            java.util.ArrayList<Integer> ringNodes = rings.get(r);
+            int count = ringNodes.size();
+            if (count == 0)
+                continue;
+            double radius = maxRadius * ((double) r / totalRings);
+            for (int k = 0; k < count; k++)
+                {
+                int node = ringNodes.get(k);
+                double angle = (2.0 * Math.PI * k / count) - Math.PI / 2.0 + (r * 0.35);
+                net.getActor(node).setX((int) Math.round(cx + radius * Math.cos(angle)), width);
+                net.getActor(node).setY((int) Math.round(cy + radius * Math.sin(angle)), height);
+                }
+            }
+        }
+
+    // Community-Clustered / Modularity Layout:
+    // Identifies network communities via deterministic label propagation and places
+    // clusters on orbital sub-centers with localized intra-community layouts.
+    public static void applyCommunity(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return;
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
+            }
+        if (n <= 2)
+            {
+            applyStar(net, width, height);
+            return;
+            }
+
+        // Deterministic label propagation (up to 10 iterations)
+        int[] comm = new int[n];
+        for (int i = 0; i < n; i++)
+            {
+            comm[i] = i;
+            }
+
+        for (int iter = 0; iter < 10; iter++)
+            {
+            boolean changed = false;
+            for (int i = 0; i < n; i++)
+                {
+                java.util.Map<Integer, Integer> freq = new java.util.HashMap<>();
+                for (int j = 0; j < n; j++)
+                    {
+                    if (i != j && (net.getValue(i, j) != 0f || net.getValue(j, i) != 0f))
+                        {
+                        int c = comm[j];
+                        freq.put(c, freq.getOrDefault(c, 0) + 1);
+                        }
+                    }
+                if (!freq.isEmpty())
+                    {
+                    int bestComm = comm[i];
+                    int bestCount = freq.getOrDefault(comm[i], 0);
+                    for (java.util.Map.Entry<Integer, Integer> entry : freq.entrySet())
+                        {
+                        if (entry.getValue() > bestCount || (entry.getValue() == bestCount && entry.getKey() < bestComm))
+                            {
+                            bestCount = entry.getValue();
+                            bestComm = entry.getKey();
+                            }
+                        }
+                    if (comm[i] != bestComm)
+                        {
+                        comm[i] = bestComm;
+                        changed = true;
+                        }
+                    }
+                }
+            if (!changed)
+                break;
+            }
+
+        // Group nodes by community
+        java.util.Map<Integer, java.util.List<Integer>> commGroups = new java.util.LinkedHashMap<>();
+        for (int i = 0; i < n; i++)
+            {
+            commGroups.computeIfAbsent(comm[i], k -> new java.util.ArrayList<>()).add(i);
+            }
+
+        java.util.List<java.util.List<Integer>> clusterList = new java.util.ArrayList<>(commGroups.values());
+        clusterList.sort((a, b) -> Integer.compare(b.size(), a.size()));
+        int numClusters = clusterList.size();
+
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+
+        if (numClusters == 1)
+            {
+            // Fall back to circular if single dense community
+            double radius = Math.min(width, height) * 0.40;
+            for (int i = 0; i < n; i++)
+                {
+                double a = 2.0 * Math.PI * i / n;
+                net.getActor(i).setX((int) Math.round(cx + radius * Math.cos(a)), width);
+                net.getActor(i).setY((int) Math.round(cy + radius * Math.sin(a)), height);
+                }
+            return;
+            }
+
+        double orbitRadius = Math.min(width, height) * 0.28;
+
+        for (int c = 0; c < numClusters; c++)
+            {
+            java.util.List<Integer> members = clusterList.get(c);
+            int mSize = members.size();
+            double cAngle = (2.0 * Math.PI * c / numClusters) - Math.PI / 2.0;
+            double clX = cx + orbitRadius * Math.cos(cAngle);
+            double clY = cy + orbitRadius * Math.sin(cAngle);
+
+            double subRadius = Math.min(width, height) * 0.13 * Math.min(1.0, 0.4 + 0.6 * Math.sqrt(mSize / (double) n));
+            if (mSize == 1)
+                {
+                int node = members.get(0);
+                net.getActor(node).setX((int) Math.round(clX), width);
+                net.getActor(node).setY((int) Math.round(clY), height);
+                }
+            else
+                {
+                for (int k = 0; k < mSize; k++)
+                    {
+                    int node = members.get(k);
+                    double nodeAngle = (2.0 * Math.PI * k / mSize);
+                    net.getActor(node).setX((int) Math.round(clX + subRadius * Math.cos(nodeAngle)), width);
+                    net.getActor(node).setY((int) Math.round(clY + subRadius * Math.sin(nodeAngle)), height);
+                    }
+                }
+            }
+        }
+
+    // Layered / Sugiyama DAG Layout:
+    // Hierarchical multi-layer layout with topological layering and barycenter ordering
+    // to minimize edge crossings.
+    public static void applyLayeredDag(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return;
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
+            }
+        if (n == 1)
+            {
+            net.getActor(0).setX(width / 2, width);
+            net.getActor(0).setY(height / 2, height);
+            return;
+            }
+
+        int[] inDeg = new int[n];
+        int[] outDeg = new int[n];
+        for (int i = 0; i < n; i++)
+            {
+            for (int j = 0; j < n; j++)
+                {
+                if (i != j && net.getValue(i, j) != 0f)
+                    {
+                    outDeg[i]++;
+                    inDeg[j]++;
+                    }
+                }
+            }
+
+        int[] layer = new int[n];
+        java.util.Arrays.fill(layer, 0);
+
+        // Longest-path layering relaxation (Bellman-Ford style, capped at n iterations)
+        for (int iter = 0; iter < n; iter++)
+            {
+            boolean updated = false;
+            for (int u = 0; u < n; u++)
+                {
+                for (int v = 0; v < n; v++)
+                    {
+                    if (u != v && net.getValue(u, v) != 0f)
+                        {
+                        if (layer[v] < layer[u] + 1 && layer[u] + 1 < n)
+                            {
+                            layer[v] = layer[u] + 1;
+                            updated = true;
+                            }
+                        }
+                    }
+                }
+            if (!updated)
+                break;
+            }
+
+        int maxL = 0;
+        for (int i = 0; i < n; i++)
+            {
+            if (layer[i] > maxL)
+                maxL = layer[i];
+            }
+
+        // Group by layer
+        java.util.ArrayList<java.util.ArrayList<Integer>> byLayer = new java.util.ArrayList<>();
+        for (int l = 0; l <= maxL; l++)
+            {
+            byLayer.add(new java.util.ArrayList<Integer>());
+            }
+        for (int i = 0; i < n; i++)
+            {
+            byLayer.get(layer[i]).add(i);
+            }
+
+        // Barycentric order within layers
+        for (int l = 1; l <= maxL; l++)
+            {
+            java.util.ArrayList<Integer> current = byLayer.get(l);
+            java.util.ArrayList<Integer> prev = byLayer.get(l - 1);
+            current.sort((a, b) -> {
+                double avgA = 0;
+                int countA = 0;
+                double avgB = 0;
+                int countB = 0;
+                for (int p = 0; p < prev.size(); p++)
+                    {
+                    int u = prev.get(p);
+                    if (net.getValue(u, a) != 0f || net.getValue(a, u) != 0f)
+                        {
+                        avgA += p;
+                        countA++;
+                        }
+                    if (net.getValue(u, b) != 0f || net.getValue(b, u) != 0f)
+                        {
+                        avgB += p;
+                        countB++;
+                        }
+                    }
+                double posA = countA > 0 ? (avgA / countA) : a;
+                double posB = countB > 0 ? (avgB / countB) : b;
+                return Double.compare(posA, posB);
+            });
+            }
+
+        int marginX = Math.max(30, width / 12);
+        int marginY = Math.max(30, height / 12);
+        int usableW = width - 2 * marginX;
+        int usableH = height - 2 * marginY;
+
+        for (int l = 0; l <= maxL; l++)
+            {
+            java.util.ArrayList<Integer> nodes = byLayer.get(l);
+            int count = nodes.size();
+            int y = maxL > 0 ? (int) Math.round(marginY + (double) l * usableH / maxL) : height / 2;
+            for (int k = 0; k < count; k++)
+                {
+                int node = nodes.get(k);
+                int x;
+                if (count == 1)
+                    {
+                    x = width / 2;
+                    }
+                else
+                    {
+                    x = (int) Math.round(marginX + (double) k * usableW / (count - 1));
+                    }
+                net.getActor(node).setX(x, width);
+                net.getActor(node).setY(y, height);
+                }
+            }
+        }
+
+    // Linear / Serpentine Pathway Layout:
+    // Sequential layout following the primary network path. Fits linearly for N <= 20
+    // and winds into alternating serpentine rows for larger networks.
+    public static void applyLinear(Network net, int width, int height)
+        {
+        int n = net.getSize();
+        if (n == 0)
+            return;
+        for (int i = 0; i < n; i++)
+            {
+            net.getActor(i).createCoordinatesIfMissing();
+            }
+        if (n == 1)
+            {
+            net.getActor(0).setX(width / 2, width);
+            net.getActor(0).setY(height / 2, height);
+            return;
+            }
+
+        // Trace pathway ordering starting from degree-1 node or lowest index
+        int start = 0;
+        for (int i = 0; i < n; i++)
+            {
+            if (degree(net, i) == 1)
+                {
+                start = i;
+                break;
+                }
+            }
+
+        boolean[] visited = new boolean[n];
+        int[] order = new int[n];
+        int count = 0;
+
+        java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+        visited[start] = true;
+        queue.add(start);
+
+        while (!queue.isEmpty())
+            {
+            int u = queue.poll();
+            order[count++] = u;
+            for (int v = 0; v < n; v++)
+                {
+                if (u != v && !visited[v] && (net.getValue(u, v) != 0f || net.getValue(v, u) != 0f))
+                    {
+                    visited[v] = true;
+                    queue.add(v);
+                    }
+                }
+            }
+        // Append any unvisited components
+        for (int i = 0; i < n; i++)
+            {
+            if (!visited[i])
+                {
+                order[count++] = i;
+                }
+            }
+
+        int marginX = Math.max(30, width / 12);
+        int marginY = Math.max(30, height / 12);
+        int usableW = width - 2 * marginX;
+        int usableH = height - 2 * marginY;
+
+        if (n <= 20)
+            {
+            // Single horizontal linear row
+            int y = height / 2;
+            for (int i = 0; i < n; i++)
+                {
+                int node = order[i];
+                int x = (int) Math.round(marginX + (double) i * usableW / (n - 1));
+                net.getActor(node).setX(x, width);
+                net.getActor(node).setY(y, height);
+                }
+            }
+        else
+            {
+            // Serpentine snake layout
+            int rows = Math.max(2, Math.min(8, (int) Math.ceil(Math.sqrt(n / 2.0))));
+            int cols = (int) Math.ceil((double) n / rows);
+
+            for (int i = 0; i < n; i++)
+                {
+                int node = order[i];
+                int r = i / cols;
+                int c = i % cols;
+                int y = rows > 1 ? (int) Math.round(marginY + (double) r * usableH / (rows - 1)) : height / 2;
+                int actualCol = (r % 2 == 0) ? c : (cols - 1 - c);
+                int x = cols > 1 ? (int) Math.round(marginX + (double) actualCol * usableW / (cols - 1)) : width / 2;
                 net.getActor(node).setX(x, width);
                 net.getActor(node).setY(y, height);
                 }

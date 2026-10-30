@@ -44,7 +44,7 @@ _agna() {
   analyses=(basic density cohesion nodal indegree outdegree emission reception determination status geodesics open-chain eccentricity diameter bavelas closeness fareness betweenness prestige cliques full)
   metric_names=(density diameter eccentricity closeness betweenness indegree outdegree total-degree emission reception status determination geodesics)
   transform_ops=(transpose symmetrize-max symmetrize-sum symmetrize-below normalize-binary normalize-threshold: add-scalar: multiply-scalar: square merge: delete-node: delete-nodes: isolate: merge-nodes: remove-outsiders renumber add-nodes: clone-node:)
-  layouts=(circular random spring grid concentric star hierarchical)
+  layouts=(circular random spring grid concentric star hierarchical core-periphery ego-radial community layered-dag linear)
   formats=(agn txt csv net graphml gml graphson xls)
   types=(empty star circular full random-connected random-weighted square-lattice beehive hexagram watts-strogatz barabasi-albert sbm erdos-renyi linear tree random)
   modes=(below sum max)

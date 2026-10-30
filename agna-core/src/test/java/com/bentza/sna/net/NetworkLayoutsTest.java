@@ -416,4 +416,82 @@ public class NetworkLayoutsTest
                     "inside canvas");
             }
         }
+
+    @Test
+    public void newLayoutsStayInsideCanvasAndAreDeterministic() throws Exception
+        {
+        int[] layouts = {
+            NetworkLayouts.CORE_PERIPHERY,
+            NetworkLayouts.EGO_RADIAL,
+            NetworkLayouts.COMMUNITY,
+            NetworkLayouts.LAYERED_DAG,
+            NetworkLayouts.LINEAR
+        };
+        int w = 800;
+        int h = 600;
+        for (int layout : layouts)
+            {
+            Network net1 = sample();
+            Network net2 = sample();
+            NetworkLayouts.apply(net1, layout, w, h);
+            NetworkLayouts.apply(net2, layout, w, h);
+            for (int i = 0; i < net1.getSize(); i++)
+                {
+                int x1 = px(net1.getActor(i), w);
+                int y1 = py(net1.getActor(i), h);
+                int x2 = px(net2.getActor(i), w);
+                int y2 = py(net2.getActor(i), h);
+                assertTrue(x1 >= 0 && x1 < w && y1 >= 0 && y1 < h,
+                        "layout " + layout + " actor " + i + " inside canvas: (" + x1 + "," + y1 + ")");
+                assertTrue(x1 == x2 && y1 == y2,
+                        "layout " + layout + " actor " + i + " deterministic");
+                }
+            }
+        }
+
+    @Test
+    public void corePeripherySeparatesInnerAndOuterRadii() throws Exception
+        {
+        Network net = sample();
+        int w = 800;
+        int h = 800;
+        NetworkLayouts.apply(net, NetworkLayouts.CORE_PERIPHERY, w, h);
+        double cx = 400.0;
+        double cy = 400.0;
+        int highDegreeNode = 0;
+        int lowDegreeNode = 0;
+        int maxD = -1;
+        int minD = Integer.MAX_VALUE;
+        for (int i = 0; i < net.getSize(); i++)
+            {
+            int d = degree(net, i);
+            if (d > maxD)
+                {
+                maxD = d;
+                highDegreeNode = i;
+                }
+            if (d < minD)
+                {
+                minD = d;
+                lowDegreeNode = i;
+                }
+            }
+        double distHigh = Math.hypot(px(net.getActor(highDegreeNode), w) - cx, py(net.getActor(highDegreeNode), h) - cy);
+        double distLow = Math.hypot(px(net.getActor(lowDegreeNode), w) - cx, py(net.getActor(lowDegreeNode), h) - cy);
+        assertTrue(distHigh < distLow, "core node closer to center than periphery node");
+        }
+
+    @Test
+    public void egoRadialPlacesEgoAtCenter() throws Exception
+        {
+        Network net = sample();
+        int w = 800;
+        int h = 800;
+        NetworkLayouts.apply(net, NetworkLayouts.EGO_RADIAL, w, h);
+        // Focal ego is highest degree (node 0 in example2)
+        int egoX = px(net.getActor(0), w);
+        int egoY = py(net.getActor(0), h);
+        assertTrue(Math.abs(egoX - 400) <= 2, "ego centered horizontally");
+        assertTrue(Math.abs(egoY - 400) <= 2, "ego centered vertically");
+        }
     }

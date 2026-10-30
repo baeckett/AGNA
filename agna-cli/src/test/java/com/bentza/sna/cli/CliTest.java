@@ -88,7 +88,9 @@ public class CliTest
     @Test
     public void drawSupportsEveryNamedLayout() throws Exception
         {
-        for (String layout : new String[] { "grid", "concentric", "spring" })
+        for (String layout : new String[] { "grid", "concentric", "spring",
+                "star", "hierarchical", "core-periphery", "ego-radial",
+                "community", "layered-dag", "linear" })
             {
             File png = File.createTempFile("agna_cli_draw_" + layout,
                     ".png");
@@ -550,6 +552,22 @@ public class CliTest
                 "layout is deterministic");
         assertTrue(run("info", a.getAbsolutePath()).contains("nodes:  12"),
                 "laid-out file opens");
+        }
+
+    @Test
+    public void layoutCommandSupportsAllNewLayouts() throws Exception
+        {
+        File src = File.createTempFile("agna_cli_lay_new_in", ".agn");
+        src.deleteOnExit();
+        run("generate", "--nodes", "15", "--type", "random-connected", "--out", src.getAbsolutePath());
+        for (String layout : new String[] { "core-periphery", "ego-radial", "community", "layered-dag", "linear" })
+            {
+            File out = File.createTempFile("agna_cli_lay_" + layout, ".agn");
+            out.deleteOnExit();
+            String res = run("layout", src.getAbsolutePath(), "--layout", layout, "--out", out.getAbsolutePath());
+            assertTrue(res.contains("layout (" + layout + ") ->"), res);
+            assertTrue(out.length() > 0, layout + " file written");
+            }
         }
 
     @Test

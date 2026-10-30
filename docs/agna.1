@@ -83,7 +83,7 @@ is never modified).  Operations:
 .B draw IN \-\-out PNG [\-\-layout L] [\-\-size WxH] [\-\-labels] [\-\-background #rrggbb] [\-\-no-faces] [\-\-edge-values]
 Render the network headlessly with the same visual language as the
 desktop viewer.  Layouts: circular (default), random, spring, grid,
-concentric, star, hierarchical.  Any canvas size is supported; a rectangular one is scaled
+concentric, star, hierarchical, core-periphery, ego-radial, community, layered-dag, linear.  Any canvas size is supported; a rectangular one is scaled
 from the viewer's internal square.  \-\-labels draws node names,
 \-\-background sets the canvas colour (and removes the default
 background picture), \-\-no-faces hides the node faces,
@@ -168,7 +168,7 @@ chain file".
 .B layout FILE \-\-layout L \-\-out OUT [\-\-size WxH]
 Apply a layout to an existing network and save the new coordinates;
 no image is rendered.  Layouts: circular, random, spring, grid,
-concentric, star, hierarchical.  Output is byte-deterministic for the same seed.
+concentric, star, hierarchical, core-periphery, ego-radial, community, layered-dag, linear.  Output is byte-deterministic for the same seed.
 .TP
 .B set FILE \-\-out OUT [\-\-flag VALUE ...]
 Edit the Network Viewer's image and edge properties of an existing

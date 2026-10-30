@@ -90,7 +90,9 @@ public final class Cli
                 + "                                  merge-nodes:N1,N2,.. | "
                 + "remove-outsiders | renumber | add-nodes:N | clone-node:N\n"
                 + "  draw IN --out PNG --layout L   L = circular | random | "
-                + "spring | grid | concentric | star | hierarchical; --size WxH; --labels;\n"
+                + "spring | grid | concentric | star | hierarchical |\n"
+                + "                                  core-periphery | ego-radial | community | layered-dag | linear;\n"
+                + "                                  --size WxH; --labels;\n"
                 + "                                  --background #rrggbb; "
                 + "--no-faces; --edge-values; prints the used layout\n"
                 + "                                  coordinates (index, "
@@ -136,7 +138,7 @@ public final class Cli
                 + "chain file\n"
                 + "  layout FILE --layout L --out OUT\n"
                 + "                                  apply a layout "
-                + "(circular|random|spring|grid|concentric|star|hierarchical) and save\n"
+                + "(circular|random|spring|grid|concentric|star|hierarchical|core-periphery|ego-radial|community|layered-dag|linear) and save\n"
                 + "                                  the new coordinates "
                 + "without rendering\n"
                 + "  set FILE --out OUT [--flag VALUE ...]\n"
@@ -827,6 +829,21 @@ public final class Cli
                     } else if ("hierarchical".equals(l) || "tree".equals(l))
                     {
                     layout = NetworkLayouts.HIERARCHICAL;
+                    } else if ("core-periphery".equals(l) || "core_periphery".equals(l))
+                    {
+                    layout = NetworkLayouts.CORE_PERIPHERY;
+                    } else if ("ego-radial".equals(l) || "ego_radial".equals(l) || "radial".equals(l) || "ego".equals(l))
+                    {
+                    layout = NetworkLayouts.EGO_RADIAL;
+                    } else if ("community".equals(l) || "clustered".equals(l))
+                    {
+                    layout = NetworkLayouts.COMMUNITY;
+                    } else if ("layered-dag".equals(l) || "layered_dag".equals(l) || "layered".equals(l) || "sugiyama".equals(l) || "dag".equals(l))
+                    {
+                    layout = NetworkLayouts.LAYERED_DAG;
+                    } else if ("linear".equals(l) || "pathway".equals(l) || "chain".equals(l))
+                    {
+                    layout = NetworkLayouts.LINEAR;
                     } else if (!"circular".equals(l))
                     {
                     out.println("unknown layout: " + l);
@@ -916,6 +933,26 @@ public final class Cli
         if (layout == NetworkLayouts.HIERARCHICAL)
             {
             return "hierarchical";
+            }
+        if (layout == NetworkLayouts.CORE_PERIPHERY)
+            {
+            return "core-periphery";
+            }
+        if (layout == NetworkLayouts.EGO_RADIAL)
+            {
+            return "ego-radial";
+            }
+        if (layout == NetworkLayouts.COMMUNITY)
+            {
+            return "community";
+            }
+        if (layout == NetworkLayouts.LAYERED_DAG)
+            {
+            return "layered-dag";
+            }
+        if (layout == NetworkLayouts.LINEAR)
+            {
+            return "linear";
             }
         return "circular";
         }
@@ -1986,6 +2023,21 @@ public final class Cli
             } else if ("hierarchical".equals(layoutName) || "tree".equals(layoutName))
             {
             layoutInt = NetworkLayouts.HIERARCHICAL;
+            } else if ("core-periphery".equals(layoutName) || "core_periphery".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.CORE_PERIPHERY;
+            } else if ("ego-radial".equals(layoutName) || "ego_radial".equals(layoutName) || "radial".equals(layoutName) || "ego".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.EGO_RADIAL;
+            } else if ("community".equals(layoutName) || "clustered".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.COMMUNITY;
+            } else if ("layered-dag".equals(layoutName) || "layered_dag".equals(layoutName) || "layered".equals(layoutName) || "sugiyama".equals(layoutName) || "dag".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.LAYERED_DAG;
+            } else if ("linear".equals(layoutName) || "pathway".equals(layoutName) || "chain".equals(layoutName))
+            {
+            layoutInt = NetworkLayouts.LINEAR;
             } else
             {
             out.println("unknown layout: " + layoutName);

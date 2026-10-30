@@ -72,8 +72,13 @@ public class ModernIcons
     public static final int CONCENTRIC_LAYOUT = 37;
     public static final int SPRING_LAYOUT = 38;
     public static final int HIERARCHICAL_LAYOUT = 39;
+    public static final int CORE_PERIPHERY_LAYOUT = 40;
+    public static final int EGO_RADIAL_LAYOUT = 41;
+    public static final int COMMUNITY_LAYOUT = 42;
+    public static final int LAYERED_DAG_LAYOUT = 43;
+    public static final int LINEAR_LAYOUT = 44;
 
-    public static final int KIND_COUNT = 40;
+    public static final int KIND_COUNT = 45;
 
     public static Color accent()
         {
@@ -483,6 +488,116 @@ public class ModernIcons
                 g.drawLine(Math.round(s * 0.78f - csize / 2f), Math.round(s * 0.45f),
                         Math.round(s * 0.78f - csize / 2f), Math.round(s * 0.65f));
                 break;
+            case CORE_PERIPHERY_LAYOUT:
+                {
+                float cpx = s * 0.50f;
+                float cpy = s * 0.50f;
+                float[][] pPos = {
+                    { cpx - s * 0.32f, cpy - s * 0.28f },
+                    { cpx + s * 0.32f, cpy - s * 0.28f },
+                    { cpx - s * 0.32f, cpy + s * 0.28f },
+                    { cpx + s * 0.32f, cpy + s * 0.28f }
+                };
+                g.setColor(line);
+                for (float[] p : pPos)
+                    {
+                    g.drawLine(Math.round(cpx), Math.round(cpy), Math.round(p[0]), Math.round(p[1]));
+                    float pd = s * 0.12f;
+                    g.draw(new Ellipse2D.Float(p[0] - pd / 2f, p[1] - pd / 2f, pd, pd));
+                    }
+                g.setColor(accent);
+                float cdCore = s * 0.22f;
+                g.fill(new Ellipse2D.Float(cpx - cdCore / 2f, cpy - cdCore / 2f, cdCore, cdCore));
+                break;
+                }
+            case EGO_RADIAL_LAYOUT:
+                {
+                float ex = s * 0.50f;
+                float ey = s * 0.50f;
+                g.setColor(line);
+                float rad1 = s * 0.22f;
+                float rad2 = s * 0.38f;
+                g.draw(new Ellipse2D.Float(ex - rad1, ey - rad1, rad1 * 2f, rad1 * 2f));
+                g.draw(new Ellipse2D.Float(ex - rad2, ey - rad2, rad2 * 2f, rad2 * 2f));
+                float[][] alters = {
+                    { ex + rad1 * 0.707f, ey - rad1 * 0.707f },
+                    { ex - rad2 * 0.866f, ey - rad2 * 0.5f },
+                    { ex + rad2 * 0.5f, ey + rad2 * 0.866f }
+                };
+                for (float[] alt : alters)
+                    {
+                    g.drawLine(Math.round(ex), Math.round(ey), Math.round(alt[0]), Math.round(alt[1]));
+                    float ad = s * 0.10f;
+                    g.draw(new Ellipse2D.Float(alt[0] - ad / 2f, alt[1] - ad / 2f, ad, ad));
+                    }
+                g.setColor(accent);
+                float ed = s * 0.18f;
+                g.fill(new Ellipse2D.Float(ex - ed / 2f, ey - ed / 2f, ed, ed));
+                break;
+                }
+            case COMMUNITY_LAYOUT:
+                {
+                float[][] clCent = {
+                    { s * 0.30f, s * 0.32f },
+                    { s * 0.70f, s * 0.32f },
+                    { s * 0.50f, s * 0.75f }
+                };
+                g.setColor(line);
+                g.drawLine(Math.round(clCent[0][0]), Math.round(clCent[0][1]), Math.round(clCent[1][0]), Math.round(clCent[1][1]));
+                g.drawLine(Math.round(clCent[0][0]), Math.round(clCent[0][1]), Math.round(clCent[2][0]), Math.round(clCent[2][1]));
+                g.drawLine(Math.round(clCent[1][0]), Math.round(clCent[1][1]), Math.round(clCent[2][0]), Math.round(clCent[2][1]));
+                float cRad = s * 0.12f;
+                for (int ci = 0; ci < 3; ci++)
+                    {
+                    g.setColor(line);
+                    g.draw(new Ellipse2D.Float(clCent[ci][0] - cRad, clCent[ci][1] - cRad, cRad * 2f, cRad * 2f));
+                    g.setColor(ci == 2 ? accent : line);
+                    float dnode = s * 0.10f;
+                    g.fill(new Ellipse2D.Float(clCent[ci][0] - dnode / 2f, clCent[ci][1] - dnode / 2f, dnode, dnode));
+                    }
+                break;
+                }
+            case LAYERED_DAG_LAYOUT:
+                {
+                float[][] topNodes = { { s * 0.32f, s * 0.20f }, { s * 0.68f, s * 0.20f } };
+                float[][] midNodes = { { s * 0.22f, s * 0.50f }, { s * 0.50f, s * 0.50f }, { s * 0.78f, s * 0.50f } };
+                float[][] botNodes = { { s * 0.35f, s * 0.80f }, { s * 0.65f, s * 0.80f } };
+                g.setColor(line);
+                g.drawLine(Math.round(topNodes[0][0]), Math.round(topNodes[0][1]), Math.round(midNodes[0][0]), Math.round(midNodes[0][1]));
+                g.drawLine(Math.round(topNodes[0][0]), Math.round(topNodes[0][1]), Math.round(midNodes[1][0]), Math.round(midNodes[1][1]));
+                g.drawLine(Math.round(topNodes[1][0]), Math.round(topNodes[1][1]), Math.round(midNodes[1][0]), Math.round(midNodes[1][1]));
+                g.drawLine(Math.round(topNodes[1][0]), Math.round(topNodes[1][1]), Math.round(midNodes[2][0]), Math.round(midNodes[2][1]));
+                g.drawLine(Math.round(midNodes[1][0]), Math.round(midNodes[1][1]), Math.round(botNodes[0][0]), Math.round(botNodes[0][1]));
+                g.drawLine(Math.round(midNodes[1][0]), Math.round(midNodes[1][1]), Math.round(botNodes[1][0]), Math.round(botNodes[1][1]));
+                float ldSize = s * 0.10f;
+                g.setColor(accent);
+                for (float[] tn : topNodes)
+                    g.fill(new Ellipse2D.Float(tn[0] - ldSize / 2f, tn[1] - ldSize / 2f, ldSize, ldSize));
+                g.setColor(line);
+                for (float[] mn : midNodes)
+                    g.draw(new Ellipse2D.Float(mn[0] - ldSize / 2f, mn[1] - ldSize / 2f, ldSize, ldSize));
+                for (float[] bn : botNodes)
+                    g.draw(new Ellipse2D.Float(bn[0] - ldSize / 2f, bn[1] - ldSize / 2f, ldSize, ldSize));
+                break;
+                }
+            case LINEAR_LAYOUT:
+                {
+                float[][] linNodes = {
+                    { s * 0.16f, s * 0.50f },
+                    { s * 0.38f, s * 0.50f },
+                    { s * 0.62f, s * 0.50f },
+                    { s * 0.84f, s * 0.50f }
+                };
+                g.setColor(line);
+                g.drawLine(Math.round(linNodes[0][0]), Math.round(linNodes[0][1]), Math.round(linNodes[3][0]), Math.round(linNodes[3][1]));
+                float lnd = s * 0.13f;
+                for (int i = 0; i < 4; i++)
+                    {
+                    g.setColor(i == 0 || i == 3 ? accent : line);
+                    g.fill(new Ellipse2D.Float(linNodes[i][0] - lnd / 2f, linNodes[i][1] - lnd / 2f, lnd, lnd));
+                    }
+                break;
+                }
             case SELECT_NEXT:
                 g.setColor(line);
                 g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.42f, s * 0.20f,

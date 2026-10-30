@@ -530,6 +530,51 @@ public class NodeArea extends JButton implements MouseListener,
         repaint();
         }
 
+    public void setCorePeripheryLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.CORE_PERIPHERY, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
+    public void setEgoRadialLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.EGO_RADIAL, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
+    public void setCommunityLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.COMMUNITY, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
+    public void setLayeredDagLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.LAYERED_DAG, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
+    public void setLinearLayout()
+        {
+        NetworkLayouts.apply(AppRuntime.getCurrentNetwork(),
+                NetworkLayouts.LINEAR, area_width, area_width);
+        adjustNodesCoordinates();
+        paintEdges();
+        repaint();
+        }
+
     public String getTitle()
         {
         return this.title;

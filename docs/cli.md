@@ -22,7 +22,7 @@ Command summary:
 | `analyse FILE [--all\|NAME...\|cliques:N] [--out FILE]` | the full analysis battery |
 | `convert IN OUT [--in-format F] [--out-format F]` | format conversion |
 | `transform IN OUT --op OP` | network operations (see below) |
-| `draw IN --out PNG [--layout L] [--size WxH] [--labels] [--background #rrggbb] [--no-faces] [--edge-values]` | headless visualisation (circular, random, spring, grid, concentric, star, hierarchical) |
+| `draw IN --out PNG [--layout L] [--size WxH] [--labels] [--background #rrggbb] [--no-faces] [--edge-values]` | headless visualisation (circular, random, spring, grid, concentric, star, hierarchical, core-periphery, ego-radial, community, layered-dag, linear) |
 | `generate --nodes N --out FILE [--type ...] [options]` | seeded synthetic networks (empty, star, circular, full, random-connected, random-weighted, square-lattice, beehive, hexagram, watts-strogatz, barabasi-albert, sbm, erdos-renyi, linear, tree) |
 | `matrix FILE [--format csv\|tsv] [--out FILE]` | raw matrix table |
 | `nodes FILE [--out FILE]` | node table (degrees + coordinates) |
@@ -33,7 +33,7 @@ Command summary:
 | `diff A B [--out FILE.csv]` | structural comparison |
 | `add-scalar FILE V --out OUT` … `renumber FILE --out OUT` | desktop Network-menu commands (see below) |
 | `from-chain FILE --out OUT` | create a network from a chain file |
-| `layout FILE --layout L --out OUT` | apply coordinates (circular|random|spring|grid|concentric|star|hierarchical) without rendering |
+| `layout FILE --layout L --out OUT` | apply coordinates (circular|random|spring|grid|concentric|star|hierarchical|core-periphery|ego-radial|community|layered-dag|linear) without rendering |
 | `set FILE --out OUT [--flag VALUE ...]` | edit viewer attributes |
 | `--help` | this text |
 
@@ -170,7 +170,7 @@ agna draw IN --out PNG [--layout L] [--size WxH] [--labels]
 Renders the network headlessly with the same visual language as the
 desktop viewer (node faces, tie colours and transparency, grid),
 deterministically. Layouts: `circular` (default), `random`, `spring`,
-`grid`, `concentric`, `star`, `hierarchical`. Default canvas 1200x900 (any `--size WxH` works; a
+`grid`, `concentric`, `star`, `hierarchical`, `core-periphery`, `ego-radial`, `community`, `layered-dag`, `linear`. Default canvas 1200x900 (any `--size WxH` works; a
 rectangular canvas is scaled from the viewer's internal square).
 
 - `--labels` draws node names
