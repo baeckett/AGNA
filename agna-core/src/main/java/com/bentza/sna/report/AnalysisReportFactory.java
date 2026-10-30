@@ -116,6 +116,9 @@ public final class AnalysisReportFactory {
         } else {
             report.setNote("The network is disconnected (not all pairs of nodes are mutually reachable).", true);
         }
+        report.addFootnote("Active sociomatrix dimensions: N = " + size + " actors, " + edges + " ties.");
+        report.addFootnote("Directed density is computed as m / [n(n - 1)]; undirected density as 2m / [n(n - 1)].");
+        report.addFootnote("Outsider nodes represent isolated actors with degree k_i = 0.");
         return report;
     }
 
@@ -146,6 +149,8 @@ public final class AnalysisReportFactory {
         TableData dt = b.build();
         TableRegistry.register(dt);
         report.addTable(dt);
+        report.addFootnote("Directed density is defined as m / [n*(n - 1)]. Self-loops are treated as 0 and excluded.");
+        report.addFootnote("Ties with weight zero are treated as null/absent dyads.");
         return report;
     }
 
@@ -162,6 +167,8 @@ public final class AnalysisReportFactory {
         TableData ct = b.build();
         TableRegistry.register(ct);
         report.addTable(ct);
+        report.addFootnote("Cohesion index measures overall dyadic compactness based on topological shortest paths.");
+        report.addFootnote("Disconnected node pairs are assigned infinite distance and penalized in the cohesion score.");
         return report;
     }
 
@@ -197,6 +204,10 @@ public final class AnalysisReportFactory {
         TableData st = createStatisticsTable("Indegree Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
 
+        report.addFootnote("Indegree* is normalized by the maximum possible inward ties (N - 1), excluding the actor itself.");
+        report.addFootnote("Indegree** is relative to the total network size N, including self.");
+        report.addFootnote("Diagonal entries (self-loops) are excluded from inbound degree summations.");
+
         return report;
     }
 
@@ -230,6 +241,10 @@ public final class AnalysisReportFactory {
         TableData st = createStatisticsTable("Outdegree Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
 
+        report.addFootnote("Outdegree* is normalized by the maximum possible outward ties (N - 1), excluding the actor itself.");
+        report.addFootnote("Outdegree** is relative to the total network size N, including self.");
+        report.addFootnote("Diagonal entries (self-loops) are excluded from outbound degree summations.");
+
         return report;
     }
 
@@ -261,6 +276,10 @@ public final class AnalysisReportFactory {
         TableData st = createStatisticsTable("Nodal Degree Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
 
+        report.addFootnote("Nodal Degree represents total incident ties (In-Degree + Out-Degree).");
+        report.addFootnote("Relative Degree* is normalized by (N - 1) for undirected networks, or 2(N - 1) for directed networks.");
+        report.addFootnote("Self-loops are treated as 0 and excluded from degree sums.");
+
         return report;
     }
 
@@ -285,6 +304,7 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(em);
         TableData st = createStatisticsTable("Emission Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+        report.addFootnote("Emission Coefficient measures actor signaling capacity across outbound ties.");
         return report;
     }
 
@@ -309,6 +329,7 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(rec);
         TableData st = createStatisticsTable("Reception Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+        report.addFootnote("Reception Coefficient measures actor receiving capacity across inbound ties.");
         return report;
     }
 
@@ -333,6 +354,7 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(det);
         TableData st = createStatisticsTable("Determination Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+        report.addFootnote("Determination Degree computes the balance between outbound influence and inbound reception.");
         return report;
     }
 
@@ -357,6 +379,7 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(stat);
         TableData st = createStatisticsTable("Sociometric Status Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+        report.addFootnote("Sociometric Status measures choice popularity scaled relative to group size (N - 1).");
         return report;
     }
 
@@ -392,6 +415,10 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(betw);
         TableData st = createStatisticsTable("Betweenness Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+
+        report.addFootnote("Freeman betweenness centrality reflects the proportion of all shortest paths passing through the actor.");
+        report.addFootnote("Normalized betweenness divides raw betweenness by (N - 1)(N - 2) / 2 (undirected) or (N - 1)(N - 2) (directed).");
+        report.addFootnote("Shortest paths are computed using Brandes' betweenness algorithm.");
 
         return report;
     }
@@ -430,6 +457,10 @@ public final class AnalysisReportFactory {
         TableData st = createStatisticsTable("Closeness Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
 
+        report.addFootnote("Closeness centrality is the reciprocal of the total geodesic distance from an actor to all reachable nodes.");
+        report.addFootnote("Standard Closeness is normalized by (N - 1).");
+        report.addFootnote("For disconnected networks, unreachable pairs are omitted from standard distance summation.");
+
         return report;
     }
 
@@ -460,6 +491,8 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(fare);
         TableData st = createStatisticsTable("Fareness Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+
+        report.addFootnote("Fareness (farness) is the sum of geodesic shortest distances from an actor to all other reachable actors.");
         return report;
     }
 
@@ -490,6 +523,9 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(ecc);
         TableData st = createStatisticsTable("Eccentricity Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+
+        report.addFootnote("Eccentricity represents the maximum shortest-path distance from an actor to any other reachable actor in the graph.");
+        report.addFootnote("The minimum eccentricity across all actors defines the network radius; the maximum defines the network diameter.");
         return report;
     }
 
@@ -508,6 +544,8 @@ public final class AnalysisReportFactory {
         TableData dt = b.build();
         TableRegistry.register(dt);
         report.addTable(dt);
+        report.addFootnote("Network diameter represents the longest finite geodesic distance between any pair of reachable nodes.");
+        report.addFootnote("Disconnected pairs are excluded from the diameter calculation.");
         return report;
     }
 
@@ -569,6 +607,9 @@ public final class AnalysisReportFactory {
         TableRegistry.register(sumTable);
         report.addTable(sumTable);
 
+        report.addFootnote("Geodesic matrix cell (i, j) indicates the topological shortest path distance between actor i and actor j.");
+        report.addFootnote("Unreachable actor pairs are indicated by '-' (infinite distance).");
+
         return report;
     }
 
@@ -598,6 +639,7 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(bav);
         TableData st = createStatisticsTable("Bavelas Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+        report.addFootnote("Bavelas Centrality index measures relative distance advantage in centralized communication structures.");
         return report;
     }
 
@@ -622,6 +664,7 @@ public final class AnalysisReportFactory {
         float[] statVals = lib.statistics(prest);
         TableData st = createStatisticsTable("Prestige Statistics", src.getName(), statVals);
         if (st != null) report.addTable(st);
+        report.addFootnote("Prestige index reflects asymmetric prominence derived from inbound choices.");
         return report;
     }
 
@@ -654,6 +697,8 @@ public final class AnalysisReportFactory {
         TableData dt = b.build();
         TableRegistry.register(dt);
         report.addTable(dt);
+        report.addFootnote("A clique is a maximal complete subgraph where every actor is directly tied to every other actor.");
+        report.addFootnote("Cliques are enumerated using the Bron-Kerbosch backtracking algorithm.");
         return report;
     }
 
@@ -679,12 +724,14 @@ public final class AnalysisReportFactory {
         TableData dt = b.build();
         TableRegistry.register(dt);
         report.addTable(dt);
+        report.addFootnote("Displays the reconstructed topological shortest path sequence connecting source and target nodes.");
         return report;
     }
 
     public static AnalysisReport createOpenChainReport(Network src, AgnaLib lib, String legacy) {
         AnalysisReport report = new AnalysisReport("Open Chain Summary", src.getName());
         report.setRawPlainText(legacy);
+        report.addFootnote("Open chains identify unclosed triads (two-step paths without a direct bridging tie).");
         return report;
     }
 
@@ -724,6 +771,9 @@ public final class AnalysisReportFactory {
         } else {
             report.setNote("Centrality and geodesic measures skipped: the network is disconnected (run each measure separately for details).", true);
         }
+
+        report.addFootnote("Full analysis battery compiles all centralities, degree distributions, distance metrics, and entropy indices.");
+        report.addFootnote("Matrix diagonal values (self-loops) are excluded across all actor-level metrics.");
 
         return report;
     }

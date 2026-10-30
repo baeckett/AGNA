@@ -24,6 +24,7 @@ public class AnalysisReport {
     private final Date timestamp;
     private final List<TableData> tables = new ArrayList<>();
     private final Map<String, String> properties = new LinkedHashMap<>();
+    private final List<String> footnotes = new ArrayList<>();
     private String note;
     private boolean warning;
     private String rawPlainText;
@@ -42,6 +43,17 @@ public class AnalysisReport {
 
     public void addProperty(String key, String value) {
         properties.put(key, value);
+    }
+
+    public AnalysisReport addFootnote(String footnote) {
+        if (footnote != null && !footnote.trim().isEmpty()) {
+            footnotes.add(footnote.trim());
+        }
+        return this;
+    }
+
+    public List<String> getFootnotes() {
+        return Collections.unmodifiableList(footnotes);
     }
 
     public void setNote(String note, boolean isWarning) {
@@ -136,6 +148,33 @@ public class AnalysisReport {
             sb.append(table.toHtmlTable(true));
         }
 
+        // SPSS-style Notes / Methodological Remarks Block
+        if (!footnotes.isEmpty()) {
+            sb.append("<table style='width:100%; max-width:700px; border-collapse:collapse; margin-top:14px; font-size:11px; background:#fafbfc; border:1px solid #d0d7de;'>\n");
+            sb.append("  <tr style='background:#f3f4f6; border-bottom:1px solid #d0d7de;'>\n");
+            sb.append("    <td colspan='2' style='padding:5px 8px; font-weight:bold; color:#24292f; text-transform:uppercase; letter-spacing:0.5px;'>\n");
+            sb.append("      <b>Notes / Methodological Remarks</b>\n");
+            sb.append("    </td>\n");
+            sb.append("  </tr>\n");
+            char marker = 'a';
+            for (String fn : footnotes) {
+                sb.append("  <tr>\n");
+                sb.append("    <td style='width:24px; padding:3px 4px 3px 8px; vertical-align:top; font-weight:bold; color:#57606a;'>")
+                  .append(marker).append(".</td>\n");
+                sb.append("    <td style='padding:3px 8px; vertical-align:top; color:#57606a;'>")
+                  .append(escapeHtml(fn)).append("</td>\n");
+                sb.append("  </tr>\n");
+                marker++;
+            }
+            sb.append("  <tr style='border-top:1px dashed #e1e4e8; background:#ffffff;'>\n");
+            sb.append("    <td colspan='2' style='padding:4px 8px; font-size:10px; color:#8c959f; font-style:italic;'>\n");
+            sb.append("      Active Dataset: ").append(escapeHtml(networkName.isEmpty() ? "Sociomatrix" : networkName))
+              .append(" &bull; AGNA 2.1.5 Statistical Engine &bull; Tables available for export above\n");
+            sb.append("    </td>\n");
+            sb.append("  </tr>\n");
+            sb.append("</table>\n");
+        }
+
         sb.append("</div>\n");
         return sb.toString();
     }
@@ -165,6 +204,14 @@ public class AnalysisReport {
                 sb.append(table.getSubtitle()).append("\n");
             }
             sb.append(table.toPlainTextTable()).append("\n");
+        }
+        if (!footnotes.isEmpty()) {
+            sb.append("\nNotes:\n");
+            char marker = 'a';
+            for (String fn : footnotes) {
+                sb.append(marker).append(". ").append(fn).append("\n");
+                marker++;
+            }
         }
         return sb.toString();
     }
