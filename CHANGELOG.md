@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.5] - 2026-10-30
 
 ### Added
+- **Structural Archetypes Diagnostic Framework (`com.bentza.sna.theory`)**:
+  - Implemented analytical diagnostic classifier (`ArchetypeClassifier`, `ArchetypeMetrics`, `StructuralArchetype`) evaluating empirical networks against 4 classic sociological theories:
+    1. **Small-World / Strength of Weak Ties** (Watts & Strogatz, 1998; Humphries & Gurney, 2008): Measures Small-World quotient $\sigma = (C / C_{\text{rand}}) / (L / L_{\text{rand}})$, clustering coefficient $C$, and characteristic path length $L$.
+    2. **Cumulative Advantage / Preferential Attachment (Matthew Effect)** (Barabási & Albert, 1999; Merton, 1968; Price, 1976; Clauset, Shalizi & Newman, 2009): Estimates power-law scaling exponent $\hat{\gamma}$ via MLE, degree Gini inequality $G_{\text{deg}}$, and hub prominence ratio $k_{\max} / \langle k \rangle$.
+    3. **Homophily & Echo Chambers (Birds of a Feather)** (McPherson, Smith-Lovin & Cook, 2001; Blau, 1977; Newman, 2002, 2006): Computes Newman's modularity $Q$ through greedy agglomerative community clustering and degree assortativity coefficient $r$.
+    4. **Formal Authority & Bureaucracy** (Weber, 1922; Simon, 1947; Krackhardt, 1994): Evaluates Krackhardt's 4 organizational dimensions: Connectedness, Graph Hierarchy ($GH$), Graph Efficiency ($GE$), and Least Upper Bound ($LUB$).
+  - Produces an SPSS-style Archetype Goodness-of-Fit scorecard, structural signature diagnostics table, sociological interpretation narrative, and methodological footnotes.
+  - CLI support: `agna archetype FILE [--format text|json|csv|html] [--out OUT]`.
+  - Desktop GUI support: **Analysis ▸ Structural Archetypes Diagnostic...** in main menu.
 - **Modern Analysis Output Rendering & Unified Table Reporting Framework (`com.bentza.sna.report`)**:
   - Engineered an enterprise-grade reporting system featuring `TableData`, `TableRegistry`, `AnalysisReport`, and `AnalysisReportFactory`.
   - Modernized all 22 network analysis routines in `AgnaLib` (`outBasic`, `outDensity`, `outCohesion`, `outInDegree`, `outOutDegree`, `outNodalDegree`, `outEmissionDegree`, `outReceptionDegree`, `outDeterminationDegree`, `outSociometricStatus`, `outBetweenness`, `outCloseness`, `outFareness`, `outEccentricity`, `outDiameter`, `outGeodesics`, `outBavelas`, `outPrestige`, `outCliques`, `outShortestPaths`, `outOpenChainSummary`, `outFullAnalysis`).

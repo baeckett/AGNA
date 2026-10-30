@@ -837,4 +837,25 @@ public class CliTest
         assertTrue(htmlOut.contains("<!DOCTYPE html>"), htmlOut);
         assertTrue(htmlOut.contains("border-collapse:collapse"), htmlOut);
         }
+
+    @Test
+    public void testArchetypeDiagnosis() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+
+        // Test text format
+        String textOut = run("archetype", sample.getAbsolutePath());
+        assertTrue(textOut.contains("Theoretical Archetype Fit Summary"), textOut);
+        assertTrue(textOut.contains("Structural Signature Diagnostics"), textOut);
+        assertTrue(textOut.contains("Notes:"), textOut);
+
+        // Test JSON format
+        String jsonOut = run("archetype", sample.getAbsolutePath(), "--format", "json");
+        assertTrue(jsonOut.contains("\"title\": \"Theoretical Archetype Fit Summary\""), jsonOut);
+
+        // Test HTML format
+        String htmlOut = run("archetype", sample.getAbsolutePath(), "--format", "html");
+        assertTrue(htmlOut.contains("Theoretical Structural Archetypes Diagnostic"), htmlOut);
+        assertTrue(htmlOut.contains("Notes / Methodological Remarks"), htmlOut);
+        }
     }
