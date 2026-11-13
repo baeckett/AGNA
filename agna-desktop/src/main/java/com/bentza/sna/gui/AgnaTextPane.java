@@ -19,6 +19,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
+import javax.swing.text.Element;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -50,7 +51,7 @@ public class AgnaTextPane extends JTextPane
                 }
         };
 
-    AgnaTextPane()
+    public AgnaTextPane()
         {
         // RTFEditorKit rtf_edit = new RTFEditorKit();
         // StyleContext edit_context = new StyleContext();
@@ -95,7 +96,7 @@ public class AgnaTextPane extends JTextPane
 
         if (cont.equals("text/html"))
             {
-            this.setText("<html><head><body><p></p></body></head></html>");
+            this.setText("<html><head></head><body><p></p></body></html>");
             }
 
         external_elements = 0;
@@ -142,13 +143,50 @@ public class AgnaTextPane extends JTextPane
         return folder_name;
         }
 
+    private Element getBodyElement(HTMLDocument doc)
+        {
+        Element root = doc.getDefaultRootElement();
+        for (int i = 0; i < root.getElementCount(); i++)
+            {
+            Element el = root.getElement(i);
+            if ("body".equalsIgnoreCase(el.getName()))
+                {
+                return el;
+                }
+            }
+        return root;
+        }
+
+    private void insertHtmlAtBodyEnd(HTMLDocument doc, String html)
+        {
+        try
+            {
+            Element body = getBodyElement(doc);
+            doc.insertBeforeEnd(body, html);
+            this.setChanged(true);
+            this.setCaretPosition(this.getDocument().getLength());
+            } catch (Exception e)
+            {
+            AgnaLog.warn("Could not insert HTML at body end, falling back", e);
+            try
+                {
+                HTMLEditorKit kit = (HTMLEditorKit) this.getEditorKit();
+                kit.insertHTML(doc, doc.getLength(), html, 0, 0, null);
+                this.setChanged(true);
+                this.setCaretPosition(this.getDocument().getLength());
+                } catch (Exception e2)
+                {
+                AgnaLog.warn("HTML insert fallback failed", e2);
+                }
+            }
+        }
+
     // appends a string and inserts a horizontal rule before it
     public void appendBlock(String str)
         {
         String lb = System.getProperty("line.separator");
         StringBuffer newstr = new StringBuffer(str);
         String cont = this.getContentType();
-        HTMLEditorKit kit = null;
         HTMLDocument doc = null;
         int tmp_position = 0;
 
@@ -169,18 +207,10 @@ public class AgnaTextPane extends JTextPane
 
         if (cont.equals("text/html"))
             {
-            kit = ((HTMLEditorKit) this.getEditorKit());
             doc = ((HTMLDocument) this.getDocument());
-            try
-                {
-                kit.insertHTML(doc, doc.getLength(), "<hr>", 0, 0, HTML.Tag.HR);
-                kit.insertHTML(doc, doc.getLength(), newstr.toString() + "", 0,
-                        0, null);
-                this.setChanged(true);
-                this.setCaretPosition(doc.getLength());
-                } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
+            String trimmed = str != null ? str.trim() : "";
+            String html = (doc.getLength() > 1 ? "<hr>" : "") + trimmed;
+            insertHtmlAtBodyEnd(doc, html);
             }
         }
 
@@ -188,7 +218,6 @@ public class AgnaTextPane extends JTextPane
         {
         StringBuffer newstr = new StringBuffer(str);
         String cont = this.getContentType();
-        HTMLEditorKit kit = null;
         HTMLDocument doc = null;
         int tmp_position = 0;
 
@@ -209,17 +238,21 @@ public class AgnaTextPane extends JTextPane
 
         if (cont.equals("text/html"))
             {
-            kit = ((HTMLEditorKit) this.getEditorKit());
             doc = ((HTMLDocument) this.getDocument());
-            try
+            String trimmed = str != null ? str.trim() : "";
+            String html;
+            if (trimmed.startsWith("<div") || trimmed.startsWith("<table"))
                 {
-                kit.insertHTML(doc, doc.getLength(), "<p>" + newstr.toString()
-                        + "", 1, 0, HTML.Tag.P);
-                this.setChanged(true);
-                this.setCaretPosition(this.getText().length());
-                } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
+                // Full structured report: separate with <hr> if following another report
+                html = (doc.getLength() > 1 ? "<hr>" : "") + trimmed;
+                } else if (trimmed.startsWith("<p") || trimmed.startsWith("<hr"))
+                {
+                html = trimmed;
+                } else
+                {
+                html = "<p>" + trimmed.replace("\n", "<br>") + "</p>";
+                }
+            insertHtmlAtBodyEnd(doc, html);
             }
         }
 
@@ -366,17 +399,18 @@ public class AgnaTextPane extends JTextPane
 
         if (cont.equals("text/html"))
             {
-            kit = ((HTMLEditorKit) this.getEditorKit());
             doc = ((HTMLDocument) this.getDocument());
-            try
+            String trimmed = str != null ? str.trim() : "";
+            if (!trimmed.isEmpty())
                 {
-                kit.insertHTML(doc, doc.getLength(), newstr.toString() + "", 0,
-                        0, null);
-                this.setChanged(true);
-                this.setCaretPosition(this.getText().length());
-                } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
+                if (trimmed.startsWith("<"))
+                    {
+                    insertHtmlAtBodyEnd(doc, trimmed);
+                    } else
+                    {
+                    insertHtmlAtBodyEnd(doc, "<p>" + trimmed.replace("\n", "<br>") + "</p>");
+                    }
+                }
             }
         }
 
@@ -427,17 +461,8 @@ public class AgnaTextPane extends JTextPane
 
         if (cont.equals("text/html"))
             {
-            kit = ((HTMLEditorKit) this.getEditorKit());
             doc = ((HTMLDocument) this.getDocument());
-            try
-                {
-                kit.insertHTML(doc, doc.getLength(), "<p><b>"
-                        + newstr.toString() + "</b>", 1, 0, HTML.Tag.P);
-                this.setChanged(true);
-                this.setCaretPosition(this.getText().length());
-                } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
+            insertHtmlAtBodyEnd(doc, "<p><b>" + (str != null ? str : "") + "</b></p>");
             }
         }
 
@@ -449,20 +474,8 @@ public class AgnaTextPane extends JTextPane
         HTMLDocument doc = null;
         if (cont.equals("text/html"))
             {
-            kit = ((HTMLEditorKit) this.getEditorKit());
             doc = ((HTMLDocument) this.getDocument());
-            try
-                {
-                kit.insertHTML(doc, doc.getLength(), "<br>", 0, 0, HTML.Tag.BR);
-                kit.insertHTML(doc, doc.getLength(), "<IMG SRC='file:"
-                        + imag_path + "'>", 0, 0, HTML.Tag.IMG);
-                kit.insertHTML(doc, doc.getLength(), "<br>", 0, 0, HTML.Tag.BR);
-                kit.insertHTML(doc, doc.getLength(), "<br>", 0, 0, HTML.Tag.BR);
-                this.setChanged(true);
-                this.setCaretPosition(this.getText().length());
-                } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
+            insertHtmlAtBodyEnd(doc, "<p><img src='file:" + imag_path + "'></p>");
             }
         }
 
