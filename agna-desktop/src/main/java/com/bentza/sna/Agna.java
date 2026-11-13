@@ -68,32 +68,7 @@ public class Agna
                 // ask before close
                 public void windowClosing(WindowEvent e)
                     {
-                    final int confirm = JOptionPane.showOptionDialog(MainFrame
-                            .getCurrentFrame(), "Quit Agna?",
-                            "Exit Confirmation", JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null, null, null);
-                    if (confirm == 0)
-                        {
-                        // message 'Bad value encountered!...'
-                        frame.saveChangedFiles(false);
-
-                        MainFrame.getCurrentFrame().dispose();
-                        System.out.println("");
-                        System.out
-                                .println("   ****************************************");
-                        System.out.println("");
-                        System.out.println("    Thank you for using Agna.");
-                        System.out.println("");
-                        System.out.println("    For any comment, question or");
-                        System.out.println("    suggestion please e-mail:");
-                        System.out.println("");
-                        System.out.println("    "
-                                + Environment.getApplicationEmail());
-                        System.out.println("");
-                        System.out
-                                .println("   ****************************************");
-                        System.exit(0);
-                        }
+                    frame.exitApplication();
                     };
             };
 

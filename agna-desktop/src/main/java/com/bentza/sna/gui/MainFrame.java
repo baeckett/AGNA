@@ -120,7 +120,9 @@ public class MainFrame //
     private JButton tool_save_network, tool_open_network, tool_new_from_chain,
             tool_new_network, tool_open_output, tool_clear_output,
             tool_save_output, tool_viewer, tool_transpose, tool_symmetrize,
-            tool_renumber_nodes, lowerleft_button, upleft_button;
+            tool_renumber_nodes, tool_normalize, tool_ego_network,
+            tool_advisor, tool_full_analysis, tool_sociometrics,
+            tool_centrality, tool_export_table, lowerleft_button, upleft_button;
 
     private static GrNet my_grafic;
 
@@ -349,7 +351,8 @@ public class MainFrame //
 
                 // exports analysis table
                 if (e.getSource() == o_export_table
-                        || e.getSource() == a_export_table)
+                        || e.getSource() == a_export_table
+                        || e.getSource() == tool_export_table)
                     {
                     if (output_edit != null)
                         {
@@ -400,7 +403,8 @@ public class MainFrame //
                     doSymmetrize();
                     }
 
-                if (e.getSource() == d_normalize)
+                if (e.getSource() == d_normalize
+                        || e.getSource() == tool_normalize)
                     {
                     doNormalize();
                     }
@@ -512,17 +516,20 @@ public class MainFrame //
                     doBavelas();
                     }
 
-                if (e.getSource() == a_full_analysis)
+                if (e.getSource() == a_full_analysis
+                        || e.getSource() == tool_full_analysis)
                     {
                     doFullAnalysis();
                     }
 
-                if (e.getSource() == a_sociometrics)
+                if (e.getSource() == a_sociometrics
+                        || e.getSource() == tool_sociometrics)
                     {
                     doSociometricsBattery();
                     }
 
-                if (e.getSource() == a_centrality)
+                if (e.getSource() == a_centrality
+                        || e.getSource() == tool_centrality)
                     {
                     doCentralityBattery();
                     }
@@ -612,7 +619,8 @@ public class MainFrame //
                     doSetDiagonal();
                     }
 
-                if (e.getSource() == d_ego_network)
+                if (e.getSource() == d_ego_network
+                        || e.getSource() == tool_ego_network)
                     {
                     doExtractEgo();
                     }
@@ -718,7 +726,8 @@ public class MainFrame //
                     doOpenSamples();
                     }
 
-                if (e.getSource() == a_advisor || e.getSource() == h_advisor)
+                if (e.getSource() == a_advisor || e.getSource() == h_advisor
+                        || e.getSource() == tool_advisor)
                     {
                     doAnalysisAdvisor();
                     }
@@ -1552,18 +1561,130 @@ public class MainFrame //
         h_dialog.showDialog();
         }
 
-    private void doQuit()
+    public void exitApplication()
         {
-        if (show_dialog() == 0)
+        if (confirmAndSaveBeforeQuit())
             {
-            my_frame.dispose();
+            if (my_frame != null)
+                {
+                my_frame.dispose();
+                }
             System.out.println("");
+            System.out.println("   ****************************************");
             System.out.println("    Thank you for using Agna.");
-            System.out
-                    .println("    For any comments, questions or suggestions please e-mail:");
+            System.out.println("    For any comments, questions or suggestions please e-mail:");
             System.out.println("    " + Environment.getApplicationEmail());
+            System.out.println("   ****************************************");
             System.exit(0);
             }
+        }
+
+    public boolean confirmAndSaveBeforeQuit()
+        {
+        if (my_grid != null && my_grid.isEditing())
+            {
+            stopEditingTable();
+            }
+
+        boolean hadUnsavedChanges = (my_full_net != null && my_full_net.getChanged())
+                || (output_edit != null && output_edit.getChanged());
+
+        // 1. Check network for unsaved changes
+        if (my_full_net != null && my_full_net.getChanged())
+            {
+            String netName = (my_full_net.getNetwork() != null
+                    && my_full_net.getNetwork().getName() != null
+                    && !my_full_net.getNetwork().getName().trim().isEmpty())
+                    ? my_full_net.getNetwork().getName()
+                    : "current network";
+            int choice = JOptionPane.showConfirmDialog(my_frame,
+                    "The current network (" + netName + ") has unsaved changes.\nDo you want to save them before exiting?",
+                    "Save Network?",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (choice == JOptionPane.CANCEL_OPTION || choice == JOptionPane.CLOSED_OPTION)
+                {
+                return false;
+                }
+            if (choice == JOptionPane.YES_OPTION)
+                {
+                if (my_full_net.getNetworkFileName() != null
+                        && !my_full_net.getNetworkFileName().trim().isEmpty())
+                    {
+                    if (checkAllValues())
+                        {
+                        updateNetwork();
+                        }
+                    else
+                        {
+                        JOptionPane.showMessageDialog(my_frame,
+                                "One or more bad values encountered in grid.\nFile may not have been saved properly!",
+                                "Error parsing value",
+                                JOptionPane.ERROR_MESSAGE);
+                        }
+                    saveNetwork(my_full_net, my_full_net.getNetworkFileName());
+                    }
+                else
+                    {
+                    doSaveNetwork(false);
+                    }
+                if (my_full_net.getChanged())
+                    {
+                    return false;
+                    }
+                }
+            }
+
+        // 2. Check output for unsaved changes
+        if (output_edit != null && output_edit.getChanged())
+            {
+            int choice = JOptionPane.showConfirmDialog(my_frame,
+                    "The current analysis output has unsaved changes.\nDo you want to save them before exiting?",
+                    "Save Output?",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (choice == JOptionPane.CANCEL_OPTION || choice == JOptionPane.CLOSED_OPTION)
+                {
+                return false;
+                }
+            if (choice == JOptionPane.YES_OPTION)
+                {
+                if (output_edit.getFileName() != null
+                        && !output_edit.getFileName().trim().isEmpty())
+                    {
+                    saveOutput(output_edit, output_edit.getFileName());
+                    }
+                else
+                    {
+                    doSaveOutput(false);
+                    }
+                if (output_edit.getChanged())
+                    {
+                    return false;
+                    }
+                }
+            }
+
+        // 3. If neither had unsaved changes, prompt standard "Quit Agna?" confirmation
+        if (!hadUnsavedChanges)
+            {
+            int confirm = JOptionPane.showConfirmDialog(my_frame,
+                    "Quit Agna?",
+                    "Exit Confirmation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION)
+                {
+                return false;
+                }
+            }
+
+        return true;
+        }
+
+    private void doQuit()
+        {
+        exitApplication();
         }
 
     private void doOpenSamples()
@@ -5132,6 +5253,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         ImageIcon i_new_from_chain = ModernIcons.get(
                 ModernIcons.NEW_FROM_CHAIN, 22);
         ImageIcon i_renumber_nodes = ModernIcons.get(ModernIcons.RENUMBER, 22);
+        ImageIcon i_normalize = ModernIcons.get(ModernIcons.NORMALIZE, 22);
+        ImageIcon i_ego_network = ModernIcons.get(ModernIcons.EGO_NETWORK, 22);
+        ImageIcon i_advisor = ModernIcons.get(ModernIcons.ADVISOR, 22);
+        ImageIcon i_full_analysis = ModernIcons.get(ModernIcons.FULL_ANALYSIS, 22);
+        ImageIcon i_sociometrics = ModernIcons.get(ModernIcons.SOCIOMETRICS, 22);
+        ImageIcon i_centrality = ModernIcons.get(ModernIcons.CENTRALITY, 22);
+        ImageIcon i_export_table = ModernIcons.get(ModernIcons.EXPORT_TABLE, 22);
 
         // 2.1.3: with the classic preference, the old GIFs take over the
         // rest state too (easy revert path)
@@ -5218,6 +5346,14 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                     true);
             }
 
+        ImageIcon ir_normalize = ModernIcons.get(ModernIcons.NORMALIZE, 22, true);
+        ImageIcon ir_ego_network = ModernIcons.get(ModernIcons.EGO_NETWORK, 22, true);
+        ImageIcon ir_advisor = ModernIcons.get(ModernIcons.ADVISOR, 22, true);
+        ImageIcon ir_full_analysis = ModernIcons.get(ModernIcons.FULL_ANALYSIS, 22, true);
+        ImageIcon ir_sociometrics = ModernIcons.get(ModernIcons.SOCIOMETRICS, 22, true);
+        ImageIcon ir_centrality = ModernIcons.get(ModernIcons.CENTRALITY, 22, true);
+        ImageIcon ir_export_table = ModernIcons.get(ModernIcons.EXPORT_TABLE, 22, true);
+
         tool_new_network = new JButton(i_new_network);
         tool_open_network = new JButton(i_open_network);
         tool_new_from_chain = new JButton(i_new_from_chain);
@@ -5229,6 +5365,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose = new JButton(i_transpose);
         tool_symmetrize = new JButton(i_symmetrize);
         tool_renumber_nodes = new JButton(i_renumber_nodes);
+        tool_normalize = new JButton(i_normalize);
+        tool_ego_network = new JButton(i_ego_network);
+        tool_advisor = new JButton(i_advisor);
+        tool_full_analysis = new JButton(i_full_analysis);
+        tool_sociometrics = new JButton(i_sociometrics);
+        tool_centrality = new JButton(i_centrality);
+        tool_export_table = new JButton(i_export_table);
 
         tool_new_network.setRolloverIcon(ir_new_network);
         tool_open_network.setRolloverIcon(ir_open_network);
@@ -5241,6 +5384,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose.setRolloverIcon(ir_transpose);
         tool_symmetrize.setRolloverIcon(ir_symmetrize);
         tool_renumber_nodes.setRolloverIcon(ir_renumber_nodes);
+        tool_normalize.setRolloverIcon(ir_normalize);
+        tool_ego_network.setRolloverIcon(ir_ego_network);
+        tool_advisor.setRolloverIcon(ir_advisor);
+        tool_full_analysis.setRolloverIcon(ir_full_analysis);
+        tool_sociometrics.setRolloverIcon(ir_sociometrics);
+        tool_centrality.setRolloverIcon(ir_centrality);
+        tool_export_table.setRolloverIcon(ir_export_table);
 
         tool_new_network.setBorder(null);
         tool_save_network.setBorder(null);
@@ -5253,6 +5403,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose.setBorder(null);
         tool_symmetrize.setBorder(null);
         tool_renumber_nodes.setBorder(null);
+        tool_normalize.setBorder(null);
+        tool_ego_network.setBorder(null);
+        tool_advisor.setBorder(null);
+        tool_full_analysis.setBorder(null);
+        tool_sociometrics.setBorder(null);
+        tool_centrality.setBorder(null);
+        tool_export_table.setBorder(null);
 
         tool_new_network.setPreferredSize(dim_tool);
         tool_save_network.setPreferredSize(dim_tool);
@@ -5265,6 +5422,14 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose.setPreferredSize(dim_tool);
         tool_symmetrize.setPreferredSize(dim_tool);
         tool_renumber_nodes.setPreferredSize(dim_tool);
+        tool_normalize.setPreferredSize(dim_tool);
+        tool_ego_network.setPreferredSize(dim_tool);
+        tool_advisor.setPreferredSize(dim_tool);
+        tool_full_analysis.setPreferredSize(dim_tool);
+        tool_sociometrics.setPreferredSize(dim_tool);
+        tool_centrality.setPreferredSize(dim_tool);
+        tool_export_table.setPreferredSize(dim_tool);
+
         tool_new_network.setMaximumSize(dim_tool);
         tool_save_network.setMaximumSize(dim_tool);
         tool_open_network.setMaximumSize(dim_tool);
@@ -5276,6 +5441,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose.setMaximumSize(dim_tool);
         tool_symmetrize.setMaximumSize(dim_tool);
         tool_renumber_nodes.setMaximumSize(dim_tool);
+        tool_normalize.setMaximumSize(dim_tool);
+        tool_ego_network.setMaximumSize(dim_tool);
+        tool_advisor.setMaximumSize(dim_tool);
+        tool_full_analysis.setMaximumSize(dim_tool);
+        tool_sociometrics.setMaximumSize(dim_tool);
+        tool_centrality.setMaximumSize(dim_tool);
+        tool_export_table.setMaximumSize(dim_tool);
 
         tool_new_network.addActionListener(act_menu);
         tool_save_network.addActionListener(act_menu);
@@ -5288,6 +5460,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose.addActionListener(act_menu);
         tool_symmetrize.addActionListener(act_menu);
         tool_renumber_nodes.addActionListener(act_menu);
+        tool_normalize.addActionListener(act_menu);
+        tool_ego_network.addActionListener(act_menu);
+        tool_advisor.addActionListener(act_menu);
+        tool_full_analysis.addActionListener(act_menu);
+        tool_sociometrics.addActionListener(act_menu);
+        tool_centrality.addActionListener(act_menu);
+        tool_export_table.addActionListener(act_menu);
 
         tool_new_network.setToolTipText("Create new network");
         tool_save_network.setToolTipText("Save current network");
@@ -5301,6 +5480,13 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tool_transpose.setToolTipText("Transpose current network");
         tool_symmetrize.setToolTipText("Symmetrize current network");
         tool_renumber_nodes.setToolTipText("Renumber nodes");
+        tool_normalize.setToolTipText("Normalize (binarize) current network");
+        tool_ego_network.setToolTipText("Extract ego network for a node");
+        tool_advisor.setToolTipText("Analysis Advisor");
+        tool_full_analysis.setToolTipText("Full network analysis");
+        tool_sociometrics.setToolTipText("Sociometric & basic structural metrics");
+        tool_centrality.setToolTipText("Centrality and prestige metrics");
+        tool_export_table.setToolTipText("Export analysis table (HTML, CSV, LaTeX, Markdown)");
 
         tools.add(tool_new_network);
         tools.add(tool_open_network);
@@ -5312,10 +5498,18 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tools.add(tool_renumber_nodes);
         tools.add(tool_transpose);
         tools.add(tool_symmetrize);
+        tools.add(tool_normalize);
+        tools.add(tool_ego_network);
+        tools.addSeparator();
+        tools.add(tool_advisor);
+        tools.add(tool_full_analysis);
+        tools.add(tool_sociometrics);
+        tools.add(tool_centrality);
         tools.addSeparator();
         tools.add(tool_open_output);
         tools.add(tool_clear_output);
         tools.add(tool_save_output);
+        tools.add(tool_export_table);
         JPanel tools_panel = new JPanel();
         tools_panel.setLayout(new BorderLayout());
         tools_panel.add(tools, BorderLayout.WEST);

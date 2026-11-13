@@ -77,8 +77,16 @@ public class ModernIcons
     public static final int COMMUNITY_LAYOUT = 42;
     public static final int LAYERED_DAG_LAYOUT = 43;
     public static final int LINEAR_LAYOUT = 44;
+    // MainFrame toolbar additions:
+    public static final int NORMALIZE = 45;
+    public static final int EGO_NETWORK = 46;
+    public static final int ADVISOR = 47;
+    public static final int FULL_ANALYSIS = 48;
+    public static final int SOCIOMETRICS = 49;
+    public static final int CENTRALITY = 50;
+    public static final int EXPORT_TABLE = 51;
 
-    public static final int KIND_COUNT = 45;
+    public static final int KIND_COUNT = 52;
 
     public static Color accent()
         {
@@ -832,6 +840,100 @@ public class ModernIcons
                 arrow.closePath();
                 g.setColor(line);
                 g.fill(arrow);
+                break;
+            case NORMALIZE:
+                // Binarize/threshold: a stylized [0, 1] bracketed matrix
+                g.setColor(line);
+                g.drawLine((int)(s * 0.22f), (int)(s * 0.22f), (int)(s * 0.16f), (int)(s * 0.22f));
+                g.drawLine((int)(s * 0.16f), (int)(s * 0.22f), (int)(s * 0.16f), (int)(s * 0.78f));
+                g.drawLine((int)(s * 0.16f), (int)(s * 0.78f), (int)(s * 0.22f), (int)(s * 0.78f));
+                g.drawLine((int)(s * 0.78f), (int)(s * 0.22f), (int)(s * 0.84f), (int)(s * 0.22f));
+                g.drawLine((int)(s * 0.84f), (int)(s * 0.22f), (int)(s * 0.84f), (int)(s * 0.78f));
+                g.drawLine((int)(s * 0.84f), (int)(s * 0.78f), (int)(s * 0.78f), (int)(s * 0.78f));
+                g.drawOval((int)(s * 0.26f), (int)(s * 0.32f), (int)(s * 0.20f), (int)(s * 0.36f));
+                g.setColor(accent);
+                g.drawLine((int)(s * 0.62f), (int)(s * 0.32f), (int)(s * 0.62f), (int)(s * 0.68f));
+                g.drawLine((int)(s * 0.54f), (int)(s * 0.40f), (int)(s * 0.62f), (int)(s * 0.32f));
+                break;
+            case EGO_NETWORK:
+                // Focal ego node in center with radial spokes to 4 alter nodes
+                float ecx = s * 0.5f;
+                float ecy = s * 0.5f;
+                float er = s * 0.30f;
+                g.setColor(line);
+                g.drawLine((int)ecx, (int)ecy, (int)(ecx - er), (int)(ecy - er * 0.7f));
+                g.drawLine((int)ecx, (int)ecy, (int)(ecx + er), (int)(ecy - er * 0.7f));
+                g.drawLine((int)ecx, (int)ecy, (int)(ecx - er * 0.8f), (int)(ecy + er * 0.8f));
+                g.drawLine((int)ecx, (int)ecy, (int)(ecx + er * 0.8f), (int)(ecy + er * 0.8f));
+                float ear = s * 0.08f;
+                g.fill(new Ellipse2D.Float(ecx - er - ear, ecy - er * 0.7f - ear, ear * 2, ear * 2));
+                g.fill(new Ellipse2D.Float(ecx + er - ear, ecy - er * 0.7f - ear, ear * 2, ear * 2));
+                g.fill(new Ellipse2D.Float(ecx - er * 0.8f - ear, ecy + er * 0.8f - ear, ear * 2, ear * 2));
+                g.fill(new Ellipse2D.Float(ecx + er * 0.8f - ear, ecy + er * 0.8f - ear, ear * 2, ear * 2));
+                g.setColor(accent);
+                float eer = s * 0.14f;
+                g.fill(new Ellipse2D.Float(ecx - eer, ecy - eer, eer * 2, eer * 2));
+                break;
+            case ADVISOR:
+                // Analysis Advisor: compass / navigation star
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.16f, s * 0.16f, s * 0.68f, s * 0.68f));
+                Path2D needleNorth = new Path2D.Float();
+                needleNorth.moveTo(s * 0.50f, s * 0.22f);
+                needleNorth.lineTo(s * 0.60f, s * 0.50f);
+                needleNorth.lineTo(s * 0.50f, s * 0.50f);
+                needleNorth.closePath();
+                g.setColor(accent);
+                g.fill(needleNorth);
+                Path2D needleSouth = new Path2D.Float();
+                needleSouth.moveTo(s * 0.50f, s * 0.78f);
+                needleSouth.lineTo(s * 0.40f, s * 0.50f);
+                needleSouth.lineTo(s * 0.50f, s * 0.50f);
+                needleSouth.closePath();
+                g.setColor(line);
+                g.fill(needleSouth);
+                break;
+            case FULL_ANALYSIS:
+                // Comprehensive analysis: stacked suite layers / battery
+                g.setColor(line);
+                g.drawRoundRect((int)(s * 0.20f), (int)(s * 0.18f), (int)(s * 0.60f), (int)(s * 0.18f), 3, 3);
+                g.drawRoundRect((int)(s * 0.20f), (int)(s * 0.41f), (int)(s * 0.60f), (int)(s * 0.18f), 3, 3);
+                g.setColor(accent);
+                g.fillRoundRect((int)(s * 0.20f), (int)(s * 0.64f), (int)(s * 0.60f), (int)(s * 0.18f), 3, 3);
+                break;
+            case SOCIOMETRICS:
+                // Sociometric battery: directed triad showing incoming & outgoing choices
+                g.setColor(line);
+                float n1x = s * 0.50f, n1y = s * 0.22f;
+                float n2x = s * 0.22f, n2y = s * 0.74f;
+                float n3x = s * 0.78f, n3y = s * 0.74f;
+                g.drawLine((int)n1x, (int)n1y, (int)n2x, (int)n2y);
+                g.drawLine((int)n2x, (int)n2y, (int)n3x, (int)n3y);
+                g.drawLine((int)n3x, (int)n3y, (int)n1x, (int)n1y);
+                float ssr = s * 0.08f;
+                g.fill(new Ellipse2D.Float(n2x - ssr, n2y - ssr, ssr * 2, ssr * 2));
+                g.fill(new Ellipse2D.Float(n3x - ssr, n3y - ssr, ssr * 2, ssr * 2));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(n1x - ssr, n1y - ssr, ssr * 2, ssr * 2));
+                break;
+            case CENTRALITY:
+                // Centrality: target / concentric rings with central star/hub
+                g.setColor(line);
+                g.draw(new Ellipse2D.Float(s * 0.15f, s * 0.15f, s * 0.70f, s * 0.70f));
+                g.draw(new Ellipse2D.Float(s * 0.28f, s * 0.28f, s * 0.44f, s * 0.44f));
+                g.setColor(accent);
+                g.fill(new Ellipse2D.Float(s * 0.41f, s * 0.41f, s * 0.18f, s * 0.18f));
+                break;
+            case EXPORT_TABLE:
+                // Tabular grid with export arrow pointing out
+                g.setColor(line);
+                g.drawRect((int)(s * 0.18f), (int)(s * 0.26f), (int)(s * 0.46f), (int)(s * 0.46f));
+                g.drawLine((int)(s * 0.18f), (int)(s * 0.49f), (int)(s * 0.64f), (int)(s * 0.49f));
+                g.drawLine((int)(s * 0.41f), (int)(s * 0.26f), (int)(s * 0.41f), (int)(s * 0.72f));
+                g.setColor(accent);
+                g.drawLine((int)(s * 0.50f), (int)(s * 0.44f), (int)(s * 0.82f), (int)(s * 0.16f));
+                g.drawLine((int)(s * 0.66f), (int)(s * 0.16f), (int)(s * 0.82f), (int)(s * 0.16f));
+                g.drawLine((int)(s * 0.82f), (int)(s * 0.16f), (int)(s * 0.82f), (int)(s * 0.32f));
                 break;
             default:
                 break;
