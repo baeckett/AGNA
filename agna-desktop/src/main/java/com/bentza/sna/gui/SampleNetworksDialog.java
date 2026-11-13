@@ -277,6 +277,17 @@ public class SampleNetworksDialog extends JDialog {
         File alt = new File(Environment.getDefaultOpenDirectory(), filename);
         if (alt.exists()) return alt;
 
+        // Fallback: extract from bundled classpath resources
+        try (java.io.InputStream in = SampleNetworksDialog.class.getResourceAsStream("/samples/" + filename)) {
+            if (in != null) {
+                File tmp = File.createTempFile("agna_sample_", "_" + filename);
+                tmp.deleteOnExit();
+                java.nio.file.Files.copy(in, tmp.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                return tmp;
+            }
+        } catch (Exception ignored) {
+        }
+
         return f;
     }
 }
