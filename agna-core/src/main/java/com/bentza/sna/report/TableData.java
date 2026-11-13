@@ -112,6 +112,27 @@ public final class TableData {
         return headers.size();
     }
 
+    /**
+     * Creates a new TableData instance copying metadata and headers but replacing rows
+     * with edited row values.
+     */
+    public TableData withEditedRows(List<List<Object>> newRows) {
+        if (newRows == null) {
+            return this;
+        }
+        Builder b = builder(title)
+                .id(id)
+                .subtitle(subtitle)
+                .network(networkName)
+                .columns(headers);
+        for (List<Object> row : newRows) {
+            if (row != null) {
+                b.addRow(row.toArray());
+            }
+        }
+        return b.build();
+    }
+
     public Object getValueAt(int row, int col) {
         if (row < 0 || row >= rows.size()) return "";
         List<Object> r = rows.get(row);
@@ -246,7 +267,11 @@ public final class TableData {
         }
         sb.append("</tr></table>\n");
 
-        sb.append("<table style='border-collapse:collapse; width:100%; max-width:750px; font-size:12px; border:1px solid #d0d7de;'>\n");
+        sb.append("<table ");
+        if (id != null && !id.isEmpty()) {
+            sb.append("id='tbl-").append(id).append("' ");
+        }
+        sb.append("style='border-collapse:collapse; width:100%; max-width:750px; font-size:12px; border:1px solid #d0d7de;'>\n");
         sb.append("<thead><tr style='background:#f0f4f8; color:#1f2328;'>\n");
         for (int i = 0; i < headers.size(); i++) {
             boolean num = isNumericColumn(i);
@@ -353,6 +378,13 @@ public final class TableData {
     }
 
     public TableModel toTableModel() {
+        final Object[][] cellData = new Object[rows.size()][headers.size()];
+        for (int r = 0; r < rows.size(); r++) {
+            List<Object> row = rows.get(r);
+            for (int c = 0; c < headers.size(); c++) {
+                cellData[r][c] = (c < row.size()) ? row.get(c) : "";
+            }
+        }
         return new AbstractTableModel() {
             @Override
             public int getRowCount() {
@@ -371,7 +403,18 @@ public final class TableData {
 
             @Override
             public Object getValueAt(int rowIndex, int columnIndex) {
-                return TableData.this.getValueAt(rowIndex, columnIndex);
+                return cellData[rowIndex][columnIndex];
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+                cellData[rowIndex][columnIndex] = aValue;
+                fireTableCellUpdated(rowIndex, columnIndex);
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return true;
             }
 
             @Override

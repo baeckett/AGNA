@@ -59,7 +59,7 @@ public class NetworkWorkflowStressTest
                 { "10 circle.agn", "agn" }, { "10 star.agn", "agn" },
                 { "example1.agn", "agn" }, { "example2.agn", "agn" },
                 { "example3.agn", "agn" }, { "example4.agn", "agn" },
-                { "random200.agn", "agn" }, { "Sociologists.agn", "agn" },
+                { "random200.agn", "agn" },
                 { "Chain1.txt", "txt" }, { "Chain2.txt", "txt" } };
         for (String[] s : samples)
             {

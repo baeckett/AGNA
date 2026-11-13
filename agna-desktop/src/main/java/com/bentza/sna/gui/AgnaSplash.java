@@ -7,14 +7,19 @@ package com.bentza.sna.gui;
 
 import com.bentza.sna.AgnaLog;
 import com.bentza.sna.Environment;
+import java.awt.AWTEvent;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -31,6 +36,51 @@ import javax.swing.SwingUtilities;
 public class AgnaSplash extends JWindow
     {
     final int waitTime = 4000;
+    private final AtomicBoolean dismissed = new AtomicBoolean(false);
+    private AWTEventListener globalMouseListener;
+
+    public void dismiss()
+        {
+        if (dismissed.compareAndSet(false, true))
+            {
+            SwingUtilities.invokeLater(() ->
+                {
+                try
+                    {
+                    if (globalMouseListener != null)
+                        {
+                        Toolkit.getDefaultToolkit().removeAWTEventListener(globalMouseListener);
+                        globalMouseListener = null;
+                        }
+                    } catch (Exception ignored)
+                    {
+                    }
+                setVisible(false);
+                dispose();
+                });
+            }
+        }
+
+    private void attachMouseDismissRecursively(Component comp)
+        {
+        if (comp == null)
+            return;
+        comp.addMouseListener(new MouseAdapter()
+            {
+                @Override
+                public void mousePressed(MouseEvent e)
+                    {
+                    dismiss();
+                    }
+            });
+        if (comp instanceof Container)
+            {
+            for (Component child : ((Container) comp).getComponents())
+                {
+                attachMouseDismissRecursively(child);
+                }
+            }
+        }
 
     public AgnaSplash(Frame f)
         {
@@ -105,38 +155,45 @@ public class AgnaSplash extends JWindow
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation(screenSize.width / 2 - (labelSize.width / 2),
                 screenSize.height / 2 - (labelSize.height / 2));
-        addMouseListener(new MouseAdapter()
+
+        // Dismiss on direct click on splash window or any of its child panels/labels
+        attachMouseDismissRecursively(this);
+        attachMouseDismissRecursively(main_pane);
+
+        // Global AWT listener: dismiss splash if user clicks anywhere in the app
+        try
             {
-                public void mousePressed(MouseEvent e)
+            globalMouseListener = event ->
+                {
+                if (event.getID() == MouseEvent.MOUSE_PRESSED)
                     {
-                    setVisible(false);
-                    dispose();
+                    dismiss();
                     }
-            });
+                };
+            Toolkit.getDefaultToolkit().addAWTEventListener(globalMouseListener, AWTEvent.MOUSE_EVENT_MASK);
+            } catch (Exception e)
+            {
+            AgnaLog.warn("Could not register global mouse listener on splash: " + e);
+            }
+
         final int pause = waitTime;
-        final Runnable closerRunner = new Runnable()
+        Runnable waitRunner = () ->
             {
-                public void run()
-                    {
-                    setVisible(false);
-                    dispose();
-                    }
-            };
-        Runnable waitRunner = new Runnable()
-            {
-                public void run()
-                    {
-                    try
-                        {
-                        Thread.sleep(pause);
-                        SwingUtilities.invokeAndWait(closerRunner);
-                        } catch (Exception e) {
-      AgnaLog.warn("suppressed exception", e);
-      }
-                    }
+            try
+                {
+                Thread.sleep(pause);
+                } catch (InterruptedException ignored)
+                {
+                Thread.currentThread().interrupt();
+                } catch (Exception e)
+                {
+                AgnaLog.warn("suppressed exception", e);
+                }
+            dismiss();
             };
         setVisible(true);
         Thread splashThread = new Thread(waitRunner, "SplashThread");
+        splashThread.setDaemon(true);
         splashThread.start();
         }
     }

@@ -3541,7 +3541,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         e_background_width = new JMenuItem("Width...");
         e_scale_background = new JMenuItem("Scale Picture...");
         e_fit_background_to_image = new JMenuItem("Fit To Area");
-        e_background_height = new JMenuItem("Height");
+        e_background_height = new JMenuItem("Height...");
         e_no_background_image = new JMenuItem("No Background Picture");
         e_allow_ES = new JMenuItem("Allow Edge Selection");
         e_disallow_ES = new JMenuItem("Disallow Edge Selection");
@@ -4043,7 +4043,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gHelp.add(h_about);
 
         // Submeniuri din DATA:
-        d_add_node = new JMenuItem("Add Nodes");
+        d_add_node = new JMenuItem("Add Nodes...");
         d_clone_node = new JMenuItem("Clone Node");
         d_isolate_node = new JMenuItem("Isolate Node");
         d_delete_node = new JMenuItem("Delete Node");

@@ -122,18 +122,6 @@ public class SampleNetworksDialog extends JDialog {
         ));
 
         studies.add(new SampleCaseStudy(
-                "Fathers of Sociology",
-                "Theoretical Foundations",
-                "Sociologists.agn",
-                "Bența, M. I. (2001-2026). AGNA Classic Sample Network.",
-                "A clean 3-actor network linking classical sociological thinkers (Max Weber, Émile Durkheim, and Karl Marx) with mutual and asymmetric theoretical dialogues. Perfect for beginners testing triad closure and sociometric status formulas.",
-                "<ul>" +
-                "<li><b>Triad Census:</b> Run <i>Analysis ▸ Triad & Dyad Census</i> to examine complete triadic closure (Configuration 300).</li>" +
-                "<li><b>Status & Determination:</b> Test Agna's proprietary Sociometric Status and Determination degree formulas.</li>" +
-                "</ul>"
-        ));
-
-        studies.add(new SampleCaseStudy(
                 "10-Node Star Network",
                 "Theoretical Maximizer of Centralization",
                 "10 star.agn",

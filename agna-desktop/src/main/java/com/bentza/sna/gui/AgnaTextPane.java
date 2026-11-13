@@ -9,14 +9,19 @@ import com.bentza.sna.AgnaLog;
 import com.bentza.sna.io.IOUtils;
 import com.bentza.sna.Environment;
 import com.bentza.sna.net.AgnaLib;
+import com.bentza.sna.report.TableData;
+import com.bentza.sna.report.TableRegistry;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
@@ -578,7 +583,121 @@ public class AgnaTextPane extends JTextPane
             }
         }
 
-    
+    /**
+     * Extracts live/edited table cells from the rendered HTML document for the given TableData.
+     * If the user manually edited numbers or text in the output text pane, this parses those
+     * updated cell values into a refreshed TableData instance and updates TableRegistry.
+     */
+    public TableData syncTableFromDocument(TableData td)
+        {
+        if (td == null || td.getId() == null)
+            return td;
+        Document rawDoc = getDocument();
+        if (!(rawDoc instanceof HTMLDocument))
+            return td;
+        HTMLDocument doc = (HTMLDocument) rawDoc;
+        Element tableElem = doc.getElement("tbl-" + td.getId());
+        if (tableElem == null)
+            return td;
+
+        List<Element> trList = new ArrayList<>();
+        findRowElements(tableElem, trList);
+        if (trList.isEmpty())
+            return td;
+
+        List<List<Object>> liveRows = new ArrayList<>();
+        for (Element tr : trList)
+            {
+            List<Element> cells = new ArrayList<>();
+            findCellElements(tr, cells);
+            if (cells.isEmpty())
+                continue;
+
+            // Check if this row is a header row (all <th> or matches header strings)
+            boolean isHeader = false;
+            if ("th".equalsIgnoreCase(cells.get(0).getName()))
+                {
+                isHeader = true;
+                }
+            if (isHeader)
+                continue;
+
+            List<Object> rowVals = new ArrayList<>();
+            for (int col = 0; col < cells.size(); col++)
+                {
+                Element cell = cells.get(col);
+                int start = cell.getStartOffset();
+                int end = cell.getEndOffset();
+                String txt = "";
+                try
+                    {
+                    txt = doc.getText(start, Math.max(0, end - start)).trim();
+                    } catch (BadLocationException ignored)
+                    {
+                    }
+                // Try to parse numeric if column is numeric
+                boolean isNumCol = td.isNumericColumn(col);
+                if (isNumCol)
+                    {
+                    try
+                        {
+                        double d = Double.parseDouble(txt.replaceAll("[^0-9.-]", ""));
+                        rowVals.add(d);
+                        } catch (Exception ex)
+                        {
+                        rowVals.add(txt);
+                        }
+                    } else
+                    {
+                    rowVals.add(txt);
+                    }
+                }
+            if (!rowVals.isEmpty())
+                {
+                liveRows.add(rowVals);
+                }
+            }
+
+        if (liveRows.size() == td.getRowCount())
+            {
+            TableData updated = td.withEditedRows(liveRows);
+            TableRegistry.register(updated);
+            return updated;
+            }
+        return td;
+        }
+
+    private void findRowElements(Element elem, List<Element> rowsList)
+        {
+        if (elem == null)
+            return;
+        String name = elem.getName();
+        if ("tr".equalsIgnoreCase(name))
+            {
+            rowsList.add(elem);
+            return;
+            }
+        for (int i = 0; i < elem.getElementCount(); i++)
+            {
+            findRowElements(elem.getElement(i), rowsList);
+            }
+        }
+
+    private void findCellElements(Element elem, List<Element> cellsList)
+        {
+        if (elem == null)
+            return;
+        String name = elem.getName();
+        if ("td".equalsIgnoreCase(name) || "th".equalsIgnoreCase(name))
+            {
+            cellsList.add(elem);
+            return;
+            }
+        for (int i = 0; i < elem.getElementCount(); i++)
+            {
+            findCellElements(elem.getElement(i), cellsList);
+            }
+        }
 
     // End of class
     }

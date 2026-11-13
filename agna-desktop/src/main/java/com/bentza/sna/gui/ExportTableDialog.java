@@ -229,8 +229,31 @@ public class ExportTableDialog extends JDialog {
         return "csv";
     }
 
-    private void copyToClipboard() {
+    private TableData getTableToExport() {
         TableData td = getSelectedTable();
+        if (td == null) return null;
+        if (previewTable != null && previewTable.isEditing()) {
+            if (previewTable.getCellEditor() != null) {
+                previewTable.getCellEditor().stopCellEditing();
+            }
+        }
+        javax.swing.table.TableModel model = (previewTable != null) ? previewTable.getModel() : null;
+        if (model != null && model.getRowCount() == td.getRowCount() && model.getColumnCount() == td.getColumnCount()) {
+            java.util.List<java.util.List<Object>> liveRows = new java.util.ArrayList<>();
+            for (int r = 0; r < model.getRowCount(); r++) {
+                java.util.List<Object> row = new java.util.ArrayList<>();
+                for (int c = 0; c < model.getColumnCount(); c++) {
+                    row.add(model.getValueAt(r, c));
+                }
+                liveRows.add(row);
+            }
+            return td.withEditedRows(liveRows);
+        }
+        return td;
+    }
+
+    private void copyToClipboard() {
+        TableData td = getTableToExport();
         if (td == null) return;
         try {
             String text = getFormattedContent(td);
@@ -246,7 +269,7 @@ public class ExportTableDialog extends JDialog {
     }
 
     private void saveToFile() {
-        TableData td = getSelectedTable();
+        TableData td = getTableToExport();
         if (td == null) return;
 
         String ext = getSelectedExtension();

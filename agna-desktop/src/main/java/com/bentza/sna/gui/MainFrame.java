@@ -351,6 +351,13 @@ public class MainFrame //
                 if (e.getSource() == o_export_table
                         || e.getSource() == a_export_table)
                     {
+                    if (output_edit != null)
+                        {
+                        for (com.bentza.sna.report.TableData td : com.bentza.sna.report.TableRegistry.getRecentTables())
+                            {
+                            output_edit.syncTableFromDocument(td);
+                            }
+                        }
                     ExportTableDialog.showDialog(my_frame, null);
                     }
 
@@ -992,35 +999,71 @@ public class MainFrame //
                 + "' -> using '" + file.getAbsolutePath() + "'");
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        // 2.1.3: the Save As name is shown WITHOUT an extension; the chosen
-        // format (dialog or remembered setting) appends it afterwards, so
-        // the user never fights a stale extension in the name field
         String stripped_name = IOUtils.getNameWithoutExtension(file.getName());
         if (stripped_name == null || stripped_name.length() == 0)
             {
             stripped_name = "network";
             }
-        java.io.File selection = new File(chooser_dir, stripped_name);
+        final String defaultBaseName = stripped_name;
+        java.io.File selection = new File(chooser_dir, defaultBaseName + ".agn");
         chooser.setCurrentDirectory(chooser_dir);
         chooser.setSelectedFile(selection);
         chooser.setMultiSelectionEnabled(false);
         chooser.setApproveButtonToolTipText("Type file name and click here");
 
         chooser.setDialogTitle("Save Network As...");
-        // 2.1.3: the format filters stay available in the chooser (Files of
-        // Type); the definitive format + Pajek vectors are picked in the
-        // options dialog shown after the name, which also guarantees the
-        // extension on every platform
+        // Default to Agna AGN format and allow switching to other formats
+        AgnaFilesFilter agnaFilter = new AgnaFilesFilter();
         chooser.setAcceptAllFileFilterUsed(true);
-        chooser.addChoosableFileFilter(new TabTextFilesFilter());
+        chooser.addChoosableFileFilter(agnaFilter);
         chooser.addChoosableFileFilter(new PajekFilesFilter());
         chooser.addChoosableFileFilter(new CommaTextFilesFilter());
+        chooser.addChoosableFileFilter(new TabTextFilesFilter());
         chooser.addChoosableFileFilter(new ExcelFilesFilter());
         chooser.addChoosableFileFilter(new GraphMLFilesFilter());
         chooser.addChoosableFileFilter(new GMLFilesFilter());
         chooser.addChoosableFileFilter(new GraphSONFilesFilter());
         chooser.addChoosableFileFilter(new DLFilesFilter());
-        chooser.addChoosableFileFilter(new AgnaFilesFilter());
+        chooser.setFileFilter(agnaFilter);
+
+        // Dynamically update file extension in the name field when format filter changes
+        chooser.addPropertyChangeListener(JFileChooser.FILE_FILTER_CHANGED_PROPERTY, evt ->
+            {
+            javax.swing.filechooser.FileFilter newFf = (javax.swing.filechooser.FileFilter) evt.getNewValue();
+            if (newFf == null)
+                return;
+            String newExt = null;
+            if (newFf instanceof AgnaFilesFilter)
+                newExt = "agn";
+            else if (newFf instanceof PajekFilesFilter)
+                newExt = "net";
+            else if (newFf instanceof CommaTextFilesFilter)
+                newExt = "csv";
+            else if (newFf instanceof TabTextFilesFilter)
+                newExt = "txt";
+            else if (newFf instanceof ExcelFilesFilter)
+                newExt = "xlsx";
+            else if (newFf instanceof GraphMLFilesFilter)
+                newExt = "graphml";
+            else if (newFf instanceof GMLFilesFilter)
+                newExt = "gml";
+            else if (newFf instanceof GraphSONFilesFilter)
+                newExt = "graphson";
+            else if (newFf instanceof DLFilesFilter)
+                newExt = "dl";
+
+            if (newExt != null)
+                {
+                File cur = chooser.getSelectedFile();
+                String base = (cur != null && cur.getName() != null && !cur.getName().isEmpty())
+                        ? IOUtils.getNameWithoutExtension(cur.getName()) : defaultBaseName;
+                if (base == null || base.isEmpty())
+                    base = "network";
+                File parent = (cur != null && cur.getParentFile() != null)
+                        ? cur.getParentFile() : chooser.getCurrentDirectory();
+                chooser.setSelectedFile(new File(parent, base + "." + newExt));
+                }
+            });
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             {
             grid_model.setReady(true);
@@ -1807,6 +1850,24 @@ public class MainFrame //
                 } catch (SecurityException e10)
                 {
                 }
+
+        final String defaultOutBase = defaultName;
+        chooser.addPropertyChangeListener(JFileChooser.FILE_FILTER_CHANGED_PROPERTY, evt ->
+            {
+            javax.swing.filechooser.FileFilter newFf = (javax.swing.filechooser.FileFilter) evt.getNewValue();
+            if (newFf == null)
+                return;
+            String newExt = (newFf instanceof HTMLFilesFilter) ? "html" : "txt";
+            File cur = chooser.getSelectedFile();
+            String base = (cur != null && cur.getName() != null && !cur.getName().isEmpty())
+                    ? IOUtils.getNameWithoutExtension(cur.getName())
+                    : IOUtils.getNameWithoutExtension(defaultOutBase);
+            if (base == null || base.isEmpty())
+                base = "output";
+            File parent = (cur != null && cur.getParentFile() != null)
+                    ? cur.getParentFile() : chooser.getCurrentDirectory();
+            chooser.setSelectedFile(new File(parent, base + "." + newExt));
+            });
 
         if (chooser.showSaveDialog(my_frame) != JFileChooser.APPROVE_OPTION)
             return;
@@ -4350,6 +4411,9 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                     String tableId = desc.substring("export:".length());
                     com.bentza.sna.report.TableData td = com.bentza.sna.report.TableRegistry.get(tableId);
                     if (td != null) {
+                        if (output_edit != null) {
+                            td = output_edit.syncTableFromDocument(td);
+                        }
                         ExportTableDialog.showDialog(my_frame, td);
                     }
                 }
@@ -4507,8 +4571,8 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mHelp.setToolTipText("Help manual, SNA glossary cheat-sheet, and guided case studies");
 
         // submeniuri din FILE:
-        f_new = new JMenuItem("New Network");
-        f_open = new JMenuItem("Open Network");
+        f_new = new JMenuItem("New Network...");
+        f_open = new JMenuItem("Open Network...");
         f_samples = new JMenuItem("Open Sample Network & Case Study...");
         d_merge = new JMenuItem("Merge Network...");
         // 2.1.3: Merge Network lives in the File menu, after Open
@@ -4610,7 +4674,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         d_symmetrize = new JMenuItem("Symmetrize...");
         d_normalize = new JMenuItem("Normalize (Binarize)...");
         d_remove_out = new JMenuItem("Remove Outsiders");
-        d_renumber_nodes = new JMenuItem("Renumber Nodes...");
+        d_renumber_nodes = new JMenuItem("Renumber Nodes");
         d_multiply_network = new JMenuItem("Square Matrix");
         d_dichotomize = new JMenuItem("Dichotomize / Threshold Ties...");
         d_zero_diagonal = new JMenuItem("Zero Diagonal (Remove Self-Loops)");
@@ -4703,7 +4767,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mData.add(d_dichotomize);
         mData.addSeparator();
         mData.add(d_zero_diagonal);
-        mData.add(d_set_diagonal);
         mData.addSeparator();
         mData.add(d_ego_network);
         mData.add(d_network_algebra);
@@ -4729,7 +4792,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_geodesics = new JMenuItem("Geodesic Matrix");
         a_shortest_paths = new JMenuItem("Shortest Paths...");
         a_all_shortest_paths = new JMenuItem("All Shortest Paths");
-        a_cliques = new JMenuItem("N-Cliques");
+        a_cliques = new JMenuItem("N-Cliques...");
         a_centrality = new JMenuItem("Centrality & Prestige...");
         a_bavelas = new JMenuItem("Bavelas-Leavitt");
         a_closeness = new JMenuItem("Closeness");
@@ -4738,16 +4801,16 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_prestige = new JMenuItem("Prestige");
         a_full_analysis = new JMenuItem("Full Analysis...");
         a_clustering = new JMenuItem("Clustering & Cohesion...");
-        a_local_clustering = new JMenuItem("Local Clustering (Watts-Strogatz)...");
-        a_transitivity = new JMenuItem("Global Transitivity (Triads)...");
-        a_kcore = new JMenuItem("k-Core Decomposition...");
-        a_triad_census = new JMenuItem("Triad & Dyad Census (Holland-Leinhardt)...");
-        a_structural_holes = new JMenuItem("Social Capital & Structural Holes (Burt)...");
-        a_connectivity = new JMenuItem("Connectivity & Articulation Points...");
-        a_eigenvector = new JMenuItem("Eigenvector Centrality (Bonacich)...");
+        a_local_clustering = new JMenuItem("Local Clustering (Watts-Strogatz)");
+        a_transitivity = new JMenuItem("Global Transitivity (Triads)");
+        a_kcore = new JMenuItem("k-Core Decomposition");
+        a_triad_census = new JMenuItem("Triad & Dyad Census (Holland-Leinhardt)");
+        a_structural_holes = new JMenuItem("Social Capital & Structural Holes (Burt)");
+        a_connectivity = new JMenuItem("Connectivity & Articulation Points");
+        a_eigenvector = new JMenuItem("Eigenvector Centrality (Bonacich)");
         a_bonacich = new JMenuItem("Bonacich Power Centrality c(alpha, beta)...");
         a_pagerank = new JMenuItem("PageRank Centrality...");
-        a_archetypes = new JMenuItem("Structural Archetypes Diagnostic...");
+        a_archetypes = new JMenuItem("Structural Archetypes Diagnostic");
         a_hypothesis_testing = new JMenuItem("Hypothesis Testing (Null Models)...");
         a_benchmarks = new JMenuItem("Algorithm Benchmarks (Centrality, Clustering, Paths)...");
         a_export_table = new JMenuItem("Export Analysis Table...");
@@ -4943,7 +5006,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mView.add(v_close);
 
         // submeniuri din OUTPUT: -- am renuntat la el; trecute in FILE
-        o_open = new JMenuItem("Open Output File");
+        o_open = new JMenuItem("Open Output File...");
         o_save = new JMenuItem("Save Output As...");
         o_simply_save = new JMenuItem("Save Output");
         o_clear = new JMenuItem("Clear Output");
@@ -5253,9 +5316,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         tools.add(tool_open_output);
         tools.add(tool_clear_output);
         tools.add(tool_save_output);
-        JComboBox font_family_combo = makeFontFamilyCombo(output_edit);
-        if (font_family_combo != null)
-            tools.add(font_family_combo);
         JPanel tools_panel = new JPanel();
         tools_panel.setLayout(new BorderLayout());
         tools_panel.add(tools, BorderLayout.WEST);
