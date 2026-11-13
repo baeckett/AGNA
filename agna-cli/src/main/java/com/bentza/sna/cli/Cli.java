@@ -81,6 +81,15 @@ public final class Cli
                 + "  explain [METRIC] [--list] [--format text|json] [--json] [--out FILE]\n"
                 + "                                  SNA definitions, formulas, usage guidelines,\n"
                 + "                                  and cautious sociological interpretations\n"
+                + "  advise FILE [--format text|json] [--json] [--out FILE]\n"
+                + "                                  intelligent topology-driven recommendations for\n"
+                + "                                  analyses, layouts, and hypothesis models\n"
+                + "  narrative FILE [--format text|json] [--json] [--out FILE]\n"
+                + "                                  automated natural-language structural narrative\n"
+                + "                                  interpretation of density, hierarchy, and reciprocity\n"
+                + "  capabilities [--format text|json] [--json] [--out FILE]\n"
+                + "                                  self-describing manifest of all supported formats,\n"
+                + "                                  algorithms, layouts, and commands\n"
                 + "  analyse FILE [--all|NAME...|cliques:N] [--out FILE]\n"
                 + "                                  run analyses (basic, "
                 + "density, cohesion, nodal, indegree, outdegree,\n"
@@ -300,6 +309,18 @@ public final class Cli
         if ("explain".equals(cmd))
             {
             return explain(args);
+            }
+        if ("advise".equals(cmd))
+            {
+            return advise(args);
+            }
+        if ("narrative".equals(cmd))
+            {
+            return narrative(args);
+            }
+        if ("capabilities".equals(cmd) || "schema".equals(cmd))
+            {
+            return capabilities(args);
             }
         if ("analyse".equals(cmd))
             {
@@ -629,6 +650,127 @@ public final class Cli
             } else
             {
             out.print(outputText);
+            }
+        return 0;
+        }
+
+    private int advise(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        String format = "text";
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
+                } else if (file == null)
+                {
+                file = a;
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna advise FILE [--format text|json] [--json] [--out FILE]");
+            return 1;
+            }
+        Network net = open(file).getNetwork();
+        AgnaLib lib = new AgnaLib();
+        com.bentza.sna.advisor.NetworkAdvisor.AdviceReport report =
+                com.bentza.sna.advisor.NetworkAdvisor.advise(net, lib);
+        String text = "json".equals(format) ? (report.toJson() + "\n") : report.toPlainText();
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), text.getBytes(StandardCharsets.UTF_8));
+            out.println("wrote advice to " + outFile);
+            } else
+            {
+            out.print(text);
+            }
+        return 0;
+        }
+
+    private int narrative(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        String format = "text";
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
+                } else if (file == null)
+                {
+                file = a;
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna narrative FILE [--format text|json] [--json] [--out FILE]");
+            return 1;
+            }
+        Network net = open(file).getNetwork();
+        AgnaLib lib = new AgnaLib();
+        String text;
+        if ("json".equals(format))
+            {
+            text = com.bentza.sna.report.NarrativeSummaryGenerator.generateJsonSummary(net, lib) + "\n";
+            } else
+            {
+            text = com.bentza.sna.report.NarrativeSummaryGenerator.generateMarkdownSummary(net, lib);
+            }
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), text.getBytes(StandardCharsets.UTF_8));
+            out.println("wrote narrative to " + outFile);
+            } else
+            {
+            out.print(text);
+            }
+        return 0;
+        }
+
+    private int capabilities(String[] args) throws Exception
+        {
+        String outFile = null;
+        String format = "text";
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
+                }
+            }
+        String text = "json".equals(format) ? (CliCapabilities.toJson() + "\n") : CliCapabilities.toPlainText();
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), text.getBytes(StandardCharsets.UTF_8));
+            out.println("wrote capabilities to " + outFile);
+            } else
+            {
+            out.print(text);
             }
         return 0;
         }

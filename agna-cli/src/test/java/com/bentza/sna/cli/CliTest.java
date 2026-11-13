@@ -1057,4 +1057,35 @@ public class CliTest
         assertTrue(text.contains("\"min\":"), text);
         assertTrue(text.contains("\"max\":"), text);
         }
+
+    @Test
+    public void adviseRecommendsAnalysesAndLayouts() throws Exception
+        {
+        String text = run("advise", "samples/example2.agn", "--json");
+        assertTrue(text.contains("\"recommendedAnalyses\""), text);
+        assertTrue(text.contains("\"recommendedLayouts\""), text);
+        assertTrue(text.contains("\"recommendedNullModels\""), text);
+        }
+
+    @Test
+    public void narrativeProducesMarkdownAndJson() throws Exception
+        {
+        String md = run("narrative", "samples/example2.agn");
+        assertTrue(md.contains("# Structural Narrative Summary"), md);
+        assertTrue(md.contains("## 1. Scale & Density"), md);
+
+        String json = run("narrative", "samples/example2.agn", "--json");
+        assertTrue(json.contains("\"scaleAndDensity\""), json);
+        assertTrue(json.contains("\"centralization\""), json);
+        }
+
+    @Test
+    public void capabilitiesListsSupportedFeatures() throws Exception
+        {
+        String json = run("capabilities", "--json");
+        assertTrue(json.contains("\"formats\""), json);
+        assertTrue(json.contains("\"commands\""), json);
+        assertTrue(json.contains("\"layouts\""), json);
+        assertTrue(json.contains("\"nullModels\""), json);
+        }
     }

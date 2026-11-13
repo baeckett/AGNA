@@ -188,7 +188,57 @@ Returns small-world coefficient ($\sigma$), power-law degree exponent ($\gamma$)
 
 ---
 
-### 7. Monte Carlo Hypothesis Testing (`agna test-null`)
+### 7. Topology-Driven Advisory (`agna advise`)
+Let Agna inspect the graph topology and recommend the most methodologically sound metrics, visual layouts, and null models:
+```bash
+agna advise data/network.agn --json
+```
+
+**Expected JSON Response:**
+```json
+{
+  "network" : "Corporate Advice",
+  "nodes" : 15,
+  "edges" : 42,
+  "density" : 0.200,
+  "directed" : true,
+  "connected" : true,
+  "components" : 1,
+  "isolates" : 0,
+  "summary" : "Small directed, moderately connected network (15 nodes, 42 edges)...",
+  "recommendedAnalyses" : [
+    { "id": "betweenness", "name": "Betweenness Centrality", "priority": "HIGH", "rationale": "Connected graph: identifies information brokers and bottlenecks." },
+    { "id": "triad_census", "name": "Triad Census (MAN 16)", "priority": "HIGH", "rationale": "Directional ties: uncovers micro-structural hierarchies and transitivities." }
+  ],
+  "recommendedLayouts" : [
+    { "layout": "concentric", "rationale": "Places primary hubs at center with peripheral actors on outer rings." },
+    { "layout": "spring", "rationale": "Force-directed visualization for general structural exploration." }
+  ],
+  "recommendedNullModels" : [
+    { "model": "degree-preserving", "rationale": "Tests whether clustering is genuine or an artifact of degree sequence." }
+  ]
+}
+```
+
+---
+
+### 8. Structural Narrative Synthesis (`agna narrative`)
+Generate a pre-synthesized, academically cautious plain-English or Markdown narrative of the network's density, centralization, closure, and reciprocity:
+```bash
+agna narrative data/network.agn --json
+```
+
+---
+
+### 9. Feature Introspection (`agna capabilities`)
+Allow the agent to dynamically inspect supported graph formats, commands, and layout models:
+```bash
+agna capabilities --json
+```
+
+---
+
+### 10. Monte Carlo Hypothesis Testing (`agna test-null`)
 Test whether observed transitivity or reciprocity deviates from random expectation:
 ```bash
 agna test-null data/network.agn --metric transitivity --model degree-preserving -r 500 --format json

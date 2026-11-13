@@ -21,6 +21,9 @@ Command summary:
 | `info FILE [--format text\|json] [--json]` | network summary (name, size, edges, connectivity, outsiders) |
 | `validate FILE [--format text\|json] [--json]` | pre-flight data validation, format integrity, isolates, components, self-loops |
 | `explain [METRIC] [--list] [--format text\|json] [--json]` | SNA definitions, formulas, usage guidelines, and cautious interpretations |
+| `advise FILE [--format text\|json] [--json]` | topology-driven analysis, layout, and null-model recommendations |
+| `narrative FILE [--format text\|json] [--json]` | automated plain-English / Markdown structural narrative synthesis |
+| `capabilities [--format text\|json] [--json]` | self-describing manifest of all supported formats, algorithms, and commands |
 | `analyse FILE [--all\|NAME...\|cliques:N] [--out FILE]` | the full analysis battery |
 | `convert IN OUT [--in-format F] [--out-format F]` | format conversion |
 | `transform IN OUT --op OP` | network operations (see below) |
