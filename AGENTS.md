@@ -34,6 +34,7 @@ java -jar agna-cli-2.1.7.jar <command> [options]
 ```
 
 ### Why AI Agents Prefer the Native Binary
+* **Zero Installation / Single-File Executable:** It is a single, self-contained binary (`agna` or `agna.exe`). Does not require running an installer, setup wizard, or environment configuration—just download or point to the file and execute it.
 * **Instant Startup:** ~7 ms execution latency (versus ~500 ms JVM JIT startup). Subagent pipelines, tool dispatchers, and automated scripts experience zero perceived lag.
 * **Low Memory Footprint:** Drops from ~120 MB JVM heap requirement down to ~15 MB RSS.
 * **Zero System Dependencies:** Can be packaged into minimal scratch containers, CI runners, or user environments without requiring a pre-installed JDK/JRE.

@@ -11,6 +11,11 @@ Agna CLI is distributed in two distribution formats:
 
 ## Installation & Setup
 
+> [!NOTE]
+> **Does the CLI need installation?**
+> **No installation is required.** The native CLI is a **single, standalone executable file** (`agna` on macOS/Linux, `agna.exe` on Windows). It requires no installer, no setup wizard, no external libraries, and **zero Java/JRE runtime**.
+> You can place and run that single file directly from any folder (`./agna info ...`). Moving it to `/usr/local/bin` or a directory on your `$PATH` is purely an optional convenience so you can type `agna` instead of `./agna`.
+
 ### 1. Pre-Compiled Native Binary (Zero Java Needed)
 Download the standalone executable for your operating system from the [latest release](https://github.com/baeckett/AGNA/releases):
 

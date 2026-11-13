@@ -50,16 +50,16 @@ java.com), then double-click again — or run it from a terminal:
 
 ### Command Line & AI Agents (Standalone Native CLI)
 
-Prefer the terminal, scripting, or AI agent tool calling? Download the standalone native executable `agna` (no Java installation required, instant ~7ms startup):
+Prefer the terminal, scripting, or AI agent tool calling? Download the standalone native executable `agna` — it requires **zero installation** and **zero Java runtime** (it is a single file starting in ~7ms):
 
 ```bash
 # macOS Apple Silicon / Linux quick install:
 curl -sL https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
 
-# Validate and analyze in milliseconds:
-agna validate samples/example1.agn --json
-agna metrics samples/example1.agn betweenness --top 3 --json
-agna advise samples/example1.agn --json
+# Or simply run the single file directly from any folder:
+./agna validate samples/example1.agn --json
+./agna metrics samples/example1.agn betweenness --top 3 --json
+./agna advise samples/example1.agn --json
 ```
 
 See [docs/cli.md](cli.md) and [AGENTS.md](../AGENTS.md) for the complete command reference, JSON schemas, and MCP configuration.

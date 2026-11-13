@@ -95,16 +95,18 @@ needed. Choose your platform from the
 - **Windows** — [AGNA-2.1.7-setup.exe](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-setup.exe) · [AGNA-2.1.7-setup.msi](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-setup.msi)
 - **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna_2.1.7_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-2.1.7.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-Linux-x64.tar.gz)
 
-### 2. Standalone Native CLI Binaries (Zero Java, ~7ms Startup)
-For scripts, shell workflows, and AI coding agents, single-file native executables are compiled with GraalVM AOT:
+### 2. Standalone Native CLI Binaries (Zero-Install, Single-File, ~7ms Startup)
+For scripts, shell workflows, and AI coding agents, Agna CLI is provided as a **single standalone executable file** with **zero installation** and **zero Java requirements**:
 
 * **macOS (Apple Silicon M1/M2/M3/M4):** `agna-macos-arm64.tar.gz`
 * **macOS (Intel x86_64):** `agna-macos-x86_64.tar.gz`
 * **Linux (x86_64):** `agna-linux-amd64.tar.gz`
 * **Windows (x64):** `agna-windows-amd64.zip` (`agna.exe`)
 
-Quick install on macOS / Linux:
+You can run that single binary directly from any directory (`./agna <command>`). To make it accessible globally from anywhere, move it into your `$PATH` (e.g. `/usr/local/bin`):
+
 ```bash
+# Quick install on macOS / Linux:
 curl -sL https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
 agna --version
 ```
