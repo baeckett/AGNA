@@ -65,7 +65,7 @@ public class EnvironmentAndAssetsTest
     @Test
     public void versionIs214()
         {
-        assertEquals("2.1.6", Environment.getApplicationVersion());
+        assertEquals("2.1.7", Environment.getApplicationVersion());
         }
 
     private static java.net.URL load(String name)

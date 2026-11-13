@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.7] - unreleased
+
+### Planned & In Progress
+- **Beginner-Friendly UX & Educational Scaffolding**:
+  - Contextual rich tooltips across all computation battery dialogs (`CentralityBatteryDialog`, `ClusteringBatteryDialog`, `SociometricsBatteryDialog`, `FullAnalysisDialog`, `HypothesisTestingDialog`, `DistanceBatteryDialog`).
+  - Educational descriptions explaining *why* an index is useful, when to use it, real-world sociology/SNA interpretation, and computational scaling.
+  - Guided learning curve enhancements, sample dataset case studies, and interpretive report summaries.
+
+---
+
 ## [2.1.6] - 2026-10-30
 
 ### Added

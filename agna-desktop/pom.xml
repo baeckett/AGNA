@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.bentza.sna</groupId>
     <artifactId>agna</artifactId>
-    <version>2.1.6</version>
+    <version>2.1.7</version>
   </parent>
 
   <artifactId>agna-desktop</artifactId>
@@ -31,7 +31,7 @@
   </dependencies>
 
   <build>
-    <finalName>agna-2.1.6</finalName>
+    <finalName>agna-2.1.7</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
