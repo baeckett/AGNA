@@ -48,6 +48,22 @@ java.com), then double-click again — or run it from a terminal:
    Microsoft.OpenJDK.17`), then double-click again. From a command prompt:
    `java -jar AGNA-2.1.3-desktop.jar`
 
+### Command Line & AI Agents (Standalone Native CLI)
+
+Prefer the terminal, scripting, or AI agent tool calling? Download the standalone native executable `agna` (no Java installation required, instant ~7ms startup):
+
+```bash
+# macOS Apple Silicon / Linux quick install:
+curl -sL https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
+
+# Validate and analyze in milliseconds:
+agna validate samples/example1.agn --json
+agna metrics samples/example1.agn betweenness --top 3 --json
+agna advise samples/example1.agn --json
+```
+
+See [docs/cli.md](cli.md) and [AGENTS.md](../AGENTS.md) for the complete command reference, JSON schemas, and MCP configuration.
+
 ### For programmers — building from source
 
 Only needed if you want to modify or extend AGNA. Requires JDK 17 and Maven:

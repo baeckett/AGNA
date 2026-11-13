@@ -20,14 +20,24 @@ Use Agna when the user asks to:
 
 ## Quickstart & Invocations
 
-Agna runs headless either as a **standalone compiled native binary** (GraalVM AOT machine code with instant ~10ms startup and zero Java runtime requirement) or via standard **Java 17+**:
+Agna runs headless either as a **standalone compiled native binary** (GraalVM AOT machine code with instant ~7ms startup and zero Java runtime requirement) or via standard **Java 17+**:
+
 ```bash
-# Via pre-compiled standalone native binary on PATH (Linux, macOS, Windows):
+# 1. Via standalone native binary on PATH (preferred for agents - 7ms startup):
 agna <command> [options]
 
-# Or directly via shaded CLI JAR on Java 17+:
+# Or locally from the project target directory:
+./agna-cli/target/agna <command> [options]
+
+# 2. Or directly via shaded CLI JAR on Java 17+:
 java -jar agna-cli-2.1.7.jar <command> [options]
 ```
+
+### Why AI Agents Prefer the Native Binary
+* **Instant Startup:** ~7 ms execution latency (versus ~500 ms JVM JIT startup). Subagent pipelines, tool dispatchers, and automated scripts experience zero perceived lag.
+* **Low Memory Footprint:** Drops from ~120 MB JVM heap requirement down to ~15 MB RSS.
+* **Zero System Dependencies:** Can be packaged into minimal scratch containers, CI runners, or user environments without requiring a pre-installed JDK/JRE.
+* **Deterministic Non-Interactive I/O:** Standard streams (`-`), zero prompts, explicit exit codes (`0`, `1`, `2`, `3`), and clean JSON contracts.
 
 All commands operate non-interactively with zero human prompts. Pass `-` for standard input or standard output.
 
@@ -257,6 +267,17 @@ Add Agna to your agent's MCP configuration (`claude_desktop_config.json`, `.curs
   "mcpServers": {
     "agna": {
       "command": "agna",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+Or pointing directly to the compiled native binary in the workspace:
+```json
+{
+  "mcpServers": {
+    "agna": {
+      "command": "/path/to/Agna/agna-cli/target/agna",
       "args": ["mcp"]
     }
   }

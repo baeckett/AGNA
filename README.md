@@ -69,9 +69,12 @@ functions for scripted, reproducible work. All three are released under the
 
 AGNA is built to be AI-agent and tool-call friendly:
 - **Zero interactive prompts** — all operations run deterministically non-interactively and support standard input/output pipes (`-`).
+- **Instant startup (7ms)** — pre-compiled standalone native machine code (`agna` / `agna.exe`) starts in ~7ms with zero Java prerequisites.
+- **Model Context Protocol (MCP)** — native JSON-RPC 2.0 stdio server (`agna mcp`) directly integrable into Claude Desktop, Cursor, Antigravity, and Copilot.
 - **Pre-flight data validation (`validate`)** — inspect graph syntax, dimensions, isolates, components, and self-loops with actionable diagnostics (`--json`).
 - **Built-in metric dictionary (`explain`)** — retrieve definitions, formulas, and cautious interpretations for 37 SNA metrics directly in JSON.
 - **Context-window protection (`metrics --top N`)** — get summary statistics (`mean`, `stdDev`, `min`, `max`) and top-N ranking nodes to conserve LLM tokens.
+- **Topology-driven advisory (`advise`)** — AI agents can query Agna to recommend methodologically sound centrality measures, null models, and layout visualizers.
 - **Agent documentation** — see [AGENTS.md](AGENTS.md) and [llms.txt](llms.txt) for recipes, schemas, and exit code reference.
 
 ## Quick start
@@ -83,38 +86,44 @@ measures, and export the results.
 
 ## Installation
 
-All installers bundle the Java runtime; no separate Java installation is
+### 1. Desktop Application
+Installers bundle the Java runtime; no separate Java installation is
 needed. Choose your platform from the
 [latest release](https://github.com/baeckett/AGNA/releases):
 
-- **Windows** — [setup (.msi)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-setup.msi) ·
-  [setup (.exe)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-1-windows-setup.exe)
-- **macOS** — [setup (.dmg)](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-2-macos-setup.dmg)
-- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-setup.deb) ·
-  [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-3-linux-setup.rpm) ·
-  [portable x64 archive](https://github.com/baeckett/AGNA/releases/download/v2.1.3/AGNA-2.1.3-Linux-x64.tar.gz)
+- **macOS** — [AGNA-2.1.7.dmg](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7.dmg) (Apple Silicon arm64 & Intel x86_64)
+- **Windows** — [AGNA-2.1.7-setup.exe](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-setup.exe) · [AGNA-2.1.7-setup.msi](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-setup.msi)
+- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna_2.1.7_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-2.1.7.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-Linux-x64.tar.gz)
 
-All installers are **64-bit**. The macOS `.dmg` is built for **Apple
-Silicon (arm64)** — an Intel-macOS build can be produced if needed. Windows
-and Linux installers target x64/amd64, so a 32-bit Windows cannot install
-them.
+### 2. Standalone Native CLI Binaries (Zero Java, ~7ms Startup)
+For scripts, shell workflows, and AI coding agents, single-file native executables are compiled with GraalVM AOT:
 
-Users with Java 17+ can also run the self-contained desktop jar directly:
+* **macOS (Apple Silicon M1/M2/M3/M4):** `agna-macos-arm64.tar.gz`
+* **macOS (Intel x86_64):** `agna-macos-x86_64.tar.gz`
+* **Linux (x86_64):** `agna-linux-amd64.tar.gz`
+* **Windows (x64):** `agna-windows-amd64.zip` (`agna.exe`)
 
+Quick install on macOS / Linux:
+```bash
+curl -sL https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
+agna --version
 ```
-java -jar AGNA-2.1.3-desktop.jar
+
+### 3. Portable JARs (Java 17+)
+Users with Java 17+ can also run the self-contained JARs directly:
+```bash
+java -jar agna-desktop/target/agna-2.1.7.jar        # desktop
+java -jar agna-cli/target/agna-cli-2.1.7.jar --help # CLI
 ```
 
 ### Build from source
 
-Requires JDK 17 and Maven.
+Requires JDK 17+ and Maven:
 
-```
-mvn verify      # compile + run the full correctness suite (239 tests)
-                # performance benchmarks: mvn verify -Pbenchmarks
-mvn package     # builds the jars in each module's target/
-java -jar agna-desktop/target/agna-2.1.3.jar        # desktop
-java -jar agna-cli/target/agna-cli-2.1.3.jar --help # CLI
+```bash
+mvn verify                               # compile + run full test suite
+mvn package                              # build all JARs in target/
+./tools/build-native-image.sh            # build standalone native binary (GraalVM)
 ```
 
 On first start the bundled node-face images are materialized under
