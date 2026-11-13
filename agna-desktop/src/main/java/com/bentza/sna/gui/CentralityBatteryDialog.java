@@ -156,9 +156,10 @@ public class CentralityBatteryDialog extends JDialog {
         JPanel specPanel = new JPanel(new GridBagLayout());
         specPanel.setBorder(BorderFactory.createTitledBorder("Spectral & Influence Centralities"));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(3, 6, 3, 6);
+        gbc.insets = new Insets(2, 0, 2, 0);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
 
         cbEigenvector = new JCheckBox("Principal Eigenvector Centrality", true);
         cbEigenvector.setToolTipText(EducationalTooltips.getTooltip("eigenvector"));
@@ -168,9 +169,9 @@ public class CentralityBatteryDialog extends JDialog {
         cbBonacich = new JCheckBox("Bonacich Power Centrality");
         cbBonacich.setToolTipText(EducationalTooltips.getTooltip("bonacich"));
         tfBonacichBeta = new JTextField("0.10", 5);
-        JPanel bonaP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel bonaP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         bonaP.add(cbBonacich);
-        bonaP.add(new JLabel("  Attenuation (β):"));
+        bonaP.add(new JLabel("  Attenuation (β): "));
         bonaP.add(tfBonacichBeta);
         gbc.gridy = 1;
         specPanel.add(bonaP, gbc);
@@ -178,9 +179,9 @@ public class CentralityBatteryDialog extends JDialog {
         cbPageRank = new JCheckBox("PageRank Centrality");
         cbPageRank.setToolTipText(EducationalTooltips.getTooltip("pagerank"));
         tfPageRankDamping = new JTextField("0.85", 5);
-        JPanel prP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel prP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         prP.add(cbPageRank);
-        prP.add(new JLabel("  Damping factor (d):"));
+        prP.add(new JLabel("  Damping factor (d): "));
         prP.add(tfPageRankDamping);
         gbc.gridy = 2;
         specPanel.add(prP, gbc);

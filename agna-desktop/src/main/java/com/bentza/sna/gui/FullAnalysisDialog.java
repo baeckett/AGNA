@@ -158,17 +158,18 @@ public class FullAnalysisDialog extends JDialog {
         JPanel extPanel = new JPanel(new GridBagLayout());
         extPanel.setBorder(BorderFactory.createTitledBorder("Extended Modules (Parameterized / Computationally Intensive)"));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(3, 6, 3, 6);
+        gbc.insets = new Insets(2, 0, 2, 0);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
 
         // Bonacich
         cbBonacich = new JCheckBox("Bonacich Power Centrality");
         cbBonacich.setToolTipText(EducationalTooltips.getTooltip("bonacich"));
         tfBonacichBeta = new JTextField("0.10", 5);
-        JPanel bonaP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel bonaP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         bonaP.add(cbBonacich);
-        bonaP.add(new JLabel("  Attenuation (β):"));
+        bonaP.add(new JLabel("  Attenuation (β): "));
         bonaP.add(tfBonacichBeta);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         extPanel.add(bonaP, gbc);
@@ -177,9 +178,9 @@ public class FullAnalysisDialog extends JDialog {
         cbPageRank = new JCheckBox("PageRank Centrality");
         cbPageRank.setToolTipText(EducationalTooltips.getTooltip("pagerank"));
         tfPageRankDamping = new JTextField("0.85", 5);
-        JPanel prP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel prP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         prP.add(cbPageRank);
-        prP.add(new JLabel("  Damping factor (d):"));
+        prP.add(new JLabel("  Damping factor (d): "));
         prP.add(tfPageRankDamping);
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
         extPanel.add(prP, gbc);
@@ -194,9 +195,9 @@ public class FullAnalysisDialog extends JDialog {
         cbCliques = new JCheckBox("Maximal Cliques (Bron-Kerbosch)");
         cbCliques.setToolTipText(EducationalTooltips.getTooltip("cliques"));
         spCliqueDiameter = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        JPanel clqP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel clqP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         clqP.add(cbCliques);
-        clqP.add(new JLabel("  Diameter:"));
+        clqP.add(new JLabel("  Diameter: "));
         clqP.add(spCliqueDiameter);
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
         extPanel.add(clqP, gbc);
@@ -212,6 +213,7 @@ public class FullAnalysisDialog extends JDialog {
         extPanel.add(cbWeighted, gbc);
 
         JLabel clqWarn = new JLabel("<html><small style='color:#a04000;'>⚠️ <i>Warning: Clique enumeration is NP-hard and may be slow on dense networks.</i></small></html>");
+        gbc.insets = new Insets(4, 24, 2, 0);
         gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
         extPanel.add(clqWarn, gbc);
 

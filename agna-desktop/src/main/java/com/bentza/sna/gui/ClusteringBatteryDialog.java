@@ -120,21 +120,23 @@ public class ClusteringBatteryDialog extends JDialog {
         JPanel clqPanel = new JPanel(new GridBagLayout());
         clqPanel.setBorder(BorderFactory.createTitledBorder("Maximal Subgraphs"));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 6, 4, 6);
+        gbc.insets = new Insets(2, 0, 2, 0);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
 
         cbCliques = new JCheckBox("Maximal Cliques (Bron-Kerbosch)");
         cbCliques.setToolTipText(EducationalTooltips.getTooltip("cliques"));
         spCliqueDiameter = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        JPanel clqLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel clqLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         clqLine.add(cbCliques);
-        clqLine.add(new JLabel("  Diameter:"));
+        clqLine.add(new JLabel("  Diameter: "));
         clqLine.add(spCliqueDiameter);
         gbc.gridx = 0; gbc.gridy = 0;
         clqPanel.add(clqLine, gbc);
 
         JLabel clqWarn = new JLabel("<html><small style='color:#a04000;'>⚠️ <i>Warning: Clique enumeration is NP-hard and can take long on dense graphs.</i></small></html>");
+        gbc.insets = new Insets(4, 24, 2, 0);
         gbc.gridy = 1;
         clqPanel.add(clqWarn, gbc);
 
