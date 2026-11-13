@@ -132,8 +132,12 @@ public enum NetworkMetric
             for (int i = 0; i < n; i++)
                 sumDiff += (maxDeg - degrees[i]);
 
-            // Theoretical maximum difference for star graph: (n - 1) * (n - 2)
-            double maxPossible = (double) (n - 1) * (n - 2);
+            // Theoretical maximum difference for star graph:
+            // Undirected star: (n - 1) * (n - 2)
+            // Directed out-star: (n - 1)^2 (Wasserman & Faust 1994, 5.3)
+            double maxPossible = net.isSymmetric()
+                    ? (double) (n - 1) * (n - 2)
+                    : (double) (n - 1) * (n - 1);
             return maxPossible > 0 ? sumDiff / maxPossible : 0.0;
             }
         },
@@ -160,7 +164,9 @@ public enum NetworkMetric
             for (int i = 0; i < n; i++)
                 sumDiff += (maxB - b[i]);
 
-            double maxPossible = (double) (n - 1) * (n - 1) * (n - 2) / 2.0;
+            // Raw Brandes in Agna sums over ordered pairs: center of star has (n-1)(n-2),
+            // so maximum sum of differences is (n-1)^2 * (n-2)
+            double maxPossible = (double) (n - 1) * (n - 1) * (n - 2);
             return maxPossible > 0 ? sumDiff / maxPossible : 0.0;
             }
         },
@@ -187,8 +193,11 @@ public enum NetworkMetric
             for (int i = 0; i < n; i++)
                 sumDiff += (maxC - c[i]);
 
+            // Freeman (1979) closeness centralization:
+            // For raw closeness c_i = 1 / fareness_i, the star network achieves
+            // sum_{i=1}^n (c* - c_i) = (n - 1) * [1/(n-1) - 1/(2n-3)] = (n - 2) / (2n - 3).
             double maxPossible = (double) (n - 2) / (double) (2 * n - 3);
-            return maxPossible > 0 ? sumDiff / (n * maxPossible) : 0.0;
+            return maxPossible > 0 ? sumDiff / maxPossible : 0.0;
             }
         },
 

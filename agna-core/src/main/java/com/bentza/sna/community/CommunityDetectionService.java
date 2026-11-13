@@ -155,9 +155,9 @@ public final class CommunityDetectionService {
                     double kiInTarget = entry.getValue();
                     double totTarget = communityTot[targetComm];
 
-                    // Standard Louvain Delta Q formula:
-                    // dQ = (kiInTarget - kiInCurrent)/m2 - 2 * ki * (totTarget - communityTot[currentComm]) / (m2 * m2)
-                    double dQ = (kiInTarget - kiInCurrent) / m2 - (ki * (totTarget - communityTot[currentComm])) / (m2 * m2 / 2.0);
+                    // Standard Louvain Delta Q formula (Blondel et al. 2008):
+                    // dQ = 2 * (kiInTarget - kiInCurrent)/m2 - 2 * ki * (totTarget - communityTot[currentComm]) / (m2 * m2)
+                    double dQ = (2.0 * (kiInTarget - kiInCurrent)) / m2 - (ki * (totTarget - communityTot[currentComm])) / (m2 * m2 / 2.0);
                     if (dQ > bestDeltaQ) {
                         bestDeltaQ = dQ;
                         bestComm = targetComm;

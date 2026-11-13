@@ -168,8 +168,8 @@ public final class TriadCensus {
             // Node with no mutual tie: degree in asymmetric tie
             for (int i = 0; i < 3; i++) {
                 if (outDeg[i] + inDeg[i] == 1) {
-                    if (outDeg[i] == 1) return TriadType.T111U.ordinal(); // Points to mutual pair
-                    if (inDeg[i] == 1) return TriadType.T111D.ordinal();  // Mutual pair points to it
+                    if (outDeg[i] == 1) return TriadType.T111D.ordinal(); // Apex points to mutual base (Down)
+                    if (inDeg[i] == 1) return TriadType.T111U.ordinal();  // Mutual base points to apex (Up)
                 }
             }
             return TriadType.T111D.ordinal();
