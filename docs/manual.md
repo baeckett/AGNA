@@ -461,7 +461,9 @@ students, instructors, and researchers new to graph theory.
   3-part micro-guide rendered directly on hover:
   1. *What it measures*: Mathematical intuition and theoretical definition.
   2. *Why use it / Sociological meaning*: Substantive interpretation (e.g., power, brokerage, cohesion, gatekeeping).
-  3. *Interpretation & Complexity*: Practical benchmarks (e.g., Q > 0.35 for communities, C_D = 1.0 for star topologies) and computational complexity caveats.
+  3. *Interpretation & Complexity*: Nuanced, non-dogmatic guidelines (e.g., *"high degree nodes may be active hubs"*, *"elevated betweenness may indicate brokerage"*, *"modularity Q > 0.3 often suggests community clustering"*) and computational complexity caveats. Tooltips stay comfortably visible for 7 seconds.
+- **Comprehensive Tooltip Coverage Across All Menus and Network Viewer**:
+  Every single menu item and top-level menu across File, Edit, Network, Analysis, View, Preferences, and Help—as well as the Network Viewer—now features clear, descriptive tooltips explaining its exact function and purpose.
 - **Automated Plain-English Structural Narrative ("Key Takeaways & Beginner's Guide")**:
   Full Analysis reports and analytical batteries now automatically generate an
   executive structural summary (`com.bentza.sna.report.NarrativeSummaryGenerator`)

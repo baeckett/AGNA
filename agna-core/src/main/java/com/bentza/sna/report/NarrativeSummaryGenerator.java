@@ -50,22 +50,22 @@ public final class NarrativeSummaryGenerator {
                 n, edges, density));
 
         if (density >= 0.50f) {
-            sb.append("This is a <i>highly saturated, dense network</i> where most members are directly connected, facilitating rapid group consensus.");
+            sb.append("This is a <i>dense, highly saturated network</i> where most members are directly connected, which may facilitate rapid group consensus.");
         } else if (density >= 0.15f) {
-            sb.append("This is a <i>moderately connected network</i> balancing cohesive local clusters with efficient path lengths.");
+            sb.append("This is a <i>moderately connected network</i>, which may balance cohesive local clusters with manageable path lengths.");
         } else {
-            sb.append("This is a <i>sparse network</i> where ties are formed selectively, typical of large-scale social or organizational groups.");
+            sb.append("This is a <i>sparse network</i> where ties appear to form selectively, typical of larger social or organizational environments.");
         }
         sb.append("<br><br>");
 
         // 2. Topology and Connectedness
         sb.append("<b>Connectedness & Reachability:</b> ");
         if (connected) {
-            sb.append("The network forms a <i>single connected component</i>: every actor can reach every other actor through a chain of intermediaries with no isolated subgroups.");
+            sb.append("The network forms a <i>single connected component</i>: every actor can reach every other actor through a chain of intermediaries with no fully isolated subgroups.");
         } else {
             int outsiders = lib.getOusidersNumber(net);
             sb.append(String.format(Locale.ROOT,
-                    "The network is <i>disconnected</i> into separate components%s. Information cannot flow globally without external intermediaries.",
+                    "The network is <i>disconnected</i> into separate components%s. Information may not be able to flow globally without external intermediaries.",
                     outsiders > 0 ? " and contains " + outsiders + " isolate(s)" : ""));
         }
         sb.append("<br><br>");
@@ -93,14 +93,14 @@ public final class NarrativeSummaryGenerator {
 
         if (degCent >= 0.50f) {
             sb.append(String.format(Locale.ROOT,
-                    "This indicates <i>high star-like concentration</i>: communication is dominated by central hub <b>'%s'</b> (degree %.0f), who holds primary coordinating authority.",
+                    "This may indicate <i>high star-like concentration</i>: communication may be disproportionately routed through central hub <b>'%s'</b> (degree %.0f), who may hold primary coordinating authority.",
                     topName, maxDeg));
         } else if (degCent >= 0.20f) {
             sb.append(String.format(Locale.ROOT,
-                    "This indicates <i>moderate centralization</i>: activity is distributed across a core group of influential actors rather than concentrated in a single autocrat.",
+                    "This may indicate <i>moderate centralization</i>: activity appears distributed across a core group of influential actors rather than concentrated in a single node.",
                     topName));
         } else {
-            sb.append("This indicates an <i>egalitarian, decentralized topology</i>: power and connectivity are evenly dispersed across members with low hierarchy.");
+            sb.append("This may indicate an <i>egalitarian, decentralized topology</i>: power and connectivity appear relatively evenly dispersed across members with low hierarchy.");
         }
         sb.append("<br><br>");
 
@@ -112,9 +112,9 @@ public final class NarrativeSummaryGenerator {
                 "<b>Clustering & Triadic Closure:</b> Global transitivity is <b>%.3f</b>. ",
                 transitivity));
         if (transitivity >= 0.40f) {
-            sb.append("There is <i>strong social clustering</i>: 'friends of friends tend to be friends', fostering high internal trust and cohesive cliques.");
+            sb.append("There appears to be <i>strong social clustering</i>: 'friends of friends tend to be friends', which may foster internal trust and cohesive cliques.");
         } else {
-            sb.append("There is <i>low triadic closure</i>: relationships tend to follow instrumental, tree-like, or hub-and-spoke branching rather than closed triangles.");
+            sb.append("There appears to be <i>lower triadic closure</i>: relationships may follow instrumental, tree-like, or hub-and-spoke branching rather than closed triangles.");
         }
 
         if (!symmetric) {
@@ -124,8 +124,8 @@ public final class NarrativeSummaryGenerator {
                 sb.append(String.format(Locale.ROOT,
                         "<br><br><b>Reciprocity:</b> Dyadic reciprocity rate is <b>%.1f%%</b> (%d mutual vs %d asymmetric ties). %s",
                         recip * 100f, dyad.mutual, dyad.asymmetric,
-                        recip >= 0.50f ? "Relations are predominantly mutual and bilateral."
-                                       : "Ties are predominantly unreciprocated, indicating status hierarchies or directional information passing."));
+                        recip >= 0.50f ? "Relations appear predominantly mutual and bilateral, which may reflect shared social norms."
+                                       : "Ties appear predominantly unreciprocated, which may suggest status differentials or directional information passing."));
             }
         }
 

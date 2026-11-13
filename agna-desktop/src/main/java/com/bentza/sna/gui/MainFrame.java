@@ -4498,6 +4498,14 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mPreferences.setMnemonic('p');
         mHelp.setMnemonic('h');
 
+        mFile.setToolTipText("File operations: new, open, save, samples, and export");
+        mEdit.setToolTipText("Cell editing and clipboard operations");
+        mData.setToolTipText("Matrix transformations, ego networks, algebra, and node management");
+        mAnalysis.setToolTipText("Social Network Analysis algorithms, batteries, and advisors");
+        mView.setToolTipText("Visual Network Viewer and output pane controls");
+        mPreferences.setToolTipText("Working directory, look & feel, and default preferences");
+        mHelp.setToolTipText("Help manual, SNA glossary cheat-sheet, and guided case studies");
+
         // submeniuri din FILE:
         f_new = new JMenuItem("New Network");
         f_open = new JMenuItem("Open Network");
@@ -4512,6 +4520,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         f_new.setToolTipText("Create a new empty network");
         f_open.setToolTipText("Open an existing network file");
         f_samples.setToolTipText("Open classic empirical and pedagogical benchmark networks with guided case studies");
+        d_merge.setToolTipText("Merge another network file into current sociomatrix");
         f_save.setToolTipText("Save current network as a specified file");
         f_simply_save.setToolTipText("Save current network");
         f_create.setToolTipText("Create a network from a chain file");
@@ -4561,6 +4570,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 .setToolTipText("Delete selected text/data and store it into clipboard");
         e_copy.setToolTipText("Store selected text/data into clipboard");
         e_paste.setToolTipText("Insert clipboard content at cursor");
+        e_delete.setToolTipText("Clear content in selected sociomatrix cell(s)");
         e_select_all.setToolTipText("Select all text/data");
 
         e_cut.addActionListener(new ExcelAdapter(my_grid));
@@ -4624,6 +4634,12 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 .setToolTipText("Remove all isolated nodes from current network");
         d_renumber_nodes.setToolTipText("Give all nodes number-names");
         d_multiply_network.setToolTipText("Multiply sociomatrix by itself");
+        d_dichotomize.setToolTipText("Threshold tie values at a cut-off to convert matrix into binary 0/1 ties");
+        d_zero_diagonal.setToolTipText("Reset all diagonal elements to 0 to remove self-loops");
+        d_set_diagonal.setToolTipText("Set all diagonal matrix elements to a specified constant value");
+        d_ego_network.setToolTipText("Extract the 1-hop or 2-hop ego subnetwork centered on a focal actor");
+        d_network_algebra.setToolTipText("Combine two networks using element-wise addition, subtraction, intersection min, or product");
+        d_sort_actors.setToolTipText("Permute rows and columns of sociomatrix by actor name, degree, indegree, or outdegree");
 
         d_add_scalar.addActionListener(act_menu);
         d_title.addActionListener(act_menu);
@@ -4759,15 +4775,27 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 .setToolTipText("Find shortest paths between two nodes");
         a_all_shortest_paths
                 .setToolTipText("Find shortest paths for all pairs of nodes");
-        a_centrality.setToolTipText("Centrality-related coefficients");
+        a_centrality.setToolTipText("Degree, geodesic, prestige, and spectral centrality measures");
         a_bavelas
                 .setToolTipText("Compute Bavelas-Leavitt coefficient for each node");
         a_closeness
                 .setToolTipText("Compute closeness coefficient for each node");
         a_fareness.setToolTipText("Compute fareness coefficient for each node");
         a_betweenness
-                .setToolTipText("Compute betweenness  coefficient for each node");
-        // node");
+                .setToolTipText("Compute betweenness coefficient for each node");
+        a_prestige.setToolTipText("Compute proximity prestige for each node in directed networks");
+        a_cliques.setToolTipText("Enumerate maximal complete subgraphs (all members tied to each other)");
+        a_full_analysis.setToolTipText("Execute a configurable full analysis suite with customizable modules and executive narrative");
+        a_clustering.setToolTipText("Clustering coefficients, transitivity, k-core, communities, and structural equivalence");
+        a_local_clustering.setToolTipText("Compute Watts-Strogatz local clustering coefficient for each node");
+        a_transitivity.setToolTipText("Compute Newman global network transitivity (triad closure ratio)");
+        a_kcore.setToolTipText("Compute k-core structural percolation decomposition and coreness shells");
+        a_triad_census.setToolTipText("Compute complete Holland-Leinhardt 16 triad census and dyad reciprocity");
+        a_structural_holes.setToolTipText("Ronald Burt's social capital: constraint, effective size, efficiency, and hierarchy");
+        a_connectivity.setToolTipText("Identify connected components, cut-vertices (articulation points), and bridge ties");
+        a_eigenvector.setToolTipText("Compute Bonacich eigenvector centrality via principal eigenvalue decomposition");
+        a_bonacich.setToolTipText("Compute Bonacich power centrality c(alpha, beta) for prestige or bargaining exchange power");
+        a_pagerank.setToolTipText("Compute PageRank centrality with random walk damping");
 
         a_emissions.addActionListener(act_menu);
         a_receptions.addActionListener(act_menu);
@@ -4894,6 +4922,8 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         v_viewer.setToolTipText("Display Network Viewer frame");
         v_close.setToolTipText("Close Network Viewer frame");
+        v_hide_output.setToolTipText("Hide the right-hand output results pane");
+        v_view_output.setToolTipText("Show the right-hand output results pane");
 
         v_close.setEnabled(false);
 
@@ -4952,6 +4982,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         p_working_directory = new JMenuItem("Working Directory...");
         p_save_as_default = new JMenuItem("Save Settings As Default...");
         p_working_directory.setToolTipText("Choose default working directory");
+        p_save_as_default.setToolTipText("Save current display, layout, and analysis configuration as application defaults");
 
         p_working_directory.addActionListener(act_menu);
 
@@ -4959,6 +4990,9 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         p_laf_native = new JRadioButtonMenuItem("Native (system)");
         p_laf_flatlaf = new JRadioButtonMenuItem("FlatLaf (light)");
         p_laf_flatlaf_dark = new JRadioButtonMenuItem("FlatLaf (dark)");
+        p_laf_native.setToolTipText("Use operating system native look and feel");
+        p_laf_flatlaf.setToolTipText("Use FlatLaf modern light theme");
+        p_laf_flatlaf_dark.setToolTipText("Use FlatLaf modern dark theme");
         ButtonGroup laf_group = new ButtonGroup();
         laf_group.add(p_laf_native);
         laf_group.add(p_laf_flatlaf);

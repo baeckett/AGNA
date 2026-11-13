@@ -3479,6 +3479,14 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gNodes.setMnemonic('n');
         gHelp.setMnemonic('h');
 
+        gFile.setToolTipText("Export image, insert into output, or exit viewer");
+        gImage.setToolTipText("Image dimensions, layouts, grid, background, title, and faces");
+        gNodes.setToolTipText("Coordinates, name, and face settings for selected node");
+        e_edge.setToolTipText("Edge values, colors, transparency loyalty, and separation");
+        gData.setToolTipText("Add, clone, isolate, delete nodes, transpose, or symmetrize");
+        gPreferences.setToolTipText("Save or copy visual settings and default node face");
+        gHelp.setToolTipText("Viewer help and about Agna");
+
         // submeniuri din FILE:
         f_save_as = new JMenuItem("Export Image...");
         f_insert = new JMenuItem("Insert In Output");
@@ -3931,8 +3939,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         n_change_name.setToolTipText("Change selected node's name");
         n_set_face.setToolTipText("Node face settings");
         n_default_face.setToolTipText("Apply default face to selected node");
-        n_change_face
-                .setToolTipText("Change selected node's horizontal coordinate");
+        n_change_face.setToolTipText("Load picture from file as selected node's face");
         n_no_face.setToolTipText("Destroy selected node's face");
         n_face_width.setToolTipText("Change selected node's size");
         n_select_next_node.setToolTipText("Select next (End-)node");
@@ -4021,6 +4028,7 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         h_about = new JMenuItem("About Agna...");
 
         h_contents.setToolTipText("Display the Agna Help frame");
+        h_about.setToolTipText("Display Agna copyright and version information");
         // generates strange error:
 
         h_contents.setMnemonic('c');
