@@ -14,6 +14,7 @@
 - **Topology-Driven Advisory**: `agna advise <file> --json` (intelligent analysis, layout, and null model recommendations).
 - **Narrative Synthesis**: `agna narrative <file> --json` (plain-English synthesis of density, centralization, closure, and reciprocity).
 - **Capabilities & Introspection**: `agna capabilities --json` (self-describing manifest of formats, algorithms, and parameters).
+- **Native Model Context Protocol (MCP)**: `agna mcp` (in-process JSON-RPC 2.0 stdio server for Claude, Cursor, Copilot, Antigravity).
 - **Network Summary**: `agna info <file> --json` (nodes, edges, density, reciprocity, connectivity).
 - **Token-Efficient Metrics**: `agna metrics <file> <metric> --top N --json` (summary statistics + top-N ranking).
 - **Analysis Batteries**: `agna analyse <file> --all` (centrality, clustering, distances, sociometrics, structural holes).

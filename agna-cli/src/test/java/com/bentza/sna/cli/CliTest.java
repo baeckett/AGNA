@@ -1088,4 +1088,38 @@ public class CliTest
         assertTrue(json.contains("\"layouts\""), json);
         assertTrue(json.contains("\"nullModels\""), json);
         }
+
+    @Test
+    public void mcpProtocolEndToEnd() throws Exception
+        {
+        String requests =
+                "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\"}}\n"
+                + "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\"}\n"
+                + "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}\n"
+                + "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/list\"}\n"
+                + "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"tools/call\",\"params\":{\"name\":\"agna_validate\",\"arguments\":{\"file\":\"samples/example2.agn\"}}}\n"
+                + "{\"jsonrpc\":\"2.0\",\"id\":5,\"method\":\"tools/call\",\"params\":{\"name\":\"agna_metrics\",\"arguments\":{\"file\":\"samples/example2.agn\",\"metric\":\"betweenness\",\"top\":3}}}\n"
+                + "{\"jsonrpc\":\"2.0\",\"id\":6,\"method\":\"tools/call\",\"params\":{\"name\":\"agna_advise\",\"arguments\":{\"file\":\"samples/example2.agn\"}}}\n";
+
+        java.io.ByteArrayInputStream in = new java.io.ByteArrayInputStream(requests.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        java.io.ByteArrayOutputStream err = new java.io.ByteArrayOutputStream();
+
+        com.bentza.sna.cli.mcp.McpServer server = new com.bentza.sna.cli.mcp.McpServer(
+                in,
+                new java.io.PrintStream(out, true, java.nio.charset.StandardCharsets.UTF_8),
+                new java.io.PrintStream(err, true, java.nio.charset.StandardCharsets.UTF_8));
+        int exit = server.run();
+        assertEquals(0, exit);
+
+        String output = out.toString(java.nio.charset.StandardCharsets.UTF_8);
+        assertTrue(output.contains("\"protocolVersion\":\"2024-11-05\""), output);
+        assertTrue(output.contains("\"name\":\"agna\""), output);
+        assertTrue(output.contains("\"tools\":["), output);
+        assertTrue(output.contains("\"name\":\"agna_validate\""), output);
+        assertTrue(output.contains("\"name\":\"agna_metrics\""), output);
+        assertTrue(output.contains("valid") && output.contains("true"), output);
+        assertTrue(output.contains("topN") && output.contains("3"), output);
+        assertTrue(output.contains("recommendedAnalyses"), output);
+        }
     }

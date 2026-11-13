@@ -246,6 +246,50 @@ agna test-null data/network.agn --metric transitivity --model degree-preserving 
 
 ---
 
+### 11. Model Context Protocol (MCP) Server (`agna mcp`)
+Agna provides a native, zero-setup JSON-RPC 2.0 stdio server conforming to the Model Context Protocol (version `2024-11-05`). This exposes Agna's analytical capabilities directly to AI agents (Claude Desktop, Cursor, Copilot, Antigravity) as first-class tools.
+
+#### Client Configuration
+Add Agna to your agent's MCP configuration (`claude_desktop_config.json`, `.cursor/mcp.json`, etc.):
+
+```json
+{
+  "mcpServers": {
+    "agna": {
+      "command": "agna",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+Or directly via JAR:
+```json
+{
+  "mcpServers": {
+    "agna": {
+      "command": "java",
+      "args": ["-jar", "/path/to/agna-cli-2.1.7.jar", "mcp"]
+    }
+  }
+}
+```
+
+#### Exposed MCP Tools
+| MCP Tool | Description | Primary Parameters |
+| :--- | :--- | :--- |
+| `agna_validate` | Pre-flight syntax, matrix, isolate & component validation | `file` (string) |
+| `agna_info` | Topological metadata: nodes, edges, density, connectivity | `file` (string) |
+| `agna_metrics` | Centrality, Burt holes, pagerank, and top-N ranking | `file`, `metric`, `top` |
+| `agna_advise` | Topology-driven recommendation engine | `file` (string) |
+| `agna_narrative` | Qualitative structural narrative synthesis | `file`, `format` (json/text) |
+| `agna_explain` | SNA definitions, formulas, and interpretations | `metric` (string) |
+| `agna_convert` | Format conversion between 10+ SNA standards | `inFile`, `outFile`, `inFormat`, `outFormat` |
+| `agna_archetype` | Small-World, Scale-Free & Core-Periphery diagnosis | `file` (string) |
+| `agna_test_null` | Monte Carlo permutation hypothesis testing | `file`, `metric`, `model`, `permutations` |
+| `agna_capabilities`| Introspects supported formats, algorithms & models | *(none)* |
+
+---
+
 ## Safety & Best Practices for Autonomous Agents
 
 1. **Default to Read-Only:** All analysis commands (`info`, `validate`, `explain`, `metrics`, `analyse`, `archetype`) read from disk without modifying input files.

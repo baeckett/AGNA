@@ -73,6 +73,7 @@ public final class CliCapabilities {
             new CommandInfo("advise", "Intelligent topology-driven recommendations for metrics and layouts", "--format", "--json", "--out"),
             new CommandInfo("narrative", "Natural-language structural synthesis and qualitative summary", "--format", "--json", "--out"),
             new CommandInfo("capabilities", "Self-describing feature manifest and schema introspection", "--format", "--json", "--out"),
+            new CommandInfo("mcp", "Start headless Model Context Protocol (MCP) JSON-RPC stdio server"),
             new CommandInfo("analyse", "Run full analysis batteries or specific metrics with rich report", "--all", "--out", "NAME..."),
             new CommandInfo("metrics", "Structured machine-readable CSV/JSON metrics with top-N ranking", "--all", "--top", "--format", "--json", "--out"),
             new CommandInfo("convert", "Convert between 10+ SNA graph formats without metadata loss", "--in-format", "--out-format"),

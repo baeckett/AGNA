@@ -24,6 +24,7 @@ Command summary:
 | `advise FILE [--format text\|json] [--json]` | topology-driven analysis, layout, and null-model recommendations |
 | `narrative FILE [--format text\|json] [--json]` | automated plain-English / Markdown structural narrative synthesis |
 | `capabilities [--format text\|json] [--json]` | self-describing manifest of all supported formats, algorithms, and commands |
+| `mcp` | start headless Model Context Protocol (MCP) JSON-RPC stdio server |
 | `analyse FILE [--all\|NAME...\|cliques:N] [--out FILE]` | the full analysis battery |
 | `convert IN OUT [--in-format F] [--out-format F]` | format conversion |
 | `transform IN OUT --op OP` | network operations (see below) |

@@ -90,6 +90,8 @@ public final class Cli
                 + "  capabilities [--format text|json] [--json] [--out FILE]\n"
                 + "                                  self-describing manifest of all supported formats,\n"
                 + "                                  algorithms, layouts, and commands\n"
+                + "  mcp                             start Model Context Protocol (MCP) JSON-RPC stdio\n"
+                + "                                  server for AI agent & tool integration\n"
                 + "  analyse FILE [--all|NAME...|cliques:N] [--out FILE]\n"
                 + "                                  run analyses (basic, "
                 + "density, cohesion, nodal, indegree, outdegree,\n"
@@ -321,6 +323,10 @@ public final class Cli
         if ("capabilities".equals(cmd) || "schema".equals(cmd))
             {
             return capabilities(args);
+            }
+        if ("mcp".equals(cmd))
+            {
+            return mcp(args);
             }
         if ("analyse".equals(cmd))
             {
@@ -773,6 +779,12 @@ public final class Cli
             out.print(text);
             }
         return 0;
+        }
+
+    private int mcp(String[] args) throws Exception
+        {
+        com.bentza.sna.cli.mcp.McpServer server = new com.bentza.sna.cli.mcp.McpServer(in, out, System.err);
+        return server.run();
         }
 
     private int analyse(String[] args) throws Exception
