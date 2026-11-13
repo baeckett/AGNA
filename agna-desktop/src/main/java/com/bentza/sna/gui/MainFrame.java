@@ -3061,7 +3061,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         final AgnaLib agna_lib = new AgnaLib();
         FullAnalysisDialog dlg = new FullAnalysisDialog(my_frame, my_full_net.getNetwork(), options ->
             {
-            runAnalysisInBackground("Running Full Analysis Battery...", () ->
+            runAnalysisInBackground("Running Full Analysis...", () ->
                 {
                 return agna_lib.getAgnaSignature() + agna_lib.outFullAnalysis(my_full_net.getNetwork(), options);
                 });
@@ -3081,7 +3081,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         final AgnaLib agna_lib = new AgnaLib();
         SociometricsBatteryDialog dlg = new SociometricsBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
             {
-            runAnalysisInBackground("Running Sociometrics Battery...", () ->
+            runAnalysisInBackground("Running Sociometrics Analysis...", () ->
                 {
                 return agna_lib.getAgnaSignature() + agna_lib.outSociometricsBattery(my_full_net.getNetwork(), options);
                 });
@@ -3101,7 +3101,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         final AgnaLib agna_lib = new AgnaLib();
         CentralityBatteryDialog dlg = new CentralityBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
             {
-            runAnalysisInBackground("Running Centrality Battery...", () ->
+            runAnalysisInBackground("Running Centrality Analysis...", () ->
                 {
                 return agna_lib.getAgnaSignature() + agna_lib.outCentralityBattery(my_full_net.getNetwork(), options);
                 });
@@ -3121,7 +3121,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         final AgnaLib agna_lib = new AgnaLib();
         DistanceBatteryDialog dlg = new DistanceBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
             {
-            runAnalysisInBackground("Running Distance Battery...", () ->
+            runAnalysisInBackground("Running Distance Analysis...", () ->
                 {
                 return agna_lib.getAgnaSignature() + agna_lib.outDistanceBattery(my_full_net.getNetwork(), options);
                 });
@@ -3141,7 +3141,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         final AgnaLib agna_lib = new AgnaLib();
         ClusteringBatteryDialog dlg = new ClusteringBatteryDialog(my_frame, my_full_net.getNetwork(), options ->
             {
-            runAnalysisInBackground("Running Clustering Battery...", () ->
+            runAnalysisInBackground("Running Clustering Analysis...", () ->
                 {
                 return agna_lib.getAgnaSignature() + agna_lib.outClusteringBattery(my_full_net.getNetwork(), options);
                 });
@@ -4362,7 +4362,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         ttm = ToolTipManager.sharedInstance();
         ttm.setInitialDelay(400);
-        ttm.setDismissDelay(1300);
+        ttm.setDismissDelay(7000);
 
         my_full_net = new FullNet();
         my_full_net.createDefaultNetwork(); // default network with 10 nodes
@@ -4697,7 +4697,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         // Submeniuri din ANALYSIS:
         a_basic = new JMenuItem("Basic Description");
-        a_sociometrics = new JMenuItem("Sociometrics & Basic Battery...");
+        a_sociometrics = new JMenuItem("Sociometric & Basic...");
         a_nodal_degree = new JMenuItem("Nodal Degree");
         a_indegree = new JMenuItem("Indegree");
         a_outdegree = new JMenuItem("Outdegree");
@@ -4707,21 +4707,21 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_receptions = new JMenuItem("Reception Degree");
         a_determinations = new JMenuItem("Determination Degree");
         a_sociostatus = new JMenuItem("Sociometric Status");
-        a_distance = new JMenuItem("Distances & Geodesics Battery...");
+        a_distance = new JMenuItem("Distances & Geodesics...");
         a_eccentricity = new JMenuItem("Eccentricity");
         a_diameter = new JMenuItem("Diameter");
         a_geodesics = new JMenuItem("Geodesic Matrix");
         a_shortest_paths = new JMenuItem("Shortest Paths...");
         a_all_shortest_paths = new JMenuItem("All Shortest Paths");
         a_cliques = new JMenuItem("N-Cliques");
-        a_centrality = new JMenuItem("Centrality & Prestige Battery...");
+        a_centrality = new JMenuItem("Centrality & Prestige...");
         a_bavelas = new JMenuItem("Bavelas-Leavitt");
         a_closeness = new JMenuItem("Closeness");
         a_fareness = new JMenuItem("Fareness");
         a_betweenness = new JMenuItem("Betweenness");
         a_prestige = new JMenuItem("Prestige");
-        a_full_analysis = new JMenuItem("Full Analysis Battery...");
-        a_clustering = new JMenuItem("Clustering & Cohesion Battery...");
+        a_full_analysis = new JMenuItem("Full Analysis...");
+        a_clustering = new JMenuItem("Clustering & Cohesion...");
         a_local_clustering = new JMenuItem("Local Clustering (Watts-Strogatz)...");
         a_transitivity = new JMenuItem("Global Transitivity (Triads)...");
         a_kcore = new JMenuItem("k-Core Decomposition...");

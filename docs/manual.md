@@ -84,11 +84,11 @@ to read exactly what is calculated.
   - Renumber Nodes... — replaces names with numbers.
   - [Square Matrix](#square-matrix) — M×M, counting two-step walks.
 - **Analysis**:
-  - [Full Analysis Battery...](#full-analysis-battery) — configurable execution of all analytical modules with presets.
-  - [Sociometrics & Basic Battery...](#sociometrics--basic-battery) — macro parameters, density, dyad census, Newman assortativity, and valued/weighted metrics.
-  - [Centrality & Prestige Battery...](#centrality--prestige-battery) — degree, geodesic (betweenness, closeness, fareness, Bavelas), prestige, and spectral centralities, plus the Freeman Centralization summary table.
-  - [Distances & Geodesics Battery...](#distances--geodesics-battery) — geodesic matrix, eccentricity, diameter, and shortest paths.
-  - [Clustering & Cohesion Battery...](#clustering--cohesion-battery) — Watts-Strogatz local clustering, Newman transitivity, k-core, cohesion, maximal cliques, Louvain / Girvan-Newman community detection, and structural equivalence.
+  - [Full Analysis...](#full-analysis) — configurable execution of all analytical modules with presets.
+  - [Sociometric & Basic...](#sociometrics--basic-battery) — macro parameters, density, dyad census, Newman assortativity, and valued/weighted metrics.
+  - [Centrality & Prestige...](#centrality--prestige-battery) — degree, geodesic (betweenness, closeness, fareness, Bavelas), prestige, and spectral centralities, plus the Freeman Centralization summary table.
+  - [Distances & Geodesics...](#distances--geodesics-battery) — geodesic matrix, eccentricity, diameter, and shortest paths.
+  - [Clustering & Cohesion...](#clustering--cohesion-battery) — Watts-Strogatz local clustering, Newman transitivity, k-core, cohesion, maximal cliques, Louvain / Girvan-Newman community detection, and structural equivalence.
   - [Social Capital & Structural Holes (Burt)...](#social-capital--structural-holes-burt) — constraint, effective size, efficiency, and hierarchy.
   - [Connectivity & Articulation Points...](#connectivity-articulation-points-and-bridges) — connected components, cut-vertices, and bridges.
   - [Triad & Dyad Census (Holland-Leinhardt)...](#triad--dyad-census-holland-leinhardt) — complete 16 MAN triad census and reciprocity.
@@ -670,7 +670,7 @@ opened directly via **File ▸ Open Sample Network & Case Study...** or **Help �
 - **Academic Citation**:
   Padgett, J. F., & Ansell, C. K. (1993). Robust action and the rise of the Medici, 1400–1434. *American Journal of Sociology*, 98(6), 1259–1319. https://doi.org/10.1086/230190
 - **Guided Exercises in AGNA**:
-  1. *Betweenness Centrality*: Run **Analysis ▸ Centrality & Prestige Battery**. Observe that the Medici family achieves a normalized betweenness score of 0.522—more than double any other family—confirming their role as the indispensable political broker.
+  1. *Betweenness Centrality*: Run **Analysis ▸ Centrality & Prestige...**. Observe that the Medici family achieves a normalized betweenness score of 0.522—more than double any other family—confirming their role as the indispensable political broker.
   2. *Structural Holes*: Run **Analysis ▸ Social Capital & Structural Holes (Burt)**. Note Medici's exceptionally low network constraint (0.209), proving their access to non-redundant information and power arbitrage.
   3. *Ego Network Extraction*: Use **Network ▸ Extract Ego Network...** for "Medici" to inspect their immediate marital coalition.
 
@@ -681,7 +681,7 @@ opened directly via **File ▸ Open Sample Network & Case Study...** or **Help �
 - **Academic Citation**:
   Zachary, W. W. (1977). An information flow model for conflict and fission in small groups. *Journal of Anthropological Research*, 33(4), 452–473. https://doi.org/10.1086/jar.33.4.3629752
 - **Guided Exercises in AGNA**:
-  1. *Community Detection*: Run **Analysis ▸ Clustering & Cohesion Battery** with **Community Detection (Louvain)** checked. Compare the discovered two communities to the historical split centered around Member 1 and Member 34.
+  1. *Community Detection*: Run **Analysis ▸ Clustering & Cohesion...** with **Community Detection (Louvain)** checked. Compare the discovered two communities to the historical split centered around Member 1 and Member 34.
   2. *High Modularity*: Inspect Newman's modularity score $Q$. A score above 0.35 confirms strong community clustering.
   3. *Core-Periphery*: Run **k-Core Decomposition** to discover the loyal inner circles ($k = 4$) surrounding each leader versus the peripheral fringe.
 
@@ -692,8 +692,8 @@ opened directly via **File ▸ Open Sample Network & Case Study...** or **Help �
 - **Academic Citation**:
   Davis, A., Gardner, B. B., & Gardner, M. R. (1941). *Deep South: A Social Anthropological Study of Caste and Class*. University of Chicago Press.
 - **Guided Exercises in AGNA**:
-  1. *Maximal Cliques*: Run **Analysis ▸ Clustering & Cohesion Battery** with **Maximal Cliques** enabled. Observe how the women partition into two major social cliques with several bridging liaisons (e.g., Ruth, Pearl).
-  2. *High Cohesion*: Run **Analysis ▸ Sociometrics & Basic Battery** to observe the unusually high network density of high-society co-attendance.
+  1. *Maximal Cliques*: Run **Analysis ▸ Clustering & Cohesion...** with **Maximal Cliques** enabled. Observe how the women partition into two major social cliques with several bridging liaisons (e.g., Ruth, Pearl).
+  2. *High Cohesion*: Run **Analysis ▸ Sociometric & Basic...** to observe the unusually high network density of high-society co-attendance.
   3. *Eigenvector Centrality*: Run **Analysis ▸ Spectral Centralities ▸ Bonacich Eigenvector** to discover which women occupy the core of the social elite.
 
 ### Fathers of Sociology — Theoretical Triad Closure

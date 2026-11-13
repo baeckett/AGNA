@@ -89,7 +89,7 @@ public class SampleNetworksDialog extends JDialog {
                 "Padgett, J. F., & Ansell, C. K. (1993). Robust action and the rise of the Medici, 1400-1434. American Journal of Sociology, 98(6), 1259-1319.",
                 "In 15th-century Renaissance Florence, the Medici family rose to political hegemony despite having less wealth than the Strozzi and fewer patrician ancestors than the Albizzi. Padgett and Ansell demonstrated that Cosimo de' Medici's political power stemmed from strategic network positioning: marriage alliances placed the Medici at the center of a structural hole, bridging opposing aristocratic factions who refused to ally with one another directly.",
                 "<ul>" +
-                "<li><b>Betweenness Centrality:</b> Run <i>Analysis ▸ Centrality & Prestige Battery</i>. Notice that the Medici family has a betweenness score of 0.522—more than double any other family—confirming their role as the indispensable political broker.</li>" +
+                "<li><b>Betweenness Centrality:</b> Run <i>Analysis ▸ Centrality & Prestige...</i>. Notice that the Medici family has a betweenness score of 0.522—more than double any other family—confirming their role as the indispensable political broker.</li>" +
                 "<li><b>Structural Holes:</b> Run <i>Analysis ▸ Social Capital & Structural Holes (Burt)</i>. Observe Medici's exceptionally low constraint (0.209), proving their access to non-redundant communication channels.</li>" +
                 "<li><b>Ego Network:</b> Use <i>Network ▸ Extract Ego Network</i> for 'Medici' to see their direct coalition.</li>" +
                 "</ul>"
@@ -102,7 +102,7 @@ public class SampleNetworksDialog extends JDialog {
                 "Zachary, W. W. (1977). An information flow model for conflict and fission in small groups. Journal of Anthropological Research, 33(4), 452-473.",
                 "Wayne Zachary spent two years observing social interactions among 34 members of a university karate club. During the study, a dispute over lesson fees erupted between the club's martial arts instructor (Mr. Hi / Member 1) and its president (John A. / Member 34). The club subsequently fractured into two distinct organizations. This dataset is the world's most famous benchmark for community detection and network fission models.",
                 "<ul>" +
-                "<li><b>Community Detection:</b> Run <i>Analysis ▸ Clustering & Cohesion Battery</i> with <b>Community Detection (Louvain)</b> checked. Compare the discovered two communities to the historical split centered around Member 1 and Member 34.</li>" +
+                "<li><b>Community Detection:</b> Run <i>Analysis ▸ Clustering & Cohesion...</i> with <b>Community Detection (Louvain)</b> checked. Compare the discovered two communities to the historical split centered around Member 1 and Member 34.</li>" +
                 "<li><b>High Modularity:</b> Check Newman's modularity score Q. A score above 0.35 proves significant community structure.</li>" +
                 "<li><b>Coreness:</b> Run <i>k-Core Decomposition</i> to identify the loyal inner cores surrounding each leader.</li>" +
                 "</ul>"
@@ -115,7 +115,7 @@ public class SampleNetworksDialog extends JDialog {
                 "Davis, A., Gardner, B. B., & Gardner, M. R. (1941). Deep South: A social anthropological study of caste and class. University of Chicago Press.",
                 "A foundational anthropological study of social stratification in Natchez, Mississippi. Researchers recorded 18 women attending 14 informal social events (teas, parties, bridge games) over nine months. The one-mode projection records shared social event co-attendance, illustrating how overlapping informal circles structure social class and prestige.",
                 "<ul>" +
-                "<li><b>Maximal Cliques:</b> Run <i>Analysis ▸ Clustering & Cohesion Battery</i> with <b>Maximal Cliques</b> enabled. Notice how the women partition into two major social cliques with several bridging liaisons (e.g., Ruth, Pearl).</li>" +
+                "<li><b>Maximal Cliques:</b> Run <i>Analysis ▸ Clustering & Cohesion...</i> with <b>Maximal Cliques</b> enabled. Notice how the women partition into two major social cliques with several bridging liaisons (e.g., Ruth, Pearl).</li>" +
                 "<li><b>Density & Cohesion:</b> Run <i>Analysis ▸ Basic Description</i> to observe the unusually high network density of high-society co-attendance.</li>" +
                 "<li><b>Eigenvector Centrality:</b> Discover who occupies the core of the social socialite elite.</li>" +
                 "</ul>"
@@ -140,7 +140,7 @@ public class SampleNetworksDialog extends JDialog {
                 "Freeman, L. C. (1979). Centrality in social networks: Conceptual clarification. Social Networks, 1(3), 215-239.",
                 "The canonical star network consists of one central hub connected to 9 peripheral spokes with zero ties among the spokes. Freeman proved mathematically that the star network is the unique graph structure that simultaneously maximizes degree centralization (1.0), betweenness centralization (1.0), and closeness centralization (1.0).",
                 "<ul>" +
-                "<li><b>Centralization Verification:</b> Run <i>Analysis ▸ Centrality & Prestige Battery</i>. Confirm that all Freeman centralization indices are exactly 1.0000.</li>" +
+                "<li><b>Centralization Verification:</b> Run <i>Analysis ▸ Centrality & Prestige...</i>. Confirm that all Freeman centralization indices are exactly 1.0000.</li>" +
                 "<li><b>Diameter & Radius:</b> Notice that the center has eccentricity 1 while all spokes have eccentricity 2 (diameter = 2).</li>" +
                 "</ul>"
         ));
@@ -152,7 +152,7 @@ public class SampleNetworksDialog extends JDialog {
                 "Watts, D. J., & Strogatz, S. H. (1998). Collective dynamics of 'small-world' networks. Nature, 393(6684), 440-442.",
                 "A 2-regular ring lattice where every actor connects symmetrically to exactly two neighbors. Represents the complete opposite of a star: total equality, zero centralization (0.0), and homogeneous local structure.",
                 "<ul>" +
-                "<li><b>Zero Centralization:</b> Run <i>Analysis ▸ Centrality & Prestige Battery</i>. Notice that degree and closeness centralizations are exactly 0.0000.</li>" +
+                "<li><b>Zero Centralization:</b> Run <i>Analysis ▸ Centrality & Prestige...</i>. Notice that degree and closeness centralizations are exactly 0.0000.</li>" +
                 "<li><b>Transitivity:</b> Check transitivity on a simple ring (0.0000, since no 3-cycles exist without chord shortcuts).</li>" +
                 "</ul>"
         ));

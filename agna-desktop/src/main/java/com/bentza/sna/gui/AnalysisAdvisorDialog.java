@@ -80,7 +80,7 @@ public class AnalysisAdvisorDialog extends JDialog {
                 "Identify high-volume participants, opinion leaders, and recipients of deference or nominations.",
                 "<b>Recommended Algorithms:</b> Nodal Degree, In-Degree (Prestige/Popularity), Out-Degree (Expansiveness), and Eigenvector Centrality.<br>"
                 + "<i>Interpretation:</i> In-degree identifies who is sought after for advice; out-degree measures communication initiative.",
-                "Open Centrality Battery...",
+                "Open Centrality & Prestige...",
                 AdvisorAction.OPEN_CENTRALITY
         ));
         contentPanel.add(Box.createVerticalStrut(10));
@@ -91,7 +91,7 @@ public class AnalysisAdvisorDialog extends JDialog {
                 "Detect structural bottlenecks, strategic gatekeepers, and actors with non-redundant bridging ties.",
                 "<b>Recommended Algorithms:</b> Freeman Betweenness Centrality and Ronald Burt's Social Capital & Structural Holes.<br>"
                 + "<i>Interpretation:</i> High betweenness and low constraint pinpoint brokers who profit from information arbitrage and bridge structural holes.",
-                "Open Centrality & Brokerage...",
+                "Open Centrality & Prestige...",
                 AdvisorAction.OPEN_CENTRALITY
         ));
         contentPanel.add(Box.createVerticalStrut(10));
@@ -102,7 +102,7 @@ public class AnalysisAdvisorDialog extends JDialog {
                 "Discover tightly-knit cliques, community clusters, and core-periphery structures automatically.",
                 "<b>Recommended Algorithms:</b> Community Detection (Louvain Modularity Q), Watts-Strogatz Local Clustering, and k-Core Decomposition.<br>"
                 + "<i>Interpretation:</i> Modularity Q > 0.3 proves non-random community clustering; k-cores reveal the resilient organizational inner circle.",
-                "Open Clustering & Communities...",
+                "Open Clustering & Cohesion...",
                 AdvisorAction.OPEN_CLUSTERING
         ));
         contentPanel.add(Box.createVerticalStrut(10));
@@ -113,7 +113,7 @@ public class AnalysisAdvisorDialog extends JDialog {
                 "Determine whether power and ties are concentrated around a single central hub or dispersed evenly.",
                 "<b>Recommended Algorithms:</b> Freeman (1979) Global Centralization (C_D, C_B, C_C) and Newman Degree Assortativity (r).<br>"
                 + "<i>Interpretation:</i> Centralization close to 1.0 denotes a star-like autocracy; centralization near 0.0 indicates decentralized equality.",
-                "Open Sociometrics & Centralization...",
+                "Open Sociometric & Basic...",
                 AdvisorAction.OPEN_SOCIOMETRICS
         ));
         contentPanel.add(Box.createVerticalStrut(10));
@@ -124,7 +124,7 @@ public class AnalysisAdvisorDialog extends JDialog {
                 "Measure overall communication efficiency, network diameter, and independence from intermediaries.",
                 "<b>Recommended Algorithms:</b> Closeness Centrality, Geodesic Distance Matrix, and Network Diameter.<br>"
                 + "<i>Interpretation:</i> High closeness actors need the fewest steps to reach the entire population; small diameter indicates rapid diffusion.",
-                "Open Distances Battery...",
+                "Open Distances & Geodesics...",
                 AdvisorAction.OPEN_DISTANCES
         ));
         contentPanel.add(Box.createVerticalStrut(10));
@@ -140,12 +140,12 @@ public class AnalysisAdvisorDialog extends JDialog {
         ));
         contentPanel.add(Box.createVerticalStrut(10));
 
-        // Question 7: Full Battery
+        // Question 7: Full Analysis
         contentPanel.add(createAdvisorCard(
                 "📋 Run everything in one comprehensive analytical pass",
                 "Execute the complete suite of sociometric, centrality, geodesic, clustering, and structural hole metrics.",
-                "<b>Recommended:</b> Full Analysis Battery with customizable modules and automated Plain-English Takeaways.",
-                "Open Full Analysis Battery...",
+                "<b>Recommended:</b> Full Analysis with customizable modules and automated Plain-English Takeaways.",
+                "Open Full Analysis...",
                 AdvisorAction.OPEN_FULL_ANALYSIS
         ));
 
