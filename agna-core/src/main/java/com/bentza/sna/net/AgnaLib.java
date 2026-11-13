@@ -3571,6 +3571,16 @@ import java.util.Vector;
         return it + bold + "PageRank Centrality (d=" + damping + ")" + unbold + " of " + unit + outsrc.getName() + lb;
     }
 
+    public String outFreemanCentralization(Network outsrc) {
+        com.bentza.sna.report.TableData table = AnalysisReportFactory.createFreemanCentralizationSummaryTable(outsrc, this);
+        if (table == null) {
+            return it + "Freeman Centralization indices require N >= 3." + unit + lb;
+        }
+        AnalysisReport report = new AnalysisReport("Freeman Network Centralization Indices", outsrc.getName());
+        report.addTable(table);
+        return "text/html".equals(AppRuntime.outputContentType()) ? report.toHtmlReport() : report.toPlainText();
+    }
+
     public String outCentralityBattery(Network outsrc, CentralityOptions options) {
         String legacy = legacyOutCentralityBattery(outsrc, options);
         AnalysisReport report = AnalysisReportFactory.createCentralityBatteryReport(outsrc, this, options, legacy);

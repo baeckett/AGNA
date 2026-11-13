@@ -27,8 +27,30 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <p>no undirected density exists.</p>
 <h2 id="nodal-degree-and-direction" name="nodal-degree-and-direction">Nodal degree and direction</h2>
 <p>Outdegree d⁺(i) = Σⱼ A[i][j]; indegree d⁻(j) = Σᵢ A[i][j]. Emission</p>
-<p>degree and reception degree are the weighted variants (they sum the tie</p>
+<p>degree and reception degree are the valued/weighted variants (they sum the tie</p>
 <p><i>values</i>, not just the non-zero cells).</p>
+<h2 id="freeman-1979-global-network-centralization" name="freeman-1979-global-network-centralization">Freeman (1979) Global Network Centralization</h2>
+<p>Network centralization characterizes the degree of inequality or concentration</p>
+<p>of centrality across the entire network, benchmarked against the theoretically</p>
+<p>most centralized graph of the same order: the star graph (Freeman, 1979).</p>
+<p>General centralization formula:</p>
+<p><code>C_X = Σᵢ [C_X(v*) − C_X(v_i)] / max_possible_sum</code></p>
+<p>where <code>v*</code> is the actor with the highest centrality in the network.</p>
+<ul><li><b>Degree Centralization (C_D)</b>:</li></ul>
+<p>  - Undirected networks: <code>C_D = Σᵢ [d(v*) − d(v_i)] / [(n − 1)(n − 2)]</code></p>
+<p>  - Directed in-degree: <code>C_D(In) = Σᵢ [d_in(v*) − d_in(v_i)] / [(n − 1)²]</code></p>
+<p>  - Directed out-degree: <code>C_D(Out) = Σᵢ [d_out(v*) − d_out(v_i)] / [(n − 1)²]</code></p>
+<p>  - Directed total degree: <code>C_D(Total) = Σᵢ [d_tot(v*) − d_tot(v_i)] / [(n − 1)(n − 2)]</code></p>
+<p>  - Range: <code>[0.0, 1.0]</code>. Exactly 1.0 for the star network; 0.0 for complete or regular graphs.</p>
+<ul><li><b>Betweenness Centralization (C_B)</b>:</li></ul>
+<p>  <code>C_B = Σᵢ [C_B(v*) − C_B(v_i)] / (n − 1)</code></p>
+<p>  where <code>C_B</code> is raw Brandes betweenness, and the denominator represents the maximum possible sum of betweenness differences achieved uniquely by a star graph center <code>(n − 1)²(n − 2) / 2</code>.</p>
+<ul><li><b>Closeness Centralization (C_C)</b>:</li></ul>
+<p>  <code>C_C = Σᵢ [C&#x27;_C(v*) − C&#x27;_C(v_i)] / [ (n − 2)(n − 1) / (2n − 3) ]</code></p>
+<p>  where <code>C&#x27;_C(i) = (n − 1) / Σⱼ d(i, j)</code> is normalized closeness centrality.</p>
+<ul><li><b>Bavelas-Leavitt Centralization (C_Bav)</b>:</li></ul>
+<p>  Graph-level centralization of Bavelas index benchmarked against star topology.</p>
+<p><i>Note on disconnected networks</i>: Geodesic-based centralization measures (betweenness, closeness, Bavelas) require a single connected component. On disconnected graphs, Agna reports <code>N/A (Disconnected)</code> and notes that distances between components are undefined.</p>
 <h2 id="geodesics-and-shortest-paths" name="geodesics-and-shortest-paths">Geodesics and shortest paths</h2>
 <p>The geodesics matrix holds shortest-path hop counts. A 0 entry means &quot;no</p>
 <p>path&quot; (and the diagonal). Shortest Paths reports the actual intermediate</p>
@@ -44,10 +66,10 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <p>shortest s–t paths that pass through the actor.</p>
 <h2 id="bavelas-closeness-and-fareness" name="bavelas-closeness-and-fareness">Bavelas, closeness and fareness</h2>
 <p>Distance-based centralities built on the geodesic matrix. They require a</p>
-<p>connected network (see above); read the exact normalisation in the</p>
-<p>formulas.wpd companion — the family differs between authors, and Agna</p>
-<p>implements the classic versions named after Bavelas-Leavitt, closeness</p>
-<p>and fareness.</p>
+<p>connected network (see above):</p>
+<ul><li><b>Closeness</b>: <code>(n − 1) / Σⱼ d(i, j)</code></li></ul>
+<ul><li><b>Fareness</b>: <code>Σⱼ d(i, j)</code> (sum of geodesic distances to all other nodes)</li></ul>
+<ul><li><b>Bavelas-Leavitt</b>: <code>[ Σᵢ Σⱼ d(i, j) ] / [ 2 · Σⱼ d(i, j) ]</code></li></ul>
 <h2 id="prestige" name="prestige">Prestige</h2>
 <p>Proximity prestige (Lin 1976): the share of other actors that can reach</p>
 <p>i, times the average closeness of those actors; 0 when nobody can reach</p>
@@ -60,12 +82,96 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <p>Status = (in-strength + out-strength) / (n − 1). These are Agna&#x27;s own</p>
 <p>coefficients; verify they match the convention in your field before</p>
 <p>citing them.</p>
-<h2 id="a-note-on-distances" name="a-note-on-distances">A note on distances</h2>
-<p>Analyses that depend on distances assume unweighted (graph) distances;</p>
-<p>edge <i>values</i> are used by the degree/status/density statistics, not by</p>
-<p>the path-based measures.</p>
+<h2 id="newman-degree-assortativity--mixing-regimes" name="newman-degree-assortativity--mixing-regimes">Newman Degree Assortativity &amp; Mixing Regimes</h2>
+<p>Newman&#x27;s degree assortativity coefficient <code>r</code> measures the Pearson correlation</p>
+<p>of degrees at the endpoints of each edge:</p>
+<p><code>r = (Σ_e j_e k_e / M − [Σ_e (j_e + k_e) / (2M)]²) / (Σ_e (j_e² + k_e²) / (2M) − [Σ_e (j_e + k_e) / (2M)]²)</code></p>
+<p>where <code>M</code> is total edges, and <code>j_e, k_e</code> are degrees of vertices linked by edge <code>e</code>.</p>
+<ul><li>Range: <code>[-1.0, 1.0]</code>. Positive <code>r</code> (assortative) indicates high-degree nodes link preferentially to high-degree nodes (common in social networks). Negative <code>r</code> (disassortative) indicates hubs link to low-degree leaves (common in technological and biological networks).</li></ul>
+<ul><li>Directed networks: Agna computes four distinct directed mixing coefficients:</li></ul>
+<p>  - <code>Out-In</code>: outgoing degree of source vs. incoming degree of target</p>
+<p>  - <code>In-In</code>: incoming degree of source vs. incoming degree of target</p>
+<p>  - <code>Out-Out</code>: outgoing degree of source vs. outgoing degree of target</p>
+<p>  - <code>In-Out</code>: incoming degree of source vs. outgoing degree of target</p>
+<h2 id="community-detection-louvain-modularity--girvan-newman" name="community-detection-louvain-modularity--girvan-newman">Community Detection (Louvain Modularity &amp; Girvan-Newman)</h2>
+<p>Community detection identifies cohesive subgroups with high internal tie</p>
+<p>density and sparse external ties.</p>
+<ul><li><b>Newman Modularity (Q)</b>:</li></ul>
+<p>  <code>Q = (1 / 2m) Σ_{ij} [ A_{ij} − (k_i k_j / 2m) ] δ(c_i, c_j)</code></p>
+<p>  where <code>m</code> is total edge weight, <code>k_i</code> is degree, and <code>δ(c_i, c_j) = 1</code> if nodes belong to the same community.</p>
+<ul><li><b>Louvain Heuristic</b>: Fast multi-phase greedy algorithm optimizing modularity locally, then aggregating communities into meta-nodes and repeating until <code>ΔQ ≤ 0</code>.</li></ul>
+<ul><li><b>Girvan-Newman Divisive Algorithm</b>: Iteratively computes Brandes edge betweenness, removes the edge with highest betweenness, tracks modularity <code>Q</code> of each partition, and selects the division with peak modularity.</li></ul>
+<h2 id="structural-equivalence--blockmodeling" name="structural-equivalence--blockmodeling">Structural Equivalence &amp; Blockmodeling</h2>
+<p>Two actors are structurally equivalent if they have identical ties to and from</p>
+<p>all other actors in the network (Lorrain &amp; White, 1971; Burt, 1976).</p>
+<ul><li><b>Euclidean Distance</b>:</li></ul>
+<p>  <code>d(i, j) = √[ Σ_k (A_{ik} − A_{jk})² + Σ_k (A_{ki} − A_{kj})² ]</code></p>
+<p>  A distance of 0.0 indicates perfect structural equivalence.</p>
+<ul><li><b>Pearson Profile Correlation</b>:</li></ul>
+<p>  Correlation between the combined emission and reception profiles of actor <code>i</code> and actor <code>j</code>.</p>
+<ul><li><b>Blockmodel Partitioning</b>:</li></ul>
+<p>  Hierarchical average-linkage clustering groups actors into <code>K</code> positional blocks.</p>
+<ul><li><b>Image Matrix</b>:</li></ul>
+<p>  A <code>K × K</code> density table reporting the tie density between positions. Ties in the image matrix are dichotomized against the overall network density threshold <code>α</code>.</p>
+<h2 id="valued--weighted-network-metrics" name="valued--weighted-network-metrics">Valued &amp; Weighted Network Metrics</h2>
+<p>For networks with non-binary tie weights:</p>
+<ul><li><b>Node Strength</b>: In-strength <code>s⁻(i) = Σⱼ A[j][i]</code>, Out-strength <code>s⁺(i) = Σⱼ A[i][j]</code>, Total strength <code>s(i) = s⁻(i) + s⁺(i)</code>.</li></ul>
+<ul><li><b>Valued Network Density</b>: <code>Δ_w = Σ_{ij} A[i][j] / [ n(n − 1) · max(A) ]</code>.</li></ul>
+<ul><li><b>Barrat et al. (2004) Weighted Local Clustering</b>:</li></ul>
+<p>  <code>C_w(i) = [ 1 / (s_i (k_i − 1)) ] Σ_{j, h} [ (w_{ij} + w_{ih}) / 2 ] a_{ij} a_{ih} a_{jh}</code></p>
+<p>  Quantifies clustering while weighting triangles by the intensity of local interactions.</p>
+<h2 id="watts-strogatz-local-clustering--newman-transitivity" name="watts-strogatz-local-clustering--newman-transitivity">Watts-Strogatz Local Clustering &amp; Newman Transitivity</h2>
+<ul><li><b>Watts-Strogatz Local Clustering (C_i)</b>:</li></ul>
+<p>  <code>C_i = 2 T_i / [ k_i (k_i − 1) ]</code></p>
+<p>  where <code>T_i</code> is the number of triangles containing node <code>i</code>, and <code>k_i</code> is its degree. Mean clustering <code>⟨C⟩</code> averages <code>C_i</code> over all nodes with <code>k_i ≥ 2</code>.</p>
+<ul><li><b>Newman Global Transitivity (T)</b>:</li></ul>
+<p>  <code>T = 3 · Triangles / Connected_Triplets</code></p>
+<p>  Measures the overall fraction of two-step paths that are closed into triangles.</p>
+<h2 id="k-core-decomposition" name="k-core-decomposition">k-Core Decomposition</h2>
+<p>The <code>k</code>-core of a graph is the maximal induced subgraph in which every vertex</p>
+<p>has degree at least <code>k</code> (Seidman, 1983).</p>
+<ul><li>Computed using Batagelj &amp; Zaveršnik&#x27;s linear <code>O(V + E)</code> core percolation algorithm.</li></ul>
+<ul><li>Decomposes the network into nested core shells: <code>k = 1, 2, ..., k_max</code>.</li></ul>
+<ul><li>High <code>k_i</code> indicates membership in the densely interconnected central core.</li></ul>
+<h2 id="triad--dyad-census-holland-leinhardt" name="triad--dyad-census-holland-leinhardt">Triad &amp; Dyad Census (Holland-Leinhardt)</h2>
+<ul><li><b>Dyad Census</b>: Categorizes all <code>n(n − 1)/2</code> pairs into Mutual (M), Asymmetric (A), and Null (N) dyads. Dyadic reciprocity = <code>2M / (2M + A)</code>.</li></ul>
+<ul><li><b>Triad Census</b>: Enumerates all 16 mutually exclusive directed triad configurations in the Holland-Leinhardt (MAN) taxonomy (003, 012, 102, 021D, 021U, 021C, 111D, 111U, 030T, 030C, 201, 120D, 120U, 120C, 210, 300).</li></ul>
+<h2 id="social-capital--structural-holes-burt" name="social-capital--structural-holes-burt">Social Capital &amp; Structural Holes (Burt)</h2>
+<p>Ronald Burt&#x27;s (1992) structural holes theory posits that actors bridging</p>
+<p>disconnected clusters enjoy informational and brokerage advantages.</p>
+<ul><li><b>Dyadic Constraint</b>: <code>c_{ij} = (p_{ij} + Σ_q p_{iq} p_{qj})²</code></li></ul>
+<ul><li><b>Network Constraint (C_i)</b>: <code>C_i = Σ_j c_{ij}</code>. Low constraint indicates abundant structural holes.</li></ul>
+<ul><li><b>Effective Size (ES_i)</b>: <code>ES_i = Σ_j [ 1 − Σ_q p_{iq} m_{jq} ]</code> for <code>j ≠ i, q ≠ i, j</code>.</li></ul>
+<ul><li><b>Efficiency</b>: <code>E_i = ES_i / k_i</code>.</li></ul>
+<ul><li><b>Hierarchy (H_i)</b>: Degree to which constraint is concentrated in a single alter.</li></ul>
+<h2 id="connectivity-articulation-points-and-bridges" name="connectivity-articulation-points-and-bridges">Connectivity, Articulation Points and Bridges</h2>
+<ul><li><b>Weakly and Strongly Connected Components</b>: Computed via BFS and Tarjan&#x27;s linear <code>O(V + E)</code> algorithm.</li></ul>
+<ul><li><b>Articulation Points (Cut-Vertices)</b>: Vertices whose removal increases the number of connected components.</li></ul>
+<ul><li><b>Bridges</b>: Edges whose deletion partitions a component into two disconnected sets.</li></ul>
+<h2 id="spectral-centralities" name="spectral-centralities">Spectral Centralities</h2>
+<ul><li><b>Eigenvector Centrality (Bonacich, 1972)</b>:</li></ul>
+<p>  <code>A x = λ_1 x</code>. Uses shifted power iteration <code>(A + I)</code> guaranteeing unique Perron-Frobenius positive convergence without bipartite oscillation.</p>
+<ul><li><b>Bonacich Power Centrality</b>:</li></ul>
+<p>  <code>c(α, β) = α (I − β A)⁻¹ A 1</code>. Tunable attenuation <code>β</code>: positive <code>β</code> models social prestige / influence; negative <code>β</code> models exchange bargaining power.</p>
+<ul><li><b>PageRank Centrality (Page et al., 1999)</b>:</li></ul>
+<p>  Stationary distribution of random walk with restart: <code>PR(u) = (1 − d)/n + d Σ_{v ∈ In(u)} PR(v) / OutDeg(v)</code>. Configurable damping <code>d</code> (default 0.85).</p>
+<h2 id="structural-archetypes-diagnostic" name="structural-archetypes-diagnostic">Structural Archetypes Diagnostic</h2>
+<p>Classifies an empirical network against four classic theoretical paradigms:</p>
+<p>1. <b>Small-World / Weak Ties</b> (Watts-Strogatz, 1998; Humphries-Gurney, 2008): Small-world quotient <code>σ = (C / C_rand) / (L / L_rand) &gt; 1</code>.</p>
+<p>2. <b>Cumulative Advantage / Scale-Free</b> (Barabási-Albert, 1999; Price, 1976): Power-law MLE exponent <code>γ</code>, degree Gini inequality, and hub ratio <code>k_max / ⟨k⟩</code>.</p>
+<p>3. <b>Homophily &amp; Echo Chambers</b> (McPherson et al., 2001; Newman, 2006): Modularity <code>Q</code> and assortativity <code>r</code>.</p>
+<p>4. <b>Formal Hierarchy &amp; Authority</b> (Weber, 1922; Krackhardt, 1994): Krackhardt&#x27;s dimensions (Connectedness, Graph Hierarchy, Graph Efficiency, LUB).</p>
+<h2 id="hypothesis-testing-with-monte-carlo-null-models" name="hypothesis-testing-with-monte-carlo-null-models">Hypothesis Testing with Monte Carlo Null Models</h2>
+<p>Evaluates whether an observed structural statistic (density, clustering, reciprocity, assortativity) is statistically significant or an artifact of random chance:</p>
+<ul><li><b>Null Models</b>:</li></ul>
+<p>  - <code>Bernoulli Erdos-Renyi G(n, p)</code>: fixed density, edges placed uniformly at random.</p>
+<p>  - <code>Degree-Preserving Configuration Model</code>: stub-matching preserving exact in- and out-degree sequences.</p>
+<p>  - <code>Dyad Census Randomization</code>: preserves exact mutual, asymmetric, and null counts.</p>
+<ul><li><b>Outputs</b>: Empirical distribution mean <code>μ</code>, standard deviation <code>σ</code>, Z-score <code>Z = (X_obs − μ) / σ</code>, and two-tailed empirical p-value <code>p = (#{|X_sim − μ| ≥ |X_obs − μ|} + 1) / (R + 1)</code> across <code>R</code> iterations.</li></ul>
+<h2 id="algorithm-benchmarks-suite" name="algorithm-benchmarks-suite">Algorithm Benchmarks Suite</h2>
+<p>Measures empirical execution time (ms), throughput (ops/sec), and Big-O scaling across 10 foundational graph algorithms (Brandes betweenness, Freeman closeness, degree centralities, Watts-Strogatz clustering, Newman transitivity, Bron-Kerbosch cliques, all-pairs geodesics, graph diameter, and path routing).</p>
 <h2 id="n-cliques" name="n-cliques">N-Cliques</h2>
-<p>Enumerated with the Bron–Kerbosch (Tomita pivot) algorithm; the search is</p>
-<p>capped at 1000 reported cliques and the report says so when the cap is</p>
-<p>reached.</p>
+<p>Enumerated with the Bron–Kerbosch (Tomita pivot) algorithm; capped at 1000 reported cliques with explicit truncation notices if reached.</p>
+<h2 id="export-analysis-table" name="export-analysis-table">Export Analysis Table</h2>
+<p>Every analytical table in the modern HTML report contains an <code>[Export Table (CSV/JSON)]</code> action link opening the Export Table Dialog for previewing, copying to clipboard, or saving to CSV (RFC 4180), TSV, JSON, or HTML.</p>
 </body></html>

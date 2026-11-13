@@ -54,6 +54,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Implemented graph-level degree ($C_D$), betweenness ($C_B$), closeness ($C_C$), and Bavelas-Leavitt ($C_{\text{Bav}}$) centralization measures benchmarked against the star graph.
   - Generates dedicated Freeman Centralization summary tables across individual reports and consolidated battery reports.
   - Retired ambiguous legacy "Freeman General Coefficient" label; standardized all text and HTML reports on canonical Freeman (1979) centralization nomenclature ($C_D, C_B, C_C, C_{\text{Bav}}$) with $O(n)$ closed-form degree centralization.
+  - Added Agna Core method `AgnaLib.outFreemanCentralization(Network)`.
+  - Added CLI support: `agna analyse FILE --metric freeman|centralization|freeman-centralization`.
+- **Agna CLI Full Parity for Network Transformations**:
+  - Added CLI support for all `NetworkTransformService` operations in `agna transform IN OUT --op OP`:
+    - `zero-diagonal`: remove self-loops.
+    - `set-diagonal:V`: set diagonal cells to scalar `V`.
+    - `dichotomize:V`: threshold ties at value `V`.
+    - `slice:MIN:MAX`: filter ties within range `[MIN, MAX]`.
+    - `ego:NODE[:HOPS]`: extract 1-hop or 2-hop ego subnetwork.
+    - `combine:FILE:OP`: network algebra matrix combination (`add`, `subtract`, `min`, `hadamard`).
+    - `reorder:CRIT[:asc|desc]`: sort matrix by `name`, `degree`, `indegree`, or `outdegree`.
+- **Agna vs NetworkX Parity Battery & Verification Harness**:
+  - Built automated parity validation suite (`tools/nx-parity/run_parity_battery.py`, `tools/nx-parity/AgnaMetricsDump.java`) benchmarking Agna against NetworkX 3.4.2 across 7 benchmark networks and 18 graph metrics.
+  - Validated numerical equivalence across degree distributions, density, reciprocity, Brandes betweenness, closeness, Bavelas fareness, Watts-Strogatz clustering, Newman transitivity, k-core decomposition, dyad and triad censuses, Newman assortativity, and Louvain modularity.
+- **Documentation & In-App Help Updates**:
+  - Comprehensive update to `docs/manual.md` documenting Freeman centralization, Newman assortativity, Louvain & Girvan-Newman community detection, structural equivalence, weighted metrics, all matrix transformations, and UCINET DL format.
+  - Regenerated all in-app HTML help files via `tools/md2help.py`.
+  - Updated `docs/cli.md` with complete CLI documentation for all new 2.1.6 options.
 - **Newman Degree Assortativity & Directed Mixing Patterns (`com.bentza.sna.stats.DegreeAssortativity`)**:
   - Implemented Newman (2002/2003) total degree assortativity correlation coefficient $r$ and directed mixing patterns ($r_{\text{out-in}}, r_{\text{in-in}}, r_{\text{out-out}}, r_{\text{in-out}}$).
   - CLI: `agna analyse FILE --metric assortativity`.

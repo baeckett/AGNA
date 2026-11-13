@@ -129,7 +129,7 @@ def main():
     refs = build_refs(sections)
 
     toc = ["<h1>Agna Help</h1>",
-           "<p>Contents of the Agna 2.1.3 manual. Choose a section:</p>",
+           "<p>Contents of the Agna 2.1.6 manual. Choose a section:</p>",
            "<ul>"]
     for title, _ in sections:
         toc.append('<li><a href="%s.htm">%s</a></li>' % (file_stem(title),

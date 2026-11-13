@@ -83,7 +83,8 @@ public final class Cli
                 + "                                  diameter, bavelas, "
                 + "closeness, fareness, betweenness, prestige, cliques,\n"
                 + "                                  clustering, transitivity, kcore, triads, holes, components, eigenvector, bonacich, pagerank,\n"
-                + "                                  assortativity, community, equivalence, weighted,\n"
+                + "                                  assortativity, community, equivalence, weighted, freeman, centralization,\n"
+                + "                                  centrality, distance-battery, clustering-battery, sociometrics,\n"
                 + "                                  open-chain, full); --all "
                 + "runs every metric; --out saves the report\n"
                 + "  convert IN OUT [--in-format F] [--out-format F]\n"
@@ -94,9 +95,9 @@ public final class Cli
                 + "  transform IN OUT --op OP       transpose | symmetrize-max "
                 + "| symmetrize-min | symmetrize-average | symmetrize-sum | symmetrize-union | symmetrize-intersect | symmetrize-below |\n"
                 + "                                  normalize-binary | "
-                + "normalize-threshold:V | add-scalar:V |\n"
-                + "                                  multiply-scalar:V | "
-+ "                                  square | merge:FILE:POLICY |\n"
+                + "normalize-threshold:V | add-scalar:V | multiply-scalar:V | square |\n"
+                + "                                  zero-diagonal | set-diagonal:V | dichotomize:V | slice:MIN:MAX |\n"
+                + "                                  ego:NODE[:HOPS] | combine:FILE:OP | reorder:CRIT[:asc|desc] | merge:FILE:POLICY |\n"
                 + "                                  delete-node:N | "
                 + "delete-nodes:N1,N2,.. | isolate:N |\n"
                 + "                                  merge-nodes:N1,N2,.. | "
@@ -642,6 +643,9 @@ public final class Cli
             case "weighted-metrics": return lib.outWeightedMetrics(net);
             case "centrality":
             case "centrality-battery": return lib.outCentralityBattery(net, null);
+            case "freeman":
+            case "centralization":
+            case "freeman-centralization": return lib.outFreemanCentralization(net);
             case "distance-battery": return lib.outDistanceBattery(net, null);
             case "clustering-battery": return lib.outClusteringBattery(net, null);
             case "sociometrics":
@@ -843,6 +847,67 @@ public final class Cli
                 }
             net.setValue(0f, nw, src);
             net.setValue(0f, src, nw);
+            } else if ("zero-diagonal".equals(op))
+            {
+            com.bentza.sna.transform.NetworkTransformService.zeroDiagonal(net);
+            } else if (op.startsWith("set-diagonal:"))
+            {
+            float val = Float.parseFloat(op.substring(op.indexOf(':') + 1));
+            com.bentza.sna.transform.NetworkTransformService.setDiagonal(net, val);
+            } else if (op.startsWith("dichotomize:"))
+            {
+            float thresh = Float.parseFloat(op.substring(op.indexOf(':') + 1));
+            com.bentza.sna.transform.NetworkTransformService.dichotomize(net, thresh, true);
+            } else if (op.startsWith("slice:"))
+            {
+            String[] parts = op.substring(op.indexOf(':') + 1).split(":");
+            if (parts.length < 2)
+                {
+                out.println("slice requires MIN:MAX");
+                return false;
+                }
+            com.bentza.sna.transform.NetworkTransformService.slice(net, Float.parseFloat(parts[0]), Float.parseFloat(parts[1]));
+            } else if (op.startsWith("ego:"))
+            {
+            String[] parts = op.substring(op.indexOf(':') + 1).split(":");
+            int idx = findActor(net, parts[0]);
+            if (idx < 0)
+                {
+                out.println("no such node: " + parts[0]);
+                return false;
+                }
+            int radius = parts.length > 1 ? Integer.parseInt(parts[1]) : 1;
+            boolean egoIncluded = parts.length <= 2 || Boolean.parseBoolean(parts[2]);
+            Network egoNet = com.bentza.sna.transform.NetworkTransformService.extractEgoNetwork(net, idx, radius, egoIncluded);
+            full.setNetwork(egoNet);
+            } else if (op.startsWith("combine:"))
+            {
+            String[] parts = op.substring(op.indexOf(':') + 1).split(":", 2);
+            if (parts.length < 2)
+                {
+                out.println("combine requires FILE:OP (add|subtract|min|hadamard)");
+                return false;
+                }
+            FullNet other = open(parts[0]);
+            String aopStr = parts[1].toLowerCase(java.util.Locale.ROOT);
+            com.bentza.sna.transform.NetworkTransformService.AlgebraOp aop =
+                    "subtract".equals(aopStr) || "sub".equals(aopStr) ? com.bentza.sna.transform.NetworkTransformService.AlgebraOp.SUBTRACT :
+                    "min".equals(aopStr) || "intersection".equals(aopStr) ? com.bentza.sna.transform.NetworkTransformService.AlgebraOp.INTERSECTION_MIN :
+                    "hadamard".equals(aopStr) || "mul".equals(aopStr) || "multiply".equals(aopStr) ? com.bentza.sna.transform.NetworkTransformService.AlgebraOp.HADAMARD :
+                    com.bentza.sna.transform.NetworkTransformService.AlgebraOp.ADD;
+            Network comb = com.bentza.sna.transform.NetworkTransformService.combine(net, other.getNetwork(), aop);
+            full.setNetwork(comb);
+            } else if (op.startsWith("reorder:") || op.startsWith("sort:"))
+            {
+            String[] parts = op.substring(op.indexOf(':') + 1).split(":");
+            String critStr = parts[0].toLowerCase(java.util.Locale.ROOT);
+            com.bentza.sna.transform.NetworkTransformService.SortCriterion crit =
+                    critStr.contains("in") ? com.bentza.sna.transform.NetworkTransformService.SortCriterion.INDEGREE :
+                    critStr.contains("out") ? com.bentza.sna.transform.NetworkTransformService.SortCriterion.OUTDEGREE :
+                    critStr.contains("deg") ? com.bentza.sna.transform.NetworkTransformService.SortCriterion.DEGREE :
+                    com.bentza.sna.transform.NetworkTransformService.SortCriterion.NAME;
+            boolean asc = parts.length <= 1 || !"desc".equalsIgnoreCase(parts[1]);
+            com.bentza.sna.transform.NetworkTransformService.sortActors(net, crit, asc);
             } else
             {
             out.println("unknown op: " + op);

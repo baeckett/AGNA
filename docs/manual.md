@@ -9,14 +9,22 @@
   [File formats](#6-file-formats).
 - **Enter data**: with a new network (File ▸ New Network) the sociomatrix
   grid appears; type tie values into the cells. A value of 0 means "no
-  tie".
-- **Analyse**: pick an analysis from the Analysis menu; the report appears
-  in the Output pane, which doubles as a session log (every operation is
-  recorded there with a timestamp). Every computation is explained in
+  tie". Pre-defined theoretical network generators (Watts-Strogatz,
+  Barabasi-Albert, SBM, Erdos-Renyi, Organigram, lattices) are also
+  available.
+- **Analyse**: pick an analysis from the Analysis menu or run a consolidated
+  category battery (Sociometrics, Centrality, Distances, Clustering, Full
+  Analysis). Reports appear in the Output pane, which doubles as a session log
+  (every operation is recorded with a timestamp) and supports one-click table
+  export to CSV, TSV, JSON, or HTML. Every computation is explained in
   [Methodology](#4-methodology--what-exactly-is-computed-read-before-publishing-results).
+- **Automate and script**: use the `agna` command-line interface (`agna-cli`)
+  for headless scripting, batch matrix conversions, structural transformations,
+  Monte Carlo hypothesis testing, benchmarking, and parity checks against
+  NetworkX or R.
 - **Move data to other tools**: use File ▸ Save Network As... and choose
-  GraphML, GML, GraphSON or Pajek — Gephi, Cytoscape, NetworkX, igraph and
-  the R SNA packages all read at least one of these.
+  GraphML, GML, GraphSON, Pajek, or UCINET DL — Gephi, Cytoscape, NetworkX,
+  igraph and R SNA packages all read at least one of these.
 - **Get help**: Help ▸ Contents opens this manual; click anywhere on the
   startup splash to skip it.
 
@@ -29,10 +37,22 @@
   undirected tie (edge) goes both ways. Agna stores arcs; a network whose
   matrix is symmetric is read as possibly undirected.
 - **Degree**: for directed networks, outdegree = number of outgoing ties,
-  indegree = number of incoming ties; nodal degree = the pair.
+  indegree = number of incoming ties; nodal degree = the pair or total sum.
 - **Geodesic**: the shortest path between two actors, measured in hops.
 - **Outsider / isolate**: an actor with an all-zero row *and* an all-zero
   column (neither emits nor receives).
+- **Centralization**: a macro graph-level index measuring the extent to which
+  ties or shortest paths are concentrated around a single central hub actor
+  compared to the theoretical maximum (the star graph).
+- **Assortativity**: the correlation of degrees between linked actors —
+  assortative networks connect high-degree hubs to other hubs, while
+  disassortative networks connect hubs to peripheral nodes.
+- **Modularity & Communities**: a partition of vertices into dense clusters
+  with high internal tie density and sparse bridging ties to other clusters,
+  quantified by Newman's modularity score Q.
+- **Structural Equivalence**: the degree to which two actors occupy identical
+  relational positions by connecting to identical partners with identical tie
+  strengths.
 - **Walk vs path**: a walk may repeat actors; a path may not. Matrices
   square to count walks of length 2.
 
@@ -49,55 +69,38 @@ to read exactly what is calculated.
 - **Network**:
   - Title...; Add Nodes...; Delete Selected Node — bookkeeping, no
     computation.
-  - [Add Scalar...](#add-scalar) — shifts all
-    off-diagonal values by a constant.
-  - [Scalar Multiplication...](#scalar-multiplication)
-    — scales all off-diagonal values by a factor.
-  - [Transpose](#transpose) — mirrors the
-    matrix across the diagonal.
-  - [Symmetrize...](#symmetrize) — makes the
-    matrix symmetric; choose among 13 rules.
-  - [Normalize (Binarize)...](#normalize-binarize)
-    — dichotomise to 0/1, or threshold a weighted matrix.
-  - [Remove Outsiders](#remove-outsiders) —
-    delete isolates.
-  - Renumber Nodes... — replaces names with numbers, no computation.
-  - [Square Matrix](#square-matrix) — M×M,
-    counting two-step walks.
+  - [Add Scalar...](#add-scalar) — shifts all off-diagonal values by a constant.
+  - [Scalar Multiplication...](#scalar-multiplication) — scales all off-diagonal values by a factor.
+  - [Transpose](#transpose) — mirrors the matrix across the diagonal.
+  - [Symmetrize...](#symmetrize) — makes the matrix symmetric; choose among 13 rules.
+  - [Normalize (Binarize)...](#normalize-binarize) — dichotomise to 0/1, or threshold a weighted matrix.
+  - [Dichotomize / Threshold Ties...](#dichotomize--threshold-ties) — binary cut-off at custom threshold.
+  - [Zero Diagonal (Remove Self-Loops)](#zero-diagonal-remove-self-loops) — resets all diagonal elements to 0.
+  - [Set Diagonal to Value...](#set-diagonal-to-value) — sets all diagonal elements to a constant.
+  - [Extract Ego Network...](#extract-ego-network) — extracts the 1-hop or 2-hop ego subnetwork for an actor.
+  - [Network Algebra (Combine Networks)...](#network-algebra-combine-networks) — element-wise addition, subtraction, intersection min, or Hadamard product.
+  - [Reorder Sociomatrix / Sort Actors...](#reorder-sociomatrix--sort-actors) — permute matrix by Name, Degree, Indegree, or Outdegree.
+  - [Remove Outsiders](#remove-outsiders) — delete isolates.
+  - Renumber Nodes... — replaces names with numbers.
+  - [Square Matrix](#square-matrix) — M×M, counting two-step walks.
 - **Analysis**:
-  - Basic Description — the [full methodology page](#4-methodology--what-exactly-is-computed-read-before-publishing-results)
-    explains every number it reports.
-  - [Nodal Degree](#nodal-degree-and-direction),
-    [Indegree](#nodal-degree-and-direction),
-    [Outdegree](#nodal-degree-and-direction)
-    — per-direction degree counts.
-  - [Density](#density)
-    — the share of possible ties that exist.
-  - [Cohesion](#cohesion)
-    — the share of mutual dyads.
-  - Emission Degree, Reception Degree — the weighted out/in totals, see
-    [Nodal degree and direction](#nodal-degree-and-direction).
-  - [Determination Degree](#determination-and-sociometric-status),
-    [Sociometric Status](#determination-and-sociometric-status)
-    — Agna's own status coefficients.
-  - [Eccentricity](#eccentricity-and-diameter),
-    [Diameter](#eccentricity-and-diameter)
-    — the longest geodesics.
-  - [Geodesic Matrix](#geodesics-and-shortest-paths),
-    [Shortest Paths...](#geodesics-and-shortest-paths),
-    [All Shortest Paths](#geodesics-and-shortest-paths).
-  - [N-Cliques](#n-cliques).
-  - [Bavelas-Leavitt](#bavelas-closeness-and-fareness),
-    [Closeness](#bavelas-closeness-and-fareness),
-    [Fareness](#bavelas-closeness-and-fareness)
-    — the distance-based centralities.
-  - [Betweenness](#betweenness).
-  - [Prestige](#prestige).
-  - Full Analysis — the whole battery in one pass.
+  - [Full Analysis Battery...](#full-analysis-battery) — configurable execution of all analytical modules with presets.
+  - [Sociometrics & Basic Battery...](#sociometrics--basic-battery) — macro parameters, density, dyad census, Newman assortativity, and valued/weighted metrics.
+  - [Centrality & Prestige Battery...](#centrality--prestige-battery) — degree, geodesic (betweenness, closeness, fareness, Bavelas), prestige, and spectral centralities, plus the Freeman Centralization summary table.
+  - [Distances & Geodesics Battery...](#distances--geodesics-battery) — geodesic matrix, eccentricity, diameter, and shortest paths.
+  - [Clustering & Cohesion Battery...](#clustering--cohesion-battery) — Watts-Strogatz local clustering, Newman transitivity, k-core, cohesion, maximal cliques, Louvain / Girvan-Newman community detection, and structural equivalence.
+  - [Social Capital & Structural Holes (Burt)...](#social-capital--structural-holes-burt) — constraint, effective size, efficiency, and hierarchy.
+  - [Connectivity & Articulation Points...](#connectivity-articulation-points-and-bridges) — connected components, cut-vertices, and bridges.
+  - [Triad & Dyad Census (Holland-Leinhardt)...](#triad--dyad-census-holland-leinhardt) — complete 16 MAN triad census and reciprocity.
+  - [Spectral Centralities](#spectral-centralities) — Eigenvector (Bonacich), Bonacich Power c(alpha, beta), PageRank.
+  - [Structural Archetypes Diagnostic...](#structural-archetypes-diagnostic) — test empirical networks against small-world, scale-free, homophily, and hierarchy theories.
+  - [Hypothesis Testing (Null Models)...](#hypothesis-testing-with-monte-carlo-null-models) — Monte Carlo significance tests with Bernoulli Erdos-Renyi and degree-preserving configuration models.
+  - [Algorithm Benchmarks...](#algorithm-benchmarks-suite) — empirical execution time and scaling benchmarks.
+  - [Export Analysis Table...](#export-analysis-table) — export any displayed report table to CSV, TSV, JSON, or HTML.
 - **View / Output**: Network Viewer (and its Close item); Hide/Show
   Output; Open/Save/Clear the Output pane (the [session log](#session-log)).
 - **Preferences**: Working Directory...; Save Settings As Default...;
-  Look and Feel.
+  Look and Feel (FlatLaf Light, FlatLaf Dark, Native, Classic).
 - **Help**: Contents...; About Agna...
 
 ## 4. Methodology — what exactly is computed (read before publishing results)
@@ -112,8 +115,36 @@ no undirected density exists.
 ### Nodal degree and direction
 
 Outdegree d⁺(i) = Σⱼ A[i][j]; indegree d⁻(j) = Σᵢ A[i][j]. Emission
-degree and reception degree are the weighted variants (they sum the tie
+degree and reception degree are the valued/weighted variants (they sum the tie
 *values*, not just the non-zero cells).
+
+### Freeman (1979) Global Network Centralization
+
+Network centralization characterizes the degree of inequality or concentration
+of centrality across the entire network, benchmarked against the theoretically
+most centralized graph of the same order: the star graph (Freeman, 1979).
+
+General centralization formula:
+`C_X = Σᵢ [C_X(v*) − C_X(v_i)] / max_possible_sum`
+
+where `v*` is the actor with the highest centrality in the network.
+
+- **Degree Centralization (C_D)**:
+  - Undirected networks: `C_D = Σᵢ [d(v*) − d(v_i)] / [(n − 1)(n − 2)]`
+  - Directed in-degree: `C_D(In) = Σᵢ [d_in(v*) − d_in(v_i)] / [(n − 1)²]`
+  - Directed out-degree: `C_D(Out) = Σᵢ [d_out(v*) − d_out(v_i)] / [(n − 1)²]`
+  - Directed total degree: `C_D(Total) = Σᵢ [d_tot(v*) − d_tot(v_i)] / [(n − 1)(n − 2)]`
+  - Range: `[0.0, 1.0]`. Exactly 1.0 for the star network; 0.0 for complete or regular graphs.
+- **Betweenness Centralization (C_B)**:
+  `C_B = Σᵢ [C_B(v*) − C_B(v_i)] / (n − 1)`
+  where `C_B` is raw Brandes betweenness, and the denominator represents the maximum possible sum of betweenness differences achieved uniquely by a star graph center `(n − 1)²(n − 2) / 2`.
+- **Closeness Centralization (C_C)**:
+  `C_C = Σᵢ [C'_C(v*) − C'_C(v_i)] / [ (n − 2)(n − 1) / (2n − 3) ]`
+  where `C'_C(i) = (n − 1) / Σⱼ d(i, j)` is normalized closeness centrality.
+- **Bavelas-Leavitt Centralization (C_Bav)**:
+  Graph-level centralization of Bavelas index benchmarked against star topology.
+
+*Note on disconnected networks*: Geodesic-based centralization measures (betweenness, closeness, Bavelas) require a single connected component. On disconnected graphs, Agna reports `N/A (Disconnected)` and notes that distances between components are undefined.
 
 ### Geodesics and shortest paths
 
@@ -137,10 +168,10 @@ shortest s–t paths that pass through the actor.
 ### Bavelas, closeness and fareness
 
 Distance-based centralities built on the geodesic matrix. They require a
-connected network (see above); read the exact normalisation in the
-formulas.wpd companion — the family differs between authors, and Agna
-implements the classic versions named after Bavelas-Leavitt, closeness
-and fareness.
+connected network (see above):
+- **Closeness**: `(n − 1) / Σⱼ d(i, j)`
+- **Fareness**: `Σⱼ d(i, j)` (sum of geodesic distances to all other nodes)
+- **Bavelas-Leavitt**: `[ Σᵢ Σⱼ d(i, j) ] / [ 2 · Σⱼ d(i, j) ]`
 
 ### Prestige
 
@@ -160,24 +191,133 @@ Status = (in-strength + out-strength) / (n − 1). These are Agna's own
 coefficients; verify they match the convention in your field before
 citing them.
 
-### A note on distances
+### Newman Degree Assortativity & Mixing Regimes
 
-Analyses that depend on distances assume unweighted (graph) distances;
-edge *values* are used by the degree/status/density statistics, not by
-the path-based measures.
+Newman's degree assortativity coefficient `r` measures the Pearson correlation
+of degrees at the endpoints of each edge:
+`r = (Σ_e j_e k_e / M − [Σ_e (j_e + k_e) / (2M)]²) / (Σ_e (j_e² + k_e²) / (2M) − [Σ_e (j_e + k_e) / (2M)]²)`
+where `M` is total edges, and `j_e, k_e` are degrees of vertices linked by edge `e`.
+- Range: `[-1.0, 1.0]`. Positive `r` (assortative) indicates high-degree nodes link preferentially to high-degree nodes (common in social networks). Negative `r` (disassortative) indicates hubs link to low-degree leaves (common in technological and biological networks).
+- Directed networks: Agna computes four distinct directed mixing coefficients:
+  - `Out-In`: outgoing degree of source vs. incoming degree of target
+  - `In-In`: incoming degree of source vs. incoming degree of target
+  - `Out-Out`: outgoing degree of source vs. outgoing degree of target
+  - `In-Out`: incoming degree of source vs. outgoing degree of target
+
+### Community Detection (Louvain Modularity & Girvan-Newman)
+
+Community detection identifies cohesive subgroups with high internal tie
+density and sparse external ties.
+- **Newman Modularity (Q)**:
+  `Q = (1 / 2m) Σ_{ij} [ A_{ij} − (k_i k_j / 2m) ] δ(c_i, c_j)`
+  where `m` is total edge weight, `k_i` is degree, and `δ(c_i, c_j) = 1` if nodes belong to the same community.
+- **Louvain Heuristic**: Fast multi-phase greedy algorithm optimizing modularity locally, then aggregating communities into meta-nodes and repeating until `ΔQ ≤ 0`.
+- **Girvan-Newman Divisive Algorithm**: Iteratively computes Brandes edge betweenness, removes the edge with highest betweenness, tracks modularity `Q` of each partition, and selects the division with peak modularity.
+
+### Structural Equivalence & Blockmodeling
+
+Two actors are structurally equivalent if they have identical ties to and from
+all other actors in the network (Lorrain & White, 1971; Burt, 1976).
+- **Euclidean Distance**:
+  `d(i, j) = √[ Σ_k (A_{ik} − A_{jk})² + Σ_k (A_{ki} − A_{kj})² ]`
+  A distance of 0.0 indicates perfect structural equivalence.
+- **Pearson Profile Correlation**:
+  Correlation between the combined emission and reception profiles of actor `i` and actor `j`.
+- **Blockmodel Partitioning**:
+  Hierarchical average-linkage clustering groups actors into `K` positional blocks.
+- **Image Matrix**:
+  A `K × K` density table reporting the tie density between positions. Ties in the image matrix are dichotomized against the overall network density threshold `α`.
+
+### Valued & Weighted Network Metrics
+
+For networks with non-binary tie weights:
+- **Node Strength**: In-strength `s⁻(i) = Σⱼ A[j][i]`, Out-strength `s⁺(i) = Σⱼ A[i][j]`, Total strength `s(i) = s⁻(i) + s⁺(i)`.
+- **Valued Network Density**: `Δ_w = Σ_{ij} A[i][j] / [ n(n − 1) · max(A) ]`.
+- **Barrat et al. (2004) Weighted Local Clustering**:
+  `C_w(i) = [ 1 / (s_i (k_i − 1)) ] Σ_{j, h} [ (w_{ij} + w_{ih}) / 2 ] a_{ij} a_{ih} a_{jh}`
+  Quantifies clustering while weighting triangles by the intensity of local interactions.
+
+### Watts-Strogatz Local Clustering & Newman Transitivity
+
+- **Watts-Strogatz Local Clustering (C_i)**:
+  `C_i = 2 T_i / [ k_i (k_i − 1) ]`
+  where `T_i` is the number of triangles containing node `i`, and `k_i` is its degree. Mean clustering `⟨C⟩` averages `C_i` over all nodes with `k_i ≥ 2`.
+- **Newman Global Transitivity (T)**:
+  `T = 3 · Triangles / Connected_Triplets`
+  Measures the overall fraction of two-step paths that are closed into triangles.
+
+### k-Core Decomposition
+
+The `k`-core of a graph is the maximal induced subgraph in which every vertex
+has degree at least `k` (Seidman, 1983).
+- Computed using Batagelj & Zaveršnik's linear `O(V + E)` core percolation algorithm.
+- Decomposes the network into nested core shells: `k = 1, 2, ..., k_max`.
+- High `k_i` indicates membership in the densely interconnected central core.
+
+### Triad & Dyad Census (Holland-Leinhardt)
+
+- **Dyad Census**: Categorizes all `n(n − 1)/2` pairs into Mutual (M), Asymmetric (A), and Null (N) dyads. Dyadic reciprocity = `2M / (2M + A)`.
+- **Triad Census**: Enumerates all 16 mutually exclusive directed triad configurations in the Holland-Leinhardt (MAN) taxonomy (003, 012, 102, 021D, 021U, 021C, 111D, 111U, 030T, 030C, 201, 120D, 120U, 120C, 210, 300).
+
+### Social Capital & Structural Holes (Burt)
+
+Ronald Burt's (1992) structural holes theory posits that actors bridging
+disconnected clusters enjoy informational and brokerage advantages.
+- **Dyadic Constraint**: `c_{ij} = (p_{ij} + Σ_q p_{iq} p_{qj})²`
+- **Network Constraint (C_i)**: `C_i = Σ_j c_{ij}`. Low constraint indicates abundant structural holes.
+- **Effective Size (ES_i)**: `ES_i = Σ_j [ 1 − Σ_q p_{iq} m_{jq} ]` for `j ≠ i, q ≠ i, j`.
+- **Efficiency**: `E_i = ES_i / k_i`.
+- **Hierarchy (H_i)**: Degree to which constraint is concentrated in a single alter.
+
+### Connectivity, Articulation Points and Bridges
+
+- **Weakly and Strongly Connected Components**: Computed via BFS and Tarjan's linear `O(V + E)` algorithm.
+- **Articulation Points (Cut-Vertices)**: Vertices whose removal increases the number of connected components.
+- **Bridges**: Edges whose deletion partitions a component into two disconnected sets.
+
+### Spectral Centralities
+
+- **Eigenvector Centrality (Bonacich, 1972)**:
+  `A x = λ_1 x`. Uses shifted power iteration `(A + I)` guaranteeing unique Perron-Frobenius positive convergence without bipartite oscillation.
+- **Bonacich Power Centrality**:
+  `c(α, β) = α (I − β A)⁻¹ A 1`. Tunable attenuation `β`: positive `β` models social prestige / influence; negative `β` models exchange bargaining power.
+- **PageRank Centrality (Page et al., 1999)**:
+  Stationary distribution of random walk with restart: `PR(u) = (1 − d)/n + d Σ_{v ∈ In(u)} PR(v) / OutDeg(v)`. Configurable damping `d` (default 0.85).
+
+### Structural Archetypes Diagnostic
+
+Classifies an empirical network against four classic theoretical paradigms:
+1. **Small-World / Weak Ties** (Watts-Strogatz, 1998; Humphries-Gurney, 2008): Small-world quotient `σ = (C / C_rand) / (L / L_rand) > 1`.
+2. **Cumulative Advantage / Scale-Free** (Barabási-Albert, 1999; Price, 1976): Power-law MLE exponent `γ`, degree Gini inequality, and hub ratio `k_max / ⟨k⟩`.
+3. **Homophily & Echo Chambers** (McPherson et al., 2001; Newman, 2006): Modularity `Q` and assortativity `r`.
+4. **Formal Hierarchy & Authority** (Weber, 1922; Krackhardt, 1994): Krackhardt's dimensions (Connectedness, Graph Hierarchy, Graph Efficiency, LUB).
+
+### Hypothesis Testing with Monte Carlo Null Models
+
+Evaluates whether an observed structural statistic (density, clustering, reciprocity, assortativity) is statistically significant or an artifact of random chance:
+- **Null Models**:
+  - `Bernoulli Erdos-Renyi G(n, p)`: fixed density, edges placed uniformly at random.
+  - `Degree-Preserving Configuration Model`: stub-matching preserving exact in- and out-degree sequences.
+  - `Dyad Census Randomization`: preserves exact mutual, asymmetric, and null counts.
+- **Outputs**: Empirical distribution mean `μ`, standard deviation `σ`, Z-score `Z = (X_obs − μ) / σ`, and two-tailed empirical p-value `p = (#{|X_sim − μ| ≥ |X_obs − μ|} + 1) / (R + 1)` across `R` iterations.
+
+### Algorithm Benchmarks Suite
+
+Measures empirical execution time (ms), throughput (ops/sec), and Big-O scaling across 10 foundational graph algorithms (Brandes betweenness, Freeman closeness, degree centralities, Watts-Strogatz clustering, Newman transitivity, Bron-Kerbosch cliques, all-pairs geodesics, graph diameter, and path routing).
 
 ### N-Cliques
 
-Enumerated with the Bron–Kerbosch (Tomita pivot) algorithm; the search is
-capped at 1000 reported cliques and the report says so when the cap is
-reached.
+Enumerated with the Bron–Kerbosch (Tomita pivot) algorithm; capped at 1000 reported cliques with explicit truncation notices if reached.
+
+### Export Analysis Table
+
+Every analytical table in the modern HTML report contains an `[Export Table (CSV/JSON)]` action link opening the Export Table Dialog for previewing, copying to clipboard, or saving to CSV (RFC 4180), TSV, JSON, or HTML.
 
 ## 5. Matrix operations — formulas
 
 All operations write back into the current sociomatrix. The diagonal (no
-self-loops) is preserved as 0 by every operation below. These are the
-operations behind the Network menu; the [menu reference](#3-menu-reference)
-links them back here.
+self-loops) is preserved as 0 by every operation below unless explicitly
+altered by diagonal operations.
 
 ### Add scalar
 
@@ -214,21 +354,55 @@ f(a, b):
 | Arithmetical Mean | (a + b) / 2 |
 | Geometrical Mean | √(a · b) — for opposite-sign pairs the result is 0 |
 
-Use **Sum** to aggregate two measurements of the same tie, **Maximum** to
-take the stronger, **Below/Above** to keep one triangle's opinion.
-
 ### Normalize (Binarize)
 
 Two options:
 - *Binary*: M′[i][j] = 1 if M[i][j] ≠ 0, else 0.
 - *By threshold* (value t): M′[i][j] = 1 if M[i][j] > t, else 0.
-  Values exactly equal to the threshold become 0.
+
+### Dichotomize / Threshold Ties
+
+M′[i][j] = 1 if M[i][j] ≥ threshold, else 0. Replaces tie values with a clean binary adjacency matrix based on a user-defined threshold.
+
+### Slice Ties
+
+M′[i][j] = M[i][j] if min_val ≤ M[i][j] ≤ max_val, else 0. Retains ties within the specified strength window while setting ties outside the range to 0.
+
+### Zero Diagonal (Remove Self-Loops)
+
+M′[i][i] = 0 for all i. Clears reflexive self-ties across all actors.
+
+### Set Diagonal to Value
+
+M′[i][i] = c for all i. Sets reflexive diagonal values to a user-chosen scalar.
 
 ### Square Matrix
 
 M′ = M × M, i.e. M′[i][j] = Σₖ M[i][k] · M[k][j]. The entry (i, j)
 counts the walks of length 2 from i to j — the number of two-step
 intermediaries.
+
+### Extract Ego Network
+
+Extracts the 1-hop or 2-hop induced subnetwork centered on a chosen focal
+actor (ego). The subnetwork includes ego, all alter nodes within the specified
+hop distance, and all inter-alter ties among them.
+
+### Network Algebra (Combine Networks)
+
+Combines the active network with a second network of identical size:
+- **Addition**: M′[i][j] = A[i][j] + B[i][j]
+- **Difference**: M′[i][j] = A[i][j] − B[i][j]
+- **Intersection Minimum**: M′[i][j] = min(A[i][j], B[i][j])
+- **Hadamard Product**: M′[i][j] = A[i][j] · B[i][j]
+
+### Reorder Sociomatrix / Sort Actors
+
+Permutes rows and columns simultaneously to reorder the sociomatrix:
+- By **Name**: alphabetical (A–Z) or reverse (Z–A).
+- By **Degree**: ascending or descending total nodal degree.
+- By **In-Degree**: ascending or descending incoming reception volume.
+- By **Out-Degree**: ascending or descending outgoing emission volume.
 
 ### Merge Network
 
@@ -262,52 +436,37 @@ Open Network):
 | GraphML | `.graphml` | XML graph format of Gephi, NetworkX, igraph, Cytoscape |
 | GML | `.gml` | the classic text format of igraph / NetworkX |
 | GraphSON | `.json` | JSON graph format (TinkerPop family, Gephi, Cytoscape) |
+| UCINET DL | `.dl` | standard UCINET data language format (fullmatrix, edgelist1, nodelist1) |
 
 Interoperability notes:
 
-- **GraphML / GML / GraphSON** export the matrix as a *directed* graph:
-  nodes in their file order with their names, every non-zero tie as an
-  edge carrying its value as weight. On import, missing weights default
-  to 1, self-loops are ignored (the diagonal stays zero), and node order
-  defines the matrix indexing.
-- **GraphSON** import accepts both the `{"graph": {vertices, edges}}`
-  wrapper and a bare `{vertices, edges}` document; weights may use the
-  key `value` or `weight`.
-- **Excel**: Numbers files (.xlsx) open directly; saving still writes
-  the legacy `.xls`, which Excel and Numbers both read.
-- **Pajek**: the export omits comment lines so Gephi imports cleanly;
-  optional per-node Vector blocks are controlled by a checkbox (remembered
-  in the settings).
-- Legacy files store face paths with platform-specific separators; Agna
-  2.1.3 resolves them transparently, and any node without a stored face
-  falls back to the red-bullet default.
+- **UCINET DL (`.dl`)**: Imports and exports standard UCINET files. Supports `format = fullmatrix`, `format = edgelist1`, and `format = nodelist1`. Quoted labels, embedded node labels, and matrix diagonals are preserved.
+- **GraphML / GML / GraphSON** export the matrix as a *directed* graph: nodes in their file order with their names, every non-zero tie as an edge carrying its value as weight. On import, missing weights default to 1, self-loops are ignored (the diagonal stays zero), and node order defines the matrix indexing.
+- **GraphSON** import accepts both the `{"graph": {vertices, edges}}` wrapper and a bare `{vertices, edges}` document; weights may use the key `value` or `weight`.
+- **Excel**: Numbers files (.xlsx) open directly; saving writes `.xls`, which Excel and Numbers both read.
+- **Pajek**: the export omits comment lines so Gephi imports cleanly; optional per-node Vector blocks are controlled by a checkbox.
+- Legacy files store face paths with platform-specific separators; Agna resolves them transparently, and any node without a stored face falls back to the red-bullet default.
 
-## 7. New in 2.1.3
+## 7. New in 2.1.6
 
-- **Modern interface**: FlatLaf look and feel (light by default, with a
-  live picker in Preferences ▸ Look and Feel; Native and the classic
-  themes are available, and a `Classic Toolbar Icons` setting restores
-  the old icon set). The sociomatrix grid and its selection are visible
-  in every look, and node faces never disappear at launch — missing faces
-  revert to the bundled red bullet.
-- **Merge Network** (File ▸ Merge Network...): join two networks by
-  actor name with a Sum / Maximum / Keep policy, as described in
-  [Matrix operations](#merge-network).
-### Session log
-
-The Output pane records every operation with a timestamp
-(`> [time] ...` lines) — open, new, save, transforms, merge — so you can
-reconstruct what was done to a network. Use View ▸ Hide/Show Output to
-toggle the pane.
-- **Export/import family**: Excel import (including Numbers `.xlsx`),
-  GraphML, GML and GraphSON round-trips — see
-  [File formats](#6-file-formats).
-- **Full Analysis** (Analysis ▸ Full Analysis): runs the whole battery
-  in one pass, with a skip note when the network is disconnected.
-- Analyses run in the background with a cancellable progress dialog.
-- **This manual**: the help now explains every computation — see
-  [Methodology](#4-methodology--what-exactly-is-computed-read-before-publishing-results)
-  and [Matrix operations](#5-matrix-operations--formulas).
+- **Freeman (1979) Global Network Centralization**:
+  Complete centralization suite computing degree ($C_D$), betweenness ($C_B$), closeness ($C_C$), and Bavelas ($C_{\text{Bav}}$) graph centralization benchmarked against star graph maximums. In Agna Core (`AgnaLib.outFreemanCentralization`), Desktop UI (Centrality Battery), and CLI (`agna analyse FILE --metric freeman`).
+- **Newman Degree Assortativity & Mixing Regimes**:
+  Degree assortativity correlation $r$ and four directed mixing regimes (out-in, in-in, out-out, in-out).
+- **Louvain & Girvan-Newman Community Detection**:
+  Multi-phase Louvain modularity optimization and Girvan-Newman edge-betweenness community partitioning with modularity $Q$ metrics.
+- **Structural Equivalence & Blockmodeling**:
+  Euclidean distance, Pearson correlation, hierarchical complete-linkage clustering, and $K \times K$ image density matrices.
+- **Valued & Weighted Network Metrics**:
+  Node strength, valued network density, and Barrat et al. weighted local clustering.
+- **Network Transformations**:
+  Zero diagonal, set diagonal, dichotomize, slice, ego network extraction, network matrix algebra, and sociomatrix sorting.
+- **UCINET DL Format**:
+  Full import and export of UCINET `.dl` files.
+- **Agna CLI Full Parity**:
+  All metrics, battery reports, null models, and matrix transformations available in `agna-cli`.
+- **NetworkX Parity Validation Battery**:
+  Automated testing harness comparing Agna outputs directly against NetworkX.
 
 ## 8. Keyboard shortcuts
 
@@ -317,44 +476,28 @@ toggle the pane.
 
 ## 9. FAQ / Troubleshooting
 
-- **I exported to Excel and Numbers asks for a format** — Agna saves the
-  legacy `.xls`; Excel and Numbers open it directly. If you save from
-  Numbers as `.xlsx`, Agna opens that file too.
-- **How do I move a network to R or Python?** — save as GraphML, GML or
-  GraphSON; the R packages igraph/statnet and Python's NetworkX read
-  those formats directly. See [File formats](#6-file-formats).
-- **Gephi won't import my Pajek file** — ensure the network export has
-  comment lines disabled (they are by default; the option is remembered
-  for the Pajek format).
-- **Node faces are missing at launch** — a missing or `-` face now falls
-  back to the red-bullet default; if you still see none, check that the
-  settings file does not pin an invalid `Default Node Face`.
-- **An analysis prints a warning instead of numbers** — distance-based
-  measures (eccentricity, closeness, fareness, betweenness, geodesics)
-  need a connected network; that is intentional, not a bug. See
-  [Methodology](#4-methodology--what-exactly-is-computed-read-before-publishing-results).
-- **I cannot see grid lines / selections** — change the look and feel in
-  Preferences; the grid is drawn by the table itself in every theme.
+- **How do I move a network to R or Python?** — save as GraphML, GML, GraphSON, or UCINET DL; igraph, statnet, and NetworkX read those formats directly.
+- **Why does an analysis report N/A or a warning?** — geodesic-based measures (betweenness, closeness, fareness, eccentricity, diameter) require a connected network; on disconnected networks, distances between components are undefined.
+- **Can I run analyses from scripts without opening the GUI?** — yes, use `agna analyse FILE [METRICS...]` or `agna convert IN OUT`.
+- **How do I export tables to Excel or SPSS?** — click `[Export Table (CSV/JSON)]` above any report table, or use `Analysis ▸ Export Analysis Table...`.
+- **Gephi won't import my Pajek file** — ensure comment lines are disabled during export (default).
+- **Node faces are missing at launch** — missing faces fall back to the bundled red bullet.
 
 ## 10. Version history
 
-- **2.1.3** — open-source revival of Agna 2.1.2: Maven/JDK 17 build,
-  namespace `com.bentza.sna`, engine `AgnaLib`; background analyses with
-  cancellation; scalable clique search; Pajek and Excel import fixes;
-  Full Analysis; GraphML/GML/GraphSON import and export; Merge Network;
-  session log; FlatLaf interface with classic-icon fallback; modernised
-  Help; 100+ regression tests.
-- **2.1.2** — the last closed-source release by Marius Ion Bența;
-  single-jar desktop application.
+- **2.1.6** — Freeman (1979) global centralization suite ($C_D, C_B, C_C, C_{\text{Bav}}$); Newman degree assortativity and directed mixing regimes; Louvain modularity and Girvan-Newman community detection; structural equivalence and blockmodeling; valued/weighted network metrics; network transformation suite (zero/set diagonal, dichotomize, slice, ego extraction, algebra, sorting); UCINET DL format; Agna CLI complete parity; NetworkX parity battery and verification suite.
+- **2.1.5** — pre-defined synthetic network generators (Watts-Strogatz, Barabási-Albert, Stochastic Block Model, Erdős-Rényi, Hierarchical Tree, hexagonal/hexagram/square lattices); 5 new layout engines; algorithm benchmarking suite; structural archetypes diagnostic; statistical hypothesis testing with Monte Carlo null models; modern HTML table reporting framework with export dialog.
+- **2.1.4** — spectral centralities (Bonacich eigenvector, Bonacich power, PageRank); Ronald Burt's structural holes (constraint, effective size, efficiency, hierarchy); Holland-Leinhardt 16 triad census; k-core decomposition; Watts-Strogatz local clustering; Newman global transitivity; connectivity and articulation points.
+- **2.1.3** — open-source revival of Agna 2.1.2: Maven/JDK 17 build, namespace `com.bentza.sna`, engine `AgnaLib`; background analyses with cancellation; scalable clique search; Pajek and Excel import fixes; Full Analysis; GraphML/GML/GraphSON import and export; Merge Network; session log; FlatLaf interface; modernized Help.
+- **2.1.2** — the last closed-source release by Marius Ion Bența.
 
 ## 11. Cite AGNA
 
 If you use AGNA in your research, please cite it as:
 
 Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open
-Source (Version 2.1.3) [Computer software].
+Source (Version 2.1.6) [Computer software].
 https://doi.org/10.5281/zenodo.22708199
-
 
 BibTeX entry:
 
@@ -362,7 +505,7 @@ BibTeX entry:
 @software{benta_2026_agna,
   author    = {Bența, Marius I.},
   title     = {{AGNA}: Applied Graph and Network Analysis Open Source},
-  version   = {2.1.3},
+  version   = {2.1.6},
   year      = {2026},
   publisher = {AGNA Open Source},
   doi       = {10.5281/zenodo.22708199},

@@ -21,9 +21,8 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <!-- md2help generated - do not edit by hand; edit docs/manual.md -->
 <h1 id="5-matrix-operations--formulas" name="5-matrix-operations--formulas">5. Matrix operations — formulas</h1>
 <p>All operations write back into the current sociomatrix. The diagonal (no</p>
-<p>self-loops) is preserved as 0 by every operation below. These are the</p>
-<p>operations behind the Network menu; the <a href="3menureference.htm#3-menu-reference">menu reference</a></p>
-<p>links them back here.</p>
+<p>self-loops) is preserved as 0 by every operation below unless explicitly</p>
+<p>altered by diagonal operations.</p>
 <h2 id="add-scalar" name="add-scalar">Add scalar</h2>
 <p>M′[i][j] = M[i][j] + c for i ≠ j. Useful to shift a weighted matrix</p>
 <p>before dichotomising.</p>
@@ -80,17 +79,38 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <table>
 <tr><th>Geometrical Mean</th><th>√(a · b) — for opposite-sign pairs the result is 0</th></tr>
 </table>
-<p>Use <b>Sum</b> to aggregate two measurements of the same tie, <b>Maximum</b> to</p>
-<p>take the stronger, <b>Below/Above</b> to keep one triangle&#x27;s opinion.</p>
 <h2 id="normalize-binarize" name="normalize-binarize">Normalize (Binarize)</h2>
 <p>Two options:</p>
 <ul><li><i>Binary</i>: M′[i][j] = 1 if M[i][j] ≠ 0, else 0.</li></ul>
 <ul><li><i>By threshold</i> (value t): M′[i][j] = 1 if M[i][j] &gt; t, else 0.</li></ul>
-<p>  Values exactly equal to the threshold become 0.</p>
+<h2 id="dichotomize--threshold-ties" name="dichotomize--threshold-ties">Dichotomize / Threshold Ties</h2>
+<p>M′[i][j] = 1 if M[i][j] ≥ threshold, else 0. Replaces tie values with a clean binary adjacency matrix based on a user-defined threshold.</p>
+<h2 id="slice-ties" name="slice-ties">Slice Ties</h2>
+<p>M′[i][j] = M[i][j] if min_val ≤ M[i][j] ≤ max_val, else 0. Retains ties within the specified strength window while setting ties outside the range to 0.</p>
+<h2 id="zero-diagonal-remove-self-loops" name="zero-diagonal-remove-self-loops">Zero Diagonal (Remove Self-Loops)</h2>
+<p>M′[i][i] = 0 for all i. Clears reflexive self-ties across all actors.</p>
+<h2 id="set-diagonal-to-value" name="set-diagonal-to-value">Set Diagonal to Value</h2>
+<p>M′[i][i] = c for all i. Sets reflexive diagonal values to a user-chosen scalar.</p>
 <h2 id="square-matrix" name="square-matrix">Square Matrix</h2>
 <p>M′ = M × M, i.e. M′[i][j] = Σₖ M[i][k] · M[k][j]. The entry (i, j)</p>
 <p>counts the walks of length 2 from i to j — the number of two-step</p>
 <p>intermediaries.</p>
+<h2 id="extract-ego-network" name="extract-ego-network">Extract Ego Network</h2>
+<p>Extracts the 1-hop or 2-hop induced subnetwork centered on a chosen focal</p>
+<p>actor (ego). The subnetwork includes ego, all alter nodes within the specified</p>
+<p>hop distance, and all inter-alter ties among them.</p>
+<h2 id="network-algebra-combine-networks" name="network-algebra-combine-networks">Network Algebra (Combine Networks)</h2>
+<p>Combines the active network with a second network of identical size:</p>
+<ul><li><b>Addition</b>: M′[i][j] = A[i][j] + B[i][j]</li></ul>
+<ul><li><b>Difference</b>: M′[i][j] = A[i][j] − B[i][j]</li></ul>
+<ul><li><b>Intersection Minimum</b>: M′[i][j] = min(A[i][j], B[i][j])</li></ul>
+<ul><li><b>Hadamard Product</b>: M′[i][j] = A[i][j] · B[i][j]</li></ul>
+<h2 id="reorder-sociomatrix--sort-actors" name="reorder-sociomatrix--sort-actors">Reorder Sociomatrix / Sort Actors</h2>
+<p>Permutes rows and columns simultaneously to reorder the sociomatrix:</p>
+<ul><li>By <b>Name</b>: alphabetical (A–Z) or reverse (Z–A).</li></ul>
+<ul><li>By <b>Degree</b>: ascending or descending total nodal degree.</li></ul>
+<ul><li>By <b>In-Degree</b>: ascending or descending incoming reception volume.</li></ul>
+<ul><li>By <b>Out-Degree</b>: ascending or descending outgoing emission volume.</li></ul>
 <h2 id="merge-network" name="merge-network">Merge Network</h2>
 <p>Joins the current network with another file. Actors are matched **by</p>
 <p>name**: a name present in both networks becomes one actor; a name present</p>

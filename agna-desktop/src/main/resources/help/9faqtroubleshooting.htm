@@ -20,22 +20,10 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <body>
 <!-- md2help generated - do not edit by hand; edit docs/manual.md -->
 <h1 id="9-faq--troubleshooting" name="9-faq--troubleshooting">9. FAQ / Troubleshooting</h1>
-<ul><li><b>I exported to Excel and Numbers asks for a format</b> — Agna saves the</li></ul>
-<p>  legacy <code>.xls</code>; Excel and Numbers open it directly. If you save from</p>
-<p>  Numbers as <code>.xlsx</code>, Agna opens that file too.</p>
-<ul><li><b>How do I move a network to R or Python?</b> — save as GraphML, GML or</li></ul>
-<p>  GraphSON; the R packages igraph/statnet and Python&#x27;s NetworkX read</p>
-<p>  those formats directly. See <a href="6fileformats.htm#6-file-formats">File formats</a>.</p>
-<ul><li><b>Gephi won&#x27;t import my Pajek file</b> — ensure the network export has</li></ul>
-<p>  comment lines disabled (they are by default; the option is remembered</p>
-<p>  for the Pajek format).</p>
-<ul><li><b>Node faces are missing at launch</b> — a missing or <code>-</code> face now falls</li></ul>
-<p>  back to the red-bullet default; if you still see none, check that the</p>
-<p>  settings file does not pin an invalid <code>Default Node Face</code>.</p>
-<ul><li><b>An analysis prints a warning instead of numbers</b> — distance-based</li></ul>
-<p>  measures (eccentricity, closeness, fareness, betweenness, geodesics)</p>
-<p>  need a connected network; that is intentional, not a bug. See</p>
-<p>  <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#4-methodology--what-exactly-is-computed-read-before-publishing-results">Methodology</a>.</p>
-<ul><li><b>I cannot see grid lines / selections</b> — change the look and feel in</li></ul>
-<p>  Preferences; the grid is drawn by the table itself in every theme.</p>
+<ul><li><b>How do I move a network to R or Python?</b> — save as GraphML, GML, GraphSON, or UCINET DL; igraph, statnet, and NetworkX read those formats directly.</li></ul>
+<ul><li><b>Why does an analysis report N/A or a warning?</b> — geodesic-based measures (betweenness, closeness, fareness, eccentricity, diameter) require a connected network; on disconnected networks, distances between components are undefined.</li></ul>
+<ul><li><b>Can I run analyses from scripts without opening the GUI?</b> — yes, use <code>agna analyse FILE [METRICS...]</code> or <code>agna convert IN OUT</code>.</li></ul>
+<ul><li><b>How do I export tables to Excel or SPSS?</b> — click <code>[Export Table (CSV/JSON)]</code> above any report table, or use <code>Analysis ▸ Export Analysis Table...</code>.</li></ul>
+<ul><li><b>Gephi won&#x27;t import my Pajek file</b> — ensure comment lines are disabled during export (default).</li></ul>
+<ul><li><b>Node faces are missing at launch</b> — missing faces fall back to the bundled red bullet.</li></ul>
 </body></html>

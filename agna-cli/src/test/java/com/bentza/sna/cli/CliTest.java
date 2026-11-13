@@ -945,4 +945,33 @@ public class CliTest
         run("convert", tempDl.getAbsolutePath(), tempCsv.getAbsolutePath());
         assertTrue(tempCsv.exists() && tempCsv.length() > 0, "CSV converted from DL was written");
         }
+
+    @Test
+    public void testFreemanAndTransformsInCli() throws Exception
+        {
+        File sample = new File("samples/example2.agn");
+
+        // 1. Freeman centralization analysis
+        String freeman = run("analyse", sample.getAbsolutePath(), "--metric", "freeman");
+        assertTrue(freeman.contains("Freeman Network Centralization Indices"), freeman);
+        assertTrue(freeman.contains("Freeman Degree Centralization (C_D)"), freeman);
+
+        // 2. Transform zero-diagonal
+        File tempZero = File.createTempFile("agna_test_zero", ".agn");
+        tempZero.deleteOnExit();
+        run("transform", sample.getAbsolutePath(), tempZero.getAbsolutePath(), "--op", "zero-diagonal");
+        assertTrue(tempZero.exists() && tempZero.length() > 0);
+
+        // 3. Transform dichotomize
+        File tempDichot = File.createTempFile("agna_test_dichot", ".agn");
+        tempDichot.deleteOnExit();
+        run("transform", sample.getAbsolutePath(), tempDichot.getAbsolutePath(), "--op", "dichotomize:1.0");
+        assertTrue(tempDichot.exists() && tempDichot.length() > 0);
+
+        // 4. Transform ego network extraction
+        File tempEgo = File.createTempFile("agna_test_ego", ".agn");
+        tempEgo.deleteOnExit();
+        run("transform", sample.getAbsolutePath(), tempEgo.getAbsolutePath(), "--op", "ego:1:1");
+        assertTrue(tempEgo.exists() && tempEgo.length() > 0);
+        }
     }

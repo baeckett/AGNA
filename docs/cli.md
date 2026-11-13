@@ -2,10 +2,10 @@
 
 The command-line interface (`agna`) runs the Agna engine headlessly: no
 desktop, no windowing, everything pipable and scriptable. It ships as
-`agna-cli-2.1.3.jar` (run with `java -jar agna-cli-2.1.3.jar <command>`).
+`agna-cli-2.1.6.jar` (run with `java -jar agna-cli-2.1.6.jar <command>`).
 
 The CLI understands `.agn`, `.txt`, `.csv`, `.net`, `.xls`, `.xlsx`,
-`.graphml`, `.gml` and `.graphson` on input, and writes the same set on
+`.graphml`, `.gml`, `.graphson` and `.dl` (UCINET) on input, and writes the same set on
 output (`.xls` needs a real file; the text formats also accept `-` for
 stdout). A file argument of `-` reads agn text from stdin (override with
 `--in-format`).
@@ -31,6 +31,7 @@ Command summary:
 | `metrics FILE [METRIC...] [--all] [--format csv\|json] [--out FILE]` | structured metrics (below) |
 | `distance FILE --from A --to B` | shortest path between two nodes |
 | `diff A B [--out FILE.csv]` | structural comparison |
+| `test-null FILE [--null-model M] [--samples N] [--seed S]` | Monte Carlo hypothesis testing against null models |
 | `add-scalar FILE V --out OUT` … `renumber FILE --out OUT` | desktop Network-menu commands (see below) |
 | `from-chain FILE --out OUT` | create a network from a chain file |
 | `layout FILE --layout L --out OUT` | apply coordinates (circular|random|spring|grid|concentric|star|hierarchical|core-periphery|ego-radial|community|layered-dag|linear) without rendering |
@@ -46,11 +47,11 @@ agna version
 agna --version
 ```
 
-Prints `Agna CLI 2.1.3`.
+Prints `Agna CLI 2.1.6`.
 
 ```
 $ agna version
-Agna CLI 2.1.3
+Agna CLI 2.1.6
 ```
 
 ### info
@@ -90,7 +91,14 @@ runs; named analyses run in order. Available names:
 `emission`, `reception`, `determination`, `status`, `geodesics`,
 `open-chain`, `eccentricity`, `diameter`, `bavelas`, `closeness`,
 `fareness`, `betweenness`, `prestige`, `cliques` (default clique size 2;
-`cliques:3` for triangles), `full`.
+`cliques:3` for triangles), `clustering` (local clustering), `transitivity` (global transitivity),
+`kcore` (k-core decomposition), `triads` (`triad-census`), `holes` (`structural-holes`),
+`components` (`connectivity`), `eigenvector`, `bonacich`, `pagerank`,
+`assortativity` (degree assortativity & directed mixing),
+`community` (`louvain`), `girvan-newman`, `equivalence` (`blockmodel`),
+`weighted` (valued & weighted metrics), `freeman` (`centralization`),
+`centrality` (centrality battery), `distance-battery`, `clustering-battery`, `sociometrics` (sociometrics battery),
+`full` (full analysis).
 
 This is the display-oriented report — rich text, tables, and Agna's own
 conventions. For machine-readable values use `metrics`.
@@ -100,6 +108,9 @@ conventions. For machine-readable values use `metrics`.
 ```
 $ agna analyse samples/example2.agn cliques:3
 3-Cliques found in Example 2
+...
+$ agna analyse samples/example2.agn freeman
+Freeman Network Centralization Indices of Example 2
 ...
 ```
 
@@ -111,7 +122,7 @@ agna convert IN OUT [--in-format F] [--out-format F]
 
 Converts a network between formats; both are inferred from the file
 extensions. `agn`, `txt`, `csv`, `net` (Pajek), `graphml`, `gml`,
-`graphson` and `xls` are supported on input; `xls` additionally reads
+`graphson`, `dl` (UCINET) and `xls` are supported on input; `xls` additionally reads
 `.xlsx` (including Apple Numbers files).
 
 `--in-format` overrides input inference (required when `IN` is `-`);
@@ -120,6 +131,7 @@ stdout.
 
 ```
 $ agna convert net.agn out.graphml
+$ agna convert net.agn out.dl
 $ cat net.agn | agna convert - out.gml
 $ agna convert net.agn - --out-format graphson | jq '.graph'
 ```
@@ -136,14 +148,25 @@ never modified, so "save as a new network" is inherent to every op.
 | op | effect |
 |---|---|
 | `transpose` | mirror the matrix on the diagonal |
-| `symmetrize-max` | a[i][j] = a[j][i] = max of the pair |
+| `symmetrize-max` | a[i][j] = a[j][i] = max of the pair (Union) |
+| `symmetrize-min` | a[i][j] = a[j][i] = min of the pair (Intersection) |
+| `symmetrize-average` | a[i][j] = a[j][i] = arithmetic mean of the pair |
 | `symmetrize-sum` | a[i][j] = a[j][i] = sum of the pair |
+| `symmetrize-union` | boolean OR: 1 if either tie > 0 |
+| `symmetrize-intersect` | boolean AND: 1 if both ties > 0 |
 | `symmetrize-below` | copy the lower triangle onto the upper |
+| `zero-diagonal` | set all self-loops a[i][i] = 0 |
+| `set-diagonal:V` | set main diagonal a[i][i] = V |
+| `dichotomize:V` | binary thresholding: values >= V become 1, others 0 |
+| `slice:MIN:MAX` | band-pass filter: keep values in [MIN, MAX], zero others |
 | `normalize-binary` | every non-zero value becomes 1 |
 | `normalize-threshold:V` | values > V become 1, others 0 |
 | `add-scalar:V` | add V to every cell |
 | `multiply-scalar:V` | multiply every cell by V |
 | `square` | matrix square (walks of length 2) |
+| `ego:NODE[:HOPS]` | extract k-hop ego network around NODE |
+| `combine:FILE:OP` | network matrix algebra with another file (`add`, `subtract`, `min`, `hadamard`) |
+| `reorder:CRIT[:asc\|desc]` | sort sociomatrix rows/cols by `name`, `degree`, `indegree`, or `outdegree` |
 | `merge:FILE:POLICY` | merge another network by node name (sum/max/keep) |
 | `delete-node:N` | delete one node by name |
 | `delete-nodes:N1,N2,..` | delete a list of nodes |
@@ -155,6 +178,10 @@ never modified, so "save as a new network" is inherent to every op.
 | `clone-node:N` | copy a node with its ties (named "Clone of N") |
 
 ```
+$ agna transform in.agn out.agn --op zero-diagonal
+$ agna transform in.agn out.agn --op ego:Alice:2
+$ agna transform in.agn out.agn --op combine:other.agn:hadamard
+$ agna transform in.agn out.agn --op reorder:degree:desc
 $ agna transform in.agn out.agn --op merge-nodes:Alice,Bob
 $ agna transform in.agn - --op remove-outsiders --out-format graphml
 $ agna transform in.agn out.agn --op clone-node:Eve

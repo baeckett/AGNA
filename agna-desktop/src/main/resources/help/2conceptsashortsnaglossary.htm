@@ -27,10 +27,22 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <p>  undirected tie (edge) goes both ways. Agna stores arcs; a network whose</p>
 <p>  matrix is symmetric is read as possibly undirected.</p>
 <ul><li><b>Degree</b>: for directed networks, outdegree = number of outgoing ties,</li></ul>
-<p>  indegree = number of incoming ties; nodal degree = the pair.</p>
+<p>  indegree = number of incoming ties; nodal degree = the pair or total sum.</p>
 <ul><li><b>Geodesic</b>: the shortest path between two actors, measured in hops.</li></ul>
 <ul><li><b>Outsider / isolate</b>: an actor with an all-zero row <i>and</i> an all-zero</li></ul>
 <p>  column (neither emits nor receives).</p>
+<ul><li><b>Centralization</b>: a macro graph-level index measuring the extent to which</li></ul>
+<p>  ties or shortest paths are concentrated around a single central hub actor</p>
+<p>  compared to the theoretical maximum (the star graph).</p>
+<ul><li><b>Assortativity</b>: the correlation of degrees between linked actors —</li></ul>
+<p>  assortative networks connect high-degree hubs to other hubs, while</p>
+<p>  disassortative networks connect hubs to peripheral nodes.</p>
+<ul><li><b>Modularity &amp; Communities</b>: a partition of vertices into dense clusters</li></ul>
+<p>  with high internal tie density and sparse bridging ties to other clusters,</p>
+<p>  quantified by Newman&#x27;s modularity score Q.</p>
+<ul><li><b>Structural Equivalence</b>: the degree to which two actors occupy identical</li></ul>
+<p>  relational positions by connecting to identical partners with identical tie</p>
+<p>  strengths.</p>
 <ul><li><b>Walk vs path</b>: a walk may repeat actors; a path may not. Matrices</li></ul>
 <p>  square to count walks of length 2.</p>
 </body></html>

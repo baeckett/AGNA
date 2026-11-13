@@ -30,54 +30,37 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <ul><li><b>Network</b>:</li></ul>
 <p>  - Title...; Add Nodes...; Delete Selected Node — bookkeeping, no</p>
 <p>    computation.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#add-scalar">Add Scalar...</a> — shifts all</p>
-<p>    off-diagonal values by a constant.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#scalar-multiplication">Scalar Multiplication...</a></p>
-<p>    — scales all off-diagonal values by a factor.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#transpose">Transpose</a> — mirrors the</p>
-<p>    matrix across the diagonal.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#symmetrize">Symmetrize...</a> — makes the</p>
-<p>    matrix symmetric; choose among 13 rules.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#normalize-binarize">Normalize (Binarize)...</a></p>
-<p>    — dichotomise to 0/1, or threshold a weighted matrix.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#remove-outsiders">Remove Outsiders</a> —</p>
-<p>    delete isolates.</p>
-<p>  - Renumber Nodes... — replaces names with numbers, no computation.</p>
-<p>  - <a href="5matrixoperationsformulas.htm#square-matrix">Square Matrix</a> — M×M,</p>
-<p>    counting two-step walks.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#add-scalar">Add Scalar...</a> — shifts all off-diagonal values by a constant.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#scalar-multiplication">Scalar Multiplication...</a> — scales all off-diagonal values by a factor.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#transpose">Transpose</a> — mirrors the matrix across the diagonal.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#symmetrize">Symmetrize...</a> — makes the matrix symmetric; choose among 13 rules.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#normalize-binarize">Normalize (Binarize)...</a> — dichotomise to 0/1, or threshold a weighted matrix.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#dichotomize--threshold-ties">Dichotomize / Threshold Ties...</a> — binary cut-off at custom threshold.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#zero-diagonal-remove-self-loops">Zero Diagonal (Remove Self-Loops)</a> — resets all diagonal elements to 0.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#set-diagonal-to-value">Set Diagonal to Value...</a> — sets all diagonal elements to a constant.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#extract-ego-network">Extract Ego Network...</a> — extracts the 1-hop or 2-hop ego subnetwork for an actor.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#network-algebra-combine-networks">Network Algebra (Combine Networks)...</a> — element-wise addition, subtraction, intersection min, or Hadamard product.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#reorder-sociomatrix--sort-actors">Reorder Sociomatrix / Sort Actors...</a> — permute matrix by Name, Degree, Indegree, or Outdegree.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#remove-outsiders">Remove Outsiders</a> — delete isolates.</p>
+<p>  - Renumber Nodes... — replaces names with numbers.</p>
+<p>  - <a href="5matrixoperationsformulas.htm#square-matrix">Square Matrix</a> — M×M, counting two-step walks.</p>
 <ul><li><b>Analysis</b>:</li></ul>
-<p>  - Basic Description — the <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#4-methodology--what-exactly-is-computed-read-before-publishing-results">full methodology page</a></p>
-<p>    explains every number it reports.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodal-degree-and-direction">Nodal Degree</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodal-degree-and-direction">Indegree</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodal-degree-and-direction">Outdegree</a></p>
-<p>    — per-direction degree counts.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#density">Density</a></p>
-<p>    — the share of possible ties that exist.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#cohesion">Cohesion</a></p>
-<p>    — the share of mutual dyads.</p>
-<p>  - Emission Degree, Reception Degree — the weighted out/in totals, see</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#nodal-degree-and-direction">Nodal degree and direction</a>.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#determination-and-sociometric-status">Determination Degree</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#determination-and-sociometric-status">Sociometric Status</a></p>
-<p>    — Agna&#x27;s own status coefficients.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#eccentricity-and-diameter">Eccentricity</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#eccentricity-and-diameter">Diameter</a></p>
-<p>    — the longest geodesics.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#geodesics-and-shortest-paths">Geodesic Matrix</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#geodesics-and-shortest-paths">Shortest Paths...</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#geodesics-and-shortest-paths">All Shortest Paths</a>.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#n-cliques">N-Cliques</a>.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#bavelas-closeness-and-fareness">Bavelas-Leavitt</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#bavelas-closeness-and-fareness">Closeness</a>,</p>
-<p>    <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#bavelas-closeness-and-fareness">Fareness</a></p>
-<p>    — the distance-based centralities.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#betweenness">Betweenness</a>.</p>
-<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#prestige">Prestige</a>.</p>
-<p>  - Full Analysis — the whole battery in one pass.</p>
+<p>  - <a href="#full-analysis-battery">Full Analysis Battery...</a> — configurable execution of all analytical modules with presets.</p>
+<p>  - <a href="#sociometrics--basic-battery">Sociometrics &amp; Basic Battery...</a> — macro parameters, density, dyad census, Newman assortativity, and valued/weighted metrics.</p>
+<p>  - <a href="#centrality--prestige-battery">Centrality &amp; Prestige Battery...</a> — degree, geodesic (betweenness, closeness, fareness, Bavelas), prestige, and spectral centralities, plus the Freeman Centralization summary table.</p>
+<p>  - <a href="#distances--geodesics-battery">Distances &amp; Geodesics Battery...</a> — geodesic matrix, eccentricity, diameter, and shortest paths.</p>
+<p>  - <a href="#clustering--cohesion-battery">Clustering &amp; Cohesion Battery...</a> — Watts-Strogatz local clustering, Newman transitivity, k-core, cohesion, maximal cliques, Louvain / Girvan-Newman community detection, and structural equivalence.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#social-capital--structural-holes-burt">Social Capital &amp; Structural Holes (Burt)...</a> — constraint, effective size, efficiency, and hierarchy.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#connectivity-articulation-points-and-bridges">Connectivity &amp; Articulation Points...</a> — connected components, cut-vertices, and bridges.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#triad--dyad-census-holland-leinhardt">Triad &amp; Dyad Census (Holland-Leinhardt)...</a> — complete 16 MAN triad census and reciprocity.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#spectral-centralities">Spectral Centralities</a> — Eigenvector (Bonacich), Bonacich Power c(alpha, beta), PageRank.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#structural-archetypes-diagnostic">Structural Archetypes Diagnostic...</a> — test empirical networks against small-world, scale-free, homophily, and hierarchy theories.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#hypothesis-testing-with-monte-carlo-null-models">Hypothesis Testing (Null Models)...</a> — Monte Carlo significance tests with Bernoulli Erdos-Renyi and degree-preserving configuration models.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#algorithm-benchmarks-suite">Algorithm Benchmarks...</a> — empirical execution time and scaling benchmarks.</p>
+<p>  - <a href="4methodologywhatexactlyiscomputedreadbeforepublishingresults.htm#export-analysis-table">Export Analysis Table...</a> — export any displayed report table to CSV, TSV, JSON, or HTML.</p>
 <ul><li><b>View / Output</b>: Network Viewer (and its Close item); Hide/Show</li></ul>
-<p>  Output; Open/Save/Clear the Output pane (the <a href="7newin213.htm#session-log">session log</a>).</p>
+<p>  Output; Open/Save/Clear the Output pane (the <a href="#session-log">session log</a>).</p>
 <ul><li><b>Preferences</b>: Working Directory...; Save Settings As Default...;</li></ul>
-<p>  Look and Feel.</p>
+<p>  Look and Feel (FlatLaf Light, FlatLaf Dark, Native, Classic).</p>
 <ul><li><b>Help</b>: Contents...; About Agna...</li></ul>
 </body></html>

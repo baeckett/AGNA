@@ -49,21 +49,14 @@ blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
 <table>
 <tr><th>GraphSON</th><th><code>.json</code></th><th>JSON graph format (TinkerPop family, Gephi, Cytoscape)</th></tr>
 </table>
+<table>
+<tr><th>UCINET DL</th><th><code>.dl</code></th><th>standard UCINET data language format (fullmatrix, edgelist1, nodelist1)</th></tr>
+</table>
 <p>Interoperability notes:</p>
-<ul><li><b>GraphML / GML / GraphSON</b> export the matrix as a <i>directed</i> graph:</li></ul>
-<p>  nodes in their file order with their names, every non-zero tie as an</p>
-<p>  edge carrying its value as weight. On import, missing weights default</p>
-<p>  to 1, self-loops are ignored (the diagonal stays zero), and node order</p>
-<p>  defines the matrix indexing.</p>
-<ul><li><b>GraphSON</b> import accepts both the <code>{&quot;graph&quot;: {vertices, edges}}</code></li></ul>
-<p>  wrapper and a bare <code>{vertices, edges}</code> document; weights may use the</p>
-<p>  key <code>value</code> or <code>weight</code>.</p>
-<ul><li><b>Excel</b>: Numbers files (.xlsx) open directly; saving still writes</li></ul>
-<p>  the legacy <code>.xls</code>, which Excel and Numbers both read.</p>
-<ul><li><b>Pajek</b>: the export omits comment lines so Gephi imports cleanly;</li></ul>
-<p>  optional per-node Vector blocks are controlled by a checkbox (remembered</p>
-<p>  in the settings).</p>
-<ul><li>Legacy files store face paths with platform-specific separators; Agna</li></ul>
-<p>  2.1.3 resolves them transparently, and any node without a stored face</p>
-<p>  falls back to the red-bullet default.</p>
+<ul><li><b>UCINET DL (<code>.dl</code>)</b>: Imports and exports standard UCINET files. Supports <code>format = fullmatrix</code>, <code>format = edgelist1</code>, and <code>format = nodelist1</code>. Quoted labels, embedded node labels, and matrix diagonals are preserved.</li></ul>
+<ul><li><b>GraphML / GML / GraphSON</b> export the matrix as a <i>directed</i> graph: nodes in their file order with their names, every non-zero tie as an edge carrying its value as weight. On import, missing weights default to 1, self-loops are ignored (the diagonal stays zero), and node order defines the matrix indexing.</li></ul>
+<ul><li><b>GraphSON</b> import accepts both the <code>{&quot;graph&quot;: {vertices, edges}}</code> wrapper and a bare <code>{vertices, edges}</code> document; weights may use the key <code>value</code> or <code>weight</code>.</li></ul>
+<ul><li><b>Excel</b>: Numbers files (.xlsx) open directly; saving writes <code>.xls</code>, which Excel and Numbers both read.</li></ul>
+<ul><li><b>Pajek</b>: the export omits comment lines so Gephi imports cleanly; optional per-node Vector blocks are controlled by a checkbox.</li></ul>
+<ul><li>Legacy files store face paths with platform-specific separators; Agna resolves them transparently, and any node without a stored face falls back to the red-bullet default.</li></ul>
 </body></html>
