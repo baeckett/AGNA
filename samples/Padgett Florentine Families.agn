@@ -1,0 +1,62 @@
+Agna Data File
+Version	2.1
+Network Name	Padgett Florentine Families
+Network Size	15
+Has Viewer	yes
+Node Names
+Acciaiuoli	Medici	Castellani	Peruzzi	Strozzi	Barbadori	Ridolfi	Tornabuoni	Albizzi	Salviati	Pazzi	Bischeri	Guadagni	Ginori	Lamberteschi	
+End Node Names
+Network Matrix
+0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0
+1.0	0.0	0.0	0.0	0.0	1.0	1.0	1.0	1.0	1.0	0.0	0.0	0.0	0.0	0.0
+0.0	0.0	0.0	1.0	1.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0
+0.0	0.0	1.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0
+0.0	0.0	1.0	1.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0
+0.0	1.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0
+0.0	1.0	0.0	0.0	1.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0
+0.0	1.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0
+0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	1.0	0.0
+0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0
+0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0
+0.0	0.0	0.0	1.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0
+0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	1.0	0.0	0.0	1.0	0.0	0.0	1.0
+0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0
+0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0
+End Network Matrix
+STG Enabled	no
+Title Visible	no
+Edge Value Visible	no
+Print Names	yes
+Grid Enabled	no
+Face Visible	yes
+Allow Edge Selection	yes
+Color Fidelity	yes
+Area Width	500
+Selected Node	-1
+Second Selected Node	-1
+Names X	3
+Names Y	-2
+Title X	26
+Title Y	30
+Separator	0
+Edge Value Position	30
+Grid Transparency	25
+Max Transparency	35
+Background Image X	0
+Background Image Y	0
+Background Image Width	0
+Background Image Height	0
+Grid Space	40
+Edge Value Color	#00bfa6
+Grid Color	#0ad20a
+Text Color	#404040
+Title Color	#404040
+Background Color	#ffffff
+Arrow Color	#89a0a0
+Background Image File	-
+Node Faces
+.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	.\Faces\Red Bullet.gif	
+End Node Faces
+Node Coordinates
+347	314	16	300	268	16	158	287	16	122	245	16	168	241	16	228	301	16	242	235	16	276	210	16	249	270	16	386	261	16	450	257	16	152	200	16	219	190	16	236	343	16	210	121	16	
+End Node Coordinates

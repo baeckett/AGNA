@@ -88,8 +88,11 @@ public class DistanceBatteryDialog extends JDialog {
         JPanel macroPanel = new JPanel(new GridLayout(0, 1, 4, 4));
         macroPanel.setBorder(BorderFactory.createTitledBorder("Distance Matrices & Bounds"));
         cbGeodesics = new JCheckBox("Geodesic Distance Matrix (All pairs shortest path lengths)", true);
+        cbGeodesics.setToolTipText(EducationalTooltips.getTooltip("geodesics"));
         cbDiameter = new JCheckBox("Network Diameter & Average Path Length", true);
+        cbDiameter.setToolTipText(EducationalTooltips.getTooltip("diameter"));
         cbEccentricity = new JCheckBox("Node Eccentricity, Radius, Center, and Periphery", true);
+        cbEccentricity.setToolTipText(EducationalTooltips.getTooltip("eccentricity"));
         macroPanel.add(cbGeodesics);
         macroPanel.add(cbDiameter);
         macroPanel.add(cbEccentricity);
@@ -105,6 +108,7 @@ public class DistanceBatteryDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         cbSpecificPath = new JCheckBox("Enumerate shortest paths between specific pair");
+        cbSpecificPath.setToolTipText(EducationalTooltips.getTooltip("shortest_paths"));
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         pathPanel.add(cbSpecificPath, gbc);
 

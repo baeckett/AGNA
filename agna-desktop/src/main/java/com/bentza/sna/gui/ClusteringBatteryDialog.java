@@ -93,7 +93,9 @@ public class ClusteringBatteryDialog extends JDialog {
         JPanel triadPanel = new JPanel(new GridLayout(0, 1, 4, 4));
         triadPanel.setBorder(BorderFactory.createTitledBorder("Triadic & Local Clustering"));
         cbLocal = new JCheckBox("Watts-Strogatz Local Clustering (Mean <C>, Node C_i distribution, Triangles)", true);
+        cbLocal.setToolTipText(EducationalTooltips.getTooltip("local_clustering"));
         cbTransitivity = new JCheckBox("Newman Global Transitivity (3 x Triangles / Connected Triads)", true);
+        cbTransitivity.setToolTipText(EducationalTooltips.getTooltip("transitivity"));
         triadPanel.add(cbLocal);
         triadPanel.add(cbTransitivity);
         contentPanel.add(triadPanel);
@@ -103,8 +105,11 @@ public class ClusteringBatteryDialog extends JDialog {
         JPanel cohPanel = new JPanel(new GridLayout(0, 1, 4, 4));
         cohPanel.setBorder(BorderFactory.createTitledBorder("Coreness & Classical Cohesion"));
         cbKCore = new JCheckBox("k-Core Decomposition (Coreness shells k_i and maximum core)", true);
+        cbKCore.setToolTipText(EducationalTooltips.getTooltip("kcore"));
         cbCohesion = new JCheckBox("Classical Cohesion Index (Knoke mutual tie ratio)", false);
+        cbCohesion.setToolTipText(EducationalTooltips.getTooltip("cohesion"));
         cbOpenChains = new JCheckBox("Open Chains Summary (Unclosed two-step paths)", false);
+        cbOpenChains.setToolTipText(EducationalTooltips.getTooltip("open_chains"));
         cohPanel.add(cbKCore);
         cohPanel.add(cbCohesion);
         cohPanel.add(cbOpenChains);
@@ -120,6 +125,7 @@ public class ClusteringBatteryDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         cbCliques = new JCheckBox("Maximal Cliques (Bron-Kerbosch)");
+        cbCliques.setToolTipText(EducationalTooltips.getTooltip("cliques"));
         spCliqueDiameter = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
         JPanel clqLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         clqLine.add(cbCliques);
@@ -139,7 +145,9 @@ public class ClusteringBatteryDialog extends JDialog {
         JPanel commPanel = new JPanel(new GridLayout(0, 1, 4, 4));
         commPanel.setBorder(BorderFactory.createTitledBorder("Community Detection & Modularity"));
         cbCommunities = new JCheckBox("Community Detection & Newman Modularity Q (Macro-partition)", true);
+        cbCommunities.setToolTipText(EducationalTooltips.getTooltip("communities"));
         cbGirvanNewman = new JCheckBox("  Use Girvan-Newman edge-betweenness (instead of Louvain)", false);
+        cbGirvanNewman.setToolTipText(EducationalTooltips.getTooltip("girvan_newman"));
         commPanel.add(cbCommunities);
         commPanel.add(cbGirvanNewman);
         contentPanel.add(commPanel);
@@ -149,6 +157,7 @@ public class ClusteringBatteryDialog extends JDialog {
         JPanel eqPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
         eqPanel.setBorder(BorderFactory.createTitledBorder("Structural Equivalence & Blockmodeling"));
         cbEquivalence = new JCheckBox("Structural Equivalence (Burt profile correlation / distance)", false);
+        cbEquivalence.setToolTipText(EducationalTooltips.getTooltip("structural_equivalence"));
         spTargetBlocks = new JSpinner(new SpinnerNumberModel(2, 2, 20, 1));
         eqPanel.add(cbEquivalence);
         eqPanel.add(new JLabel("  Target Blocks (K):"));

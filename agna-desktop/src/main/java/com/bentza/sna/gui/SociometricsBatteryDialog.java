@@ -90,10 +90,15 @@ public class SociometricsBatteryDialog extends JDialog {
         JPanel macroPanel = new JPanel(new GridLayout(0, 1, 4, 4));
         macroPanel.setBorder(BorderFactory.createTitledBorder("Network-Level Sociometrics"));
         cbBasic = new JCheckBox("Basic Structural Parameters (Nodes, Ties, Directedness, Weighted)", true);
+        cbBasic.setToolTipText(EducationalTooltips.getTooltip("basic_metrics"));
         cbDensity = new JCheckBox("Network Density & Completeness", true);
+        cbDensity.setToolTipText(EducationalTooltips.getTooltip("density"));
         cbDyad = new JCheckBox("Reciprocity & MAN Dyad Census (Mutual, Asymmetric, Null)", true);
+        cbDyad.setToolTipText(EducationalTooltips.getTooltip("dyad_census"));
         cbAssortativity = new JCheckBox("Newman Degree Assortativity & Mixing Coefficients (r)", true);
+        cbAssortativity.setToolTipText(EducationalTooltips.getTooltip("assortativity"));
         cbWeighted = new JCheckBox("Valued & Weighted Analysis (Node Strength & Valued Density)", false);
+        cbWeighted.setToolTipText(EducationalTooltips.getTooltip("weighted_metrics"));
         macroPanel.add(cbBasic);
         macroPanel.add(cbDensity);
         macroPanel.add(cbDyad);
@@ -106,12 +111,19 @@ public class SociometricsBatteryDialog extends JDialog {
         JPanel actorPanel = new JPanel(new GridLayout(0, 2, 8, 4));
         actorPanel.setBorder(BorderFactory.createTitledBorder("Actor-Level Degree & Sociometric Volume"));
         cbNodal = new JCheckBox("Nodal Degree Distribution", true);
+        cbNodal.setToolTipText(EducationalTooltips.getTooltip("nodal_degree"));
         cbIn = new JCheckBox("In-Degree Distribution", true);
+        cbIn.setToolTipText(EducationalTooltips.getTooltip("indegree"));
         cbOut = new JCheckBox("Out-Degree Distribution", true);
+        cbOut.setToolTipText(EducationalTooltips.getTooltip("outdegree"));
         cbEmission = new JCheckBox("Emission Degree", false);
+        cbEmission.setToolTipText(EducationalTooltips.getTooltip("emission_degree"));
         cbReception = new JCheckBox("Reception Degree", false);
+        cbReception.setToolTipText(EducationalTooltips.getTooltip("reception_degree"));
         cbDetermination = new JCheckBox("Determination Degree", false);
+        cbDetermination.setToolTipText(EducationalTooltips.getTooltip("determination_degree"));
         cbSociostatus = new JCheckBox("Sociometric Status Indices", false);
+        cbSociostatus.setToolTipText(EducationalTooltips.getTooltip("sociostatus"));
 
         actorPanel.add(cbNodal);
         actorPanel.add(cbIn);

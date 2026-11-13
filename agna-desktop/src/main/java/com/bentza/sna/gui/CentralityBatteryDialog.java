@@ -111,11 +111,17 @@ public class CentralityBatteryDialog extends JDialog {
         JPanel degPanel = new JPanel(new GridLayout(0, 2, 8, 4));
         degPanel.setBorder(BorderFactory.createTitledBorder("Degree-Based Centrality & Activity"));
         cbNodal = new JCheckBox("Nodal Degree (Total)", true);
+        cbNodal.setToolTipText(EducationalTooltips.getTooltip("nodal_degree"));
         cbIn = new JCheckBox("In-Degree Centrality", true);
+        cbIn.setToolTipText(EducationalTooltips.getTooltip("indegree"));
         cbOut = new JCheckBox("Out-Degree Centrality", true);
+        cbOut.setToolTipText(EducationalTooltips.getTooltip("outdegree"));
         cbEmission = new JCheckBox("Emission Degree", false);
+        cbEmission.setToolTipText(EducationalTooltips.getTooltip("emission_degree"));
         cbReception = new JCheckBox("Reception Degree", false);
+        cbReception.setToolTipText(EducationalTooltips.getTooltip("reception_degree"));
         cbDetermination = new JCheckBox("Determination Degree", false);
+        cbDetermination.setToolTipText(EducationalTooltips.getTooltip("determination_degree"));
         degPanel.add(cbNodal);
         degPanel.add(cbIn);
         degPanel.add(cbOut);
@@ -129,10 +135,15 @@ public class CentralityBatteryDialog extends JDialog {
         JPanel geoPanel = new JPanel(new GridLayout(0, 2, 8, 4));
         geoPanel.setBorder(BorderFactory.createTitledBorder("Geodesic & Distance Centralities"));
         cbBetweenness = new JCheckBox("Betweenness Centrality", true);
+        cbBetweenness.setToolTipText(EducationalTooltips.getTooltip("betweenness"));
         cbCloseness = new JCheckBox("Closeness Centrality", true);
+        cbCloseness.setToolTipText(EducationalTooltips.getTooltip("closeness"));
         cbPrestige = new JCheckBox("Prestige & Sociometric Status", true);
+        cbPrestige.setToolTipText(EducationalTooltips.getTooltip("prestige"));
         cbBavelas = new JCheckBox("Bavelas-Leavitt Centrality", false);
+        cbBavelas.setToolTipText(EducationalTooltips.getTooltip("bavelas"));
         cbFareness = new JCheckBox("Fareness Index", false);
+        cbFareness.setToolTipText(EducationalTooltips.getTooltip("fareness"));
         geoPanel.add(cbBetweenness);
         geoPanel.add(cbCloseness);
         geoPanel.add(cbPrestige);
@@ -150,10 +161,12 @@ public class CentralityBatteryDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         cbEigenvector = new JCheckBox("Principal Eigenvector Centrality", true);
+        cbEigenvector.setToolTipText(EducationalTooltips.getTooltip("eigenvector"));
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         specPanel.add(cbEigenvector, gbc);
 
         cbBonacich = new JCheckBox("Bonacich Power Centrality");
+        cbBonacich.setToolTipText(EducationalTooltips.getTooltip("bonacich"));
         tfBonacichBeta = new JTextField("0.10", 5);
         JPanel bonaP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         bonaP.add(cbBonacich);
@@ -163,6 +176,7 @@ public class CentralityBatteryDialog extends JDialog {
         specPanel.add(bonaP, gbc);
 
         cbPageRank = new JCheckBox("PageRank Centrality");
+        cbPageRank.setToolTipText(EducationalTooltips.getTooltip("pagerank"));
         tfPageRankDamping = new JTextField("0.85", 5);
         JPanel prP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         prP.add(cbPageRank);

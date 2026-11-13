@@ -28,6 +28,7 @@ public class AnalysisReport {
     private String note;
     private boolean warning;
     private String rawPlainText;
+    private String executiveSummary;
 
     public AnalysisReport(String title, String networkName) {
         this.title = (title != null) ? title : "Analysis Report";
@@ -93,6 +94,14 @@ public class AnalysisReport {
         return warning;
     }
 
+    public void setExecutiveSummary(String executiveSummary) {
+        this.executiveSummary = executiveSummary;
+    }
+
+    public String getExecutiveSummary() {
+        return executiveSummary;
+    }
+
     /**
      * Renders a modern HTML report card compatible with Swing HTMLEditorKit.
      */
@@ -113,6 +122,15 @@ public class AnalysisReport {
         sb.append(DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault()).format(timestamp));
         sb.append("</span>");
         sb.append("</td></tr></table>\n");
+
+        // Executive Summary / Plain-English Structural Narrative if present
+        if (executiveSummary != null && !executiveSummary.trim().isEmpty()) {
+            sb.append("<div style='background:#f0f7ff; border-left:4px solid #0056b3; padding:10px 14px; margin-bottom:14px; border-radius:4px;'>\n")
+              .append("<b style='color:#004080; font-size:13px;'>💡 Key Structural Takeaways & Beginner's Guide:</b>\n")
+              .append("<div style='margin-top:6px; font-size:11px; line-height:1.45; color:#24292f;'>\n")
+              .append(executiveSummary).append("\n")
+              .append("</div></div>\n");
+        }
 
         // Methodological note / warning if present
         if (note != null && !note.trim().isEmpty()) {
@@ -194,6 +212,17 @@ public class AnalysisReport {
         sb.append("\n");
         if (note != null && !note.trim().isEmpty()) {
             sb.append(note).append("\n");
+        }
+        if (executiveSummary != null && !executiveSummary.trim().isEmpty()) {
+            sb.append("\n=== Key Structural Takeaways & Beginner's Guide ===\n");
+            String plain = executiveSummary.replaceAll("<br/?>", "\n")
+                                           .replaceAll("</li>", "\n")
+                                           .replaceAll("<li>", " - ")
+                                           .replaceAll("<[^>]*>", "")
+                                           .replaceAll("\n{3,}", "\n\n")
+                                           .trim();
+            sb.append(plain).append("\n");
+            sb.append("===================================================\n\n");
         }
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");

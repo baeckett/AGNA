@@ -1891,13 +1891,37 @@ public class NodeArea extends JButton implements MouseListener,
 
     public String getToolTipText(MouseEvent e)
         {
-        if (e == null)
+        if (e == null || my_nodes == null)
             return null;
         int where = whereAreWe(e.getX(), e.getY());
-        if (where == -1)
+        if (where == -1 || where >= my_nodes.length || my_nodes[where] == null)
             return null;
-        else
-            return M01 + my_nodes[where].name + M07;
+
+        Actor a = my_nodes[where];
+        Network net = AppRuntime.getCurrentNetwork();
+        int inDeg = 0;
+        int outDeg = 0;
+        if (net != null && where < net.getSize())
+            {
+            int n = net.getSize();
+            for (int j = 0; j < n; j++)
+                {
+                if (j != where)
+                    {
+                    if (net.getValue(where, j) != 0) outDeg++;
+                    if (net.getValue(j, where) != 0) inDeg++;
+                    }
+                }
+            }
+
+        StringBuilder sb = new StringBuilder(256);
+        sb.append("<html><div style='padding:3px; font-family:sans-serif;'>");
+        sb.append("<b style='color:#004080; font-size:12px;'>").append(a.getName()).append("</b><br>");
+        sb.append("<b>Actor Index:</b> ").append(where + 1).append("<br>");
+        sb.append("<b>Total Degree:</b> ").append(inDeg + outDeg).append("<br>");
+        sb.append("<b>In-Degree:</b> ").append(inDeg).append(" &bull; <b>Out-Degree:</b> ").append(outDeg);
+        sb.append("</div></html>");
+        return sb.toString();
         }
 
     // returns actor index if mouse over actor;

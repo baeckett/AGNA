@@ -1,4 +1,4 @@
-# Agna User Manual — 2.1.6
+# Agna User Manual — 2.1.7
 
 ## 1. Quick start
 
@@ -61,7 +61,7 @@
 Items that compute something link to their explanation; follow the link
 to read exactly what is calculated.
 
-- **File**: [New Network...](#12-pre-defined-network-models-and-academic-references); Open Network; [Merge Network...](#merge-network);
+- **File**: [New Network...](#12-pre-defined-network-models-and-academic-references); Open Network; [Open Sample Network & Case Study...](#13-curated-benchmark-case-studies--guided-exercises); [Merge Network...](#merge-network);
   Save Network As... (the format list is documented in
   [File formats](#6-file-formats)); Save Network; New From Chain...; Quit.
 - **Edit**: Cut / Copy / Paste / Delete / Select All (spreadsheet cell
@@ -95,13 +95,14 @@ to read exactly what is calculated.
   - [Spectral Centralities](#spectral-centralities) — Eigenvector (Bonacich), Bonacich Power c(alpha, beta), PageRank.
   - [Structural Archetypes Diagnostic...](#structural-archetypes-diagnostic) — test empirical networks against small-world, scale-free, homophily, and hierarchy theories.
   - [Hypothesis Testing (Null Models)...](#hypothesis-testing-with-monte-carlo-null-models) — Monte Carlo significance tests with Bernoulli Erdos-Renyi and degree-preserving configuration models.
+  - [Analysis Advisor ("What Should I Compute?")...](#analysis-advisor--what-should-i-compute) — beginner wizard mapping research questions to recommended analytical batteries.
   - [Algorithm Benchmarks...](#algorithm-benchmarks-suite) — empirical execution time and scaling benchmarks.
   - [Export Analysis Table...](#export-analysis-table) — export any displayed report table to CSV, TSV, JSON, or HTML.
 - **View / Output**: Network Viewer (and its Close item); Hide/Show
   Output; Open/Save/Clear the Output pane (the [session log](#session-log)).
 - **Preferences**: Working Directory...; Save Settings As Default...;
   Look and Feel (FlatLaf Light, FlatLaf Dark, Native, Classic).
-- **Help**: Contents...; About Agna...
+- **Help**: Contents...; [SNA Quick Reference & Concept Cheat-Sheet...](#sna-quick-reference--concept-cheat-sheet); [Analysis Advisor...](#analysis-advisor--what-should-i-compute); [Guided Case Studies...](#13-curated-benchmark-case-studies--guided-exercises); About Agna...
 
 ## 4. Methodology — what exactly is computed (read before publishing results)
 
@@ -447,16 +448,55 @@ Interoperability notes:
 - **Pajek**: the export omits comment lines so Gephi imports cleanly; optional per-node Vector blocks are controlled by a checkbox.
 - Legacy files store face paths with platform-specific separators; Agna resolves them transparently, and any node without a stored face falls back to the red-bullet default.
 
-## 7. New in 2.1.6
+## 7. Educational features & beginner's guide (New in 2.1.7)
+
+Version 2.1.7 introduces a comprehensive educational onboarding suite designed
+to make Social Network Analysis friendlier, more intuitive, and accessible for
+students, instructors, and researchers new to graph theory.
+
+- **Interactive Educational Tooltips Across All Computational Batteries**:
+  Every checkbox and option in Agna's battery dialogues (`CentralityBatteryDialog`,
+  `ClusteringBatteryDialog`, `SociometricsBatteryDialog`, `DistanceBatteryDialog`,
+  `FullAnalysisDialog`, `HypothesisTestingDialog`) now features a rich, structured
+  3-part micro-guide rendered directly on hover:
+  1. *What it measures*: Mathematical intuition and theoretical definition.
+  2. *Why use it / Sociological meaning*: Substantive interpretation (e.g., power, brokerage, cohesion, gatekeeping).
+  3. *Interpretation & Complexity*: Practical benchmarks (e.g., Q > 0.35 for communities, C_D = 1.0 for star topologies) and computational complexity caveats.
+- **Automated Plain-English Structural Narrative ("Key Takeaways & Beginner's Guide")**:
+  Full Analysis reports and analytical batteries now automatically generate an
+  executive structural summary (`com.bentza.sna.report.NarrativeSummaryGenerator`)
+  translating abstract graph metrics into natural language sociology:
+  - *Group Saturation & Density*: Explains the proportion of realized connections and communication bandwidth.
+  - *Network Topology & Components*: Clarifies component structure, reachability, and potential information bottlenecks.
+  - *Hierarchy vs Equality*: Interprets Freeman (1979) degree centralization, contrasting star-like autocratic leadership against decentralized egalitarian networks.
+  - *Triadic Trust & Clustering*: Explains Newman global transitivity and local clustering as measures of social capital and triad closure ("a friend of my friend is my friend").
+  - *Reciprocity & Directionality*: Analyzes mutual versus unreciprocated ties.
+  - *Recommended Next Steps*: Suggests actionable next analyses (e.g., running Burt's structural holes if betweenness is concentrated, or Louvain community detection if transitivity is elevated).
+- **Curated Benchmark Case Studies & Dataset Browser (`SampleNetworksDialog`)**:
+  Accessible via **File ▸ Open Sample Network & Case Study...** and **Help ▸ Guided Case Studies...**.
+  Features seminal historical datasets with native coordinates and guided questions:
+  Padgett's Florentine Families (1434), Zachary's Karate Club (1977), Davis's Southern Women (1941),
+  the classical Fathers of Sociology network, and canonical 10-node Star and Circle topologies.
+  See [Curated benchmark case studies](#13-curated-benchmark-case-studies--guided-exercises).
+- **Analysis Advisor ("What Should I Compute?") Decision Wizard (`AnalysisAdvisorDialog`)**:
+  Accessible via **Analysis ▸ Analysis Advisor...** and **Help ▸ Analysis Advisor...**.
+  Helps researchers map empirical research questions (*"Who are the leaders?", "Who controls information?", "Are there factions?", "Is the network hierarchical?", "Are findings statistically significant?"*) directly to recommended analytical batteries with one-click execution.
+- **In-App SNA Concept Reference & Formula Cheat-Sheet (`SnaCheatSheetDialog`)**:
+  Accessible via **Help ▸ SNA Quick Reference & Concept Cheat-Sheet...**.
+  Searchable dictionary containing over 27 formal metric definitions, formulas, sociological significance, and category filters.
+- **Interactive Node Hover Inspector in Network Viewer (`com.bentza.sna.net.NodeArea`)**:
+  Hovering over any node in the visual Network Viewer displays a clean floating badge with the actor's name, index, total degree, and in/out-degree breakdown.
+
+### Previous release highlights (2.1.6)
 
 - **Freeman (1979) Global Network Centralization**:
-  Complete centralization suite computing degree ($C_D$), betweenness ($C_B$), closeness ($C_C$), and Bavelas ($C_{\text{Bav}}$) graph centralization benchmarked against star graph maximums. In Agna Core (`AgnaLib.outFreemanCentralization`), Desktop UI (Centrality Battery), and CLI (`agna analyse FILE --metric freeman`).
+  Complete centralization suite computing degree (C_D), betweenness (C_B), closeness (C_C), and Bavelas (C_Bav) graph centralization benchmarked against star graph maximums. In Agna Core (`AgnaLib.outFreemanCentralization`), Desktop UI (Centrality Battery), and CLI (`agna analyse FILE --metric freeman`).
 - **Newman Degree Assortativity & Mixing Regimes**:
-  Degree assortativity correlation $r$ and four directed mixing regimes (out-in, in-in, out-out, in-out).
+  Degree assortativity correlation r and four directed mixing regimes (out-in, in-in, out-out, in-out).
 - **Louvain & Girvan-Newman Community Detection**:
-  Multi-phase Louvain modularity optimization and Girvan-Newman edge-betweenness community partitioning with modularity $Q$ metrics.
+  Multi-phase Louvain modularity optimization and Girvan-Newman edge-betweenness community partitioning with modularity Q metrics.
 - **Structural Equivalence & Blockmodeling**:
-  Euclidean distance, Pearson correlation, hierarchical complete-linkage clustering, and $K \times K$ image density matrices.
+  Euclidean distance, Pearson correlation, hierarchical complete-linkage clustering, and K × K image density matrices.
 - **Valued & Weighted Network Metrics**:
   Node strength, valued network density, and Barrat et al. weighted local clustering.
 - **Network Transformations**:
@@ -485,6 +525,7 @@ Interoperability notes:
 
 ## 10. Version history
 
+- **2.1.7** — Educational scaffolding and beginner onboarding suite: interactive Educational Tooltips across all computational battery dialogues (centrality, clustering, sociometrics, distance, full analysis, null models); automated Plain-English Structural Narrative generator ("Key Takeaways & Beginner's Guide") in analytical reports; curated Benchmark Case Studies & Dataset Browser (`SampleNetworksDialog`) with historical context and guided exercises for Padgett Florentine Families, Zachary Karate Club, Davis Southern Women, and canonical benchmark topologies; Analysis Advisor ("What Should I Compute?") decision wizard (`AnalysisAdvisorDialog`) mapping research questions to recommended analyses; in-app searchable SNA Concept Reference and formula cheat-sheet (`SnaCheatSheetDialog`); interactive Node Hover Inspector in visual Network Viewer (`NodeArea`).
 - **2.1.6** — Freeman (1979) global centralization suite ($C_D, C_B, C_C, C_{\text{Bav}}$); Newman degree assortativity and directed mixing regimes; Louvain modularity and Girvan-Newman community detection; structural equivalence and blockmodeling; valued/weighted network metrics; network transformation suite (zero/set diagonal, dichotomize, slice, ego extraction, algebra, sorting); UCINET DL format; Agna CLI complete parity; NetworkX parity battery and verification suite.
 - **2.1.5** — pre-defined synthetic network generators (Watts-Strogatz, Barabási-Albert, Stochastic Block Model, Erdős-Rényi, Hierarchical Tree, hexagonal/hexagram/square lattices); 5 new layout engines; algorithm benchmarking suite; structural archetypes diagnostic; statistical hypothesis testing with Monte Carlo null models; modern HTML table reporting framework with export dialog.
 - **2.1.4** — spectral centralities (Bonacich eigenvector, Bonacich power, PageRank); Ronald Burt's structural holes (constraint, effective size, efficiency, hierarchy); Holland-Leinhardt 16 triad census; k-core decomposition; Watts-Strogatz local clustering; Newman global transitivity; connectivity and articulation points.
@@ -496,7 +537,7 @@ Interoperability notes:
 If you use AGNA in your research, please cite it as:
 
 Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open
-Source (Version 2.1.6) [Computer software].
+Source (Version 2.1.7) [Computer software].
 https://doi.org/10.5281/zenodo.22708199
 
 BibTeX entry:
@@ -505,7 +546,7 @@ BibTeX entry:
 @software{benta_2026_agna,
   author    = {Bența, Marius I.},
   title     = {{AGNA}: Applied Graph and Network Analysis Open Source},
-  version   = {2.1.6},
+  version   = {2.1.7},
   year      = {2026},
   publisher = {AGNA Open Source},
   doi       = {10.5281/zenodo.22708199},
@@ -615,3 +656,59 @@ peers within the same administrative branch.
   - Krackhardt, D. (1994). Graph theoretical dimensions of informal organizations. In K. M. Carley & M. J. Prietula (Eds.), *Computational Organization Theory* (pp. 89–111). Hillsdale, NJ: Lawrence Erlbaum Associates.
   - Simon, H. A. (1962). The architecture of complexity. *Proceedings of the American Philosophical Society*, 106(6), 467–482.
 - **Relevance**: Krackhardt (1994) formalizes the classical corporate hierarchy in social network analysis as a directed out-tree and measures organizational divergence using four graph-theoretic dimensions: Connectedness, Graph Hierarchy, Graph Efficiency, and Least Upper Bound. Simon (1962) analyzes why complex social and administrative organizations naturally decompose into hierarchic tree structures.
+
+## 13. Curated benchmark case studies & guided exercises
+
+Agna 2.1.7 bundles curated historical datasets designed for classroom instruction,
+methodological validation, and hands-on self-study. Each sample dataset can be
+opened directly via **File ▸ Open Sample Network & Case Study...** or **Help ▸ Guided Case Studies...**.
+
+### Padgett's Florentine Families (1434) — Political Brokerage and Structural Holes
+
+- **Historical Context**: In 15th-century Renaissance Florence, the Medici family rose to political hegemony despite having less wealth than the Strozzi and fewer patrician ancestors than the Albizzi. Padgett and Ansell (1993) demonstrated that Cosimo de' Medici's political dominance stemmed from strategic network positioning: marriage alliances placed the Medici at the center of a structural hole, bridging opposing aristocratic factions who refused to ally with one another directly.
+- **File**: `samples/Padgett Florentine Families.agn` (16 families, 20 marriage alliance ties).
+- **Academic Citation**:
+  Padgett, J. F., & Ansell, C. K. (1993). Robust action and the rise of the Medici, 1400–1434. *American Journal of Sociology*, 98(6), 1259–1319. https://doi.org/10.1086/230190
+- **Guided Exercises in AGNA**:
+  1. *Betweenness Centrality*: Run **Analysis ▸ Centrality & Prestige Battery**. Observe that the Medici family achieves a normalized betweenness score of 0.522—more than double any other family—confirming their role as the indispensable political broker.
+  2. *Structural Holes*: Run **Analysis ▸ Social Capital & Structural Holes (Burt)**. Note Medici's exceptionally low network constraint (0.209), proving their access to non-redundant information and power arbitrage.
+  3. *Ego Network Extraction*: Use **Network ▸ Extract Ego Network...** for "Medici" to inspect their immediate marital coalition.
+
+### Zachary's Karate Club (1977) — Faction Split and Modularity
+
+- **Historical Context**: Wayne Zachary spent two years observing social interactions among 34 members of a university karate club. During the study, an administrative conflict over lesson fees erupted between the club's martial arts instructor (Mr. Hi / Member 1) and its president (John A. / Member 34). The club subsequently fractured into two distinct organizations. This dataset is the world's most widely cited benchmark for community detection algorithms and network fission models.
+- **File**: `samples/Zachary Karate Club.agn` (34 members, 78 friendship ties).
+- **Academic Citation**:
+  Zachary, W. W. (1977). An information flow model for conflict and fission in small groups. *Journal of Anthropological Research*, 33(4), 452–473. https://doi.org/10.1086/jar.33.4.3629752
+- **Guided Exercises in AGNA**:
+  1. *Community Detection*: Run **Analysis ▸ Clustering & Cohesion Battery** with **Community Detection (Louvain)** checked. Compare the discovered two communities to the historical split centered around Member 1 and Member 34.
+  2. *High Modularity*: Inspect Newman's modularity score $Q$. A score above 0.35 confirms strong community clustering.
+  3. *Core-Periphery*: Run **k-Core Decomposition** to discover the loyal inner circles ($k = 4$) surrounding each leader versus the peripheral fringe.
+
+### Davis's Southern Women (1941) — Social Circles and Clique Overlap
+
+- **Historical Context**: A foundational sociological and anthropological study of social stratification in Natchez, Mississippi. Allison Davis and colleagues recorded 18 women attending 14 informal social events (teas, church circles, bridge clubs) over nine months. The one-mode projection represents shared event co-attendance, illustrating how overlapping informal social circles define class solidarity and socialite status.
+- **File**: `samples/Davis Southern Women.agn` (18 women, 139 co-attendance ties).
+- **Academic Citation**:
+  Davis, A., Gardner, B. B., & Gardner, M. R. (1941). *Deep South: A Social Anthropological Study of Caste and Class*. University of Chicago Press.
+- **Guided Exercises in AGNA**:
+  1. *Maximal Cliques*: Run **Analysis ▸ Clustering & Cohesion Battery** with **Maximal Cliques** enabled. Observe how the women partition into two major social cliques with several bridging liaisons (e.g., Ruth, Pearl).
+  2. *High Cohesion*: Run **Analysis ▸ Sociometrics & Basic Battery** to observe the unusually high network density of high-society co-attendance.
+  3. *Eigenvector Centrality*: Run **Analysis ▸ Spectral Centralities ▸ Bonacich Eigenvector** to discover which women occupy the core of the social elite.
+
+### Fathers of Sociology — Theoretical Triad Closure
+
+- **Historical Context**: A 3-actor theoretical network linking classical sociological thinkers (Max Weber, Émile Durkheim, and Karl Marx) with mutual and asymmetric dialogues.
+- **File**: `samples/Sociologists.agn` (3 actors).
+- **Guided Exercises in AGNA**:
+  1. *Triad Census*: Run **Analysis ▸ Triad & Dyad Census** to examine complete triadic closure (Configuration 300).
+  2. *Status & Determination*: Test Agna's proprietary Sociometric Status and Determination degree formulas.
+
+### Canonical Benchmarks — 10-Node Star & Circle Networks
+
+- **10-Node Star Network (`samples/10 star.agn`)**:
+  - Maximizes Freeman (1979) degree, betweenness, and closeness centralization ($C_D = C_B = C_C = 1.0000$).
+  - Proves the theoretical extreme of centralized autocracy and hub-dependent communication.
+- **10-Node Circle Network (`samples/10 circle.agn`)**:
+  - A 2-regular ring lattice where every actor connects symmetrically to exactly two neighbors.
+  - Exhibits zero centralization ($C_D = C_B = C_C = 0.0000$) and serves as the baseline for Watts-Strogatz small-world rewiring experiments.

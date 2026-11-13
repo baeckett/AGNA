@@ -121,15 +121,25 @@ public class FullAnalysisDialog extends JDialog {
         stdPanel.setBorder(BorderFactory.createTitledBorder("Standard Modules (Polynomial & Fast)"));
 
         cbBasic = new JCheckBox("Basic Structural Metrics & Density (Nodes, Density, Reciprocity)", true);
+        cbBasic.setToolTipText(EducationalTooltips.getTooltip("basic_metrics"));
         cbDegree = new JCheckBox("Degree Distributions (Nodal Degree, In-Degree, Out-Degree)", true);
+        cbDegree.setToolTipText(EducationalTooltips.getTooltip("nodal_degree"));
         cbPrestige = new JCheckBox("Sociometric Status & Prestige Indices", true);
+        cbPrestige.setToolTipText(EducationalTooltips.getTooltip("prestige"));
         cbCentrality = new JCheckBox("Centrality & Distances (Betweenness, Closeness, Geodesics Matrix, Diameter)", true);
+        cbCentrality.setToolTipText(EducationalTooltips.getTooltip("betweenness"));
         cbSpectral = new JCheckBox("Spectral Centrality (Principal Eigenvector Centrality)", true);
+        cbSpectral.setToolTipText(EducationalTooltips.getTooltip("eigenvector"));
         cbClustering = new JCheckBox("Clustering & Cohesion (Watts-Strogatz Local Clustering, Transitivity, k-Cores)", true);
+        cbClustering.setToolTipText(EducationalTooltips.getTooltip("local_clustering"));
         cbHoles = new JCheckBox("Social Capital & Structural Holes (Burt's Constraint, Effective Size, Efficiency)", true);
+        cbHoles.setToolTipText(EducationalTooltips.getTooltip("open_chains"));
         cbConnectivity = new JCheckBox("Connectivity & Dyads (Components, Cut-Vertices, Bridges, MAN Dyad Census)", true);
+        cbConnectivity.setToolTipText(EducationalTooltips.getTooltip("dyad_census"));
         cbAssortativity = new JCheckBox("Degree Assortativity & Mixing Patterns (Newman r)", true);
+        cbAssortativity.setToolTipText(EducationalTooltips.getTooltip("assortativity"));
         cbCommunities = new JCheckBox("Community Detection & Modularity Partitioning (Louvain Q)", true);
+        cbCommunities.setToolTipText(EducationalTooltips.getTooltip("communities"));
 
         stdPanel.add(cbBasic);
         stdPanel.add(cbDegree);
@@ -154,6 +164,7 @@ public class FullAnalysisDialog extends JDialog {
 
         // Bonacich
         cbBonacich = new JCheckBox("Bonacich Power Centrality");
+        cbBonacich.setToolTipText(EducationalTooltips.getTooltip("bonacich"));
         tfBonacichBeta = new JTextField("0.10", 5);
         JPanel bonaP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         bonaP.add(cbBonacich);
@@ -164,6 +175,7 @@ public class FullAnalysisDialog extends JDialog {
 
         // PageRank
         cbPageRank = new JCheckBox("PageRank Centrality");
+        cbPageRank.setToolTipText(EducationalTooltips.getTooltip("pagerank"));
         tfPageRankDamping = new JTextField("0.85", 5);
         JPanel prP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         prP.add(cbPageRank);
@@ -174,11 +186,13 @@ public class FullAnalysisDialog extends JDialog {
 
         // Triad Census
         cbTriad = new JCheckBox("Holland-Leinhardt 16 Triad Census");
+        cbTriad.setToolTipText(EducationalTooltips.getTooltip("dyad_census"));
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
         extPanel.add(cbTriad, gbc);
 
         // Maximal Cliques
         cbCliques = new JCheckBox("Maximal Cliques (Bron-Kerbosch)");
+        cbCliques.setToolTipText(EducationalTooltips.getTooltip("cliques"));
         spCliqueDiameter = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
         JPanel clqP = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         clqP.add(cbCliques);
@@ -188,10 +202,12 @@ public class FullAnalysisDialog extends JDialog {
         extPanel.add(clqP, gbc);
 
         cbEquivalence = new JCheckBox("Structural Equivalence & Blockmodeling (Burt profile correlation / distance)");
+        cbEquivalence.setToolTipText(EducationalTooltips.getTooltip("structural_equivalence"));
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
         extPanel.add(cbEquivalence, gbc);
 
         cbWeighted = new JCheckBox("Valued & Weighted Analysis (Node Strength & Valued Density)");
+        cbWeighted.setToolTipText(EducationalTooltips.getTooltip("weighted_metrics"));
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
         extPanel.add(cbWeighted, gbc);
 

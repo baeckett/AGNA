@@ -105,6 +105,7 @@ public class HypothesisTestingDialog extends JDialog
         gbc.gridx = 1; gbc.weightx = 1.0;
         metricCombo = new JComboBox<>(NetworkMetric.values());
         metricCombo.setSelectedItem(NetworkMetric.TRANSITIVITY);
+        metricCombo.setToolTipText("<html><b>Test Metric:</b> Select the network statistic to evaluate against synthetic null distributions.</html>");
         formPanel.add(metricCombo, gbc);
 
         gbc.gridx = 1; gbc.gridy = 1;
@@ -117,6 +118,7 @@ public class HypothesisTestingDialog extends JDialog
         gbc.gridx = 1; gbc.weightx = 1.0;
         modelCombo = new JComboBox<>(NullModel.values());
         modelCombo.setSelectedItem(NullModel.DEGREE_PRESERVING);
+        modelCombo.setToolTipText("<html><b>Null Model:</b> The random graph model used to generate baseline synthetic networks.</html>");
         formPanel.add(modelCombo, gbc);
 
         gbc.gridx = 1; gbc.gridy = 3;
@@ -129,6 +131,7 @@ public class HypothesisTestingDialog extends JDialog
         gbc.gridx = 1; gbc.weightx = 1.0;
         repCombo = new JComboBox<>(new Integer[] { 100, 500, 1000, 5000 });
         repCombo.setSelectedItem(1000);
+        repCombo.setToolTipText("<html><b>Monte Carlo Replications (R):</b> Recommended: 1,000 for standard research empirical p-value resolution (0.001).</html>");
         formPanel.add(repCombo, gbc);
 
         metricCombo.addActionListener(e ->

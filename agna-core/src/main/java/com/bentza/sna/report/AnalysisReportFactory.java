@@ -964,6 +964,7 @@ public final class AnalysisReportFactory {
         }
         AnalysisReport report = new AnalysisReport("FULL ANALYSIS Battery", src.getName());
         report.setRawPlainText(legacy);
+        report.setExecutiveSummary(NarrativeSummaryGenerator.generateSummary(src, lib));
         boolean connected = lib.isConnected(src);
 
         // Build composite report based on selected options

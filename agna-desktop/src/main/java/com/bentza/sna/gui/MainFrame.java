@@ -105,7 +105,8 @@ public class MainFrame //
             a_archetypes, a_hypothesis_testing, a_benchmarks, a_export_table, o_export_table, v_viewer,
             v_close, v_hide_output, v_view_output, p_working_directory,
             p_save_as_default, p_laf_native, p_laf_flatlaf,
-            p_laf_flatlaf_dark, h_contents, h_about_agna;
+            p_laf_flatlaf_dark, h_contents, h_about_agna,
+            f_samples, a_advisor, h_cheat_sheet, h_samples, h_advisor;
 
     private static JMenuBar mb;
 
@@ -703,6 +704,21 @@ public class MainFrame //
                         || e.getSource() == lowerleft_button)
                     {
                     doHelpContents(my_frame);
+                    }
+
+                if (e.getSource() == f_samples || e.getSource() == h_samples)
+                    {
+                    doOpenSamples();
+                    }
+
+                if (e.getSource() == a_advisor || e.getSource() == h_advisor)
+                    {
+                    doAnalysisAdvisor();
+                    }
+
+                if (e.getSource() == h_cheat_sheet)
+                    {
+                    doSnaCheatSheet();
                     }
 
                 if (e.getSource() == h_about_agna)
@@ -1507,7 +1523,38 @@ public class MainFrame //
             }
         }
 
-    
+    private void doOpenSamples()
+        {
+        SampleNetworksDialog dlg = new SampleNetworksDialog(my_frame, file -> {
+            stopEditingTable();
+            grid_model.setReady(false);
+            saveChangedNetworks(true);
+            doSimplyOpenNetwork(file);
+        });
+        dlg.setVisible(true);
+        }
+
+    private void doAnalysisAdvisor()
+        {
+        AnalysisAdvisorDialog dlg = new AnalysisAdvisorDialog(my_frame, action -> {
+            switch (action) {
+                case OPEN_CENTRALITY: doCentralityBattery(); break;
+                case OPEN_CLUSTERING: doClusteringBattery(); break;
+                case OPEN_SOCIOMETRICS: doSociometricsBattery(); break;
+                case OPEN_DISTANCES: doDistanceBattery(); break;
+                case OPEN_HOLES: doStructuralHoles(); break;
+                case OPEN_HYPOTHESIS_TESTING: doHypothesisTesting(); break;
+                case OPEN_FULL_ANALYSIS: doFullAnalysis(); break;
+            }
+        });
+        dlg.setVisible(true);
+        }
+
+    private void doSnaCheatSheet()
+        {
+        SnaCheatSheetDialog dlg = new SnaCheatSheetDialog(my_frame);
+        dlg.setVisible(true);
+        }
 
     private void doOpenOutput() // new version
         {
@@ -4454,6 +4501,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         // submeniuri din FILE:
         f_new = new JMenuItem("New Network");
         f_open = new JMenuItem("Open Network");
+        f_samples = new JMenuItem("Open Sample Network & Case Study...");
         d_merge = new JMenuItem("Merge Network...");
         // 2.1.3: Merge Network lives in the File menu, after Open
         f_save = new JMenuItem("Save Network As...");
@@ -4463,6 +4511,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         f_new.setToolTipText("Create a new empty network");
         f_open.setToolTipText("Open an existing network file");
+        f_samples.setToolTipText("Open classic empirical and pedagogical benchmark networks with guided case studies");
         f_save.setToolTipText("Save current network as a specified file");
         f_simply_save.setToolTipText("Save current network");
         f_create.setToolTipText("Create a network from a chain file");
@@ -4477,6 +4526,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         f_new.addActionListener(act_menu);
         f_open.addActionListener(act_menu);
+        f_samples.addActionListener(act_menu);
         f_save.addActionListener(act_menu);
         f_simply_save.addActionListener(act_menu);
         f_create.addActionListener(act_menu);
@@ -4491,6 +4541,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         mFile.add(f_new);
         mFile.add(f_open);
+        mFile.add(f_samples);
         mFile.add(d_merge);
         mFile.addSeparator();
         mFile.add(f_create);
@@ -4816,6 +4867,11 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_benchmarks.addActionListener(act_menu);
         a_export_table.addActionListener(act_menu);
 
+        a_advisor = new JMenuItem("Analysis Advisor (What Should I Compute?)...");
+        a_advisor.setToolTipText("Interactive wizard helping beginners select the right algorithms for their research question");
+        a_advisor.addActionListener(act_menu);
+
+        mAnalysis.add(a_advisor);
         mAnalysis.add(a_full_analysis);
         mAnalysis.addSeparator();
         mAnalysis.add(a_sociometrics);
@@ -4921,17 +4977,33 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
 
         // submeniuri din HELP:
         h_contents = new JMenuItem("Contents...");
+        h_cheat_sheet = new JMenuItem("SNA Quick Reference & Concept Cheat-Sheet...");
+        h_advisor = new JMenuItem("Analysis Advisor...");
+        h_samples = new JMenuItem("Guided Case Studies & Sample Networks...");
         h_about_agna = new JMenuItem("About Agna...");
+
         h_contents.setToolTipText("Display the Agna Help frame");
+        h_cheat_sheet.setToolTipText("Searchable glossary of Social Network Analysis concepts, definitions, and interpretations");
+        h_advisor.setToolTipText("Wizard guiding you to the right analysis battery for your research question");
+        h_samples.setToolTipText("Explore seminal empirical datasets with guided sociological questions");
         h_about_agna.setToolTipText("Display Agna copyright information");
 
         h_contents.addActionListener(act_menu);
+        h_cheat_sheet.addActionListener(act_menu);
+        h_advisor.addActionListener(act_menu);
+        h_samples.addActionListener(act_menu);
         h_about_agna.addActionListener(act_menu);
+
         h_contents.setMnemonic('c');
         h_about_agna.setMnemonic('a');
         h_contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
                 ActionEvent.CTRL_MASK));
+
         mHelp.add(h_contents);
+        mHelp.add(h_cheat_sheet);
+        mHelp.add(h_advisor);
+        mHelp.add(h_samples);
+        mHelp.addSeparator();
         mHelp.add(h_about_agna);
 
         //

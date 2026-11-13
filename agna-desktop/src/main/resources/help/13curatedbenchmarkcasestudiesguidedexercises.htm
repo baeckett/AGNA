@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>13. Curated benchmark case studies & guided exercises - Agna Help</title>
+<style>/* Agna help stylesheet (2.1.3) - clean, modern, printable */
+body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+       font-size: 14px; line-height: 1.55; color: #222; background: #fff;
+       max-width: 820px; margin: 24px auto; padding: 0 20px; }
+h1 { font-size: 22px; border-bottom: 2px solid #298C8C; padding-bottom: 6px; }
+h2 { font-size: 17px; margin-top: 28px; color: #123; }
+h3 { font-size: 15px; }
+code, pre { background: #f4f6f6; border-radius: 4px; font-size: 13px; }
+pre { padding: 10px; overflow-x: auto; }
+table { border-collapse: collapse; margin: 12px 0; }
+th, td { border: 1px solid #c8d2d2; padding: 6px 10px; text-align: left; }
+th { background: #e8f0f0; }
+a { color: #1b6a6a; }
+blockquote { border-left: 4px solid #298C8C; margin: 10px 0; padding: 2px 14px;
+             color: #345; background: #f7fbfb; }
+.warning { border-left: 4px solid #c0392b; background: #fdf3f2; padding: 6px 12px; }
+</style></head>
+<body>
+<!-- md2help generated - do not edit by hand; edit docs/manual.md -->
+<h1 id="13-curated-benchmark-case-studies--guided-exercises" name="13-curated-benchmark-case-studies--guided-exercises">13. Curated benchmark case studies &amp; guided exercises</h1>
+<p>Agna 2.1.7 bundles curated historical datasets designed for classroom instruction,</p>
+<p>methodological validation, and hands-on self-study. Each sample dataset can be</p>
+<p>opened directly via <b>File ▸ Open Sample Network &amp; Case Study...</b> or <b>Help ▸ Guided Case Studies...</b>.</p>
+<h2 id="padgetts-florentine-families-1434--political-brokerage-and-structural-holes" name="padgetts-florentine-families-1434--political-brokerage-and-structural-holes">Padgett&#x27;s Florentine Families (1434) — Political Brokerage and Structural Holes</h2>
+<ul><li><b>Historical Context</b>: In 15th-century Renaissance Florence, the Medici family rose to political hegemony despite having less wealth than the Strozzi and fewer patrician ancestors than the Albizzi. Padgett and Ansell (1993) demonstrated that Cosimo de&#x27; Medici&#x27;s political dominance stemmed from strategic network positioning: marriage alliances placed the Medici at the center of a structural hole, bridging opposing aristocratic factions who refused to ally with one another directly.</li></ul>
+<ul><li><b>File</b>: <code>samples/Padgett Florentine Families.agn</code> (16 families, 20 marriage alliance ties).</li></ul>
+<ul><li><b>Academic Citation</b>:</li></ul>
+<p>  Padgett, J. F., &amp; Ansell, C. K. (1993). Robust action and the rise of the Medici, 1400–1434. <i>American Journal of Sociology</i>, 98(6), 1259–1319. https://doi.org/10.1086/230190</p>
+<ul><li><b>Guided Exercises in AGNA</b>:</li></ul>
+<p>  1. <i>Betweenness Centrality</i>: Run <b>Analysis ▸ Centrality &amp; Prestige Battery</b>. Observe that the Medici family achieves a normalized betweenness score of 0.522—more than double any other family—confirming their role as the indispensable political broker.</p>
+<p>  2. <i>Structural Holes</i>: Run <b>Analysis ▸ Social Capital &amp; Structural Holes (Burt)</b>. Note Medici&#x27;s exceptionally low network constraint (0.209), proving their access to non-redundant information and power arbitrage.</p>
+<p>  3. <i>Ego Network Extraction</i>: Use <b>Network ▸ Extract Ego Network...</b> for &quot;Medici&quot; to inspect their immediate marital coalition.</p>
+<h2 id="zacharys-karate-club-1977--faction-split-and-modularity" name="zacharys-karate-club-1977--faction-split-and-modularity">Zachary&#x27;s Karate Club (1977) — Faction Split and Modularity</h2>
+<ul><li><b>Historical Context</b>: Wayne Zachary spent two years observing social interactions among 34 members of a university karate club. During the study, an administrative conflict over lesson fees erupted between the club&#x27;s martial arts instructor (Mr. Hi / Member 1) and its president (John A. / Member 34). The club subsequently fractured into two distinct organizations. This dataset is the world&#x27;s most widely cited benchmark for community detection algorithms and network fission models.</li></ul>
+<ul><li><b>File</b>: <code>samples/Zachary Karate Club.agn</code> (34 members, 78 friendship ties).</li></ul>
+<ul><li><b>Academic Citation</b>:</li></ul>
+<p>  Zachary, W. W. (1977). An information flow model for conflict and fission in small groups. <i>Journal of Anthropological Research</i>, 33(4), 452–473. https://doi.org/10.1086/jar.33.4.3629752</p>
+<ul><li><b>Guided Exercises in AGNA</b>:</li></ul>
+<p>  1. <i>Community Detection</i>: Run <b>Analysis ▸ Clustering &amp; Cohesion Battery</b> with <b>Community Detection (Louvain)</b> checked. Compare the discovered two communities to the historical split centered around Member 1 and Member 34.</p>
+<p>  2. <i>High Modularity</i>: Inspect Newman&#x27;s modularity score $Q$. A score above 0.35 confirms strong community clustering.</p>
+<p>  3. <i>Core-Periphery</i>: Run <b>k-Core Decomposition</b> to discover the loyal inner circles ($k = 4$) surrounding each leader versus the peripheral fringe.</p>
+<h2 id="daviss-southern-women-1941--social-circles-and-clique-overlap" name="daviss-southern-women-1941--social-circles-and-clique-overlap">Davis&#x27;s Southern Women (1941) — Social Circles and Clique Overlap</h2>
+<ul><li><b>Historical Context</b>: A foundational sociological and anthropological study of social stratification in Natchez, Mississippi. Allison Davis and colleagues recorded 18 women attending 14 informal social events (teas, church circles, bridge clubs) over nine months. The one-mode projection represents shared event co-attendance, illustrating how overlapping informal social circles define class solidarity and socialite status.</li></ul>
+<ul><li><b>File</b>: <code>samples/Davis Southern Women.agn</code> (18 women, 139 co-attendance ties).</li></ul>
+<ul><li><b>Academic Citation</b>:</li></ul>
+<p>  Davis, A., Gardner, B. B., &amp; Gardner, M. R. (1941). <i>Deep South: A Social Anthropological Study of Caste and Class</i>. University of Chicago Press.</p>
+<ul><li><b>Guided Exercises in AGNA</b>:</li></ul>
+<p>  1. <i>Maximal Cliques</i>: Run <b>Analysis ▸ Clustering &amp; Cohesion Battery</b> with <b>Maximal Cliques</b> enabled. Observe how the women partition into two major social cliques with several bridging liaisons (e.g., Ruth, Pearl).</p>
+<p>  2. <i>High Cohesion</i>: Run <b>Analysis ▸ Sociometrics &amp; Basic Battery</b> to observe the unusually high network density of high-society co-attendance.</p>
+<p>  3. <i>Eigenvector Centrality</i>: Run <b>Analysis ▸ Spectral Centralities ▸ Bonacich Eigenvector</b> to discover which women occupy the core of the social elite.</p>
+<h2 id="fathers-of-sociology--theoretical-triad-closure" name="fathers-of-sociology--theoretical-triad-closure">Fathers of Sociology — Theoretical Triad Closure</h2>
+<ul><li><b>Historical Context</b>: A 3-actor theoretical network linking classical sociological thinkers (Max Weber, Émile Durkheim, and Karl Marx) with mutual and asymmetric dialogues.</li></ul>
+<ul><li><b>File</b>: <code>samples/Sociologists.agn</code> (3 actors).</li></ul>
+<ul><li><b>Guided Exercises in AGNA</b>:</li></ul>
+<p>  1. <i>Triad Census</i>: Run <b>Analysis ▸ Triad &amp; Dyad Census</b> to examine complete triadic closure (Configuration 300).</p>
+<p>  2. <i>Status &amp; Determination</i>: Test Agna&#x27;s proprietary Sociometric Status and Determination degree formulas.</p>
+<h2 id="canonical-benchmarks--10-node-star--circle-networks" name="canonical-benchmarks--10-node-star--circle-networks">Canonical Benchmarks — 10-Node Star &amp; Circle Networks</h2>
+<ul><li><b>10-Node Star Network (<code>samples/10 star.agn</code>)</b>:</li></ul>
+<p>  - Maximizes Freeman (1979) degree, betweenness, and closeness centralization ($C_D = C_B = C_C = 1.0000$).</p>
+<p>  - Proves the theoretical extreme of centralized autocracy and hub-dependent communication.</p>
+<ul><li><b>10-Node Circle Network (<code>samples/10 circle.agn</code>)</b>:</li></ul>
+<p>  - A 2-regular ring lattice where every actor connects symmetrically to exactly two neighbors.</p>
+<p>  - Exhibits zero centralization ($C_D = C_B = C_C = 0.0000$) and serves as the baseline for Watts-Strogatz small-world rewiring experiments.</p>
+</body></html>
