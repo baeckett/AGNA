@@ -1938,7 +1938,7 @@ tmp_node.setFace(tmpname);
                         {
                         // if could by no means read face from file:
                         tmp_node.setFace(AppRuntime.getDefaultNodeFaceSource());
-                        if (!is_err)
+                        if (!is_err && !java.awt.GraphicsEnvironment.isHeadless())
                             {
                             errors
                                     .append("\nErrors encountered on reading Node Faces.");
@@ -1953,13 +1953,15 @@ tmp_node.setFace(tmpname);
         try
             {
             tmp_width = parseNextInt(str, "Area Width");
-            net_area.setWidthSimply(tmp_width);
+            if (net_area != null)
+                net_area.setWidthSimply(tmp_width);
             } catch (Exception e)
             {
             if (parseFindNextWord(str, "Image") != null)
                 errors.append("\nInvalid Image Width.");
             tmp_width = 400;
-            net_area.setWidthSimply(tmp_width);
+            if (net_area != null)
+                net_area.setWidthSimply(tmp_width);
             }
 
         // finding node coordinates and widths:
@@ -1992,7 +1994,7 @@ tmp_node.setFace(tmpname);
                                     .append("\nErrors encountered on reading Node Coordinates.");
                             }
                         // node size cannot exceed 80 % of area width
-                        if (tmp_node.getSize() > (int) ((float) net_area
+                        if (net_area != null && tmp_node.getSize() > (int) ((float) net_area
                                 .getWidth() * 0.8f))
                             tmp_node.setSize(16);
                         }
@@ -2011,6 +2013,14 @@ tmp_node.setFace(tmpname);
                         && str.indexOf("Has Viewer no") < 0)
                     errors.append("\nNode Coordinates not found.");
                 }
+            }
+
+        // In headless mode (or if no viewer area), skip GUI canvas settings
+        if (net_area == null)
+            {
+            if (errors.length() < 1)
+                return null;
+            return errors.toString();
             }
 
         // finding area settings:
@@ -3029,6 +3039,10 @@ tmp_node.setFace(tmpname);
 
     public void attachArea()
         {
+        if (java.awt.GraphicsEnvironment.isHeadless())
+            {
+            return;
+            }
         net_area = new NodeArea(my_network);
         setChanged(true);
         }

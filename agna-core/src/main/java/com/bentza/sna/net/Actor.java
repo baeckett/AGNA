@@ -289,6 +289,10 @@ face_item = getImageStockInstance().requestImageItem(AppRuntime
 
     public int getFaceWidth()
         {
+        if (face_item == null || face_item.image_icon == null)
+            {
+            return node_size;
+            }
         return (int) ((double) node_size * face_item.image_icon.getIconWidth() / Math
                 .max(face_item.image_icon.getIconWidth(), face_item.image_icon
                         .getIconHeight()));
@@ -296,6 +300,10 @@ face_item = getImageStockInstance().requestImageItem(AppRuntime
 
     public int getFaceHeight()
         {
+        if (face_item == null || face_item.image_icon == null)
+            {
+            return node_size;
+            }
         return (int) ((double) node_size * face_item.image_icon.getIconHeight() / Math
                 .max(face_item.image_icon.getIconWidth(), face_item.image_icon
                         .getIconHeight()));
@@ -499,6 +507,7 @@ face_item = getImageStockInstance().requestImageItem(tmp_face_source);
 
     public void setX(int tmp_x, int x_max)
         {
+        createCoordinatesIfMissing();
         if (tmp_x <= 0)
             {
             xy.setX(0f);
@@ -513,6 +522,7 @@ face_item = getImageStockInstance().requestImageItem(tmp_face_source);
 
     public void setY(int tmp_y, int y_max)
         {
+        createCoordinatesIfMissing();
         if (tmp_y <= 0)
             {
             xy.setY(0f);

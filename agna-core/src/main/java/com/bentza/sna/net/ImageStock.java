@@ -142,6 +142,12 @@ public class ImageStock
             return empty;
             }
 
+        if (java.awt.GraphicsEnvironment.isHeadless())
+            {
+            empty.increaseClients();
+            return empty;
+            }
+
         String resolved = resolveImagePath(tmp_image_source);
         if (resolved == null)
             {

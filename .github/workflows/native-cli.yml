@@ -1,0 +1,94 @@
+name: Native CLI Binaries (GraalVM)
+
+on:
+  push:
+    branches: [ main, v2.1.7 ]
+    tags: [ 'v*' ]
+  pull_request:
+    paths:
+      - 'agna-core/**'
+      - 'agna-cli/**'
+      - 'pom.xml'
+      - '.github/workflows/native-cli.yml'
+  workflow_dispatch:
+
+jobs:
+  build-native:
+    name: Build Native CLI (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux-amd64
+            binary_name: agna
+            output_name: agna-linux-amd64
+          - os: macos-latest
+            target: macos-arm64
+            binary_name: agna
+            output_name: agna-macos-arm64
+          - os: macos-13
+            target: macos-x86_64
+            binary_name: agna
+            output_name: agna-macos-x86_64
+          - os: windows-latest
+            target: windows-amd64
+            binary_name: agna.exe
+            output_name: agna-windows-amd64.exe
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Build Native Executable via Maven
+        run: mvn -B -ntp -pl agna-cli -am package -Pnative -DskipTests
+
+      - name: Verify Native Binary (POSIX)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x agna-cli/target/${{ matrix.binary_name }}
+          ./agna-cli/target/${{ matrix.binary_name }} --version
+          ./agna-cli/target/${{ matrix.binary_name }} capabilities --json
+
+      - name: Verify Native Binary (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          agna-cli\target\${{ matrix.binary_name }} --version
+          agna-cli\target\${{ matrix.binary_name }} capabilities --json
+
+      - name: Stage Artifacts (POSIX)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p dist
+          cp agna-cli/target/${{ matrix.binary_name }} dist/${{ matrix.output_name }}
+          cd dist
+          shasum -a 256 ${{ matrix.output_name }} > ${{ matrix.output_name }}.sha256
+          tar -czf ${{ matrix.output_name }}.tar.gz ${{ matrix.output_name }}
+
+      - name: Stage Artifacts (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist -Force
+          Copy-Item agna-cli/target/${{ matrix.binary_name }} -Destination dist/${{ matrix.output_name }}
+          cd dist
+          (Get-FileHash ${{ matrix.output_name }} -Algorithm SHA256).Hash.ToLower() + "  " + "${{ matrix.output_name }}" | Out-File -Encoding ascii "${{ matrix.output_name }}.sha256"
+          Compress-Archive -Path ${{ matrix.output_name }} -DestinationPath "${{ matrix.output_name }}.zip"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agna-cli-${{ matrix.target }}
+          path: |
+            dist/*
+          if-no-files-found: error

@@ -25,10 +25,20 @@ class ImageItem
     // creates an empty ImageItem
     public ImageItem()
         {
-        image_icon = new ImageIcon("");
-        small_image_icon = new ImageIcon("");
         image_source = "-";
         clients = 0;
+        try
+            {
+            if (!java.awt.GraphicsEnvironment.isHeadless())
+                {
+                image_icon = new ImageIcon("");
+                small_image_icon = new ImageIcon("");
+                }
+            } catch (Throwable ignored)
+            {
+            image_icon = null;
+            small_image_icon = null;
+            }
         }
 
     /**

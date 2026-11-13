@@ -20,12 +20,12 @@ Use Agna when the user asks to:
 
 ## Quickstart & Invocations
 
-Agna runs headless on Java 17+:
+Agna runs headless either as a **standalone compiled native binary** (GraalVM AOT machine code with instant ~10ms startup and zero Java runtime requirement) or via standard **Java 17+**:
 ```bash
-# Via pre-installed binary on PATH:
+# Via pre-compiled standalone native binary on PATH (Linux, macOS, Windows):
 agna <command> [options]
 
-# Or directly via shaded CLI JAR:
+# Or directly via shaded CLI JAR on Java 17+:
 java -jar agna-cli-2.1.7.jar <command> [options]
 ```
 

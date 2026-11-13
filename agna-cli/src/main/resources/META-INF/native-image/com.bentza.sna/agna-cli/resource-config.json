@@ -1,0 +1,53 @@
+{
+  "resources":{
+  "includes":[{
+    "pattern":"\\QMETA-INF/services/com.sun.source.util.Plugin\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.nio.charset.spi.CharsetProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.nio.file.spi.FileSystemProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/javax.xml.parsers.DocumentBuilderFactory\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/javax.xml.transform.TransformerFactory\\E"
+  }, {
+    "pattern":"\\Qfaces\\E"
+  }, {
+    "pattern":"\\Qsamples\\E"
+  }, {
+    "pattern":"java.desktop:\\Qjavax/swing/text/html/default.css\\E"
+  }, {
+    "pattern":"java.desktop:\\Qjavax/swing/text/html/parser/html32.bdtd\\E"
+  }, {
+    "pattern":"java.xml:\\Qcom/sun/org/apache/xml/internal/serializer/Encodings.properties\\E"
+  }]},
+  "bundles":[{
+    "name":"com.apple.laf.resources.aqua",
+    "classNames":["com.apple.laf.resources.aqua"]
+  }, {
+    "name":"com.sun.org.apache.xml.internal.serializer.XMLEntities",
+    "locales":["und"]
+  }, {
+    "name":"com.sun.swing.internal.plaf.basic.resources.basic",
+    "classNames":["com.sun.swing.internal.plaf.basic.resources.basic"]
+  }, {
+    "name":"com.sun.tools.javac.resources.compiler",
+    "classNames":["com.sun.tools.javac.resources.compiler"]
+  }, {
+    "name":"com.sun.tools.javac.resources.javac",
+    "classNames":["com.sun.tools.javac.resources.javac"]
+  }, {
+    "name":"com.sun.tools.javac.resources.launcher",
+    "classNames":["com.sun.tools.javac.resources.launcher"]
+  }, {
+    "name":"sun.awt.resources.awt",
+    "classNames":["sun.awt.resources.awt"]
+  }, {
+    "name":"sun.awt.resources.awtosx",
+    "classNames":["sun.awt.resources.awtosx"]
+  }]
+}

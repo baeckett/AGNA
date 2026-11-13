@@ -196,7 +196,7 @@ public class Environment
      */
     public static synchronized void ensureAssetsExtracted()
         {
-        if (assets_extracted)
+        if (assets_extracted || java.awt.GraphicsEnvironment.isHeadless())
             return;
 
         Path target_root = Paths.get(USER_ASSETS_ROOT + fs + "faces");
