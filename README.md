@@ -65,6 +65,15 @@ functions for scripted, reproducible work. All three are released under the
 - **Automate** — repeat analyses from a terminal with AGNA CLI
   ([reference](docs/cli.md), `--help` lists every command).
 
+## Use with AI Agents & LLMs
+
+AGNA is built to be AI-agent and tool-call friendly:
+- **Zero interactive prompts** — all operations run deterministically non-interactively and support standard input/output pipes (`-`).
+- **Pre-flight data validation (`validate`)** — inspect graph syntax, dimensions, isolates, components, and self-loops with actionable diagnostics (`--json`).
+- **Built-in metric dictionary (`explain`)** — retrieve definitions, formulas, and cautious interpretations for 37 SNA metrics directly in JSON.
+- **Context-window protection (`metrics --top N`)** — get summary statistics (`mean`, `stdDev`, `min`, `max`) and top-N ranking nodes to conserve LLM tokens.
+- **Agent documentation** — see [AGENTS.md](AGENTS.md) and [llms.txt](llms.txt) for recipes, schemas, and exit code reference.
+
 ## Quick start
 
 The shortest path to a first analysis is the

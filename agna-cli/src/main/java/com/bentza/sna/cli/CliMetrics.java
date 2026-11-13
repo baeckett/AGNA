@@ -290,10 +290,15 @@ public final class CliMetrics
 
     public static String json(Network net)
         {
-        return json(net, null);
+        return json(net, null, 0);
         }
 
     public static String json(Network net, java.util.Set<String> wanted)
+        {
+        return json(net, wanted, 0);
+        }
+
+    public static String json(Network net, java.util.Set<String> wanted, int topN)
         {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();
@@ -306,32 +311,126 @@ public final class CliMetrics
         software.put("license", "Apache-2.0");
         software.put("citationDoi", com.bentza.sna.Environment
                 .getCitationDoi());
-        ArrayNode metrics = root.putArray("metrics");
-        for (String line : csv(net, wanted))
+        if (topN > 0)
+            {
+            root.put("topN", topN);
+            }
+
+        List<String> rawRows = csv(net, wanted);
+
+        // Group rows by metric
+        java.util.Map<String, List<String[]>> metricGroups = new java.util.LinkedHashMap<>();
+        for (String line : rawRows)
             {
             if (line.equals(HEADER))
                 {
                 continue;
                 }
             String[] c = splitCsv(line);
-            ObjectNode m = metrics.addObject();
-            m.put("metric", c[0]);
-            if (c[1].length() > 0)
+            metricGroups.computeIfAbsent(c[0], k -> new ArrayList<>()).add(c);
+            }
+
+        // Build summary object when topN > 0
+        if (topN > 0)
+            {
+            ObjectNode summaryNode = root.putObject("summary");
+            for (java.util.Map.Entry<String, List<String[]>> entry : metricGroups.entrySet())
                 {
-                m.put("node1", c[1]);
-                }
-            if (c[2].length() > 0)
-                {
-                m.put("node2", c[2]);
-                }
-            try
-                {
-                m.put("value", Double.parseDouble(c[3]));
-                } catch (NumberFormatException e)
-                {
-                m.put("value", c[3]);
+                String metricName = entry.getKey();
+                List<String[]> list = entry.getValue();
+                if (list.isEmpty())
+                    {
+                    continue;
+                    }
+                List<Double> numericVals = new ArrayList<>();
+                for (String[] row : list)
+                    {
+                    try
+                        {
+                        numericVals.add(Double.parseDouble(row[3]));
+                        } catch (Exception ignored)
+                        {
+                        }
+                    }
+                if (!numericVals.isEmpty())
+                    {
+                    double sum = 0.0;
+                    double min = Double.MAX_VALUE;
+                    double max = -Double.MAX_VALUE;
+                    for (double v : numericVals)
+                        {
+                        sum += v;
+                        if (v < min)
+                            {
+                            min = v;
+                            }
+                        if (v > max)
+                            {
+                            max = v;
+                            }
+                        }
+                    int cnt = numericVals.size();
+                    double mean = sum / cnt;
+                    double sumSq = 0.0;
+                    for (double v : numericVals)
+                        {
+                        double diff = v - mean;
+                        sumSq += diff * diff;
+                        }
+                    double stdDev = Math.sqrt(sumSq / cnt);
+                    ObjectNode mSum = summaryNode.putObject(metricName);
+                    mSum.put("count", cnt);
+                    mSum.put("mean", Math.round(mean * 10000.0) / 10000.0);
+                    mSum.put("stdDev", Math.round(stdDev * 10000.0) / 10000.0);
+                    mSum.put("min", min);
+                    mSum.put("max", max);
+                    }
                 }
             }
+
+        ArrayNode metrics = root.putArray("metrics");
+        for (java.util.Map.Entry<String, List<String[]>> entry : metricGroups.entrySet())
+            {
+            List<String[]> list = entry.getValue();
+            if (topN > 0 && list.size() > topN)
+                {
+                // Sort descending by value for top-N ranking
+                list.sort((a, b) -> {
+                    try
+                        {
+                        double va = Double.parseDouble(a[3]);
+                        double vb = Double.parseDouble(b[3]);
+                        return Double.compare(vb, va);
+                        } catch (Exception e)
+                        {
+                        return 0;
+                        }
+                });
+                list = list.subList(0, topN);
+                }
+
+            for (String[] c : list)
+                {
+                ObjectNode m = metrics.addObject();
+                m.put("metric", c[0]);
+                if (c[1].length() > 0)
+                    {
+                    m.put("node1", c[1]);
+                    }
+                if (c[2].length() > 0)
+                    {
+                    m.put("node2", c[2]);
+                    }
+                try
+                    {
+                    m.put("value", Double.parseDouble(c[3]));
+                    } catch (NumberFormatException e)
+                    {
+                    m.put("value", c[3]);
+                    }
+                }
+            }
+
         try
             {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(

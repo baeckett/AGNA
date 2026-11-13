@@ -73,8 +73,14 @@ public final class Cli
                 + "usage: agna <command> [options] FILE\n\n"
                 + "commands:\n"
                 + "  version                         print version\n"
-                + "  info FILE [--out FILE]           network summary (incl. "
-                + "connectivity and outsiders)\n"
+                + "  info FILE [--format text|json] [--json] [--out FILE]\n"
+                + "                                  network summary (incl. connectivity and outsiders)\n"
+                + "  validate FILE [--format text|json] [--json] [--out FILE]\n"
+                + "                                  pre-flight data validation, format integrity,\n"
+                + "                                  isolates, components, self-loops, diagnostics\n"
+                + "  explain [METRIC] [--list] [--format text|json] [--json] [--out FILE]\n"
+                + "                                  SNA definitions, formulas, usage guidelines,\n"
+                + "                                  and cautious sociological interpretations\n"
                 + "  analyse FILE [--all|NAME...|cliques:N] [--out FILE]\n"
                 + "                                  run analyses (basic, "
                 + "density, cohesion, nodal, indegree, outdegree,\n"
@@ -124,7 +130,7 @@ public final class Cli
                 + "  ego FILE --node NAME --out OUT  extract the 1-hop ego "
                 + "network\n"
                 + "  components FILE [--out CSV]      connected components\n"
-                + "  metrics FILE [METRIC...] [--all] [--format csv|json] [--out FILE]\n"
+                + "  metrics FILE [METRIC...] [--all] [--top N] [--format csv|json] [--json] [--out FILE]\n"
                 + "                                  structured metrics; "
                 + "pick by name (density, diameter, eccentricity,\n"
                 + "                                  closeness, betweenness, "
@@ -287,6 +293,14 @@ public final class Cli
             {
             return info(args);
             }
+        if ("validate".equals(cmd))
+            {
+            return validate(args);
+            }
+        if ("explain".equals(cmd))
+            {
+            return explain(args);
+            }
         if ("analyse".equals(cmd))
             {
             return analyse(args);
@@ -429,23 +443,70 @@ public final class Cli
         {
         String file = null;
         String outFile = null;
+        String format = "text";
         for (int i = 1; i < args.length; i++)
             {
-            if ("--out".equals(args[i]) && i + 1 < args.length)
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
                 {
                 outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
                 } else if (file == null)
                 {
-                file = args[i];
+                file = a;
                 }
             }
         if (file == null)
             {
-            out.println("usage: agna info FILE [--out FILE]");
+            out.println("usage: agna info FILE [--format text|json] [--json] [--out FILE]");
             return 1;
             }
         FullNet full = open(file);
         Network net = full.getNetwork();
+        if ("json".equals(format))
+            {
+            AgnaLib lib = new AgnaLib();
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.node.ObjectNode root = mapper.createObjectNode();
+            root.put("name", net.getName() != null ? net.getName() : "");
+            root.put("nodes", net.getSize());
+            root.put("edges", net.getEdgesNumber());
+            root.put("density", lib.density(net));
+            root.put("directed", !net.isSymmetric());
+            root.put("symmetric", net.isSymmetric());
+            root.put("connected", lib.isConnected(net));
+            root.put("components", CliValidator.countComponents(net));
+            com.fasterxml.jackson.databind.node.ArrayNode outsiders = root.putArray("outsiders");
+            for (int idx = 0; idx < net.getSize(); idx++)
+                {
+                if (net.isOutsider(idx))
+                    {
+                    outsiders.add(net.getActor(idx).getName());
+                    }
+                }
+            com.fasterxml.jackson.databind.node.ObjectNode software = root.putObject("software");
+            software.put("name", "AGNA CLI");
+            software.put("version", Environment.getApplicationVersion());
+            software.put("license", "Apache-2.0");
+            software.put("citationDoi", Environment.getCitationDoi());
+            String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root) + "\n";
+            if (outFile != null)
+                {
+                Files.write(new File(outFile).toPath(), jsonStr.getBytes(
+                        StandardCharsets.UTF_8));
+                out.println("wrote summary to " + outFile);
+                } else
+                {
+                out.print(jsonStr);
+                }
+            return 0;
+            }
+
         StringBuilder sb = new StringBuilder();
         sb.append("name:   ").append(net.getName()).append('\n');
         sb.append("nodes:  ").append(net.getSize()).append('\n');
@@ -460,6 +521,114 @@ public final class Cli
             } else
             {
             out.print(sb);
+            }
+        return 0;
+        }
+
+    private int validate(String[] args) throws Exception
+        {
+        String file = null;
+        String outFile = null;
+        String format = "text";
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
+                } else if (file == null)
+                {
+                file = a;
+                }
+            }
+        if (file == null)
+            {
+            out.println("usage: agna validate FILE [--format text|json] [--json] [--out FILE]");
+            return 1;
+            }
+        CliValidator.ValidationReport report = CliValidator.validate(file, this);
+        String text = "json".equals(format) ? (report.toJson() + "\n") : report.toPlainText();
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), text.getBytes(
+                    StandardCharsets.UTF_8));
+            out.println("wrote validation report to " + outFile);
+            } else
+            {
+            out.print(text);
+            }
+        return report.valid ? 0 : 2;
+        }
+
+    private int explain(String[] args) throws Exception
+        {
+        String metric = null;
+        String outFile = null;
+        String format = "text";
+        boolean list = false;
+        for (int i = 1; i < args.length; i++)
+            {
+            String a = args[i];
+            if ("--out".equals(a) && i + 1 < args.length)
+                {
+                outFile = args[++i];
+                } else if ("--format".equals(a) && i + 1 < args.length)
+                {
+                format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
+                } else if ("--list".equals(a))
+                {
+                list = true;
+                } else if (metric == null)
+                {
+                metric = a;
+                }
+            }
+
+        String outputText;
+        if (list || metric == null)
+            {
+            if ("json".equals(format))
+                {
+                outputText = com.bentza.sna.edu.EducationalKnowledge.listToJson();
+                } else
+                {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Agna SNA Educational Metric Dictionary:\n\n");
+                for (com.bentza.sna.edu.EducationalKnowledge.MetricGuide g : com.bentza.sna.edu.EducationalKnowledge.getAll().values())
+                    {
+                    sb.append(String.format(Locale.ROOT, "  %-24s [%s] - %s\n", g.id, g.category, g.title));
+                    }
+                sb.append("\nRun 'agna explain <metric>' for detailed definition, formula, and interpretation.\n");
+                outputText = sb.toString();
+                }
+            } else
+            {
+            com.bentza.sna.edu.EducationalKnowledge.MetricGuide guide = com.bentza.sna.edu.EducationalKnowledge.find(metric);
+            if (guide == null)
+                {
+                out.println("unknown metric or topic: '" + metric + "'. Run 'agna explain --list' to see all available metrics.");
+                return 1;
+                }
+            outputText = "json".equals(format) ? (guide.toJson() + "\n") : (guide.toPlainText() + "\n");
+            }
+
+        if (outFile != null)
+            {
+            Files.write(new File(outFile).toPath(), outputText.getBytes(
+                    StandardCharsets.UTF_8));
+            out.println("wrote explanation to " + outFile);
+            } else
+            {
+            out.print(outputText);
             }
         return 0;
         }
@@ -1598,6 +1767,7 @@ public final class Cli
         String outFile = null;
         String format = "csv";
         boolean all = false;
+        int topN = 0;
         java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
         java.util.Set<String> known = java.util.Set.of("density",
                 "diameter", "eccentricity", "closeness", "betweenness",
@@ -1612,6 +1782,12 @@ public final class Cli
                 } else if ("--format".equals(a) && i + 1 < args.length)
                 {
                 format = args[++i];
+                } else if ("--json".equals(a))
+                {
+                format = "json";
+                } else if ("--top".equals(a) && i + 1 < args.length)
+                {
+                topN = Integer.parseInt(args[++i]);
                 } else if ("--all".equals(a))
                 {
                 all = true;
@@ -1630,8 +1806,8 @@ public final class Cli
             }
         if (file == null)
             {
-            out.println("usage: agna metrics FILE [METRIC...] [--all] "
-                    + "[--format csv|json] [--out FILE]");
+            out.println("usage: agna metrics FILE [METRIC...] [--all] [--top N] "
+                    + "[--format csv|json] [--json] [--out FILE]");
             return 1;
             }
         if (all || wanted.isEmpty())
@@ -1649,7 +1825,7 @@ public final class Cli
                     + "distance-based measures (diameter, eccentricity, "
                     + "closeness, betweenness) are omitted");
             }
-        String text = "json".equals(format) ? CliMetrics.json(net, wanted)
+        String text = "json".equals(format) ? CliMetrics.json(net, wanted, topN)
                 : String.join("\n", CliMetrics.csv(net, wanted)) + "\n";
         if (outFile != null)
             {

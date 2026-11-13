@@ -974,4 +974,87 @@ public class CliTest
         run("transform", sample.getAbsolutePath(), tempEgo.getAbsolutePath(), "--op", "ego:1:1");
         assertTrue(tempEgo.exists() && tempEgo.length() > 0);
         }
+
+    @Test
+    public void infoSupportsJsonOutput() throws Exception
+        {
+        String text = run("info", "samples/example2.agn", "--json");
+        assertTrue(text.contains("\"name\""), text);
+        assertTrue(text.contains("\"nodes\": 9"), text);
+        assertTrue(text.contains("\"edges\": 18"), text);
+        assertTrue(text.contains("\"density\":"), text);
+        assertTrue(text.contains("\"connected\": true"), text);
+        }
+
+    @Test
+    public void validateCleanNetworkReturnsPass() throws Exception
+        {
+        String text = run("validate", "samples/example2.agn");
+        assertTrue(text.contains("Agna Network Validation: PASSED"), text);
+        assertTrue(text.contains("Nodes:       9"), text);
+        assertTrue(text.contains("Edges:       18"), text);
+        assertTrue(text.contains("Clean structure"), text);
+        }
+
+    @Test
+    public void validateSupportsJsonOutput() throws Exception
+        {
+        String text = run("validate", "samples/example2.agn", "--json");
+        assertTrue(text.contains("\"valid\": true"), text);
+        assertTrue(text.contains("\"nodes\": 9"), text);
+        assertTrue(text.contains("\"edges\": 18"), text);
+        assertTrue(text.contains("\"connected\": true"), text);
+        assertTrue(text.contains("\"density\":"), text);
+        }
+
+    @Test
+    public void validateMissingFileReturnsErrorCode() throws Exception
+        {
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        int code = new Cli(new java.io.PrintStream(buf)).run(new String[] { "validate", "nonexistent_file_xyz.agn" });
+        assertEquals(2, code, "Missing file should return code 2");
+        String text = buf.toString(StandardCharsets.UTF_8.name());
+        assertTrue(text.contains("FAILED"), text);
+        assertTrue(text.contains("does not exist"), text);
+        }
+
+    @Test
+    public void explainListsMetrics() throws Exception
+        {
+        String text = run("explain", "--list");
+        assertTrue(text.contains("betweenness"), text);
+        assertTrue(text.contains("closeness"), text);
+        assertTrue(text.contains("freeman_centralization"), text);
+        }
+
+    @Test
+    public void explainSpecificMetricReturnsGuide() throws Exception
+        {
+        String text = run("explain", "betweenness");
+        assertTrue(text.contains("Betweenness Centrality"), text);
+        assertTrue(text.contains("What it measures:"), text);
+        assertTrue(text.contains("Brandes"), text);
+        }
+
+    @Test
+    public void explainSupportsJsonOutput() throws Exception
+        {
+        String text = run("explain", "betweenness", "--json");
+        assertTrue(text.contains("\"id\": \"betweenness\""), text);
+        assertTrue(text.contains("\"whatItMeasures\":"), text);
+        assertTrue(text.contains("\"whyUseIt\":"), text);
+        assertTrue(text.contains("\"interpretation\":"), text);
+        }
+
+    @Test
+    public void metricsSupportsTopNAndSummaryStatistics() throws Exception
+        {
+        String text = run("metrics", "samples/example2.agn", "betweenness", "--top", "3", "--json");
+        assertTrue(text.contains("\"topN\": 3"), text);
+        assertTrue(text.contains("\"summary\":"), text);
+        assertTrue(text.contains("\"mean\":"), text);
+        assertTrue(text.contains("\"stdDev\":"), text);
+        assertTrue(text.contains("\"min\":"), text);
+        assertTrue(text.contains("\"max\":"), text);
+        }
     }

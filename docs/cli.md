@@ -2,7 +2,7 @@
 
 The command-line interface (`agna`) runs the Agna engine headlessly: no
 desktop, no windowing, everything pipable and scriptable. It ships as
-`agna-cli-2.1.6.jar` (run with `java -jar agna-cli-2.1.6.jar <command>`).
+`agna-cli-2.1.7.jar` (run with `java -jar agna-cli-2.1.7.jar <command>`).
 
 The CLI understands `.agn`, `.txt`, `.csv`, `.net`, `.xls`, `.xlsx`,
 `.graphml`, `.gml`, `.graphson` and `.dl` (UCINET) on input, and writes the same set on
@@ -11,14 +11,16 @@ stdout). A file argument of `-` reads agn text from stdin (override with
 `--in-format`).
 
 Exit status: 0 on success; 1 on usage errors, unknown commands/analyses/
-metrics, unreadable files and exceptions.
+metrics, or exceptions; 2 on pre-flight data validation failure or unreadable files.
 
 Command summary:
 
 | command | purpose |
 |---|---|
 | `version` | print the version |
-| `info FILE` | network summary (name, size, edges, basic description) |
+| `info FILE [--format text\|json] [--json]` | network summary (name, size, edges, connectivity, outsiders) |
+| `validate FILE [--format text\|json] [--json]` | pre-flight data validation, format integrity, isolates, components, self-loops |
+| `explain [METRIC] [--list] [--format text\|json] [--json]` | SNA definitions, formulas, usage guidelines, and cautious interpretations |
 | `analyse FILE [--all\|NAME...\|cliques:N] [--out FILE]` | the full analysis battery |
 | `convert IN OUT [--in-format F] [--out-format F]` | format conversion |
 | `transform IN OUT --op OP` | network operations (see below) |
@@ -28,7 +30,7 @@ Command summary:
 | `nodes FILE [--out FILE]` | node table (degrees + coordinates) |
 | `ego FILE --node NAME --out OUT` | 1-hop ego network extraction |
 | `components FILE` | connected components |
-| `metrics FILE [METRIC...] [--all] [--format csv\|json] [--out FILE]` | structured metrics (below) |
+| `metrics FILE [METRIC...] [--all] [--top N] [--format csv\|json] [--json] [--out FILE]` | structured metrics and token-efficient top-N summaries |
 | `distance FILE --from A --to B` | shortest path between two nodes |
 | `diff A B [--out FILE.csv]` | structural comparison |
 | `test-null FILE [--null-model M] [--samples N] [--seed S]` | Monte Carlo hypothesis testing against null models |
@@ -74,8 +76,81 @@ edges:  20
 Basic description of Example 2
 ...
 The network is connected.
+$ agna info net.agn --json
+{
+  "name": "Example 2",
+  "nodes": 9,
+  "edges": 20,
+  "density": 0.2778,
+  "directed": false,
+  "connected": true,
+  "components": 1
+}
 $ agna info net.agn --out summary.txt
 wrote summary to summary.txt
+```
+
+### validate
+
+```
+agna validate FILE [--format text|json] [--json] [--out FILE]
+```
+
+Runs comprehensive pre-flight verification on a network file to inspect
+its structural integrity before running intensive analyses. Checks:
+- File existence and format syntax across all supported formats (`.agn`, `.csv`, `.net`, `.graphml`, etc.)
+- Matrix squareness and non-finite tie values
+- Disconnected component partitions and outsiders
+- Self-loops (diagonal non-zero values)
+- Isolate actors (degree 0)
+- Directed vs. symmetric status and valued weights
+
+Exit code is `0` if valid, or `2` if the file is missing, unparseable, or fails validation.
+
+```
+$ agna validate samples/example2.agn --json
+{
+  "valid": true,
+  "file": "samples/example2.agn",
+  "format": "agn",
+  "nodes": 9,
+  "edges": 20,
+  "density": 0.2778,
+  "directed": false,
+  "weighted": false,
+  "connected": true,
+  "components": 1,
+  "selfLoops": 0,
+  "isolates": [],
+  "outsiders": [],
+  "diagnostics": []
+}
+```
+
+### explain
+
+```
+agna explain [METRIC] [--list] [--format text|json] [--json] [--out FILE]
+```
+
+Inspects Agna's built-in Social Network Analysis knowledge base (37 metrics).
+Provides formal definitions, mathematical formulas, when-to-use criteria,
+technical computation notes, and cautious sociological interpretations.
+
+- `agna explain --list` — lists all 37 explained metrics by category.
+- `agna explain <metric> [--json]` — queries the detailed micro-guide for a specific metric.
+
+```
+$ agna explain betweenness --json
+{
+  "id": "betweenness",
+  "title": "Betweenness Centrality (Freeman / Brandes)",
+  "category": "Path Centrality",
+  "whatItMeasures": "The proportion of all shortest paths between all pairs of nodes that pass through this actor.",
+  "whyUseIt": "Identifies brokers, gatekeepers, and potential bottlenecks. Vital for studying structural holes and information control.",
+  "interpretation": "High betweenness nodes may act as pivotal brokers or gatekeepers; their absence could potentially disconnect or delay communication between subgroups.",
+  "technicalNote": "Computed via Brandes O(VE) algorithm. Normalized against theoretical maximum."
+}
 ```
 
 ### analyse
@@ -481,7 +556,7 @@ disconnected networks.
 ### Syntax
 
 ```
-agna metrics FILE [METRIC...] [--all] [--format csv|json] [--out FILE]
+agna metrics FILE [METRIC...] [--all] [--top N] [--format csv|json] [--json] [--out FILE]
 ```
 
 - `FILE` — the input network (any supported format; `-` for stdin).
@@ -490,7 +565,11 @@ agna metrics FILE [METRIC...] [--all] [--format csv|json] [--out FILE]
 - `--all` — produce every metric. **This is also the default:** when no
   metric names are given, the full set is produced, so `agna metrics
   net.agn` behaves exactly like `agna metrics net.agn --all`.
+- `--top N` — filter output to top `N` highest scoring nodes and include a
+  `summary` statistical distribution (`mean`, `stdDev`, `min`, `max`) in JSON.
+  Essential for LLM agents to conserve token context on large networks.
 - `--format csv|json` — output format (default `csv`).
+- `--json` — shorthand alias for `--format json`.
 - `--out FILE` — write to a file instead of stdout.
 
 ### Metric names

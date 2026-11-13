@@ -1,0 +1,29 @@
+# AGNA: Applied Graph and Network Analysis
+
+> AGNA is an open-source, headless-capable Java engine and CLI for social network analysis (SNA), sociometry, and graph theory (v2.1.7, Apache-2.0).
+
+## Agent & LLM Documentation
+- [Agna for AI Agents](AGENTS.md): Complete guide for AI models, CLI recipes, JSON schemas, error exit codes, and token-saving tips.
+- [CLI Reference](docs/cli.md): Full command-line documentation for all 35+ commands.
+- [User Manual](docs/manual.md): Comprehensive methodology manual, algorithms, and metric definitions.
+- [Quickstart Guide](docs/QUICKSTART.md): Quick introduction for researchers and practitioners.
+
+## Core Capabilities
+- **Pre-Flight Validation**: `agna validate <file> --json` (syntax, isolate detection, component analysis, self-loops, diagnostics).
+- **Educational Knowledge Base**: `agna explain <metric> --json` (37 metrics with definitions, formulas, and cautious interpretations).
+- **Network Summary**: `agna info <file> --json` (nodes, edges, density, reciprocity, connectivity).
+- **Token-Efficient Metrics**: `agna metrics <file> <metric> --top N --json` (summary statistics + top-N ranking).
+- **Analysis Batteries**: `agna analyse <file> --all` (centrality, clustering, distances, sociometrics, structural holes).
+- **Format Conversion**: `agna convert <in> <out>` (Pajek .net, GraphML, GML, GraphSON, UCINET DL, CSV/TSV, Excel, AGN).
+- **Graph Transformations**: `agna transform <in> <out> --op <op>` (symmetrize, dichotomize, transpose, ego-network, normalize).
+- **Theory & Statistics**: `agna archetype <file> --format json` (small-world, scale-free, core-periphery) and `agna test-null` (Monte Carlo permutation testing).
+
+## Canonical Invocation
+```bash
+# Run via CLI binary or JAR:
+agna <command> [options] FILE
+java -jar agna-cli-2.1.7.jar <command> [options] FILE
+```
+
+## Citation
+Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open Source (Version 2.1.7) [Computer software]. https://doi.org/10.5281/zenodo.22708199
