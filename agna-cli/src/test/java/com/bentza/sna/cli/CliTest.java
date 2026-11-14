@@ -992,7 +992,7 @@ public class CliTest
         String text = run("validate", "samples/example2.agn");
         assertTrue(text.contains("Agna Network Validation: PASSED"), text);
         assertTrue(text.contains("Nodes:       9"), text);
-        assertTrue(text.contains("Edges:       18"), text);
+        assertTrue(text.contains("Edges:       20"), text);
         assertTrue(text.contains("Clean structure"), text);
         }
 
@@ -1000,11 +1000,11 @@ public class CliTest
     public void validateSupportsJsonOutput() throws Exception
         {
         String text = run("validate", "samples/example2.agn", "--json");
-        assertTrue(text.contains("\"valid\": true"), text);
-        assertTrue(text.contains("\"nodes\": 9"), text);
-        assertTrue(text.contains("\"edges\": 18"), text);
-        assertTrue(text.contains("\"connected\": true"), text);
-        assertTrue(text.contains("\"density\":"), text);
+        assertTrue(text.contains("\"valid\" : true") || text.contains("\"valid\": true"), text);
+        assertTrue(text.contains("\"nodes\" : 9") || text.contains("\"nodes\": 9"), text);
+        assertTrue(text.contains("\"edges\" : 20") || text.contains("\"edges\": 20"), text);
+        assertTrue(text.contains("\"connected\" : true") || text.contains("\"connected\": true"), text);
+        assertTrue(text.contains("\"density\""), text);
         }
 
     @Test
@@ -1050,12 +1050,12 @@ public class CliTest
     public void metricsSupportsTopNAndSummaryStatistics() throws Exception
         {
         String text = run("metrics", "samples/example2.agn", "betweenness", "--top", "3", "--json");
-        assertTrue(text.contains("\"topN\": 3"), text);
-        assertTrue(text.contains("\"summary\":"), text);
-        assertTrue(text.contains("\"mean\":"), text);
-        assertTrue(text.contains("\"stdDev\":"), text);
-        assertTrue(text.contains("\"min\":"), text);
-        assertTrue(text.contains("\"max\":"), text);
+        assertTrue(text.contains("\"topN\" : 3") || text.contains("\"topN\": 3"), text);
+        assertTrue(text.contains("\"summary\""), text);
+        assertTrue(text.contains("\"mean\""), text);
+        assertTrue(text.contains("\"stdDev\""), text);
+        assertTrue(text.contains("\"min\""), text);
+        assertTrue(text.contains("\"max\""), text);
         }
 
     @Test

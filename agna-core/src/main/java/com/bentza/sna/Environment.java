@@ -101,8 +101,8 @@ public class Environment
     // ---- 2.1.3: citation metadata ----
     // All cite strings in the app, the CLI and the docs draw from here.
 
-    /** Zenodo DOI for the 2.1.3 release. */
-    public static final String CITATION_DOI = "10.5281/zenodo.22708199";
+    /** Zenodo DOI for the 2.2.0 release. */
+    public static final String CITATION_DOI = "10.5281/zenodo.24209965";
 
     public static String getCitationDoi()
         {

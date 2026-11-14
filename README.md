@@ -173,7 +173,7 @@ If you use AGNA in your research, please cite it (see also
 [CITATION.cff](CITATION.cff) and [CITATION.bib](CITATION.bib)):
 
 > Bența, M. I. (2026). *AGNA: Applied Graph and Network Analysis Open Source*
-> (Version 2.1.3) [Computer software]. https://doi.org/10.5281/zenodo.22708199
+> (Version 2.2.0) [Computer software]. https://doi.org/10.5281/zenodo.24209965
 
 ## Links
 

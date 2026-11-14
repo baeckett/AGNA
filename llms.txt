@@ -30,4 +30,4 @@ java -jar agna-cli-2.2.0.jar <command> [options] FILE
 ```
 
 ## Citation
-Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open Source (Version 2.2.0) [Computer software]. https://doi.org/10.5281/zenodo.22708199
+Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open Source (Version 2.2.0) [Computer software]. https://doi.org/10.5281/zenodo.24209965
