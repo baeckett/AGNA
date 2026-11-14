@@ -29,6 +29,8 @@ public class ExportTableDialogTest {
         ExportTableDialog dlg = new ExportTableDialog(null, td);
         assertNotNull(dlg);
         assertEquals("Export Analysis Table - AGNA", dlg.getTitle());
+        assertTrue(dlg.getWidth() >= 660, "Dialog width should be at least 660px");
+        assertTrue(dlg.getHeight() >= 460, "Dialog height should be at least 460px");
         dlg.dispose();
     }
 }

@@ -80,10 +80,7 @@ public class ExportTableDialog extends JDialog {
     }
 
     private void initComponents(TableData preselected) {
-        setLayout(new BorderLayout(8, 8));
-        setSize(700, 520);
-        setMinimumSize(new Dimension(560, 420));
-        setLocationRelativeTo(getParent());
+        setLayout(new BorderLayout(10, 10));
 
         // Top Panel: Table selector
         JPanel topPanel = new JPanel(new GridBagLayout());
@@ -135,27 +132,31 @@ public class ExportTableDialog extends JDialog {
         previewTable = new JTable();
         previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         previewTable.setFillsViewportHeight(true);
+        previewTable.setRowHeight(22);
+        previewTable.setPreferredScrollableViewportSize(new Dimension(700, 220));
+
         JScrollPane scrollPane = new JScrollPane(previewTable);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel statusPanel = new JPanel(new BorderLayout());
+        statusPanel.setBorder(BorderFactory.createEmptyBorder(4, 2, 2, 2));
         statusLabel = new JLabel(" ");
         statusLabel.setFont(statusLabel.getFont().deriveFont(Font.PLAIN, 11f));
-        feedbackLabel = new JLabel(" ");
-        feedbackLabel.setFont(feedbackLabel.getFont().deriveFont(Font.BOLD, 11f));
-        feedbackLabel.setForeground(new java.awt.Color(0, 120, 40));
         statusPanel.add(statusLabel, BorderLayout.WEST);
-        statusPanel.add(feedbackLabel, BorderLayout.EAST);
         centerPanel.add(statusPanel, BorderLayout.SOUTH);
 
         add(centerPanel, BorderLayout.CENTER);
 
         // Bottom Panel: Format & Actions
-        JPanel bottomPanel = new JPanel(new BorderLayout(6, 6));
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(6, 12, 10, 12));
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new javax.swing.BoxLayout(bottomPanel, javax.swing.BoxLayout.Y_AXIS));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(4, 12, 12, 12));
 
-        JPanel formatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 2));
+        JPanel formatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 6));
         formatPanel.setBorder(BorderFactory.createTitledBorder("Export Format"));
+        formatPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         rCsv = new JRadioButton("CSV (*.csv)", true);
         rJson = new JRadioButton("JSON (*.json)");
@@ -172,19 +173,30 @@ public class ExportTableDialog extends JDialog {
         formatPanel.add(rJson);
         formatPanel.add(rTsv);
         formatPanel.add(rHtml);
-        bottomPanel.add(formatPanel, BorderLayout.NORTH);
+        bottomPanel.add(formatPanel);
 
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+        bottomPanel.add(javax.swing.Box.createVerticalStrut(6));
+
+        JPanel actionPanel = new JPanel(new BorderLayout(8, 4));
+        actionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        feedbackLabel = new JLabel(" ");
+        feedbackLabel.setFont(feedbackLabel.getFont().deriveFont(Font.BOLD, 12f));
+        feedbackLabel.setForeground(new java.awt.Color(0, 130, 40));
+        actionPanel.add(feedbackLabel, BorderLayout.CENTER);
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         JButton btnCopy = new JButton("Copy to Clipboard");
         JButton btnSave = new JButton("Save Table As...");
         btnSave.setFont(btnSave.getFont().deriveFont(Font.BOLD));
         JButton btnClose = new JButton("Close");
 
-        actionPanel.add(btnCopy);
-        actionPanel.add(btnSave);
-        actionPanel.add(btnClose);
-        bottomPanel.add(actionPanel, BorderLayout.SOUTH);
+        btnPanel.add(btnCopy);
+        btnPanel.add(btnSave);
+        btnPanel.add(btnClose);
+        actionPanel.add(btnPanel, BorderLayout.EAST);
 
+        bottomPanel.add(actionPanel);
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Event Listeners
@@ -193,7 +205,20 @@ public class ExportTableDialog extends JDialog {
         btnSave.addActionListener(e -> saveToFile());
         btnClose.addActionListener(e -> dispose());
 
+        // Keyboard navigation (ESC to close, Enter to save)
+        getRootPane().registerKeyboardAction(e -> dispose(),
+                javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0),
+                javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
+        getRootPane().setDefaultButton(btnSave);
+
         updatePreview();
+
+        pack();
+        int targetW = Math.max(760, getWidth());
+        int targetH = Math.max(540, getHeight());
+        setSize(targetW, targetH);
+        setMinimumSize(new Dimension(660, 460));
+        setLocationRelativeTo(getParent());
     }
 
     private TableData getSelectedTable() {
