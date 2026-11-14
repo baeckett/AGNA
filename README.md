@@ -91,9 +91,9 @@ Installers bundle the Java runtime; no separate Java installation is
 needed. Choose your platform from the
 [latest release](https://github.com/baeckett/AGNA/releases):
 
-- **macOS** — [AGNA-2.1.7.dmg](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7.dmg) (Apple Silicon arm64 & Intel x86_64)
-- **Windows** — [AGNA-2.1.7-setup.exe](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-setup.exe) · [AGNA-2.1.7-setup.msi](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-setup.msi)
-- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna_2.1.7_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-2.1.7.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.1.7/AGNA-2.1.7-Linux-x64.tar.gz)
+- **macOS** — [AGNA-2.2.0.dmg](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.dmg) (Apple Silicon arm64 & Intel x86_64)
+- **Windows** — [AGNA-2.2.0-setup.exe](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-setup.exe) · [AGNA-2.2.0-setup.msi](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-setup.msi)
+- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna_2.2.0_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-2.2.0.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-Linux-x64.tar.gz)
 
 ### 2. Standalone Native CLI Binaries (Zero-Install, Single-File, ~7ms Startup)
 For scripts, shell workflows, and AI coding agents, Agna CLI is provided as a **single standalone executable file** with **zero installation** and **zero Java requirements**:
@@ -107,15 +107,15 @@ You can run that single binary directly from any directory (`./agna <command>`).
 
 ```bash
 # Quick install on macOS / Linux:
-curl -sL https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
+curl -sL https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
 agna --version
 ```
 
 ### 3. Portable JARs (Java 17+)
 Users with Java 17+ can also run the self-contained JARs directly:
 ```bash
-java -jar agna-desktop/target/agna-2.1.7.jar        # desktop
-java -jar agna-cli/target/agna-cli-2.1.7.jar --help # CLI
+java -jar agna-desktop/target/agna-2.2.0.jar        # desktop
+java -jar agna-cli/target/agna-cli-2.2.0.jar --help # CLI
 ```
 
 ### Build from source

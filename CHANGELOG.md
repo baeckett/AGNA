@@ -7,30 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.1.7] - unreleased
+## [2.2.0] - 2026-11-14
 
 ### Added
-- **Educational Tooltips Across Computational Batteries (`com.bentza.sna.gui.EducationalTooltips`)**:
-  - Implemented an educational repository of over 25 rich HTML tooltips integrated into `CentralityBatteryDialog`, `ClusteringBatteryDialog`, `SociometricsBatteryDialog`, `DistanceBatteryDialog`, `FullAnalysisDialog`, and `HypothesisTestingDialog`.
-  - Formatted as structured 3-part micro-guides: *What it measures*, *Why use it / Sociological meaning*, and *Interpretation & Complexity caveats*.
-- **Automated Plain-English Structural Narrative ("Key Takeaways & Beginner's Guide") (`com.bentza.sna.report.NarrativeSummaryGenerator`)**:
-  - Automatically synthesizes plain-English structural executive summaries in Full Analysis and battery reports.
-  - Translates abstract metrics (density, components, Freeman degree centralization, transitivity, reciprocity) into natural language narratives explaining group saturation, dominant hub leadership, triadic clustering trust, and suggested analytical next steps.
-- **Curated Benchmark Case Studies & Sample Browser (`com.bentza.sna.gui.SampleNetworksDialog`)**:
-  - Built-in pedagogical dataset browser accessible via **File ▸ Open Sample Network & Case Study...** and **Help ▸ Guided Case Studies...**.
-  - Includes seminal historical datasets with native coordinates and layout:
-    - **Padgett's Florentine Families (1434)**: Marriage alliances and the rise of the Medici through structural holes and betweenness brokerage.
-    - **Zachary's Karate Club (1977)**: Faction split between instructor and administrator; benchmark for community detection and modularity $Q$.
-    - **Davis's Southern Women (1941)**: Social event co-attendance and overlapping clique elite structures.
-    - **10-Node Star & Circle Networks**: Canonical mathematical benchmarks for extreme centralization vs complete egalitarian symmetry.
-  - Each case study features historical context, academic citations, and step-by-step guided questions ("What to try in AGNA").
-- **Analysis Advisor ("What Should I Compute?") Wizard (`com.bentza.sna.gui.AnalysisAdvisorDialog`)**:
-  - Interactive research question wizard accessible via **Analysis ▸ Analysis Advisor...** and **Help ▸ Analysis Advisor...**.
-  - Maps common empirical questions (*"Who are the leaders?", "Who controls information as a broker?", "Are there factions?", "Is the network hierarchical or equal?", "Are results statistically significant?"*) directly to recommended batteries.
-- **In-App SNA Concept Reference & Cheat-Sheet (`com.bentza.sna.gui.SnaCheatSheetDialog`)**:
-  - Searchable concept dictionary and formula cheat-sheet accessible via **Help ▸ SNA Quick Reference & Concept Cheat-Sheet...** with category filters and real-time keyword search.
-- **Interactive Node Hover Inspector in Network Viewer (`com.bentza.sna.net.NodeArea`)**:
-  - Hovering over any node in the visual Network Viewer displays a clean floating badge with the actor's name, index, total degree, and in/out-degree breakdown.
+- **Standalone Native GraalVM AOT CLI Binaries (`agna` / `agna.exe`)**:
+  - Ahead-of-Time (AOT) compiled native machine code for macOS (Apple Silicon ARM64, Intel x86_64), Linux (x86_64), and Windows (x64).
+  - Starts in ~7 milliseconds with zero Java/JRE runtime requirements and minimal memory footprint (~15 MB RSS).
+  - Isolated headless AWT/Swing execution paths across `Actor`, `FullNet`, `ImageStock`, and `ImageItem` to eliminate GUI/display link errors on headless servers and minimal containers.
+  - Automated multi-platform GitHub Actions build workflow (`.github/workflows/native-cli.yml`).
+- **Native Model Context Protocol (MCP) Server (`agna mcp`)**:
+  - Native JSON-RPC 2.0 stdio server conforming to MCP specification `2024-11-05`.
+  - Exposes 10 first-class tools for AI agents (Claude Desktop, Cursor, Copilot, Antigravity): `agna_validate`, `agna_info`, `agna_metrics`, `agna_advise`, `agna_narrative`, `agna_explain`, `agna_convert`, `agna_archetype`, `agna_test_null`, `agna_capabilities`.
+- **Topological Advisory & Knowledge Base Engine (`agna advise`, `agna explain`, `agna narrative`)**:
+  - Topology-driven analytical recommendation engine advising users and agents on suitable metrics, layout algorithms, and null models.
+  - Built-in SNA definitions, mathematical formulas, and sociological caveats for 37 metrics via CLI and MCP.
+  - Qualitative plain-English structural narrative synthesis of network cohesion, hierarchy, and reciprocity.
+- **Desktop Toolbar & UX Modernization**:
+  - Replaced legacy font dropdown with dedicated toolbar action buttons: Normalize, Extract Ego Network, Analysis Advisor, Full Analysis, Sociometric & Basic, Centrality & Prestige, and Export Analysis Table.
+  - Instant splash screen dismissal on click anywhere on screen.
+  - Intelligent multi-format `Save As...` dialog with automatic extension synchronization and `.agn` default.
+  - Unsaved changes confirmation dialogs for both modified network models and analysis reports on exit.
+  - Refined menu action titles with standard ellipses (`...`) for all dialog-triggering actions.
+  - Redesigned multi-resolution macOS App Icon (`Agna.icns`) with pixel-crisp 16px/32px/64px assets for Finder List and Column views.
+- **Educational Scaffolding & Case Studies Suite**:
+  - Educational tooltips across computational battery dialogues (`EducationalTooltips`).
+  - Curated historical benchmark case studies browser (`SampleNetworksDialog`) with Padgett Florentine Families, Zachary Karate Club, Davis Southern Women, and canonical star/circle graphs.
+  - Analysis Advisor ("What Should I Compute?") wizard (`AnalysisAdvisorDialog`).
+  - In-app searchable SNA Concept Reference and formula cheat-sheet (`SnaCheatSheetDialog`).
+  - Interactive Node Hover Inspector in visual Network Viewer (`NodeArea`).
+
+### Fixed
+- Fixed report nesting defect where subsequent analyses were incorrectly embedded inside notes tables.
+- Fixed layout alignment in Full Analysis options dialog for Extended Modules.
+- Fixed coordinate handling when loading and manipulating network actors without pre-existing positions.
+- Cleaned sample networks: replaced empty `random200.agn` with a 200-node Erdős–Rényi random network, removed obsolete files.
 
 ---
 

@@ -54,7 +54,7 @@ Prefer the terminal, scripting, or AI agent tool calling? Download the standalon
 
 ```bash
 # macOS Apple Silicon / Linux quick install:
-curl -sL https://github.com/baeckett/AGNA/releases/download/v2.1.7/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
+curl -sL https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
 
 # Or simply run the single file directly from any folder:
 ./agna validate samples/example1.agn --json

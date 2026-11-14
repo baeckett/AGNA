@@ -30,7 +30,7 @@ agna <command> [options]
 ./agna-cli/target/agna <command> [options]
 
 # 2. Or directly via shaded CLI JAR on Java 17+:
-java -jar agna-cli-2.1.7.jar <command> [options]
+java -jar agna-cli-2.2.0.jar <command> [options]
 ```
 
 ### Why AI Agents Prefer the Native Binary
@@ -114,7 +114,7 @@ agna info data/network.agn --json
   "outsiders" : [ ],
   "software" : {
     "name" : "AGNA CLI",
-    "version" : "2.1.7"
+    "version" : "2.2.0"
   }
 }
 ```
@@ -290,7 +290,7 @@ Or directly via JAR:
   "mcpServers": {
     "agna": {
       "command": "java",
-      "args": ["-jar", "/path/to/agna-cli-2.1.7.jar", "mcp"]
+      "args": ["-jar", "/path/to/agna-cli-2.2.0.jar", "mcp"]
     }
   }
 }

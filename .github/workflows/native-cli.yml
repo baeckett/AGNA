@@ -2,7 +2,7 @@ name: Native CLI Binaries (GraalVM)
 
 on:
   push:
-    branches: [ main, v2.1.7 ]
+    branches: [ main, v2.2.0 ]
     tags: [ 'v*' ]
   pull_request:
     paths:
@@ -11,6 +11,9 @@ on:
       - 'pom.xml'
       - '.github/workflows/native-cli.yml'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-native:
@@ -92,3 +95,11 @@ jobs:
           path: |
             dist/*
           if-no-files-found: error
+
+      - name: Upload Native Binaries to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} dist/* --clobber
