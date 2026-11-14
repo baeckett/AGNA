@@ -3,14 +3,6 @@
   "name":"[Lsun.java2d.loops.GraphicsPrimitive;"
 },
 {
-  "name":"com.apple.eawt._AppEventHandler",
-  "methods":[{"name":"handleNativeNotification","parameterTypes":["int"] }]
-},
-{
-  "name":"com.apple.eawt._AppMenuBarHandler",
-  "methods":[{"name":"initMenuStates","parameterTypes":["boolean","boolean","boolean","boolean"] }]
-},
-{
   "name":"com.bentza.sna.cli.Main",
   "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
 },
@@ -287,9 +279,5 @@
 {
   "name":"sun.java2d.pipe.RegionIterator",
   "fields":[{"name":"curIndex"}, {"name":"numXbands"}, {"name":"region"}]
-},
-{
-  "name":"sun.lwawt.macosx.LWCToolkit",
-  "methods":[{"name":"installToolkitThreadInJava","parameterTypes":[] }]
 }
 ]

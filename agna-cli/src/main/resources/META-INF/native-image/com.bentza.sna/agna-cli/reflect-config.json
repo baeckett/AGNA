@@ -19,58 +19,6 @@
   "name":"[Ljava.awt.event.MouseMotionListener;"
 },
 {
-  "name":"com.apple.laf.AquaButtonBorder$Dynamic",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.apple.laf.AquaButtonCheckBoxUI",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
-},
-{
-  "name":"com.apple.laf.AquaButtonUI",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
-},
-{
-  "name":"com.apple.laf.AquaButtonUI$AquaHierarchyButtonListener",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.apple.laf.AquaKeyBindings",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.apple.laf.AquaLabelUI",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
-},
-{
-  "name":"com.apple.laf.AquaLookAndFeel",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.apple.laf.AquaMnemonicHandler$AltProcessor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.apple.laf.AquaPanelUI",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
-},
-{
-  "name":"com.apple.laf.AquaTextFieldBorder",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.apple.laf.AquaTextFieldUI",
-  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
-},
-{
-  "name":"com.apple.laf.AquaTextPaneUI",
-  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
-},
-{
-  "name":"com.apple.laf.AquaUtilControlSize$PropertySizeListener",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"com.bentza.sna.gui.AgnaTextPane",
   "methods":[{"name":"coalesceEvents","parameterTypes":["java.awt.AWTEvent","java.awt.AWTEvent"] }]
 },

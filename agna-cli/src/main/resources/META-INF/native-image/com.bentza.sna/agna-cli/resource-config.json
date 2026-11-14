@@ -26,28 +26,7 @@
     "pattern":"java.xml:\\Qcom/sun/org/apache/xml/internal/serializer/Encodings.properties\\E"
   }]},
   "bundles":[{
-    "name":"com.apple.laf.resources.aqua",
-    "classNames":["com.apple.laf.resources.aqua"]
-  }, {
     "name":"com.sun.org.apache.xml.internal.serializer.XMLEntities",
     "locales":["und"]
-  }, {
-    "name":"com.sun.swing.internal.plaf.basic.resources.basic",
-    "classNames":["com.sun.swing.internal.plaf.basic.resources.basic"]
-  }, {
-    "name":"com.sun.tools.javac.resources.compiler",
-    "classNames":["com.sun.tools.javac.resources.compiler"]
-  }, {
-    "name":"com.sun.tools.javac.resources.javac",
-    "classNames":["com.sun.tools.javac.resources.javac"]
-  }, {
-    "name":"com.sun.tools.javac.resources.launcher",
-    "classNames":["com.sun.tools.javac.resources.launcher"]
-  }, {
-    "name":"sun.awt.resources.awt",
-    "classNames":["sun.awt.resources.awt"]
-  }, {
-    "name":"sun.awt.resources.awtosx",
-    "classNames":["sun.awt.resources.awtosx"]
   }]
 }
