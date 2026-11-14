@@ -95,8 +95,30 @@ needed. Choose your platform from the
 - **Windows** — [AGNA-2.2.0.exe](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.exe) · [AGNA-2.2.0.msi](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.msi)
 - **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna_2.2.0-1_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-2.2.0-1.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-Linux-x64.tar.gz)
 
-> **Note for macOS users:** Because AGNA is community open-source software and not signed with an expensive Apple Developer ID certificate, macOS Gatekeeper may display a prompt saying *"Apple could not verify 'AGNA.app' is free of malware..."*.
-> **To open:** Drag `AGNA.app` to `/Applications`. In Finder, **Right-Click (or Control-Click) AGNA.app and choose "Open"**, then click **"Open"** in the dialogue. Alternatively, open Terminal and run: `xattr -cr /Applications/AGNA.app`. macOS will remember this and open normally from then on.
+#### Opening on macOS (Bypassing Gatekeeper Malware Warning)
+
+Because AGNA is community open-source software and not signed with an annual commercial Apple Developer ID certificate, macOS Gatekeeper may display a prompt on the first launch saying:
+> *"Apple could not verify “AGNA.app” is free of malware that may harm your Mac or compromise your privacy."*
+
+This is standard macOS protection for files downloaded from the web. **You only need to bypass it once:**
+
+* **Option 1 (System Settings — Recommended on macOS Sequoia & Sonoma):**
+  1. Click **Done** on the alert dialogue.
+  2. Open **System Settings ▸ Privacy & Security**.
+  3. Scroll down to the **Security** section where you will see:  
+     *“AGNA.app was blocked from use because it is not from an identified developer.”*
+  4. Click **Open Anyway**, enter your Mac password / Touch ID, and click **Open**.
+* **Option 2 (Right-Click in Finder):**
+  1. In Finder, open `/Applications`.
+  2. **Right-Click (or Control-Click)** `AGNA.app` and choose **Open**.
+  3. In the prompt that appears, click the **Open** button.
+* **Option 3 (Terminal One-Liner):**
+  Remove the download quarantine attribute attached by your browser:
+  ```bash
+  xattr -cr /Applications/AGNA.app
+  ```
+
+Once confirmed via any of these options, macOS permanently remembers your choice and AGNA opens immediately on double-click.
 
 ### 2. Standalone Native CLI Binaries (Zero-Install, Single-File, ~7ms Startup)
 For scripts, shell workflows, and AI coding agents, Agna CLI is provided as a **single standalone executable file** with **zero installation** and **zero Java requirements**:
