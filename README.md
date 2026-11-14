@@ -3,7 +3,7 @@
 [![CI](https://github.com/baeckett/AGNA/actions/workflows/ci.yml/badge.svg)](https://github.com/baeckett/AGNA/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-![AGNA 2.1.3 on macOS: sociomatrix grid, analysis report, and Network Viewer](docs/screenshots/agna-2.1.3-macos.png)
+![AGNA 2.2.0 on macOS: sociomatrix grid, analysis report, and Network Viewer](docs/screenshots/agna-macos.png)
 
 **AGNA — Applied Graph and Network Analysis Open Source** — is free desktop
 and command-line software for **social network analysis, sociometry, and
@@ -31,8 +31,8 @@ institutional, historical, and other relational data. It is used in
 sociology, anthropology, communication research, psychology, education,
 organizational research, animal-behavior studies, and the humanities. The
 original author, [Marius Ion Bența](https://www.netanalysis.co.uk), [George Barițiu History Institute, Cluj](https://institutuldeistoriegeorgebaritiu.ro/), built it
-(2001–2005) as a friendly alternative to programming environments; **2.1.3**
-is the open-source revival of that work, modernized and fully tested.
+(2001–2005) as a friendly alternative to programming environments; **2.2.0**
+is the open-source release of that work, modernized and fully tested.
 
 ## The three components
 
@@ -91,9 +91,12 @@ Installers bundle the Java runtime; no separate Java installation is
 needed. Choose your platform from the
 [latest release](https://github.com/baeckett/AGNA/releases):
 
-- **macOS** — [AGNA-2.2.0.dmg](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.dmg) (Apple Silicon arm64 & Intel x86_64)
-- **Windows** — [AGNA-2.2.0-setup.exe](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-setup.exe) · [AGNA-2.2.0-setup.msi](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-setup.msi)
-- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna_2.2.0_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-2.2.0.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-Linux-x64.tar.gz)
+- **macOS** — [AGNA-2.2.0.dmg](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.dmg) (Drag to `/Applications`)
+- **Windows** — [AGNA-2.2.0.exe](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.exe) · [AGNA-2.2.0.msi](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0.msi)
+- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna_2.2.0-1_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-2.2.0-1.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.2.0/AGNA-2.2.0-Linux-x64.tar.gz)
+
+> **Note for macOS users:** Because AGNA is community open-source software and not signed with an expensive Apple Developer ID certificate, macOS Gatekeeper may display a prompt saying *"Apple could not verify 'AGNA.app' is free of malware..."*.
+> **To open:** Drag `AGNA.app` to `/Applications`. In Finder, **Right-Click (or Control-Click) AGNA.app and choose "Open"**, then click **"Open"** in the dialogue. Alternatively, open Terminal and run: `xattr -cr /Applications/AGNA.app`. macOS will remember this and open normally from then on.
 
 ### 2. Standalone Native CLI Binaries (Zero-Install, Single-File, ~7ms Startup)
 For scripts, shell workflows, and AI coding agents, Agna CLI is provided as a **single standalone executable file** with **zero installation** and **zero Java requirements**:
