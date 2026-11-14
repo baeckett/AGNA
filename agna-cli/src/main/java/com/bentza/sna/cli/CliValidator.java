@@ -242,6 +242,8 @@ public final class CliValidator {
             report.diagnostics.add(String.format(Locale.ROOT,
                     "Graph is disconnected into %d components. Distance, closeness, and diameter metrics will be undefined across disconnected pairs.",
                     report.components));
+        } else if (report.directed && !lib.isStronglyConnected(net)) {
+            report.diagnostics.add("Network is directed and not strongly connected (some directed paths are one-way only).");
         }
         if (report.weighted) {
             report.diagnostics.add("Network contains valued/weighted ties. Binary-only algorithms will treat non-zero ties as 1.");

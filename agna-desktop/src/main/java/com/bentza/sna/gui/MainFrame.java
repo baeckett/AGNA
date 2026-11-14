@@ -5071,13 +5071,6 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         a_centrality.addActionListener(act_menu);
         a_distance.addActionListener(act_menu);
         a_clustering.addActionListener(act_menu);
-        a_structural_holes.addActionListener(act_menu);
-        a_connectivity.addActionListener(act_menu);
-        a_full_analysis.addActionListener(act_menu);
-        a_archetypes.addActionListener(act_menu);
-        a_hypothesis_testing.addActionListener(act_menu);
-        a_benchmarks.addActionListener(act_menu);
-        a_export_table.addActionListener(act_menu);
 
         a_advisor = new JMenuItem("Analysis Advisor (What Should I Compute?)...");
         a_advisor.setToolTipText("Interactive wizard helping beginners select the right algorithms for their research question");

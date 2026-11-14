@@ -100,7 +100,8 @@ public final class AnalysisReportFactory {
         b.addRow("Weight Structure", weightStr, "Edge value scale");
         b.addRow("Min Tie Weight", String.valueOf(min), "Minimum observed weight");
         b.addRow("Max Tie Weight", String.valueOf(max), "Maximum observed weight");
-        b.addRow("Connectivity", connected ? "Connected" : "Disconnected", connected ? "All node pairs mutually reachable" : "Some node pairs unreachable");
+        b.addRow("Connectivity", connected ? (lib.isStronglyConnected(src) ? "Connected (Strongly)" : "Connected (Weakly)") : "Disconnected",
+                connected ? (lib.isStronglyConnected(src) ? "All node pairs mutually reachable in both directions" : "Single connected component (reachability exists across all nodes)") : "Multiple disconnected components");
         b.addRow("Outsider Nodes", String.valueOf(outsiders), "Isolated actors with zero ties");
 
         TableData paramsTable = b.build();
@@ -404,9 +405,8 @@ public final class AnalysisReportFactory {
         AnalysisReport report = new AnalysisReport("Betweenness Centrality", src.getName());
         report.setRawPlainText(legacy);
 
-        if (!connected) {
-            String warnMsg = "WARNING: The network '" + src.getName()
-                    + "' is disconnected. Freeman betweenness requires all pairs to be connected; the values below are computed on existing paths only and underestimate centrality.";
+        if (!lib.isStronglyConnected(src)) {
+            String warnMsg = "Note: Network is not strongly connected. Betweenness is computed on all existing shortest paths.";
             report.setNote(warnMsg, true);
         }
 
@@ -444,9 +444,8 @@ public final class AnalysisReportFactory {
         AnalysisReport report = new AnalysisReport("Closeness Centrality", src.getName());
         report.setRawPlainText(legacy);
 
-        if (!connected) {
-            String warnMsg = "WARNING: The network '" + src.getName()
-                    + "' is disconnected. Freeman closeness requires a fully connected graph; reported values reflect reachable nodes only and are not comparable across components.";
+        if (!lib.isStronglyConnected(src)) {
+            String warnMsg = "Note: Network is not strongly connected. Freeman closeness values reflect reachable nodes only.";
             report.setNote(warnMsg, true);
         }
 
@@ -485,8 +484,8 @@ public final class AnalysisReportFactory {
         AnalysisReport report = new AnalysisReport("Fareness Centrality", src.getName());
         report.setRawPlainText(legacy);
 
-        if (!connected) {
-            String warnMsg = "WARNING: The network '" + src.getName() + "' is disconnected.";
+        if (!lib.isStronglyConnected(src)) {
+            String warnMsg = "Note: Network is not strongly connected. Fareness reflects reachable nodes only.";
             report.setNote(warnMsg, true);
         }
 
@@ -521,8 +520,8 @@ public final class AnalysisReportFactory {
         AnalysisReport report = new AnalysisReport("Eccentricity / Graph Centrality", src.getName());
         report.setRawPlainText(legacy);
 
-        if (!connected) {
-            String warnMsg = "WARNING: The network '" + src.getName() + "' is disconnected.";
+        if (!lib.isStronglyConnected(src)) {
+            String warnMsg = "Note: Network is not strongly connected. Eccentricity reflects maximum reachable distance.";
             report.setNote(warnMsg, true);
         }
 
@@ -638,8 +637,8 @@ public final class AnalysisReportFactory {
         AnalysisReport report = new AnalysisReport("Bavelas Centrality", src.getName());
         report.setRawPlainText(legacy);
 
-        if (!connected) {
-            report.setNote("WARNING: The network '" + src.getName() + "' is disconnected.", true);
+        if (!lib.isStronglyConnected(src)) {
+            report.setNote("Note: Network is not strongly connected. Bavelas centrality reflects reachable nodes only.", true);
         }
 
         float[] bav = lib.bavelas(src);
@@ -797,24 +796,19 @@ public final class AnalysisReportFactory {
             for (TableData td : createSociometricStatusReport(src, lib, "").getTables()) report.addTable(td);
         }
         if (options.isIncludeBetweenness()) {
-            if (connected) {
-                for (TableData td : createBetweennessReport(src, lib, "").getTables()) report.addTable(td);
-            } else {
-                report.setNote("Betweenness centrality skipped: network is disconnected.", true);
-            }
+            for (TableData td : createBetweennessReport(src, lib, "").getTables()) report.addTable(td);
         }
         if (options.isIncludeCloseness()) {
-            if (connected) {
-                for (TableData td : createClosenessReport(src, lib, "").getTables()) report.addTable(td);
-            } else {
-                report.setNote("Closeness centrality skipped: network is disconnected.", true);
-            }
+            for (TableData td : createClosenessReport(src, lib, "").getTables()) report.addTable(td);
         }
-        if (options.isIncludeBavelas() && connected) {
+        if (options.isIncludeBavelas()) {
             for (TableData td : createBavelasReport(src, lib, "").getTables()) report.addTable(td);
         }
-        if (options.isIncludeFareness() && connected) {
+        if (options.isIncludeFareness()) {
             for (TableData td : createFarenessReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (!lib.isStronglyConnected(src) && (options.isIncludeCloseness() || options.isIncludeBavelas() || options.isIncludeFareness())) {
+            report.setNote("Note: Network is not strongly connected. Distance-based centrality measures reflect reachable paths only.", true);
         }
         if (options.isIncludeNodalDegree() || options.isIncludeBetweenness() || options.isIncludeCloseness()) {
             TableData freemanTable = createFreemanCentralizationSummaryTable(src, lib);
@@ -845,21 +839,20 @@ public final class AnalysisReportFactory {
         report.setRawPlainText(legacy);
         boolean connected = lib.isConnected(src);
 
-        if (connected) {
-            if (options.isIncludeGeodesicsMatrix()) {
-                for (TableData td : createGeodesicsReport(src, lib, "").getTables()) report.addTable(td);
-            }
-            if (options.isIncludeDiameter()) {
-                for (TableData td : createDiameterReport(src, lib, "").getTables()) report.addTable(td);
-            }
-            if (options.isIncludeEccentricity()) {
-                for (TableData td : createEccentricityReport(src, lib, "").getTables()) report.addTable(td);
-            }
-            if (options.isIncludeSpecificShortestPath()) {
-                for (TableData td : createShortestPathsReport(src, options.getFromNode(), options.getToNode(), lib, "").getTables()) report.addTable(td);
-            }
-        } else {
-            report.setNote("Network is disconnected. Infinite path lengths exist between isolated components.", true);
+        if (options.isIncludeGeodesicsMatrix()) {
+            for (TableData td : createGeodesicsReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeDiameter()) {
+            for (TableData td : createDiameterReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeEccentricity()) {
+            for (TableData td : createEccentricityReport(src, lib, "").getTables()) report.addTable(td);
+        }
+        if (options.isIncludeSpecificShortestPath()) {
+            for (TableData td : createShortestPathsReport(src, options.getFromNode(), options.getToNode(), lib, "").getTables()) report.addTable(td);
+        }
+        if (!lib.isStronglyConnected(src)) {
+            report.setNote("Note: Network is not strongly connected. Distance and geodesic measures reflect reachable paths only.", true);
         }
 
         report.addFootnote("Geodesic distances are computed as the shortest path between node pairs.");
@@ -993,17 +986,17 @@ public final class AnalysisReportFactory {
         }
 
         if (options.isIncludeGeodesicCentralities()) {
-            if (connected) {
-                AnalysisReport betw = createBetweennessReport(src, lib, "");
-                for (TableData td : betw.getTables()) report.addTable(td);
+            AnalysisReport betw = createBetweennessReport(src, lib, "");
+            for (TableData td : betw.getTables()) report.addTable(td);
 
-                AnalysisReport close = createClosenessReport(src, lib, "");
-                for (TableData td : close.getTables()) report.addTable(td);
+            AnalysisReport close = createClosenessReport(src, lib, "");
+            for (TableData td : close.getTables()) report.addTable(td);
 
-                AnalysisReport geo = createGeodesicsReport(src, lib, "");
-                for (TableData td : geo.getTables()) report.addTable(td);
-            } else {
-                report.setNote("Centrality and geodesic measures skipped: the network is disconnected (run each measure separately for details).", true);
+            AnalysisReport geo = createGeodesicsReport(src, lib, "");
+            for (TableData td : geo.getTables()) report.addTable(td);
+
+            if (!lib.isStronglyConnected(src)) {
+                report.setNote("Note: Network is not strongly connected. Geodesic and distance-based measures reflect reachable paths only.", true);
             }
         }
 
@@ -1419,12 +1412,12 @@ public final class AnalysisReportFactory {
         float[] deg = lib.nodalDegree(src);
         float degCent = (deg != null) ? lib.freemanDegreeCentralization(src) : 0f;
 
-        float betwCent = 0f;
+        float[] betw = lib.betweenness(src);
+        float betwCent = (betw != null) ? lib.freemanGeneralIndex(betw, lib.betweenness(new Network(size, 1))) : 0f;
+
         float closeCent = 0f;
         float bavCent = 0f;
         if (connected) {
-            float[] betw = lib.betweenness(src);
-            if (betw != null) betwCent = lib.freemanGeneralIndex(betw, lib.betweenness(new Network(size, 1)));
             float[] close = lib.closeness(src);
             if (close != null) closeCent = lib.freemanGeneralIndex(close, lib.closeness(new Network(size, 1)));
             float[] bav = lib.bavelas(src);
@@ -1438,12 +1431,11 @@ public final class AnalysisReportFactory {
                 .isNumeric(false, true, false, false);
 
         b.addRow("Freeman Degree Centralization (C_D)", String.format(Locale.ROOT, "%.4f", degCent), "[0, 1]", "Star Network (N=" + size + ")");
+        b.addRow("Freeman Betweenness Centralization (C_B)", String.format(Locale.ROOT, "%.4f", betwCent), "[0, 1]", "Star Network (N=" + size + ")");
         if (connected) {
-            b.addRow("Freeman Betweenness Centralization (C_B)", String.format(Locale.ROOT, "%.4f", betwCent), "[0, 1]", "Star Network (N=" + size + ")");
             b.addRow("Freeman Closeness Centralization (C_C)", String.format(Locale.ROOT, "%.4f", closeCent), "[0, 1]", "Star Network (N=" + size + ")");
             b.addRow("Bavelas-Leavitt Centralization (C_Bav)", String.format(Locale.ROOT, "%.4f", bavCent), "[0, 1]", "Star Network (N=" + size + ")");
         } else {
-            b.addRow("Freeman Betweenness Centralization (C_B)", "N/A (Disconnected)", "[0, 1]", "Requires single component");
             b.addRow("Freeman Closeness Centralization (C_C)", "N/A (Disconnected)", "[0, 1]", "Requires single component");
             b.addRow("Bavelas-Leavitt Centralization (C_Bav)", "N/A (Disconnected)", "[0, 1]", "Requires single component");
         }

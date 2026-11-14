@@ -1004,10 +1004,10 @@ import java.util.Vector;
                 sociometricStatus(src));
         addPajekVectorIfSelected(out, selected, "Nodal Degree",
                 nodalDegree(src));
+        addPajekVectorIfSelected(out, selected, "Betweenness",
+                betweenness(src));
         if (isConnected(src))
             {
-            addPajekVectorIfSelected(out, selected, "Betweenness",
-                    betweenness(src));
             addPajekVectorIfSelected(out, selected, "Closeness",
                     closeness(src));
             addPajekVectorIfSelected(out, selected, "Prestige",
@@ -1041,7 +1041,41 @@ import java.util.Vector;
 
     public boolean isConnected(Network src)
         {
+        return isWeaklyConnected(src);
+        }
+
+    public boolean isWeaklyConnected(Network src)
+        {
+        int n = src.getSize();
+        if (n <= 1)
+            return true;
+        boolean[] seen = new boolean[n];
+        int[] q = new int[n];
+        int head = 0, tail = 0;
+        q[tail++] = 0;
+        seen[0] = true;
+        int visited = 0;
+        while (head < tail)
+            {
+            int u = q[head++];
+            visited++;
+            for (int v = 0; v < n; v++)
+                {
+                if (!seen[v] && (src.getValue(u, v) != 0f || src.getValue(v, u) != 0f))
+                    {
+                    seen[v] = true;
+                    q[tail++] = v;
+                    }
+                }
+            }
+        return visited == n;
+        }
+
+    public boolean isStronglyConnected(Network src)
+        {
         int size = src.getSize();
+        if (size <= 1)
+            return true;
         int[][] geod = geodesics(src);
         for (int i = 0; i < size; i++)
             {
@@ -1165,21 +1199,18 @@ import java.util.Vector;
         if (options.isIncludeGeodesicCentralities())
             {
             out.append(outDiameter(outsrc));
-            if (isConnected(outsrc))
-                {
-                out.append(outBavelas(outsrc));
-                out.append(outFareness(outsrc));
-                out.append(outCloseness(outsrc));
-                out.append(outBetweenness(outsrc));
-                out.append(outEccentricity(outsrc));
-                out.append(outGeodesics(outsrc));
-                } else
+            out.append(outBavelas(outsrc));
+            out.append(outFareness(outsrc));
+            out.append(outCloseness(outsrc));
+            out.append(outBetweenness(outsrc));
+            out.append(outEccentricity(outsrc));
+            out.append(outGeodesics(outsrc));
+            if (!isStronglyConnected(outsrc))
                 {
                 out.append(lb
                         + it
-                        + "Centrality and geodesic measures skipped: the network "
-                        + "is disconnected (run each measure separately for "
-                        + "details)." + unit + lb);
+                        + "Note: Network is not strongly connected. Geodesic and "
+                        + "distance-based measures reflect reachable paths only." + unit + lb);
                 }
             }
         if (options.isIncludeSpectralCentrality())
@@ -1328,19 +1359,14 @@ import java.util.Vector;
 
     public String legacyOutEccentricity(Network outsrc)
         {
-        // 2.1.3: refuse disconnected networks (0 = no path
-        // would silently corrupt the result)
-        if (!isConnected(outsrc))
-            {
-            return it + "WARNING: " + outsrc.getName()
-                    + " is disconnected; the eccentricity index cannot be "
-                    + "computed (not all pairs of nodes are mutually "
-                    + "reachable)." + unit + lb;
-            }
-
         int size = outsrc.getSize();
         int i;
         StringBuffer out = new StringBuffer("");
+        if (!isStronglyConnected(outsrc))
+            {
+            out.append(it + "Note: " + outsrc.getName()
+                    + " is not strongly connected. Eccentricity is computed on reachable paths only." + unit + lb);
+            }
         float[] outecc = new float[size];
         AgnaLib agna_lib = new AgnaLib();
         outecc = agna_lib.eccentricity(outsrc);
@@ -1435,17 +1461,13 @@ import java.util.Vector;
 
     public String legacyOutFareness(Network outsrc)
         {
-        // 2.1.3: refuse disconnected networks (0 = no path)
-        if (!isConnected(outsrc))
-            {
-            return it + "WARNING: " + outsrc.getName()
-                    + " is disconnected; the fareness index cannot be "
-                    + "computed (not all pairs of nodes are mutually "
-                    + "reachable)." + unit + lb;
-            }
-
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
+        if (!isStronglyConnected(outsrc))
+            {
+            out.append(it + "Note: " + outsrc.getName()
+                    + " is not strongly connected. Fareness is computed on reachable paths only." + unit + lb);
+            }
         float[] outarray =  fareness(outsrc);
         out.append(it + bold + "Distribution of Fareness Centrality" + unbold
                 + " in " + unit + outsrc.getName());
@@ -1499,19 +1521,14 @@ import java.util.Vector;
 
     public String legacyOutCloseness(Network outsrc)
         {
-        // 2.1.3: refuse disconnected networks (0 = no path
-        // would silently corrupt the result)
-        if (!isConnected(outsrc))
+        int size = outsrc.getSize();
+        StringBuffer out = new StringBuffer("");
+        if (!isStronglyConnected(outsrc))
             {
-            return it + "WARNING: " + outsrc.getName()
-                    + " is disconnected; the closeness centrality index "
-                    + "cannot be computed (not all pairs of nodes are "
-                    + "mutually reachable)." + unit + lb;
+            out.append(it + "Note: " + outsrc.getName()
+                    + " is not strongly connected. Closeness centrality is computed on reachable paths only." + unit + lb);
             }
 
-        int size = outsrc.getSize();
-
-        StringBuffer out = new StringBuffer("");
         float[] outarray =  closeness(outsrc);
         out.append(it + bold + "Distribution of Closeness Centrality" + unbold
                 + " in " + unit + outsrc.getName());
@@ -1793,18 +1810,14 @@ import java.util.Vector;
 
     public String legacyOutBetweenness(Network outsrc)
         {
-        // 2.1.3: refuse disconnected networks (0 = no path
-        // would silently corrupt the result)
-        if (!isConnected(outsrc))
-            {
-            return it + "WARNING: " + outsrc.getName()
-                    + " is disconnected; the betweenness centrality index "
-                    + "cannot be computed (not all pairs of nodes are "
-                    + "mutually reachable)." + unit + lb;
-            }
-
         int size = outsrc.getSize();
         StringBuffer out = new StringBuffer("");
+        if (!isStronglyConnected(outsrc))
+            {
+            out.append(it + "Note: " + outsrc.getName()
+                    + " is not strongly connected. Betweenness is computed on all existing shortest paths." + unit + lb);
+            }
+
         float[] outdet = betweenness(outsrc);
         if (outdet == null)
             return null;
@@ -1981,16 +1994,14 @@ import java.util.Vector;
 
     public String legacyOutBavelas(Network outsrc)
         {
-        // 2.1.3: refuse disconnected networks (0 = no path)
-        if (!isConnected(outsrc))
+        int size = outsrc.getSize();
+        StringBuffer out = new StringBuffer("");
+        if (!isStronglyConnected(outsrc))
             {
-            return it + "WARNING: " + outsrc.getName()
-                    + " is disconnected; the Bavelas-Leavitt centrality "
-                    + "index cannot be computed (not all pairs of nodes are "
-                    + "mutually reachable)." + unit + lb;
+            out.append(it + "Note: " + outsrc.getName()
+                    + " is not strongly connected. Bavelas-Leavitt centrality is computed on reachable paths only." + unit + lb);
             }
 
-        int size = outsrc.getSize();
         float[] outarray = new float[size];
         if (outarray == null)
             {
@@ -1998,7 +2009,6 @@ import java.util.Vector;
                     + "Bavelas-Leavitt centrality cannot be computed for an empty network."
                     + unit;
             }
-        StringBuffer out = new StringBuffer("");
         float[] outrecwei = null;
         outarray = bavelas(outsrc);
 
@@ -3594,10 +3604,8 @@ import java.util.Vector;
         if (options.isIncludeInDegree()) out.append(outInDegree(outsrc));
         if (options.isIncludeOutDegree()) out.append(outOutDegree(outsrc));
         if (options.isIncludePrestige()) out.append(outPrestige(outsrc));
-        if (isConnected(outsrc)) {
-            if (options.isIncludeBetweenness()) out.append(outBetweenness(outsrc));
-            if (options.isIncludeCloseness()) out.append(outCloseness(outsrc));
-        }
+        if (options.isIncludeBetweenness()) out.append(outBetweenness(outsrc));
+        if (options.isIncludeCloseness()) out.append(outCloseness(outsrc));
         if (options.isIncludeEigenvector()) out.append(legacyOutEigenvector(outsrc));
         if (options.isIncludeBonacich()) out.append(legacyOutBonacich(outsrc, options.getBonacichBeta()));
         if (options.isIncludePageRank()) out.append(legacyOutPageRank(outsrc, options.getPageRankDamping()));
@@ -3613,12 +3621,11 @@ import java.util.Vector;
     public String legacyOutDistanceBattery(Network outsrc, DistanceOptions options) {
         if (options == null) options = DistanceOptions.createStandard();
         StringBuffer out = new StringBuffer(it + bold + "Distances & Geodesics Battery" + unbold + " of " + unit + outsrc.getName() + lb);
-        if (isConnected(outsrc)) {
-            if (options.isIncludeGeodesicsMatrix()) out.append(outGeodesics(outsrc));
-            if (options.isIncludeDiameter()) out.append(outDiameter(outsrc));
-            if (options.isIncludeEccentricity()) out.append(outEccentricity(outsrc));
-        } else {
-            out.append(lb + it + "Network is disconnected." + unit + lb);
+        if (options.isIncludeGeodesicsMatrix()) out.append(outGeodesics(outsrc));
+        if (options.isIncludeDiameter()) out.append(outDiameter(outsrc));
+        if (options.isIncludeEccentricity()) out.append(outEccentricity(outsrc));
+        if (!isStronglyConnected(outsrc)) {
+            out.append(lb + it + "Note: Network is not strongly connected; distance measures reflect reachable paths only." + unit + lb);
         }
         return out.toString();
     }
