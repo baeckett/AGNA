@@ -29,7 +29,7 @@ class ImageItem
         clients = 0;
         try
             {
-            if (!java.awt.GraphicsEnvironment.isHeadless())
+            if (System.getProperty("org.graalvm.nativeimage.imagecode") == null)
                 {
                 image_icon = new ImageIcon("");
                 small_image_icon = new ImageIcon("");

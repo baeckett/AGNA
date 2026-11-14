@@ -196,7 +196,7 @@ public class Environment
      */
     public static synchronized void ensureAssetsExtracted()
         {
-        if (assets_extracted || java.awt.GraphicsEnvironment.isHeadless())
+        if (assets_extracted || System.getProperty("org.graalvm.nativeimage.imagecode") != null)
             return;
 
         Path target_root = Paths.get(USER_ASSETS_ROOT + fs + "faces");

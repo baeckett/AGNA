@@ -102,7 +102,7 @@ public class FullAnalysisTest
 
         assertTrue(html.contains("Density"));
         assertTrue(html.contains("Structural Holes Metrics") || html.contains("Constraint (C_i)"));
-        assertFalse(html.contains("Betweenness"));
+        assertFalse(html.contains("Distribution of Betweenness in"));
         assertFalse(html.contains("Eigenvector"));
         assertFalse(html.contains("k-Core"));
         }

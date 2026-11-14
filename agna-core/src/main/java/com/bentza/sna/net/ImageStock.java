@@ -142,7 +142,7 @@ public class ImageStock
             return empty;
             }
 
-        if (java.awt.GraphicsEnvironment.isHeadless())
+        if (System.getProperty("org.graalvm.nativeimage.imagecode") != null)
             {
             empty.increaseClients();
             return empty;

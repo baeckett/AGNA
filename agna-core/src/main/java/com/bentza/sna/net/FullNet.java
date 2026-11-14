@@ -1938,7 +1938,7 @@ tmp_node.setFace(tmpname);
                         {
                         // if could by no means read face from file:
                         tmp_node.setFace(AppRuntime.getDefaultNodeFaceSource());
-                        if (!is_err && !java.awt.GraphicsEnvironment.isHeadless())
+                        if (!is_err && System.getProperty("org.graalvm.nativeimage.imagecode") == null)
                             {
                             errors
                                     .append("\nErrors encountered on reading Node Faces.");
@@ -3039,7 +3039,7 @@ tmp_node.setFace(tmpname);
 
     public void attachArea()
         {
-        if (java.awt.GraphicsEnvironment.isHeadless())
+        if (System.getProperty("org.graalvm.nativeimage.imagecode") != null)
             {
             return;
             }
