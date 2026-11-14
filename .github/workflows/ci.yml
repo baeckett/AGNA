@@ -23,8 +23,8 @@ jobs:
       - name: Upload the built jar as an artifact
         uses: actions/upload-artifact@v4
         with:
-          name: agna-2.1.3.jar
-          path: agna-desktop/target/agna-2.1.3.jar
+          name: agna-desktop.jar
+          path: agna-desktop/target/agna-*.jar
           if-no-files-found: error
 
   sbom-gate:

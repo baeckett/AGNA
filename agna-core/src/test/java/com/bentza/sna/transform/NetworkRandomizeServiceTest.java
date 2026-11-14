@@ -184,10 +184,7 @@ public class NetworkRandomizeServiceTest {
         net.setValue(1.0f, 0, 9);
         net.setValue(1.0f, 9, 0);
 
-        int[] origDegrees = new int[10];
-        for (int i = 0; i < 10; i++) {
-            origDegrees[i] = (int) lib.degree(net, i);
-        }
+        float[] origDegrees = lib.nodalDegree(net);
 
         RandomizeOptions opts = new RandomizeOptions();
         opts.setModel(RandomizeOptions.Model.DEGREE_PRESERVING);
@@ -196,8 +193,9 @@ public class NetworkRandomizeServiceTest {
         NetworkRandomizeService.populate(net, opts, new Random(333));
         assertPreservedMetadata(net);
 
+        float[] newDegrees = lib.nodalDegree(net);
         for (int i = 0; i < 10; i++) {
-            assertEquals(origDegrees[i], (int) lib.degree(net, i), "Degree of node " + i + " must be preserved");
+            assertEquals(origDegrees[i], newDegrees[i], 0.0001f, "Degree of node " + i + " must be preserved");
         }
     }
 
