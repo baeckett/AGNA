@@ -140,7 +140,7 @@ public class CentralityBatteryDialog extends JDialog {
         cbCloseness.setToolTipText(EducationalTooltips.getTooltip("closeness"));
         cbPrestige = new JCheckBox("Prestige & Sociometric Status", true);
         cbPrestige.setToolTipText(EducationalTooltips.getTooltip("prestige"));
-        cbBavelas = new JCheckBox("Bavelas-Leavitt Centrality", false);
+        cbBavelas = new JCheckBox("Bavelas-Leavitt Centrality", true);
         cbBavelas.setToolTipText(EducationalTooltips.getTooltip("bavelas"));
         cbFareness = new JCheckBox("Fareness Index", false);
         cbFareness.setToolTipText(EducationalTooltips.getTooltip("fareness"));
@@ -220,7 +220,7 @@ public class CentralityBatteryDialog extends JDialog {
         cbBetweenness.setSelected(true);
         cbCloseness.setSelected(true);
         cbPrestige.setSelected(true);
-        cbBavelas.setSelected(false);
+        cbBavelas.setSelected(true);
         cbFareness.setSelected(false);
         cbEigenvector.setSelected(true);
         cbBonacich.setSelected(false);

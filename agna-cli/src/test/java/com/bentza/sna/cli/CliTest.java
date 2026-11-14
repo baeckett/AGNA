@@ -973,6 +973,20 @@ public class CliTest
         tempEgo.deleteOnExit();
         run("transform", sample.getAbsolutePath(), tempEgo.getAbsolutePath(), "--op", "ego:1:1");
         assertTrue(tempEgo.exists() && tempEgo.length() > 0);
+
+        // 5. Randomize command
+        File tempRand = File.createTempFile("agna_test_rand", ".agn");
+        tempRand.deleteOnExit();
+        String outRand = run("randomize", sample.getAbsolutePath(), tempRand.getAbsolutePath(), "--model", "gnp", "--prob", "0.4", "--seed", "123");
+        assertTrue(outRand.contains("randomized ->"), outRand);
+        assertTrue(tempRand.exists() && tempRand.length() > 0);
+
+        // 6. Transform randomize op
+        File tempTransRand = File.createTempFile("agna_test_trans_rand", ".agn");
+        tempTransRand.deleteOnExit();
+        String outTransRand = run("transform", sample.getAbsolutePath(), tempTransRand.getAbsolutePath(), "--op", "randomize:ws:4:0.2");
+        assertTrue(outTransRand.contains("transformed ->"), outTransRand);
+        assertTrue(tempTransRand.exists() && tempTransRand.length() > 0);
         }
 
     @Test

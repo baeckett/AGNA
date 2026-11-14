@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use AGNA in your research, please cite it with the entry below (see also the 'Cite AGNA' section of the Help contents and the README)."
 title: "AGNA: Applied Graph and Network Analysis Open Source"
-version: "2.2.0"
+version: "2.2.1"
 abstract: >-
   AGNA (Applied Graph and Network Analysis) is cross-platform open-source
   software for social network analysis and sequential analysis.

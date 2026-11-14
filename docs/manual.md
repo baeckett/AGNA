@@ -1,4 +1,4 @@
-# Agna User Manual — 2.2.0
+# Agna User Manual — 2.2.1
 
 ## 1. Quick start
 
@@ -527,6 +527,7 @@ students, instructors, and researchers new to graph theory.
 
 ## 10. Version history
 
+- **2.2.1** — Populate with random edge values (`Network ▸ Populate with Random Edge Values...` & CLI `agna randomize`) with 8 theoretical random graph models (Erdős–Rényi $G(n,p)$ and $G(n,m)$, continuous weighted ties, Watts–Strogatz small-world, Barabási–Albert scale-free, random connected, degree-preserving permutation, weight permutation); Bavelas-Leavitt centrality checked by default in Centrality & Prestige Battery; scalable node addition up to 250 nodes (500 total) without warning prompts, supporting up to 5,000 nodes; removed redundant Zero Diagonal menu item; symmetrization state sync bug fixes; table export UI improvements; disconnected network betweenness path handling.
 - **2.2.0** — Standalone Native GraalVM CLI binaries (`agna` / `agna.exe`) for macOS (Apple Silicon ARM64, Intel x86_64), Linux (AMD64), and Windows (x64) with instant ~7ms startup and zero Java runtime dependency; native Model Context Protocol (MCP) server (`agna mcp`) conforming to JSON-RPC 2.0 / MCP specification `2024-11-05` for AI agents; topology-driven analytical advisory engine (`agna advise`); qualitative structural narrative generator (`agna narrative`); desktop toolbar revitalization (quick-action buttons for Normalize, Ego Network, Advisor, Full Analysis, Sociometrics, Centrality, Export); intelligent multi-format `Save As...` dialog with extension sync; unsaved changes safety prompts on exit; macOS app icon multi-resolution refresh (16px/32px/64px); HTML report nesting bug fixes.
 - **2.1.7** — Educational scaffolding and beginner onboarding suite: interactive Educational Tooltips across all computational battery dialogues (centrality, clustering, sociometrics, distance, full analysis, null models); automated Plain-English Structural Narrative generator ("Key Takeaways & Beginner's Guide") in analytical reports; curated Benchmark Case Studies & Dataset Browser (`SampleNetworksDialog`) with historical context and guided exercises for Padgett Florentine Families, Zachary Karate Club, Davis Southern Women, and canonical benchmark topologies; Analysis Advisor ("What Should I Compute?") decision wizard (`AnalysisAdvisorDialog`) mapping research questions to recommended analyses; in-app searchable SNA Concept Reference and formula cheat-sheet (`SnaCheatSheetDialog`); interactive Node Hover Inspector in visual Network Viewer (`NodeArea`).
 - **2.1.6** — Freeman (1979) global centralization suite ($C_D, C_B, C_C, C_{\text{Bav}}$); Newman degree assortativity and directed mixing regimes; Louvain modularity and Girvan-Newman community detection; structural equivalence and blockmodeling; valued/weighted network metrics; network transformation suite (zero/set diagonal, dichotomize, slice, ego extraction, algebra, sorting); UCINET DL format; Agna CLI complete parity; NetworkX parity battery and verification suite.
@@ -540,7 +541,7 @@ students, instructors, and researchers new to graph theory.
 If you use AGNA in your research, please cite it as:
 
 Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open
-Source (Version 2.2.0) [Computer software].
+Source (Version 2.2.1) [Computer software].
 https://doi.org/10.5281/zenodo.24209965
 
 BibTeX entry:
@@ -549,7 +550,7 @@ BibTeX entry:
 @software{benta_2026_agna,
   author    = {Bența, Marius I.},
   title     = {{AGNA}: Applied Graph and Network Analysis Open Source},
-  version   = {2.2.0},
+  version   = {2.2.1},
   year      = {2026},
   publisher = {AGNA Open Source},
   doi       = {10.5281/zenodo.24209965},

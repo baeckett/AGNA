@@ -28,6 +28,8 @@ import com.bentza.sna.report.AnalysisReport;
 import com.bentza.sna.report.TableData;
 import com.bentza.sna.theory.ArchetypeClassifier;
 import com.bentza.sna.theory.ArchetypeMetrics;
+import com.bentza.sna.transform.NetworkRandomizeService;
+import com.bentza.sna.transform.RandomizeOptions;
 import com.bentza.sna.benchmark.AlgorithmBenchmarkSuite;
 import com.bentza.sna.benchmark.BenchmarkResult;
 import java.awt.Color;
@@ -159,6 +161,7 @@ public final class Cli
                 + "                                  benchmark centrality, clustering, and path algorithm performance\n"
                 + "  test-null FILE [--metric M] [--model NULL_MODEL] [-r N] [--seed S] [--format text|json|csv|html]\n"
                 + "                                  Monte Carlo hypothesis test (degree-preserving, erdos-renyi, dyad-census)\n"
+                + "  randomize IN OUT [--model M]    populate or randomize ties (gnp | gnm | weighted | ws | ba | connected | degree-preserving | weight-permutation)\n"
                 + "network commands (each saves a new file via --out):\n"
                 + "  add-scalar FILE V --out OUT     add V to every cell\n"
                 + "  multiply-scalar FILE V --out OUT\n"
@@ -387,6 +390,10 @@ public final class Cli
         if ("benchmark".equals(cmd) || "bench".equals(cmd))
             {
             return benchmark(args);
+            }
+        if ("randomize".equals(cmd) || "populate".equals(cmd))
+            {
+            return randomize(args);
             }
         if ("add-scalar".equals(cmd))
             {
@@ -1231,12 +1238,129 @@ public final class Cli
                     com.bentza.sna.transform.NetworkTransformService.SortCriterion.NAME;
             boolean asc = parts.length <= 1 || !"desc".equalsIgnoreCase(parts[1]);
             com.bentza.sna.transform.NetworkTransformService.sortActors(net, crit, asc);
+            } else if (op.startsWith("randomize:") || op.startsWith("populate:") || "randomize".equals(op))
+            {
+            RandomizeOptions opts = new RandomizeOptions();
+            String[] parts = op.split(":");
+            if (parts.length > 1)
+                {
+                String m = parts[1].toLowerCase(Locale.ROOT);
+                if (m.contains("gnm")) opts.setModel(RandomizeOptions.Model.ERDOS_RENYI_GNM);
+                else if (m.contains("weight-perm") || m.contains("shuffle-weight")) opts.setModel(RandomizeOptions.Model.WEIGHT_PERMUTATION);
+                else if (m.contains("weight")) opts.setModel(RandomizeOptions.Model.RANDOM_WEIGHTED);
+                else if (m.contains("watt") || m.equals("ws")) opts.setModel(RandomizeOptions.Model.WATTS_STROGATZ);
+                else if (m.contains("barabasi") || m.equals("ba")) opts.setModel(RandomizeOptions.Model.BARABASI_ALBERT);
+                else if (m.contains("connect")) opts.setModel(RandomizeOptions.Model.RANDOM_CONNECTED);
+                else if (m.contains("degree") || m.contains("maslov")) opts.setModel(RandomizeOptions.Model.DEGREE_PRESERVING);
+                else opts.setModel(RandomizeOptions.Model.ERDOS_RENYI_GNP);
+                }
+            if (parts.length > 2)
+                {
+                try
+                    {
+                    opts.setProbability(Double.parseDouble(parts[2]));
+                    opts.setTieCount(Integer.parseInt(parts[2]));
+                    } catch (NumberFormatException ignored) {}
+                }
+            if (parts.length > 3 && ("sym".equalsIgnoreCase(parts[3]) || "true".equalsIgnoreCase(parts[3])))
+                {
+                opts.setSymmetric(true);
+                }
+            NetworkRandomizeService.populate(net, opts, new Random());
             } else
             {
             out.println("unknown op: " + op);
             return false;
             }
         return true;
+        }
+
+    private int randomize(String[] args) throws Exception
+        {
+        if (args.length < 3)
+            {
+            out.println("usage: agna randomize IN OUT [--model MODEL] [--prob P] [--count M] [--symmetric] [--seed S]");
+            return 1;
+            }
+        String inPath = args[1];
+        String outPath = args[2];
+        RandomizeOptions opts = new RandomizeOptions();
+        Long seed = null;
+
+        for (int i = 3; i < args.length; i++)
+            {
+            if ("--model".equals(args[i]) && i + 1 < args.length)
+                {
+                String m = args[++i].toLowerCase(Locale.ROOT);
+                if (m.contains("gnm")) opts.setModel(RandomizeOptions.Model.ERDOS_RENYI_GNM);
+                else if (m.contains("weight-perm") || m.contains("shuffle-weight")) opts.setModel(RandomizeOptions.Model.WEIGHT_PERMUTATION);
+                else if (m.contains("weight")) opts.setModel(RandomizeOptions.Model.RANDOM_WEIGHTED);
+                else if (m.contains("watt") || m.equals("ws")) opts.setModel(RandomizeOptions.Model.WATTS_STROGATZ);
+                else if (m.contains("barabasi") || m.equals("ba")) opts.setModel(RandomizeOptions.Model.BARABASI_ALBERT);
+                else if (m.contains("connect")) opts.setModel(RandomizeOptions.Model.RANDOM_CONNECTED);
+                else if (m.contains("degree") || m.contains("maslov") || m.contains("swap")) opts.setModel(RandomizeOptions.Model.DEGREE_PRESERVING);
+                else opts.setModel(RandomizeOptions.Model.ERDOS_RENYI_GNP);
+                }
+            else if ("--prob".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setProbability(Double.parseDouble(args[++i]));
+                }
+            else if ("--count".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setTieCount(Integer.parseInt(args[++i]));
+                }
+            else if ("--symmetric".equals(args[i]) || "--undirected".equals(args[i]))
+                {
+                opts.setSymmetric(true);
+                }
+            else if ("--directed".equals(args[i]))
+                {
+                opts.setSymmetric(false);
+                }
+            else if ("--min".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setMinWeight(Double.parseDouble(args[++i]));
+                }
+            else if ("--max".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setMaxWeight(Double.parseDouble(args[++i]));
+                }
+            else if ("--k".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setWattsStrogatzK(Integer.parseInt(args[++i]));
+                }
+            else if ("--beta".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setWattsStrogatzBeta(Double.parseDouble(args[++i]));
+                }
+            else if ("--m".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setBarabasiAlbertM(Integer.parseInt(args[++i]));
+                }
+            else if ("--swaps".equals(args[i]) && i + 1 < args.length)
+                {
+                opts.setSwapsPerEdge(Integer.parseInt(args[++i]));
+                }
+            else if ("--seed".equals(args[i]) && i + 1 < args.length)
+                {
+                seed = Long.parseLong(args[++i]);
+                }
+            else if ("--in-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdinFormat = args[++i];
+                }
+            else if ("--out-format".equals(args[i]) && i + 1 < args.length)
+                {
+                stdoutFormat = args[++i];
+                }
+            }
+
+        FullNet full = open(inPath);
+        Random rng = seed != null ? new Random(seed) : new Random();
+        NetworkRandomizeService.populate(full.getNetwork(), opts, rng);
+        write(full, outPath);
+        out.println("randomized -> " + outPath + " using " + opts.getModel().getLabel());
+        return 0;
         }
 
     private static void deleteNodes(Network net, String list)

@@ -1,6 +1,6 @@
 # AGNA: Applied Graph and Network Analysis
 
-> AGNA is an open-source, headless-capable Java engine and CLI for social network analysis (SNA), sociometry, and graph theory (v2.2.0, Apache-2.0).
+> AGNA is an open-source, headless-capable Java engine and CLI for social network analysis (SNA), sociometry, and graph theory (v2.2.1, Apache-2.0).
 
 ## Agent & LLM Documentation
 - [Agna for AI Agents](AGENTS.md): Complete guide for AI models, CLI recipes, JSON schemas, error exit codes, and token-saving tips.
@@ -26,8 +26,8 @@
 ```bash
 # Run via CLI binary or JAR:
 agna <command> [options] FILE
-java -jar agna-cli-2.2.0.jar <command> [options] FILE
+java -jar agna-cli-2.2.1.jar <command> [options] FILE
 ```
 
 ## Citation
-Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open Source (Version 2.2.0) [Computer software]. https://doi.org/10.5281/zenodo.24209965
+Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open Source (Version 2.2.1) [Computer software]. https://doi.org/10.5281/zenodo.24209965

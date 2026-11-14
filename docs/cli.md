@@ -5,7 +5,7 @@ desktop, no windowing, everything pipable and scriptable.
 
 Agna CLI is distributed in two distribution formats:
 1. **Standalone Native Binary (`agna` / `agna.exe`)**: Compiled Ahead-of-Time (AOT) via GraalVM into machine code. Requires **no Java runtime**, starts in **~7 milliseconds**, and uses only ~15 MB RAM. Ideal for interactive shell sessions, CI/CD pipelines, and AI coding agents.
-2. **Universal Executable JAR (`agna-cli-2.2.0.jar`)**: Runs on any platform with Java 17+ installed (`java -jar agna-cli-2.2.0.jar <command>`).
+2. **Universal Executable JAR (`agna-cli-2.2.1.jar`)**: Runs on any platform with Java 17+ installed (`java -jar agna-cli-2.2.1.jar <command>`).
 
 ---
 
@@ -29,7 +29,7 @@ Download the standalone executable for your operating system from the [latest re
 # Download and install directly to /usr/local/bin:
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m | sed 's/x86_64/x86_64/' | sed 's/arm64/arm64/' | sed 's/aarch64/arm64/')
-curl -L -o /tmp/agna.tar.gz "https://github.com/baeckett/AGNA/releases/download/v2.2.0/agna-${OS}-${ARCH}.tar.gz"
+curl -L -o /tmp/agna.tar.gz "https://github.com/baeckett/AGNA/releases/download/v2.2.1/agna-${OS}-${ARCH}.tar.gz"
 tar -xzf /tmp/agna.tar.gz -C /usr/local/bin agna
 chmod +x /usr/local/bin/agna
 
@@ -51,7 +51,7 @@ The resulting executable will be placed at `agna-cli/target/agna`.
 ### 3. Portable JAR Invocation (Java 17+)
 Alternatively, run the shaded CLI JAR with Java 17+:
 ```bash
-java -jar agna-cli/target/agna-cli-2.2.0.jar <command> [options]
+java -jar agna-cli/target/agna-cli-2.2.1.jar <command> [options]
 ```
 
 ---

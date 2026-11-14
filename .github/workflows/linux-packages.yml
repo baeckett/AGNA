@@ -32,15 +32,15 @@ jobs:
           JAR=$(ls agna-desktop/target/agna-*.jar | head -1)
           JARNAME=$(basename "$JAR")
           cp "$JAR" ~/pkg/"$JARNAME"
-          jpackage --type deb --name agna --app-version 2.2.0 \
+          jpackage --type deb --name agna --app-version 2.2.1 \
             --vendor "Marius Ion Bența" --input ~/pkg --main-jar "$JARNAME" \
             --main-class com.bentza.sna.Agna --dest ~/out
-          jpackage --type rpm --name agna --app-version 2.2.0 \
+          jpackage --type rpm --name agna --app-version 2.2.1 \
             --vendor "Marius Ion Bența" --input ~/pkg --main-jar "$JARNAME" \
             --main-class com.bentza.sna.Agna --dest ~/out
           mkdir -p ~/portable/agna
           cp "$JAR" ~/portable/agna/
-          tar -czf ~/out/AGNA-2.2.0-Linux-x64.tar.gz -C ~/portable agna
+          tar -czf ~/out/AGNA-2.2.1-Linux-x64.tar.gz -C ~/portable agna
 
       - name: Validate the packages (dpkg-deb and rpm)
         run: |

@@ -1885,29 +1885,18 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     private void doAddActor()
         {
-        String tmp_str = "";
-        Object[] values = new Object[10];
-        for (int i = 0; i < 10; i++)
-            {
-            values[i] = (Object) String.valueOf(i + 1);
-            }
-        tmp_str = (String) JOptionPane.showInputDialog(gr_frame,
-                "Please select number of nodes to be added:", "Add new nodes",
-                JOptionPane.QUESTION_MESSAGE, null, values, "1");
+        int currentSize = (gr_full_net != null && gr_full_net.getNetwork() != null)
+                ? gr_full_net.getNetwork().getSize() : 0;
+        int nn = AddNodesHelper.promptNumberOfNodes(gr_frame, currentSize);
         gr_frame.repaint();
-        if (tmp_str == null)
+        if (nn <= 0)
             return;
 
-        final int nn = Integer.parseInt(tmp_str);
-        // adding nodes inside thread
-        /*
-         * Thread add_nodes_thread = new Thread() { public void run() {
-         */
+        // adding nodes
         gr_model.setReady(false);
         gr_full_net.addNodesToNetwork(nn); // no position specified
         for (int i = 1; i <= nn; i++)
             {
-            // specified
             // updates table:
             gr_model.addRowCol();
             }
@@ -1919,10 +1908,20 @@ gr_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         gr_full_net.setChanged(true);
         gr_model.setReady(true);
         MainFrame.setTableCellEditor();
-        
-        /*
-         * } }; add_nodes_thread.start();
-         */
+        MainFrame.updateMatrix();
+        }
+
+    public void addRowsCols(int count)
+        {
+        if (gr_model != null && count > 0)
+            {
+            gr_model.setReady(false);
+            for (int i = 0; i < count; i++)
+                {
+                gr_model.addRowCol();
+                }
+            gr_model.setReady(true);
+            }
         }
 
     private void doCloneActor()

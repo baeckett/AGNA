@@ -20,6 +20,8 @@ import com.bentza.sna.report.ClusteringOptions;
 import com.bentza.sna.report.DistanceOptions;
 import com.bentza.sna.report.FullAnalysisOptions;
 import com.bentza.sna.report.SociometricsOptions;
+import com.bentza.sna.transform.NetworkRandomizeService;
+import com.bentza.sna.transform.RandomizeOptions;
 import com.bentza.sna.Agna;
 import com.bentza.sna.Environment;
 import com.bentza.sna.AgnaThread;
@@ -92,7 +94,7 @@ public class MainFrame //
             e_paste, e_delete, e_select_all, d_title, d_add_nodes,
             d_delete_nodes, d_add_scalar, d_multiply_scalar, d_transpose,
             d_symmetrize, d_normalize, d_remove_out, d_renumber_nodes, d_merge,
-            d_multiply_network, d_dichotomize, d_zero_diagonal,
+            d_multiply_network, d_dichotomize, d_randomize,
             d_set_diagonal, d_ego_network, d_network_algebra, d_sort_actors, a_basic,
             a_nodal_degree, a_indegree, a_outdegree, a_density, a_cohesion,
             a_emissions, a_receptions, a_determinations, a_sociostatus,
@@ -609,9 +611,9 @@ public class MainFrame //
                     doDichotomize();
                     }
 
-                if (e.getSource() == d_zero_diagonal)
+                if (e.getSource() == d_randomize)
                     {
-                    doZeroDiagonal();
+                    doRandomize();
                     }
 
                 if (e.getSource() == d_set_diagonal)
@@ -2601,19 +2603,12 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         else
             return;
         my_frame.repaint();
-        String tmp_str = "";
-        Object[] values = new Object[10];
-        for (int i = 0; i < 10; i++)
-            {
-            values[i] = (Object) String.valueOf(i + 1);
-            }
-        tmp_str = (String) JOptionPane.showInputDialog(my_frame,
-                "Please select number of nodes to be added:", "Add new nodes",
-                JOptionPane.QUESTION_MESSAGE, null, values, "1");
+        int currentSize = (my_full_net != null && my_full_net.getNetwork() != null)
+                ? my_full_net.getNetwork().getSize() : 0;
+        int nn = AddNodesHelper.promptNumberOfNodes(my_frame, currentSize);
         my_frame.repaint();
-        if (tmp_str == null)
+        if (nn <= 0)
             return;
-        final int nn = Integer.parseInt(tmp_str);
 
         // adding nodes inside thread
         my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -2633,7 +2628,14 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         MainFrame.setTableCellEditor();
         setCurrentStatus(default_status);
         my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        
+
+        if (my_grafic != null && my_grafic.gr_frame != null && my_grafic.my_area != null)
+            {
+            my_grafic.addRowsCols(nn);
+            my_grafic.my_area.updateArea(my_full_net.getNetwork());
+            my_grafic.my_area.paintEdges();
+            my_grafic.getCurrentFrame().repaint();
+            }
         }
 
     private void doDeleteNodes()
@@ -2805,6 +2807,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
             }
         if (!checkAllValues())
             return;
+        updateNetwork();
 
         SymmetrizeDialog dlg = new SymmetrizeDialog(my_frame, my_full_net.getNetwork(), res ->
             {
@@ -2825,13 +2828,26 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 {
                 FullNet newNet = new FullNet();
                 newNet.setNetwork(netToTransform);
+                newNet.attachArea();
                 my_full_net = newNet;
                 }
+            else if (my_full_net.isArea())
+                {
+                my_full_net.net_area.updateArea(my_full_net.getNetwork());
+                }
+
             my_full_net.setChanged(true);
             refreshFrameTitle();
-            updateNetwork();
             updateMatrix();
             grid_model.setReady(true);
+
+            if (my_grafic != null && my_grafic.gr_frame != null && my_grafic.my_area != null)
+                {
+                my_grafic.my_area.updateArea(my_full_net.getNetwork());
+                my_grafic.my_area.paintEdges();
+                my_grafic.getCurrentFrame().repaint();
+                }
+
             appendOutputLog("Symmetrized " + currentNetworkLabel() + " by "
                     + res.method + (res.zeroDiagonal ? " (zero diagonal)" : "") + ".");
             });
@@ -2866,6 +2882,60 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
                 break;
             default: lib.symmetrizeMaximum(net); break;
             }
+        }
+
+    private void doRandomize()
+        {
+        if (my_full_net == null || my_full_net.getNetwork() == null || my_full_net.getNetwork().getSize() < 2)
+            {
+            JOptionPane.showMessageDialog(my_frame,
+                    "Please load or create a network with at least 2 actors to populate with random edge values.",
+                    "No Network", JOptionPane.WARNING_MESSAGE);
+            return;
+            }
+        if (!checkAllValues())
+            return;
+        updateNetwork();
+
+        RandomizeNetworkDialog dlg = new RandomizeNetworkDialog(my_frame, my_full_net.getNetwork(), res ->
+            {
+            grid_model.setReady(false);
+            Network netToTransform = res.createNewNetwork ? my_full_net.getNetwork().copy() : my_full_net.getNetwork();
+            if (res.createNewNetwork)
+                {
+                netToTransform.setName(my_full_net.getNetwork().getName() + "_Random");
+                }
+
+            NetworkRandomizeService.populate(netToTransform, res.options, new java.util.Random());
+
+            if (res.createNewNetwork)
+                {
+                FullNet newNet = new FullNet();
+                newNet.setNetwork(netToTransform);
+                newNet.attachArea();
+                my_full_net = newNet;
+                }
+            else if (my_full_net.isArea())
+                {
+                my_full_net.net_area.updateArea(my_full_net.getNetwork());
+                }
+
+            my_full_net.setChanged(true);
+            refreshFrameTitle();
+            updateMatrix();
+            grid_model.setReady(true);
+
+            if (my_grafic != null && my_grafic.gr_frame != null && my_grafic.my_area != null)
+                {
+                my_grafic.my_area.updateArea(my_full_net.getNetwork());
+                my_grafic.my_area.paintEdges();
+                my_grafic.getCurrentFrame().repaint();
+                }
+
+            appendOutputLog("Populated " + currentNetworkLabel() + " with random edges using "
+                    + res.options.getModel().getLabel() + ".");
+            });
+        dlg.setVisible(true);
         }
 
     private void doNormalize()
@@ -4798,7 +4868,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         d_renumber_nodes = new JMenuItem("Renumber Nodes");
         d_multiply_network = new JMenuItem("Square Matrix");
         d_dichotomize = new JMenuItem("Dichotomize / Threshold Ties...");
-        d_zero_diagonal = new JMenuItem("Zero Diagonal (Remove Self-Loops)");
+        d_randomize = new JMenuItem("Populate with Random Edge Values...");
         d_set_diagonal = new JMenuItem("Set Diagonal to Value...");
         d_ego_network = new JMenuItem("Extract Ego Network...");
         d_network_algebra = new JMenuItem("Network Algebra (Combine Networks)...");
@@ -4820,7 +4890,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         d_renumber_nodes.setToolTipText("Give all nodes number-names");
         d_multiply_network.setToolTipText("Multiply sociomatrix by itself");
         d_dichotomize.setToolTipText("Threshold tie values at a cut-off to convert matrix into binary 0/1 ties");
-        d_zero_diagonal.setToolTipText("Reset all diagonal elements to 0 to remove self-loops");
+        d_randomize.setToolTipText("Populate or randomize edge values and network topology");
         d_set_diagonal.setToolTipText("Set all diagonal matrix elements to a specified constant value");
         d_ego_network.setToolTipText("Extract the 1-hop or 2-hop ego subnetwork centered on a focal actor");
         d_network_algebra.setToolTipText("Combine two networks using element-wise addition, subtraction, intersection min, or product");
@@ -4839,7 +4909,7 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         d_merge.addActionListener(act_menu);
         d_multiply_network.addActionListener(act_menu);
         d_dichotomize.addActionListener(act_menu);
-        d_zero_diagonal.addActionListener(act_menu);
+        d_randomize.addActionListener(act_menu);
         d_set_diagonal.addActionListener(act_menu);
         d_ego_network.addActionListener(act_menu);
         d_network_algebra.addActionListener(act_menu);
@@ -4887,11 +4957,11 @@ if (my_frame != null) my_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_
         mData.addSeparator();
         mData.add(d_dichotomize);
         mData.addSeparator();
-        mData.add(d_zero_diagonal);
-        mData.addSeparator();
         mData.add(d_ego_network);
         mData.add(d_network_algebra);
         mData.add(d_sort_actors);
+        mData.addSeparator();
+        mData.add(d_randomize);
         mData.addSeparator();
         mData.add(d_multiply_network);
 

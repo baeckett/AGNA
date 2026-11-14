@@ -24,7 +24,7 @@ public class CentralityOptions implements Serializable {
     // Geodesic centralities
     private boolean includeBetweenness = true;
     private boolean includeCloseness = true;
-    private boolean includeBavelas = false;
+    private boolean includeBavelas = true;
     private boolean includeFareness = false;
     private boolean includePrestige = true;
     private boolean includeSociostatus = false;

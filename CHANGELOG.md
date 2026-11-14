@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.1] - 2026-11-14
+
+### Added
+- **Populate with Random Edge Values (`Network ▸ Populate with Random Edge Values...` & CLI `agna randomize`)**:
+  - Added interactive dialog and engine service (`NetworkRandomizeService`) offering 8 theoretical random graph models while preserving existing actors, identities, node names, and visual coordinates:
+    1. **Erdős–Rényi $G(n, p)$**: Independent Bernoulli ties with probability $p$, directed or symmetric.
+    2. **Erdős–Rényi $G(n, m)$**: Exactly $m$ ties placed uniformly across non-diagonal pairs.
+    3. **Random Weighted Ties**: Continuous edge weights uniformly sampled within $[W_{\min}, W_{\max}]$.
+    4. **Watts–Strogatz Small-World**: Ring lattice rewiring with tunable neighborhood $k$ and probability $\beta$.
+    5. **Barabási–Albert Scale-Free**: Preferential attachment generating power-law degree distributions.
+    6. **Random Connected Network**: Spanning tree baseline guaranteeing 0 isolated nodes.
+    7. **Degree-Preserving Permutation**: Maslov–Sneppen double-edge swaps preserving exact in/out degree sequences.
+    8. **Weight Permutation**: Random shuffling of tie weights across existing edges preserving binary topology.
+  - Supports both in-place sociomatrix transformation and creating a new network copy (`<Name>_Random`).
+  - Added CLI command `agna randomize IN OUT [--model M] [options]` and transform operation `--op randomize:<model>[:<params>]`.
+
+### Changed
+- **Centrality & Prestige Battery**:
+  - Bavelas-Leavitt Centrality index is now checked by default in `CentralityOptions`, `CentralityBatteryDialog`, and the *Standard Centralities* preset.
+- **Scalable Node Addition**:
+  - Replaced the legacy 1..10 fixed dropdown in `Add Nodes` with an interactive numeric input dialog (`AddNodesHelper`).
+  - Users can now add up to 250 nodes (or up to 500 total network actors) immediately without any warning dialog.
+  - A clear confirmation warning is issued for large node additions (> 250 added or > 500 total) to prevent unintended table/canvas freezes, supporting up to 5,000 nodes.
+  - Standardized behavior across the main window menu (`Network ▸ Add Nodes...`), toolbar, and Network Viewer (`Node ▸ Add Nodes...`).
+- **Cleaned Network Menu**:
+  - Removed the redundant `Zero Diagonal (Remove Self-Loops)` menu item as self-loops are already strictly zeroed across all Agna matrix operations.
+
+### Fixed
+- **Symmetrization State Bug**:
+  - Fixed an issue where running `Symmetrize by Maximum` (and other symmetrization rules) in the GUI was overwritten by an immediate pre-transformation table sync, reverting ties back to their asymmetric values.
+  - Synchronized real-time edge updates with the Network Viewer canvas when symmetrizing.
+- **Export Table Dialog**:
+  - Fixed partial drawing / missing buttons in the Table Export dialog and resolved the duplicate-close dialog redisplay bug.
+- **Betweenness on Disconnected Networks**:
+  - Ensured Brandes betweenness properly evaluates reachable paths across components without throwing premature disconnection errors.
+
 ## [2.2.0] - 2026-11-14
 
 ### Added

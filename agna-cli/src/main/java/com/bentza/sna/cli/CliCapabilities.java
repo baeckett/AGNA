@@ -50,7 +50,8 @@ public final class CliCapabilities {
             "normalize-binary", "normalize-threshold", "add-scalar", "multiply-scalar",
             "square", "zero-diagonal", "set-diagonal", "dichotomize", "slice",
             "ego", "combine", "reorder", "merge", "delete-node", "delete-nodes",
-            "isolate", "merge-nodes", "remove-outsiders", "renumber", "add-nodes", "clone-node"
+            "isolate", "merge-nodes", "remove-outsiders", "renumber", "add-nodes", "clone-node",
+            "randomize", "populate"
     );
 
     public static class CommandInfo {
@@ -88,7 +89,8 @@ public final class CliCapabilities {
             new CommandInfo("diff", "Compute structural difference between two graphs", "--out"),
             new CommandInfo("archetype", "Classify network against Small-World, Scale-Free, and Core-Periphery models", "--format", "--out"),
             new CommandInfo("benchmark", "Benchmark performance of centrality, path, and clustering algorithms", "--iterations", "--format", "--out"),
-            new CommandInfo("test-null", "Monte Carlo hypothesis testing against randomized null models", "--metric", "--model", "-r", "--seed", "--format", "--out")
+            new CommandInfo("test-null", "Monte Carlo hypothesis testing against randomized null models", "--metric", "--model", "-r", "--seed", "--format", "--out"),
+            new CommandInfo("randomize", "Populate or randomize sociomatrix edge values across existing actors", "--model", "--prob", "--count", "--symmetric", "--seed", "--out")
     );
 
     public static String toPlainText() {

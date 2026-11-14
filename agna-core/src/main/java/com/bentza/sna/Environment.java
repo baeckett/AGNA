@@ -36,7 +36,7 @@ public class Environment
     {
     private final static String application_name = "Agna";
 
-    private final static String application_version = "2.2.0";
+    private final static String application_version = "2.2.1";
 
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
