@@ -22,7 +22,7 @@ public class CitationTest
     @Test
     public void doiIsTheReleasedZenodoDoi()
         {
-        assertEquals("10.5281/zenodo.24209965", Environment.getCitationDoi());
+        assertEquals("10.5281/zenodo.24226451", Environment.getCitationDoi());
         }
 
     @Test
@@ -39,7 +39,7 @@ public class CitationTest
         assertTrue(text.contains("Ben\u021Ba, M. I. (2026)"), text);
         assertTrue(text.contains(Environment.getSoftwareTitle()), text);
         assertTrue(text.contains(
-                "https://doi.org/10.5281/zenodo.24209965"), text);
+                "https://doi.org/10.5281/zenodo.24226451"), text);
         }
 
     @Test
@@ -57,6 +57,6 @@ public class CitationTest
         {
         String footer = Environment.getSoftwareFooter();
         assertTrue(footer.contains("Generated with AGNA"), footer);
-        assertTrue(footer.contains("10.5281/zenodo.24209965"), footer);
+        assertTrue(footer.contains("10.5281/zenodo.24226451"), footer);
         }
     }
