@@ -73,7 +73,12 @@ public final class McpServer {
                     jsonPayload = new String(buffer, 0, read);
                 }
 
-                if (jsonPayload.isEmpty() || !jsonPayload.startsWith("{")) {
+                if (jsonPayload.isEmpty()) {
+                    continue;
+                }
+                if (!jsonPayload.startsWith("{") && !jsonPayload.startsWith("[")) {
+                    // 2.2.2: JSON-RPC 2.0 requires a -32700 reply (id null) instead of silently dropping input
+                    sendParseError("not a JSON object");
                     continue;
                 }
 
@@ -86,6 +91,8 @@ public final class McpServer {
                 }
 
                 if (!root.isObject()) {
+                    sendError(com.fasterxml.jackson.databind.node.NullNode.getInstance(), -32600,
+                            "Invalid Request: expected a JSON object (batches are not supported)");
                     continue;
                 }
 

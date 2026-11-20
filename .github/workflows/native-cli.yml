@@ -2,7 +2,7 @@ name: Native CLI Binaries (GraalVM)
 
 on:
   push:
-    branches: [ main, v2.2.1 ]
+    branches: [ main, v2.2.2 ]
     tags: [ 'v*' ]
   pull_request:
     paths:

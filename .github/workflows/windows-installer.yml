@@ -29,12 +29,15 @@ jobs:
           New-Item -ItemType Directory -Force pkg, out | Out-Null
           $jar = Get-ChildItem -Path agna-desktop\target\agna-*.jar | Select-Object -First 1
           Copy-Item $jar.FullName pkg\$($jar.Name)
-          jpackage --type msi --name AGNA --app-version 2.2.1 `
+          # exactly the 2.2.1 sample set (packaging/samples-manifest.txt), never the whole samples folder
+          New-Item -ItemType Directory -Force pkg\samples | Out-Null
+          Get-Content packaging\samples-manifest.txt | Where-Object { $_.Trim() } | ForEach-Object { Copy-Item -LiteralPath "samples\$_" -Destination pkg\samples\ -ErrorAction Stop }
+          jpackage --type msi --name AGNA --app-version 2.2.2 `
             --vendor "Marius Ion Benta" `
             --description "AGNA - Applied Graph and Network Analysis Open Source" `
             --icon packaging\Agna.ico --input pkg --main-jar $jar.Name `
             --main-class com.bentza.sna.Agna --dest out
-          jpackage --type exe --name AGNA --app-version 2.2.1 `
+          jpackage --type exe --name AGNA --app-version 2.2.2 `
             --vendor "Marius Ion Benta" `
             --description "AGNA - Applied Graph and Network Analysis Open Source" `
             --icon packaging\Agna.ico --input pkg --main-jar $jar.Name `

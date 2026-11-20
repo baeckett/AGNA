@@ -1,0 +1,8 @@
+empty-report-fixed     171
+matrix-header          38
+metrics-distances      30
+validate-additive      20
+louvain                7
+closeness-bounded      14
+unicode-csv            128
+unexplained: 0

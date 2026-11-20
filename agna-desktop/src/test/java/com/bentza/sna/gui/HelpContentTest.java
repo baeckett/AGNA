@@ -104,7 +104,7 @@ public class HelpContentTest
         assertTrue(ops.contains("Symmetrize"));
         assertTrue(ops.contains("√"));
 
-        String news = read(new File(helpDir(), "7newin216.htm"));
+        String news = read(new File(helpDir(), "10versionhistory.htm"));
         assertTrue(news.contains("Freeman"));
         }
     }

@@ -1,124 +1,72 @@
-# Agna 2.1.3 — Release notes
+# AGNA 2.2.2 — Release Notes (Hotfix / Correction Release for 2.2.1)
 
-Open-source revival of Agna (last closed-source release: 2.1.2), restructured
-into a Maven monorepo.
-Copyright (C) 2001–2026 Marius Ion Bența.
-Website: https://www.netanalysis.co.uk — contact@netanalysis.co.uk
+**Release Date:** 2026-11-20  
+**License:** Apache License 2.0  
+**Author:** Marius Ion Bența (George Barițiu History Institute, Cluj)  
+**Website:** https://www.netanalysis.co.uk  
+**Zenodo DOI (all versions, always the latest):** https://doi.org/10.5281/zenodo.22708198
 
-## What is AGNA
+---
 
-AGNA — Applied Graph and Network Analysis Open Source — is free software for
-social network analysis, sociometry, and sequential analysis: a desktop
-application, a command-line interface, and a reusable Java engine, all under
-the Apache License 2.0.
+## Overview
 
-## Layout (monorepo)
+**AGNA 2.2.2** is a correction release for **AGNA 2.2.1**. It fixes two mathematical defects discovered in the post-2.2.1 verification audit—most importantly a depth-first traversal bug in `agna metrics` and `agna distance` that produced non-minimal geodesic distances, diameters, closeness, and betweenness values on cyclic networks—along with input integrity hardening, report completeness fixes, and CLI/MCP contract compliance.
 
-- `agna-core` — network engine: networks, analyses, layouts, import/export
-- `agna-cli` — command-line interface (30+ commands: analyse, convert,
-  transform, draw, generate, matrix, metrics, distance, diff, layout, ...)
-- `agna-desktop` — the Swing desktop application
-- `docs/`, `packaging/`, `samples/`, `LICENSE`, `CITATION.cff`/`CITATION.bib`
+No new features are added in 2.2.2; see [ERRATUM_2.2.1.md](ERRATUM_2.2.1.md) and [CHANGELOG.md](CHANGELOG.md) for full technical details.
 
-## New features in 2.1.3
+---
 
-- **New layout engine** — three algorithms: **grid**, **concentric**
-  (hub-centered by degree), and **force-directed spring embedding**
-  (Fruchterman–Reingold with Barnes–Hut acceleration for large networks).
-  Available in the desktop Image menu and toolbar, and from the CLI
-  (`layout`, `draw --layout`).
-- **AGNA CLI** — a full command surface (30+ commands) for headless,
-  reproducible analysis and diagram generation, with pipe support,
-  structured output (CSV/JSON), man page and shell completions.
-- **Analysis battery** — Full Analysis, scalable N-Cliques, prestige
-  (Lin 1976), Brandes betweenness, distance and structural-diff suites.
-- **Import/export** — agn, text/CSV, Pajek `.net` (Gephi-safe), Excel
-  (`.xls`/`.xlsx`, incl. Apple Numbers), GraphML, GML, GraphSON.
-- **Merge Network** (by name; sum/max/keep policies); session log in the
-  Output pane; background analyses with cancellation.
-- **Modern UI** — FlatLaf look and feel (light default, live theme picker,
-  classic fallback); node-face fallback; resizable modern Help with
-  formulas, links and the citation guide.
-- **UTF-8 text I/O** throughout, with a legacy latin-1 read fallback for
-  old files.
-- **Quality** — 230 automated tests (138 core, 42 CLI, 50 desktop):
-  fuzz, stress, performance, rendering, round-trips and unicode suites.
+## Critical Fixes (Erratum for 2.2.1)
 
-## Bugs fixed in 2.1.3
+1. **True Breadth-First Search (BFS) Geodesic Distances in `agna metrics`, `agna_metrics` (MCP), and `agna distance --out`:**
+   - In 2.2.1, path traversal in `agna metrics` used a LIFO stack (depth-first) instead of a FIFO queue (breadth-first), causing shortest-path lengths to be overestimated on cyclic networks (affecting `diameter`, `eccentricity`, `closeness`, `betweenness`, and `geodesics` rows in `agna metrics`).
+   - *Note:* The AGNA Desktop application reports, `agna analyse`, and all degree-based measures were **not** affected.
+   - Verified against NetworkX across all bundled empirical samples and 65 benchmark graphs:
+     - **Zachary Karate Club:** Diameter `5` (was `6` in 2.2.1)
+     - **Padgett Florentine Families:** Diameter `5` (was `7` in 2.2.1)
+     - **random200:** Diameter `4` (was `53` in 2.2.1)
+2. **Wasserman–Faust Bounded Closeness on Disconnected Networks:**
+   - Standardized closeness on networks that are not strongly connected now applies the Wasserman–Faust reachable-component scaling factor so values strictly remain within $[0, 1]$ across Desktop, `agna analyse`, and `agna metrics` (and remain identical on connected networks).
+   - `agna metrics` omits `diameter` and `eccentricity` on disconnected networks where they are mathematically undefined.
+3. **Complete Two-Phase Louvain Modularity & Exact Bonacich Power Centrality:**
+   - Louvain community detection now runs both Phase 1 (local moving) and Phase 2 (community aggregation), increasing modularity on Zachary Karate Club from $Q = 0.361$ to $Q = 0.416$.
+   - Bonacich power centrality $c(\alpha, \beta)$ is solved exactly via Gaussian elimination with partial pivoting and validates $|\beta| < 1/\lambda_{\max}$; eigenvector centrality uses a converged Lanczos/power solver.
 
-- Save As dialog reliability: self-healing default name, format filters,
-  directory/path guards, extension handling.
-- `.agn` reader: crash on files without a Background Image File setting;
-  optional-settings NPEs; spurious "Node" parse warnings.
-- Settings: the title vertical offset is restored correctly; no crash when
-  an existing `~/.agna` settings file is present.
-- Pajek export is Gephi-clean: no comment header, optional vector blocks,
-  coordinates normalized to 0..1, face round-trip.
-- Grid lines are now drawn unconditionally, visible under native look and
-  feels (macOS Aqua) that suppress them.
-- Spring layout: gentle displacement and fit-to-canvas normalization (no
-  border hugging); Barnes–Hut acceleration above 256 nodes (~12x faster on
-  1000–5000 node networks, same layout quality).
-- Path helpers no longer truncate at dots inside directory names; Excel
-  export is safe for headless runs.
-- Binary-degree semantics documented; the multiple-geodesics stub replaced;
-  clique enumeration capped with a truncation note; analyses land safely
-  on the event thread with cancellation.
-- Help: resizable window, regenerated contents with working anchors, stale
-  pages removed; legacy commented-out code removed from the sources.
-- Performance benchmarks are separate from the correctness suite and run
-  only with `mvn verify -Pbenchmarks` (stable on shared CI runners).
-- Engine hardening: matrix APIs validate shape before computing (no silent
-  ArrayIndexOutOfBounds); integer matrix multiplication accumulates in
-  `long` and fails loudly on overflow; non-finite (NaN/infinity) tie values
-  are rejected at the transformation entry points; clique reports state
-  when enumeration was truncated or cancelled; all-shortest-path
-  enumeration is capped; metamorphic invariance tests (permutation,
-  transposition, symmetrization) added.
+---
 
-## Citation
+## Additional Fixes in 2.2.2
 
-DOI: 10.5281/zenodo.22708199 — see CITATION.cff / CITATION.bib
+- **Drawing Hang on Header-Only / Generated Networks (`Has Viewer no`):** Clamped grid spacing so `agna draw` and image export never hang in an infinite grid loop when `Grid Space` is `0`.
+- **RFC 4180 Quoted CSV & TSV Reader:** Actor names containing commas or escaped quotes (e.g., `"José ""Pepe"", Jr."`) are parsed without splitting or losing actors.
+- **Pre-Flight Input Integrity Validation:** Corrupt files (binary data, non-square or ragged CSVs, `NaN`/text cells, Pajek ties to missing vertices, headerless `.agn` files) are refused with **exit code `2`** and structured diagnostics in `agna validate --json` (override with `--lenient`).
+- **Complete CLI `agna analyse` Text Reports:** `clustering`, `transitivity`, `kcore`, `triads`, `holes`, `components`, `eigenvector`, `bonacich`, and `pagerank` now print full ASCII data tables instead of title-only headers.
+- **Installers ship exactly the 2.2.1 sample set:** the ten sample networks embedded in the jar (listed in `packaging/samples-manifest.txt`). Repository test fixtures (`Chain1.txt`, `Chain2.txt`, `4 full.txt`) are no longer bundled; the build scripts and CI workflows stage the installer input from the manifest, and a unit test guards it.
+- **CLI & MCP Contract Hardening:**
+  - `agna generate <type> --nodes N` accepts network type positionally and rejects unknown types with exit code `1`.
+  - `agna matrix --format csv` writes a leading empty corner cell so exported CSV matrices re-import cleanly.
+  - Standard exit codes enforced (`0` success, `1` usage error, `2` data validation error, `3` computation error).
+  - `agna metrics --json` writes diagnostic notes exclusively to `stderr` so `stdout` is always pure JSON, and includes a `conventions.betweenness` field documenting ordered-pair summation.
+  - `agna mcp` responds to malformed JSON lines with JSON-RPC `-32700` and batch arrays with `-32600`.
 
-## Files
+---
 
-- `AGNA-2.1.3-desktop.jar` — run: `java -jar AGNA-2.1.3-desktop.jar`
-- `AGNA-2.1.3-cli.zip` — CLI jar + reference + man page + completions
-- `AGNA-2.1.3-core.jar` (+ sources jar)
-- `AGNA-2.1.3-Linux-x64.tar.gz` — self-contained Linux archive
-- `AGNA-2.1.3-3-linux-setup.deb` — Debian/Ubuntu installer (bundled runtime,
-  installs to `/opt/agna` with an `agna` launcher on the PATH)
-- macOS (.dmg) and Windows installers are built on their platforms from
-  the recipes in `packaging/`
+## Verification Summary
 
-## License
+- **Unit Test Suite:** 420 tests (273 core, 80 CLI, 67 desktop) — 0 failures, 0 errors.
+- **NetworkX Parity Battery (`tools/nx-parity`):** 65 networks, 3,360 checks — 3,353 PASS, 0 FAIL (down from 68 failures in 2.2.1).
+- **Differential Audit (`tools/audit/differential.py`):** 1,365 command runs comparing 2.2.1 vs. 2.2.2 — 0 unexplained differences.
+- **CLI Robustness Battery (`tools/audit/cli_battery.py`):** 667 runs — 0 timeouts, 0 stack traces, 0 prefixed/broken JSON payloads.
 
-Apache License 2.0 (all modules). See LICENSE and the README (including the
-High-Risk Activities Disclaimer).
+---
 
-## Software bills of materials
+## Release Files
 
-- `docs/sbom/AGNA-2.1.3-SBOM.json` — CycloneDX 1.4 aggregate SBOM.
-- `docs/sbom/AGNA-2.1.3-SPDX.json` — SPDX 2.2 variant (ISO/IEC 5962),
-  converted from the same dependency graph.
-### SBOM diff for this release
-
-| | First BOM (audit baseline) | Final BOM |
-|---|---|---|
-| Format | CycloneDX 1.4 | CycloneDX 1.4 + SPDX 2.2 |
-| Components | 9 | 14 (all Apache License 2.0) |
-| Non-permissive licenses | LGPL (JExcelAPI/jxl 2.6.12) | none |
-| Known-vulnerable EOL component | log4j 1.2.14 (transitive of jxl) | none (log4j-api 2.23.1, Apache-2.0) |
-| Excel `.xls` stack | JExcelAPI (LGPL) | Apache POI 5.3.0 (with commons-codec,
-  commons-collections4, commons-math3, commons-io, SparseBitSet) |
-
-The `sbom-gate` CI job now enforces the Apache-2.0-only policy; the gate
-allowlist contains no other license.
-
-- Both are attached on the release page; the `sbom-gate` CI job fails the
-  build when a component's license is not allowlisted or a banned/
-  SNAPSHOT component appears. All runtime dependencies are Apache License
-  2.0: the Excel `.xls` path moved from JExcelAPI (LGPL) to Apache POI,
-  which also removed the end-of-life log4j 1.x transitive. The optional
-  OWASP NVD scan runs locally with `mvn -Psbom-gate verify
-  -Ddependency-check.skip=false`.
+- `AGNA-2.2.2.dmg` — macOS Universal / Apple Silicon installer with bundled Java runtime (Drag to `/Applications`)
+- `AGNA-2.2.2-desktop.jar` — Cross-platform executable desktop JAR (`java -jar AGNA-2.2.2-desktop.jar`, Java 17+)
+- `AGNA-2.2.2-cli.jar` — Standalone command-line & MCP server JAR (`java -jar AGNA-2.2.2-cli.jar --help`)
+- `AGNA-2.2.2-cli.zip` — CLI bundle (executable JAR, CLI reference manual, man page `agna.1`, bash/zsh completions)
+- `AGNA-2.2.2-core.jar` & `AGNA-2.2.2-core-sources.jar` — Reusable Java SNA engine library and sources
+- `AGNA-2.2.2-Linux-x64.tar.gz` — Portable Linux archive
+- `AGNA-2.2.2-source-zenodo.zip` — Complete source code, documentation, verification tools, and packaging recipes for Zenodo archival
+- `AGNA-2.2.2-SBOM.json` & `AGNA-2.2.2-SPDX.json` — CycloneDX 1.4 and SPDX 2.2 Software Bills of Materials
+- `ERRATUM_2.2.1.md` & `SHA256SUMS.txt` — Erratum notice and SHA-256 cryptographic checksums

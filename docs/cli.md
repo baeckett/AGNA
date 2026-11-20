@@ -5,7 +5,7 @@ desktop, no windowing, everything pipable and scriptable.
 
 Agna CLI is distributed in two distribution formats:
 1. **Standalone Native Binary (`agna` / `agna.exe`)**: Compiled Ahead-of-Time (AOT) via GraalVM into machine code. Requires **no Java runtime**, starts in **~7 milliseconds**, and uses only ~15 MB RAM. Ideal for interactive shell sessions, CI/CD pipelines, and AI coding agents.
-2. **Universal Executable JAR (`agna-cli-2.2.1.jar`)**: Runs on any platform with Java 17+ installed (`java -jar agna-cli-2.2.1.jar <command>`).
+2. **Universal Executable JAR (`agna-cli-2.2.2.jar`)**: Runs on any platform with Java 17+ installed (`java -jar agna-cli-2.2.2.jar <command>`).
 
 ---
 
@@ -29,7 +29,7 @@ Download the standalone executable for your operating system from the [latest re
 # Download and install directly to /usr/local/bin:
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m | sed 's/x86_64/x86_64/' | sed 's/arm64/arm64/' | sed 's/aarch64/arm64/')
-curl -L -o /tmp/agna.tar.gz "https://github.com/baeckett/AGNA/releases/download/v2.2.1/agna-${OS}-${ARCH}.tar.gz"
+curl -L -o /tmp/agna.tar.gz "https://github.com/baeckett/AGNA/releases/download/v2.2.2/agna-${OS}-${ARCH}.tar.gz"
 tar -xzf /tmp/agna.tar.gz -C /usr/local/bin agna
 chmod +x /usr/local/bin/agna
 
@@ -51,7 +51,7 @@ The resulting executable will be placed at `agna-cli/target/agna`.
 ### 3. Portable JAR Invocation (Java 17+)
 Alternatively, run the shaded CLI JAR with Java 17+:
 ```bash
-java -jar agna-cli/target/agna-cli-2.2.1.jar <command> [options]
+java -jar agna-cli/target/agna-cli-2.2.2.jar <command> [options]
 ```
 
 ---
@@ -64,6 +64,11 @@ stdout). A file argument of `-` reads agn text from stdin (override with
 
 Exit status: 0 on success; 1 on usage errors, unknown commands/analyses/
 metrics, or exceptions; 2 on pre-flight data validation failure or unreadable files; 3 on computational failure.
+
+Input integrity (2.2.2): every command that reads a network first checks the file for structural damage
+(random bytes, text or NaN cells, non-square or ragged matrices, header-less `.agn` files, arcs to missing vertices)
+and refuses it with exit code 2 and a message naming the problem. `agna validate FILE` lists every issue.
+The global flag `--lenient` loads a damaged file best-effort instead (for example `agna info FILE --lenient`).
 
 Command summary:
 
@@ -645,6 +650,11 @@ agna metrics FILE [METRIC...] [--all] [--top N] [--format csv|json] [--json] [--
 | `status` | node | reception − emission |
 | `determination` | node | (emission − reception) / (emission + reception); 0 when the denominator is 0 |
 | `geodesics` | ordered pair | hop distance from node1 to node2; `0` = no path |
+
+Betweenness convention: raw betweenness is summed over ordered pairs (A to B and B to A are counted separately), so on an
+undirected network it is twice the unnormalised value reported by NetworkX or igraph; divide by 2 to compare. The `analyse`
+report states this in a footnote, `metrics --json` carries it in a `conventions` field, and the CSV form prints it on standard
+error so the data stream stays clean.
 
 Names are matched exactly; unknown names are **rejected** with
 

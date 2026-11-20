@@ -668,6 +668,10 @@ import javax.swing.JTextPane;
             parsePlainTextFile(str);
         else if (extension.equals("csv")) // csv file
             parseCommaTextFile(str);
+        else if (extension.equals("tsv") && parseStructuredMatrix(str, '\t')) // 2.2.2
+            {
+            // loaded by the structured reader
+            }
         else if (extension.equals("net")) // Pajek file
             parsePajekFile(str);
         else if (extension.equals("graphml")) // GraphML file
@@ -2505,8 +2509,37 @@ tmp_node.setFace(tmpname);
         }
 
     // parses csv files
+    /**
+     * 2.2.2: structured RFC 4180 reading (quoted names, ';' or tab
+     * separators, BOM, trailing separators). Returns false when the text is
+     * not a well-formed square matrix; the legacy token-count reader is then
+     * used as a best-effort fallback (reached only with --lenient or after
+     * the user confirmed the import report).
+     */
+    private boolean parseStructuredMatrix(String str, char defaultSep)
+        {
+        char sep = com.bentza.sna.io.CsvMatrixParser.detectSeparator(str, defaultSep);
+        com.bentza.sna.io.CsvMatrixParser.Result r = com.bentza.sna.io.CsvMatrixParser.parse(str, sep);
+        if (r == null)
+            return false;
+        int n = r.names.length;
+        my_network = new Network(n);
+        for (int i = 0; i < n; i++)
+            {
+            my_network.setNodeName(r.names[i], i);
+            for (int j = 0; j < n; j++)
+                if (r.values[i][j] != 0f)
+                    my_network.setValue(r.values[i][j], i, j);
+            }
+        return true;
+        }
+
     private void parseCommaTextFile(String str)
         {
+        if (parseStructuredMatrix(str, ','))
+            {
+            return;
+            }
         int ni = 0;
         int i = 0;
         // vector of new values:

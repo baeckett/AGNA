@@ -30,7 +30,7 @@ echo "==> Using GraalVM Native Image at: $NATIVE_IMAGE_BIN"
 "$NATIVE_IMAGE_BIN" --version
 
 # Ensure CLI JAR is present
-CLI_JAR="agna-cli/target/agna-cli-2.2.1.jar"
+CLI_JAR="agna-cli/target/agna-cli-2.2.2.jar"
 if [ ! -f "$CLI_JAR" ]; then
   echo "==> Packaging $CLI_JAR..."
   if command -v mvn >/dev/null 2>&1; then

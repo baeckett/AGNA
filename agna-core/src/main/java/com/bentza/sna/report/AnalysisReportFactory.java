@@ -433,6 +433,8 @@ public final class AnalysisReportFactory {
 
         report.addFootnote("Freeman betweenness centrality reflects the proportion of all shortest paths passing through the actor.");
         report.addFootnote("Normalized betweenness divides raw betweenness by (N - 1)(N - 2) / 2 (undirected) or (N - 1)(N - 2) (directed).");
+        // 2.2.2: state the counting convention next to the numbers
+        report.addFootnote("Raw betweenness is summed over ordered pairs (A to B and B to A are counted separately), so on an undirected network it is twice the unnormalised value reported by NetworkX or igraph; divide by 2 to compare. Normalised values are not affected.");
         report.addFootnote("Shortest paths are computed using Brandes' betweenness algorithm.");
 
         return report;
@@ -1345,9 +1347,19 @@ public final class AnalysisReportFactory {
     }
 
     public static AnalysisReport createBonacichReport(Network src, double beta, AgnaLib lib, String legacy) {
-        double[] bon = SpectralCentrality.computeBonacich(src, beta, 100);
         AnalysisReport report = new AnalysisReport("Bonacich Power Centrality", src.getName());
         report.setRawPlainText(legacy);
+        double betaLimit = SpectralCentrality.bonacichBetaLimit(src);
+        report.addProperty("Admissible range", Double.isInfinite(betaLimit) ? "any beta (no ties)"
+                : String.format(Locale.ROOT, "|beta| < 1/lambda_max = %.4f", betaLimit));
+        double[] bon;
+        try {
+            bon = SpectralCentrality.computeBonacich(src, beta, 100);
+        } catch (IllegalArgumentException ex) {
+            report.setNote(ex.getMessage(), true);
+            report.addFootnote("Reference: Bonacich, P. (1987). Power and centrality: A family of measures. American Journal of Sociology, 92(5), 1170-1182.");
+            return report;
+        }
 
         report.addProperty("Attenuation Parameter (Beta)", String.format(Locale.ROOT, "%.3f", beta));
         report.addProperty("Power Model", beta >= 0 ? "Influence / Prestige (alters enhance power)" : "Exchange Theory / Bargaining (dependent alters enhance power)");

@@ -48,6 +48,7 @@ public class EducationalScaffoldingTest {
 
         for (String sampleName : samples) {
             File f = new File("samples", sampleName);
+            if (!f.exists()) f = new File("../samples", sampleName);
             assertTrue(f.exists(), "Sample file missing: " + f.getAbsolutePath());
             FullNet full = new FullNet();
             full.readNetwork(java.nio.file.Files.readString(f.toPath()), "agn");

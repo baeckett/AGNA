@@ -57,21 +57,14 @@ public class BasicDescriptionTest
         net.setValue(1f, 1, 0);
         net.setValue(1f, 2, 3);
         net.setValue(1f, 3, 2);
+        // 2.2.1 behaviour: the warning names the network and the index, and values use reachable paths only
         String bavelas = new AgnaLib().outBavelas(net);
-        assertTrue(bavelas.contains("WARNING: Split is disconnected"),
-                bavelas);
-        assertTrue(
-                bavelas.contains("the Bavelas-Leavitt centrality index "
-                        + "cannot be computed"), bavelas);
+        assertTrue(bavelas.contains("Note: Split is not strongly connected"), bavelas);
+        assertTrue(bavelas.contains("Bavelas-Leavitt centrality is computed on reachable paths only"), bavelas);
         String closeness = new AgnaLib().outCloseness(net);
-        assertTrue(closeness.contains("WARNING: Split is disconnected"),
-                closeness);
-        assertTrue(
-                closeness.contains("the closeness centrality index cannot "
-                        + "be computed"), closeness);
+        assertTrue(closeness.contains("Note: Split is not strongly connected"), closeness);
+        assertTrue(closeness.contains("Closeness centrality is computed on reachable paths only"), closeness);
         String betweenness = new AgnaLib().outBetweenness(net);
-        assertTrue(
-                betweenness.contains("the betweenness centrality index "
-                        + "cannot be computed"), betweenness);
+        assertTrue(betweenness.contains("Note: Split is not strongly connected"), betweenness);
         }
     }

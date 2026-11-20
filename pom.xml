@@ -6,11 +6,11 @@
 
   <groupId>com.bentza.sna</groupId>
   <artifactId>agna</artifactId>
-  <version>2.2.1</version>
+  <version>2.2.2</version>
   <packaging>pom</packaging>
 
   <name>Agna</name>
-  <description>Agna - social network analysis (open source, 2.2.1). Monorepo: agna-core (engine), agna-cli (command line), agna-desktop (Swing application).</description>
+  <description>Agna - social network analysis (open source, 2.2.2). Monorepo: agna-core (engine), agna-cli (command line), agna-desktop (Swing application).</description>
 
   <modules>
     <module>agna-core</module>

@@ -135,7 +135,8 @@ public class ComprehensiveFunctionalityBatteryTest {
                     foundDegree = true;
                     assertFalse(val.contains("N/A"));
                 }
-                if (measure.contains("Betweenness")) {
+                if (measure.contains("Closeness")) {
+                    // 2.2.1: closeness and Bavelas centralization are not reported for disconnected networks
                     foundBetweennessNA = true;
                     assertTrue(val.contains("N/A (Disconnected)"));
                 }

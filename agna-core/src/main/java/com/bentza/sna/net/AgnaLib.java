@@ -1497,15 +1497,29 @@ import java.util.Vector;
 
     // closeness: the inverse of fareness;
     // standard value: closeness multiplied by (size - 1)
+    // 2.2.2: Wasserman-Faust correction. For an actor that reaches r of the (size - 1) other actors with
+    // total distance f, the standardised value is (r / (size - 1)) * (r / f), always within [0, 1].
+    // Here the unstandardised value is returned (the reports multiply by size - 1), i.e. (r / (size - 1))^2 / f.
+    // On strongly connected networks r = size - 1 and the result equals 1 / f, as in 2.2.1.
     public float[] closeness(Network src)
         {
         int size = src.getSize();
-        int i;
+        int i, j;
         float[] finarray =  fareness(src);
+        int[][] geomat = geodesics(src);
         for (i = 0; i < size; i++)
             {
             if (finarray[i] != 0f)
-                finarray[i] = (float) (1 / (double) finarray[i]);
+                {
+                int reached = 0;
+                for (j = 0; j < size; j++)
+                    {
+                    if (j != i && geomat[i][j] > 0)
+                        reached++;
+                    }
+                double share = size > 1 ? reached / (double) (size - 1) : 1.0;
+                finarray[i] = (float) (share * share / (double) finarray[i]);
+                }
             }
         return finarray;
         }
@@ -1526,7 +1540,7 @@ import java.util.Vector;
         if (!isStronglyConnected(outsrc))
             {
             out.append(it + "Note: " + outsrc.getName()
-                    + " is not strongly connected. Closeness centrality is computed on reachable paths only." + unit + lb);
+                    + " is not strongly connected. Closeness centrality is computed on reachable paths only (Wasserman-Faust normalisation, so values never exceed 1)." + unit + lb);
             }
 
         float[] outarray =  closeness(outsrc);
@@ -1834,6 +1848,11 @@ import java.util.Vector;
             out.append(untr);
             }
         out.append(untable);
+
+        // 2.2.2: state the counting convention next to the numbers
+        out.append(it + "Note: raw betweenness is summed over ordered pairs (A to B and B to A are counted separately), "
+                + "so on an undirected network it is twice the unnormalised value reported by NetworkX or igraph; "
+                + "divide by 2 to compare." + unit + lb);
 
         // freeman centralization:
         out

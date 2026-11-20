@@ -14,6 +14,25 @@ public final class Main
         {
         }
 
+    /**
+     * 2.2.2: documented exit codes (AGENTS.md): 1 usage, 2 data/validation,
+     * 3 computation. Before 2.2.2 every failure exited with 1.
+     */
+    static int exitCodeFor(Throwable e)
+        {
+        if (e instanceof Cli.InputIntegrityException
+                || e instanceof java.io.FileNotFoundException
+                || e instanceof java.nio.file.NoSuchFileException
+                || e instanceof java.nio.charset.CharacterCodingException)
+            return 2;
+        if (e instanceof ArithmeticException || e instanceof StackOverflowError
+                || e instanceof OutOfMemoryError
+                || (e instanceof IllegalArgumentException && e.getMessage() != null
+                        && e.getMessage().startsWith("Bonacich power")))
+            return 3;
+        return 1;
+        }
+
     public static void main(String[] args)
         {
         System.setProperty("java.awt.headless", "true");
@@ -21,7 +40,7 @@ public final class Main
         try
             {
             code = new Cli(System.out).run(args);
-            } catch (Exception e)
+            } catch (Exception | StackOverflowError | OutOfMemoryError e)
             {
             boolean wantsJson = false;
             if (args != null)
@@ -45,7 +64,7 @@ public final class Main
                 System.err.println("Agna CLI error: " + e.getMessage());
                 System.err.println("Hint: Run 'agna --help' for usage, or 'agna validate <file>' to inspect the network.");
                 }
-            code = 1;
+            code = exitCodeFor(e);
             }
         System.exit(code);
         }

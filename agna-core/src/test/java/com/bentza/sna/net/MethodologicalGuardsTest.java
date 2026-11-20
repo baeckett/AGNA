@@ -40,16 +40,14 @@ public class MethodologicalGuardsTest
         }
 
     @Test
-    public void disconnectedNetworkIsRefusedForEccentricityClosenessBetweenness()
+    public void notStronglyConnectedNetworkIsFlaggedForEccentricityClosenessBetweenness()
         {
         Network net = directedChain();
         AgnaLib lib = new AgnaLib();
-        assertTrue(lib.outEccentricity(net).contains(
-                "is disconnected"));
-        assertTrue(lib.outCloseness(net).contains(
-                "is disconnected"));
-        assertTrue(lib.outBetweenness(net).contains(
-                "is disconnected"));
+        // 2.2.1 behaviour: computed on reachable paths, with an explicit note (later versions refuse)
+        assertTrue(lib.outEccentricity(net).contains("is not strongly connected"));
+        assertTrue(lib.outCloseness(net).contains("is not strongly connected"));
+        assertTrue(lib.outBetweenness(net).contains("is not strongly connected"));
         }
 
     @Test

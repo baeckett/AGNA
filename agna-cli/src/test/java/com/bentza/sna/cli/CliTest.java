@@ -992,10 +992,10 @@ public class CliTest
     @Test
     public void infoSupportsJsonOutput() throws Exception
         {
-        String text = run("info", "samples/example2.agn", "--json");
+        String text = run("info", "samples/example2.agn", "--json").replace("\" : ", "\": ");
         assertTrue(text.contains("\"name\""), text);
         assertTrue(text.contains("\"nodes\": 9"), text);
-        assertTrue(text.contains("\"edges\": 18"), text);
+        assertTrue(text.contains("\"edges\": 20"), text);
         assertTrue(text.contains("\"density\":"), text);
         assertTrue(text.contains("\"connected\": true"), text);
         }

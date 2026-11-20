@@ -36,7 +36,7 @@ public class Environment
     {
     private final static String application_name = "Agna";
 
-    private final static String application_version = "2.2.1";
+    private final static String application_version = "2.2.2";
 
     /**
      * Historic homepage (defunct). Kept for compatibility with older records.
@@ -102,7 +102,7 @@ public class Environment
     // All cite strings in the app, the CLI and the docs draw from here.
 
     /** Zenodo DOI for the 2.2.0 release. */
-    public static final String CITATION_DOI = "10.5281/zenodo.24226451";
+    public static final String CITATION_DOI = "10.5281/zenodo.22708198";
 
     public static String getCitationDoi()
         {

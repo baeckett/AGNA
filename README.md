@@ -3,7 +3,7 @@
 [![CI](https://github.com/baeckett/AGNA/actions/workflows/ci.yml/badge.svg)](https://github.com/baeckett/AGNA/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-![AGNA 2.2.1 on macOS: sociomatrix grid, analysis report, and Network Viewer](docs/screenshots/agna-macos.png)
+![AGNA 2.2.2 on macOS: sociomatrix grid, analysis report, and Network Viewer](docs/screenshots/agna-macos.png)
 
 **AGNA — Applied Graph and Network Analysis Open Source** — is free desktop
 and command-line software for **social network analysis, sociometry, and
@@ -31,7 +31,7 @@ institutional, historical, and other relational data. It is used in
 sociology, anthropology, communication research, psychology, education,
 organizational research, animal-behavior studies, and the humanities. The
 original author, [Marius Ion Bența](https://www.netanalysis.co.uk), [George Barițiu History Institute, Cluj](https://institutuldeistoriegeorgebaritiu.ro/), built it
-(2001–2005) as a friendly alternative to programming environments; **2.2.1**
+(2001–2005) as a friendly alternative to programming environments; **2.2.2**
 is the open-source release of that work, modernized and fully tested.
 
 ## The three components
@@ -91,9 +91,9 @@ Installers bundle the Java runtime; no separate Java installation is
 needed. Choose your platform from the
 [latest release](https://github.com/baeckett/AGNA/releases):
 
-- **macOS** — [AGNA-2.2.1.dmg](https://github.com/baeckett/AGNA/releases/download/v2.2.1/AGNA-2.2.1.dmg) (Drag to `/Applications`)
-- **Windows** — [AGNA-2.2.1.exe](https://github.com/baeckett/AGNA/releases/download/v2.2.1/AGNA-2.2.1.exe) · [AGNA-2.2.1.msi](https://github.com/baeckett/AGNA/releases/download/v2.2.1/AGNA-2.2.1.msi)
-- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.2.1/agna_2.2.1-1_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.2.1/agna-2.2.1-1.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.2.1/AGNA-2.2.1-Linux-x64.tar.gz)
+- **macOS** — [AGNA-2.2.2.dmg](https://github.com/baeckett/AGNA/releases/download/v2.2.2/AGNA-2.2.2.dmg) (Drag to `/Applications`)
+- **Windows** — [AGNA-2.2.2.exe](https://github.com/baeckett/AGNA/releases/download/v2.2.2/AGNA-2.2.2.exe) · [AGNA-2.2.2.msi](https://github.com/baeckett/AGNA/releases/download/v2.2.2/AGNA-2.2.2.msi)
+- **Linux** — [Debian/Ubuntu .deb](https://github.com/baeckett/AGNA/releases/download/v2.2.2/agna_2.2.2-1_amd64.deb) · [Fedora/RHEL .rpm](https://github.com/baeckett/AGNA/releases/download/v2.2.2/agna-2.2.2-1.x86_64.rpm) · [portable archive](https://github.com/baeckett/AGNA/releases/download/v2.2.2/AGNA-2.2.2-Linux-x64.tar.gz)
 
 #### Opening on macOS (Bypassing Gatekeeper Malware Warning)
 
@@ -132,15 +132,15 @@ You can run that single binary directly from any directory (`./agna <command>`).
 
 ```bash
 # Quick install on macOS / Linux:
-curl -sL https://github.com/baeckett/AGNA/releases/download/v2.2.1/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
+curl -sL https://github.com/baeckett/AGNA/releases/download/v2.2.2/agna-macos-arm64.tar.gz | tar -xz -C /usr/local/bin agna
 agna --version
 ```
 
 ### 3. Portable JARs (Java 17+)
 Users with Java 17+ can also run the self-contained JARs directly:
 ```bash
-java -jar agna-desktop/target/agna-2.2.1.jar        # desktop
-java -jar agna-cli/target/agna-cli-2.2.1.jar --help # CLI
+java -jar agna-desktop/target/agna-2.2.2.jar        # desktop
+java -jar agna-cli/target/agna-cli-2.2.2.jar --help # CLI
 ```
 
 ### Build from source
@@ -198,7 +198,7 @@ If you use AGNA in your research, please cite it (see also
 [CITATION.cff](CITATION.cff) and [CITATION.bib](CITATION.bib)):
 
 > Bența, M. I. (2026). *AGNA: Applied Graph and Network Analysis Open Source*
-> (Version 2.2.1) [Computer software]. https://doi.org/10.5281/zenodo.24226451
+> (Version 2.2.2) [Computer software]. https://doi.org/10.5281/zenodo.22708198
 
 ## Links
 

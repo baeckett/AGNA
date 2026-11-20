@@ -147,3 +147,11 @@ need the distro's packaging tools (`fakeroot`, `rpmbuild`).
   always use the correct "Bența" spelling.
 - System requirements for the produced apps: same as the jar (Java
   runtime is bundled, ~150-250 MB installed).
+
+## Sample networks in installers
+
+Installers ship exactly the ten sample networks that AGNA 2.2.1 shipped (the files embedded in the jar), listed in
+`packaging/samples-manifest.txt`. The repository's `samples/` folder also contains test fixtures (`Chain1.txt`,
+`Chain2.txt`, `4 full.txt`), which are **not** installed. The build scripts and CI workflows stage the input folder with
+`packaging/stage-samples.sh` instead of passing `samples/` or `agna-desktop/target` to `jpackage`, and the unit test
+`InstallerSamplesManifestTest` fails if the manifest ever differs from the embedded set.

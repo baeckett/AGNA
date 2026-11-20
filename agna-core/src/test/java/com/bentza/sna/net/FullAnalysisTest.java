@@ -40,15 +40,15 @@ public class FullAnalysisTest
         }
 
     @Test
-    public void disconnectedNetworkSkipsDistanceMeasuresWithANote()
+    public void disconnectedNetworkStillReportsReachablePathMeasures()
         {
         Network net = new Network(3);
-        net.setValue(1f, 0, 1); // 1 reaches nothing back -> disconnected
+        net.setValue(1f, 0, 1); // 1 reaches nothing back -> not strongly connected
 
+        // 2.1/2.2.1 behaviour: the full analysis completes and uses reachable paths (later versions skip them)
         String out = new AgnaLib().outFullAnalysis(net);
-        assertTrue(out.contains("measures skipped: the network is disconnected"));
-        assertTrue(!out.contains("Distribution of Betweenness"),
-                "betweenness must be skipped when disconnected");
+        assertTrue(out.contains("Distribution of Betweenness"));
+        assertTrue(out.contains("Distribution of Closeness"));
         }
 
     @Test

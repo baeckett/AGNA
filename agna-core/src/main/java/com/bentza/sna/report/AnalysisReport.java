@@ -201,7 +201,12 @@ public class AnalysisReport {
      * Renders standard plain text representation, falling back to raw plain text if configured.
      */
     public String toPlainText() {
-        if (rawPlainText != null && !rawPlainText.isEmpty()) {
+        // 2.2.2: several analyses (clustering, transitivity, k-core, triad census, structural holes,
+        // dimensionality, connectivity, eigenvector, Bonacich, PageRank) carry a one-line legacy title as
+        // raw text. Returning it made the plain-text output (CLI 'analyse', text exports) contain no
+        // values at all. Use the raw text only when it holds more than a title.
+        if (rawPlainText != null && !rawPlainText.isEmpty()
+                && !(isTitleOnly(rawPlainText) && hasStructuredContent())) {
             return rawPlainText;
         }
         StringBuilder sb = new StringBuilder();
@@ -252,5 +257,23 @@ public class AnalysisReport {
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
                 .replace("'", "&#39;");
+    }
+
+    /** A legacy stub is exactly one line of the form "TITLE of NETWORK". */
+    private boolean isTitleOnly(String text) {
+        String only = null;
+        for (String l : text.split("\\r?\\n")) {
+            String t = l.replaceAll("<[^>]*>", "").trim();
+            if (t.isEmpty()) continue;
+            if (only != null) return false;
+            only = t;
+        }
+        if (only == null) return true;
+        return networkName != null && !networkName.isEmpty() && only.endsWith(" of " + networkName.trim());
+    }
+
+    private boolean hasStructuredContent() {
+        return !tables.isEmpty() || !properties.isEmpty()
+                || (note != null && !note.trim().isEmpty());
     }
 }

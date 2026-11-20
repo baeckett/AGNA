@@ -30,7 +30,7 @@ agna <command> [options]
 ./agna-cli/target/agna <command> [options]
 
 # 2. Or directly via shaded CLI JAR on Java 17+:
-java -jar agna-cli-2.2.1.jar <command> [options]
+java -jar agna-cli-2.2.2.jar <command> [options]
 ```
 
 ### Why AI Agents Prefer the Native Binary
@@ -51,6 +51,10 @@ Agna CLI uses deterministic exit codes:
 * **`1` (USAGE / ARGUMENT ERROR):** Unknown command, missing required flag, or unknown metric name.
 * **`2` (DATA VALIDATION FAILURE):** File not found, unparseable graph syntax, non-square matrix, or failed pre-flight validation.
 * **`3` (COMPUTATIONAL FAILURE):** Algorithm convergence limit reached, or mathematical precondition not met (e.g., closeness requested on disconnected graph).
+
+---
+
+Damaged input files are refused with exit code `2` before any analysis runs; pass the global flag `--lenient` only when the user explicitly wants a best-effort load.
 
 ---
 
@@ -114,7 +118,7 @@ agna info data/network.agn --json
   "outsiders" : [ ],
   "software" : {
     "name" : "AGNA CLI",
-    "version" : "2.2.1"
+    "version" : "2.2.2"
   }
 }
 ```
@@ -290,7 +294,7 @@ Or directly via JAR:
   "mcpServers": {
     "agna": {
       "command": "java",
-      "args": ["-jar", "/path/to/agna-cli-2.2.1.jar", "mcp"]
+      "args": ["-jar", "/path/to/agna-cli-2.2.2.jar", "mcp"]
     }
   }
 }

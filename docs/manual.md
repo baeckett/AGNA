@@ -542,7 +542,7 @@ If you use AGNA in your research, please cite it as:
 
 Bența, M. I. (2026). AGNA: Applied Graph and Network Analysis Open
 Source (Version 2.2.1) [Computer software].
-https://doi.org/10.5281/zenodo.24226451
+https://doi.org/10.5281/zenodo.22708198
 
 BibTeX entry:
 
@@ -553,7 +553,7 @@ BibTeX entry:
   version   = {2.2.1},
   year      = {2026},
   publisher = {AGNA Open Source},
-  doi       = {10.5281/zenodo.24226451},
+  doi       = {10.5281/zenodo.22708198},
   url       = {https://github.com/baeckett/AGNA}
 }
 ```

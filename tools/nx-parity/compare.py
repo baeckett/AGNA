@@ -157,9 +157,12 @@ def check_network(bat, doc):
 
     # ---------------- distances ----------------
     Dm = dist_matrix(G, n)
+    # 2.2.2: Agna's "connected" flag is weak connectivity (documented);
+    # strong connectivity is checked separately by the analyses
+    weak = nx.is_connected(U) if sym else nx.is_weakly_connected(D)
     connected = nx.is_connected(U) if sym else nx.is_strongly_connected(D)
-    bat.vec(net, "connected", [1.0 if doc["connected"] else 0.0], [1.0 if connected else 0.0],
-            conv="undirected: nx.is_connected; directed: nx.is_strongly_connected")
+    bat.vec(net, "connected", [1.0 if doc["connected"] else 0.0], [1.0 if weak else 0.0],
+            conv="undirected: nx.is_connected; directed: nx.is_weakly_connected (Agna convention)")
     bat.vec(net, "geodesics", np.array(doc["geodesics"], float).ravel(), Dm.ravel(),
             conv="nx.all_pairs_shortest_path_length, 0 = unreachable")
     ecc_ref = Dm.max(1)
@@ -170,16 +173,13 @@ def check_network(bat, doc):
             conv="nx.eccentricity (connected); max reachable distance otherwise")
     far = Dm.sum(1)
     bat.vec(net, "fareness", doc["fareness"], far, conv="row sum of distances")
-    if connected:
-        cc = nx.closeness_centrality(G.reverse() if not sym else G)
-        bat.vec(net, "closeness*(n-1)", to_arr(doc["closeness"]) * (n - 1),
-                [cc[i] for i in range(n)],
-                conv="Agna closeness = 1/fareness (outgoing); x(n-1) == nx.closeness_centrality "
-                     "(on G.reverse() for digraphs, since NX uses incoming distance)")
-    else:
-        ref = np.where(far > 0, 1.0 / np.where(far > 0, far, 1), 0.0)
-        bat.vec(net, "closeness(disconnected)", doc["closeness"], ref,
-                note="(reachable-only definition; Agna reports refuse this case)")
+    # 2.2.2: Agna closeness uses the Wasserman-Faust correction, which is
+    # exactly nx.closeness_centrality(wf_improved=True), on every network
+    cc = nx.closeness_centrality(G.reverse() if not sym else G, wf_improved=True)
+    bat.vec(net, "closeness*(n-1)", to_arr(doc["closeness"]) * (n - 1),
+            [cc[i] for i in range(n)],
+            conv="Agna closeness x(n-1) == nx.closeness_centrality(wf_improved=True) "
+                 "(on G.reverse() for digraphs, since NX uses incoming distance)")
     bc = nx.betweenness_centrality(G, normalized=False)
     bref = np.array([bc[i] for i in range(n)]) * (2.0 if sym else 1.0)
     bat.vec(net, "betweenness", doc["betweenness"], bref,
@@ -259,9 +259,11 @@ def check_network(bat, doc):
     for beta in (0.10, 0.05):
         key = f"bonacich_{beta:.2f}"
         if beta * lam >= 1:
-            bat.add(net, key, FAIL if doc.get(key) and not isinstance(doc[key], dict) else WARN, None,
-                    f"beta={beta} >= 1/lambda_max={1/lam:.4f}: series diverges, Agna returns a truncated "
-                    f"value instead of rejecting beta")
+            rejected = not (doc.get(key) and not isinstance(doc[key], dict))
+            bat.add(net, key, PASS if rejected else FAIL, None,
+                    f"beta={beta} >= 1/lambda_max={1/lam:.4f}: the series diverges; "
+                    + ("Agna correctly rejects beta (2.2.2)" if rejected
+                       else "Agna returns a truncated value instead of rejecting beta"))
             continue
         ref = np.linalg.solve(np.eye(n) - beta * Abin, Abin @ np.ones(n))
         bat.vec(net, key, doc[key], ref, rel=1e-4, absl=1e-4,
@@ -312,12 +314,16 @@ def check_network(bat, doc):
                 w = abs(Wnl[i, j]) + abs(Wnl[j, i])
                 if w > 0:
                     Gw.add_edge(i, j, weight=w)
-        co = nx.constraint(Gw, weight="weight") if is_weighted else nx.constraint(U)
+        # 2.2.2: directed data use mutual weights z_ij + z_ji (Burt 1992;
+        # == nx on the DiGraph). The binarised undirected view U is only
+        # equivalent for symmetric binary data.
+        use_mutual = is_weighted or not sym
+        co = nx.constraint(Gw, weight="weight") if use_mutual else nx.constraint(U)
 
         # For effective size: on unweighted graphs, nx.effective_size matches Burt's formula (q != i, j).
         # On weighted graphs, nx's sparse matrix implementation includes the diagonal q=j, whereas
         # Burt (1992, eq 2.9) explicitly requires q != i, j.
-        if is_weighted:
+        if use_mutual:
             Ws = Wnl + Wnl.T
             p = np.zeros((n, n))
             m = np.zeros((n, n))

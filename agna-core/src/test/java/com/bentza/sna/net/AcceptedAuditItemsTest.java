@@ -78,14 +78,13 @@ public class AcceptedAuditItemsTest
         }
 
     @Test
-    public void farenessAndBavelasRefuseDisconnectedNetworks()
+    public void farenessAndBavelasNoteThatOnlyReachablePathsAreUsed()
         {
         Network net = new Network(3);
         net.setValue(1f, 0, 1); // 1 reaches 0, but nobody reaches 2
         AgnaLib lib = new AgnaLib();
-        assertTrue(lib.outFareness(net).contains(
-                " is disconnected"));
-        assertTrue(lib.outBavelas(net).contains(
-                "is disconnected"));
+        // 2.2.1 computes on reachable paths and says so (later versions refuse undefined measures)
+        assertTrue(lib.outFareness(net).contains("is not strongly connected"));
+        assertTrue(lib.outBavelas(net).contains("is not strongly connected"));
         }
     }

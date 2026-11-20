@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.2] - 2026-11-20
+
+Correction release for 2.2.1. It fixes the wrong results and the unsafe input handling found in the post-2.2.1 audit and reproduced on the published 2.2.1. No feature is added; every fix was verified against the 2.2.1 behaviour (see "How this release was verified").
+
+### Fixed: wrong results
+- **`agna metrics` (and the MCP and Python `metrics` calls): distances were computed with a stack (depth-first) instead of a queue (breadth-first).** Geodesic hop counts, eccentricity, diameter, closeness and betweenness were wrong on most networks that contain a cycle. On the bundled samples 2.2.1 was wrong for 8 of 10 networks.
+- **`agna distance FROM TO --out FILE`:** the hop count and path used the same depth-first search (Zachary: Member 15 to Member 4 gave 4 hops, the shortest is 3).
+- **Closeness could exceed its maximum of 1 when some actors could not reach others** (desktop, `agna analyse`, `agna metrics`). Closeness now uses the Wasserman-Faust normalisation (identical on strongly connected networks, always within [0, 1]).
+- **`agna metrics` no longer reports diameter and eccentricity when some actor cannot reach another** (undefined there).
+- **Louvain community detection ran only the first phase** (no aggregation), so modularity was systematically too low (Zachary karate club: Q = 0.361, now 0.416).
+- **Bonacich power centrality returned a truncated, divergent series when beta was at or above 1/lambda-max.** It is now computed exactly, the admissible range is shown, and an inadmissible beta is reported with an explanation instead of garbage. Eigenvector centrality uses a converged solver.
+
+### Clarified
+- **Betweenness counting convention is now stated next to the numbers:** raw betweenness is summed over ordered pairs, so on an undirected network it is twice the NetworkX/igraph unnormalised value. The `analyse` report has a footnote, `metrics --json` has an additive `conventions.betweenness` field, and `metrics` CSV prints a note on standard error. No value changed.
+
+- **Citation DOI:** the software, the Help page, `CITATION.cff`, `CITATION.bib` and the README now cite the all-versions Zenodo DOI 10.5281/zenodo.22708198, which always resolves to the latest release; 2.2.1 cited its own version DOI (10.5281/zenodo.24226451).
+
+### Packaging
+- Installers ship exactly the ten sample networks shipped with 2.2.1. The input folder given to `jpackage` is now staged from `packaging/samples-manifest.txt`, so test fixtures from the repository's `samples/` folder (`Chain1.txt`, `Chain2.txt`, `4 full.txt`) can no longer end up in an installer; a unit test guards the manifest.
+
+### Fixed: hangs and data loss
+- **`agna draw` (and image export) never finished for any network file without viewer settings** (`Has Viewer no`, including files written by Agna itself, and most generated networks): a grid step of 0 made the grid loop run forever. The step is now clamped; images are pixel-identical to 2.2.1 wherever 2.2.1 finished.
+- **CSV files with quoted names lost actors.** A name such as `"José ""Pepe"", Jr."` was split at its comma, so 2.2.1 loaded 3 of 4 actors and renamed them 1, 2, 3 without any warning. CSV (and, new, `.tsv`) files are now read as RFC 4180: quoted names, `;` or tab separators and a byte-order mark all work. Files that loaded before load identically.
+
+### Fixed: input handling
+- **Corrupt input was accepted as a valid network.** Random bytes, text or NaN cells, non-square or ragged CSV, Pajek arcs to missing vertices and header-less `.agn` files all loaded with exit code 0. A new integrity check refuses them (exit code 2) with a message naming the problem. `agna validate` lists every issue; `--lenient` loads a damaged file best-effort.
+- **Several `agna analyse` text reports contained only a title and no values** (clustering, transitivity, k-core, triad census, structural holes, connectivity, eigenvector, Bonacich, PageRank). They now print their tables.
+
+### Fixed: command-line contract
+- **`agna generate star --nodes 8` silently created a random network.** The network type may be given as a positional argument; an unknown type or option is an error (exit code 1) with the list of valid types.
+- **`agna matrix --format csv`:** the header row was one column short, so the output could not be re-imported. An empty corner cell is now written, and names that contain the separator are quoted.
+- **Exit codes:** 1 usage error, 2 data error (corrupt or missing file), 3 computation error. Every failure used to exit with 1.
+- **`agna metrics` printed its notes to standard output before the JSON,** which broke machine-readable output. Notes now go to standard error.
+- **`agna validate` JSON:** density is rounded (no float noise such as 0.4000000059604645); integrity issues and parser warnings are listed.
+- **MCP server:** a malformed line now gets a JSON-RPC `-32700` reply and a batch request gets `-32600`, instead of silence.
+
+### How this release was verified
+- **420 unit tests** (273 core, 80 CLI, 67 desktop), including regression tests for every fix.
+- **Differential testing** (`tools/audit/differential.py`, `classify_differences.py`): 1,365 command runs (68 commands on 21 inputs: the bundled samples plus edge-case files) with the unmodified 2.2.1 jar and the 2.2.2 jar. 957 are byte-identical; every other difference was classified by an automatic check into the fixes listed above (title-only reports now filled, closeness bounded, distances corrected, header alignment, additive validation output, Louvain, quoted-name CSV). No unexplained difference remains.
+- **NetworkX parity** (`tools/nx-parity`): 65 designed and real networks, 3,360 checks of degree, distance, centrality, clustering, k-core, eigenvector, Bonacich, PageRank and community indices. 2.2.1: 3,280 pass, 68 fail. 2.2.2: 3,353 pass, 0 fail, 5 warnings (Louvain is heuristic and may differ from the reference by a small modularity gap), 2 skipped (degenerate eigenvectors). Nothing that passed on 2.2.1 fails on 2.2.2.
+- **Robustness battery** (`tools/audit/cli_battery.py`, 667 runs on valid, edge-case and hostile files): stack traces 8 to 0; JSON with a text prefix 18 to 0; malformed files accepted 115 to 28 (only `dup_names.csv` and `truncated.agn`, which still load); timeouts 3 to 0.
+- **Rendering:** 16 of 16 drawn images are pixel-identical to 2.2.1 on the inputs where 2.2.1 finished.
+
+### Known limitations that remain
+- Fareness, Bavelas-Leavitt centrality and eccentricity in the desktop reports on networks that are not strongly connected are computed on reachable paths only, with a note.
+- Two kinds of damaged file are still accepted: a CSV with duplicate actor names (`dup_names.csv`) and a `.agn` file cut off after its matrix (`truncated.agn`).
+- Performance on very large networks (several thousand actors) is unchanged: dense O(n^3) algorithms remain.
+
+---
+
 ## [2.2.1] - 2026-11-14
 
 ### Added

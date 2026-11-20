@@ -80,7 +80,7 @@ public final class CliMetrics
             queue.add(s);
             while (!queue.isEmpty())
                 {
-                int v = queue.remove(queue.size() - 1);
+                int v = queue.remove(0);  // 2.2.2: FIFO (breadth-first); the stack used in 2.2.1 gave wrong distances
                 for (int w = 0; w < n; w++)
                     {
                     if (dist[w] == -1 && net.getValue(v, w) != 0f)
@@ -120,7 +120,7 @@ public final class CliMetrics
                 }
             while (!queue.isEmpty())
                 {
-                int v = queue.remove(queue.size() - 1);
+                int v = queue.remove(0);  // 2.2.2: FIFO order is required by Brandes accumulation
                 order.add(v);
                 for (int w = 0; w < n; w++)
                     {
@@ -182,39 +182,58 @@ public final class CliMetrics
         rows.add(row("density", "", "", density));
 
         int[][] hops = hops(net);
-        if (connected)
+        // 2.2.2: "0" in hops means "no directed path". Diameter and eccentricity are only defined
+        // when every actor can reach every other actor (strong connectivity).
+        boolean strong = true;
+        for (int i = 0; i < n && strong; i++)
             {
-            int diameter = 0;
-            for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
                 {
-                for (int j = 0; j < n; j++)
+                if (i != j && hops[i][j] == 0)
                     {
-                    diameter = Math.max(diameter, hops[i][j]);
+                    strong = false;
+                    break;
                     }
                 }
-            rows.add(row("diameter", "", "", diameter));
-            for (int i = 0; i < n; i++)
+            }
+        if (connected)
+            {
+            if (strong)
                 {
-                // eccentricity: longest reachable path (isolates: 0)
-                int ecc = 0;
-                for (int j = 0; j < n; j++)
+                int diameter = 0;
+                for (int i = 0; i < n; i++)
                     {
-                    ecc = Math.max(ecc, hops[i][j]);
+                    for (int j = 0; j < n; j++)
+                        {
+                        diameter = Math.max(diameter, hops[i][j]);
+                        }
                     }
-                rows.add(row("eccentricity", node(net, i), "", ecc));
+                rows.add(row("diameter", "", "", diameter));
+                for (int i = 0; i < n; i++)
+                    {
+                    int ecc = 0;
+                    for (int j = 0; j < n; j++)
+                        {
+                        ecc = Math.max(ecc, hops[i][j]);
+                        }
+                    rows.add(row("eccentricity", node(net, i), "", ecc));
+                    }
                 }
             for (int i = 0; i < n; i++)
                 {
                 double reach = 0.0;
+                int reached = 0;
                 for (int j = 0; j < n; j++)
                     {
                     if (i != j && hops[i][j] > 0)
                         {
                         reach += hops[i][j];
+                        reached++;
                         }
                     }
-                // closeness: (n-1) / sum of reachable distances
-                double closeness = reach > 0 ? (n - 1.0) / reach : 0.0;
+                // closeness (Wasserman-Faust): (r / (n-1)) * (r / sum of distances to the r reachable actors);
+                // identical to (n-1)/sum on strongly connected networks, and always within [0, 1]
+                double closeness = reach > 0 ? ((double) reached / (n - 1.0)) * (reached / reach) : 0.0;
                 rows.add(row("closeness", node(net, i), "", closeness));
                 }
             float[] bet = betweenness(net);
@@ -314,6 +333,12 @@ public final class CliMetrics
         if (topN > 0)
             {
             root.put("topN", topN);
+            }
+
+        // 2.2.2: counting convention of raw betweenness (additive field; the CSV output is unchanged)
+        if (wanted == null || wanted.contains("betweenness"))
+            {
+            root.putObject("conventions").put("betweenness", "Raw betweenness is summed over ordered pairs (A to B and B to A are counted separately), so on an undirected network it is twice the unnormalised value reported by NetworkX or igraph; divide by 2 to compare. Normalised values are not affected.");
             }
 
         List<String> rawRows = csv(net, wanted);

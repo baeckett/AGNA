@@ -4,13 +4,14 @@
 # Requires JDK 17+ and the distro packaging tools (dpkg-deb for deb,
 # rpmbuild for rpm - install with: sudo apt-get install -y fakeroot rpm).
 set -euo pipefail
-AGNA_JAR="${AGNA_JAR:-agna-desktop/target/agna-2.2.1.jar}"
+AGNA_JAR="${AGNA_JAR:-agna-desktop/target/agna-2.2.2.jar}"
 [ -f "$AGNA_JAR" ] || { echo "jar not found: $AGNA_JAR (run: mvn -pl agna-desktop -am package -DskipTests)" >&2; exit 1; }
 TMP="$(mktemp -d)"; OUT="${OUT:-$(pwd)/installers-out}"; mkdir -p "$TMP/pkg" "$OUT"
-cp "$AGNA_JAR" "$TMP/pkg/agna-2.2.1.jar"
-ARGS=( --name agna --app-version 2.2.1 --vendor "Marius Ion Bența"
+cp "$AGNA_JAR" "$TMP/pkg/agna-2.2.2.jar"
+"$(dirname "$0")/stage-samples.sh" "$TMP/pkg/samples"   # exactly the 2.2.1 sample set
+ARGS=( --name agna --app-version 2.2.2 --vendor "Marius Ion Bența"
        --description "AGNA - Applied Graph and Network Analysis Open Source"
-       --input "$TMP/pkg" --main-jar agna-2.2.1.jar
+       --input "$TMP/pkg" --main-jar agna-2.2.2.jar
        --main-class com.bentza.sna.Agna --dest "$OUT" )
 case "${1:-deb}" in
   deb)  jpackage --type deb "${ARGS[@]}" ;;

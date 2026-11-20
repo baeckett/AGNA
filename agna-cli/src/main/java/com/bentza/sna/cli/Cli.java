@@ -191,14 +191,90 @@ public final class Cli
                 + "agn text)\n";
         }
 
+    // ---- 2.2.2: input integrity ------------------------------------------
+
+    /** Raised when the input file is structurally corrupt (exit code 2). */
+    public static final class InputIntegrityException extends Exception
+        {
+        private static final long serialVersionUID = 1L;
+        public final List<com.bentza.sna.io.InputIntegrityChecker.Issue> issues;
+
+        InputIntegrityException(String file, List<com.bentza.sna.io.InputIntegrityChecker.Issue> issues)
+            {
+            super(describe(file, issues));
+            this.issues = issues;
+            }
+
+        private static String describe(String file, List<com.bentza.sna.io.InputIntegrityChecker.Issue> issues)
+            {
+            StringBuilder sb = new StringBuilder("invalid network data in " + file + ":");
+            for (com.bentza.sna.io.InputIntegrityChecker.Issue i : issues)
+                if (i.severity == com.bentza.sna.io.InputIntegrityChecker.Severity.ERROR)
+                    sb.append(" ").append(i.message);
+            sb.append(" (run 'agna validate ").append(file)
+                    .append("' for details, or add --lenient to load it anyway)");
+            return sb.toString();
+            }
+        }
+
+    private List<com.bentza.sna.io.InputIntegrityChecker.Issue> lastIssues = new ArrayList<>();
+    private List<String> lastParseWarnings = new ArrayList<>();
+    private boolean lenient = false;
+    private boolean integrityAdvisory = false;
+
+    /** Integrity issues found by the last open() call. */
+    public List<com.bentza.sna.io.InputIntegrityChecker.Issue> getLastIssues()
+        {
+        return lastIssues;
+        }
+
+    /** Parser warnings logged during the last open() call. */
+    public List<String> getLastParseWarnings()
+        {
+        return lastParseWarnings;
+        }
+
+    /** When true, open() records integrity errors instead of refusing the file (used by validate). */
+    public void setIntegrityAdvisory(boolean advisory)
+        {
+        this.integrityAdvisory = advisory;
+        }
+
+    public void setLenient(boolean lenient)
+        {
+        this.lenient = lenient;
+        }
+
+    private void checkIntegrity(String file, String text, String ext) throws InputIntegrityException
+        {
+        lastIssues = com.bentza.sna.io.InputIntegrityChecker.check(text, ext);
+        if (!lenient && !integrityAdvisory
+                && com.bentza.sna.io.InputIntegrityChecker.hasErrors(lastIssues))
+            {
+            throw new InputIntegrityException(file, lastIssues);
+            }
+        }
+
     public FullNet open(String file) throws Exception
         {
         FullNet full = new FullNet();
         String ext = extOf(file);
+        lastIssues = new ArrayList<>();
+        lastParseWarnings = new ArrayList<>();
         if ("-".equals(file))
             {
             byte[] bytes = in.readAllBytes();
-            full.readNetwork(IOUtils.utf8BytesToText(bytes), stdinFormat);
+            String text = IOUtils.utf8BytesToText(bytes);
+            checkIntegrity("<stdin>", text, stdinFormat != null ? stdinFormat : "agn");
+            com.bentza.sna.AgnaLog.startCapture();
+            try
+                {
+                full.readNetwork(text, stdinFormat);
+                }
+            finally
+                {
+                lastParseWarnings = new ArrayList<>(com.bentza.sna.AgnaLog.stopCapture());
+                }
             return full;
             }
         File targetFile = new File(file);
@@ -214,13 +290,34 @@ public final class Cli
                     }
                 }
             }
-        if ("xls".equals(ext) || "xlsx".equals(ext))
+        if (!targetFile.exists())
             {
-            full.readExcelFile(targetFile, ext);
-            } else
+            throw new java.io.FileNotFoundException("file does not exist: " + file);
+            }
+        com.bentza.sna.AgnaLog.startCapture();
+        try
             {
-            byte[] bytes = Files.readAllBytes(targetFile.toPath());
-            full.readNetwork(IOUtils.utf8BytesToText(bytes), ext);
+            if ("xls".equals(ext) || "xlsx".equals(ext))
+                {
+                full.readExcelFile(targetFile, ext);
+                } else
+                {
+                byte[] bytes = Files.readAllBytes(targetFile.toPath());
+                String text = IOUtils.utf8BytesToText(bytes);
+                checkIntegrity(file, text, ext);
+                full.readNetwork(text, ext);
+                }
+            }
+        finally
+            {
+            lastParseWarnings = new ArrayList<>(com.bentza.sna.AgnaLog.stopCapture());
+            }
+        if (full.getNetwork() == null)
+            {
+            throw new InputIntegrityException(file, java.util.Collections.singletonList(
+                    new com.bentza.sna.io.InputIntegrityChecker.Issue(
+                            com.bentza.sna.io.InputIntegrityChecker.Severity.ERROR, "NO_NETWORK",
+                            "the file could be read but contains no network.")));
             }
         return full;
         }
@@ -293,6 +390,19 @@ public final class Cli
 
     public int run(String[] args) throws Exception
         {
+        // 2.2.2: global flags
+        if (args != null)
+            {
+            List<String> kept = new ArrayList<>();
+            for (String a : args)
+                {
+                if ("--lenient".equals(a))
+                    lenient = true;
+                else
+                    kept.add(a);
+                }
+            args = kept.toArray(new String[0]);
+            }
         if (args.length == 0 || "--help".equals(args[0]))
             {
             out.print(help());
@@ -1601,6 +1711,14 @@ public final class Cli
         return "circular";
         }
 
+    private static final java.util.Set<String> GENERATE_TYPES = new java.util.HashSet<>(java.util.Arrays.asList(
+            "random", "empty", "isolated", "star", "circular", "ring", "full", "clique",
+            "random-connected", "connected", "random-weighted", "weighted",
+            "square-lattice", "square", "grid", "beehive", "hexagonal", "hexagonal-lattice", "honeycomb",
+            "hexagram", "hexagram-lattice", "star-of-david", "watts-strogatz", "small-world", "ws",
+            "barabasi-albert", "scale-free", "ba", "sbm", "stochastic-block-model", "community",
+            "linear", "chain", "path", "tree", "hierarchical", "organigram", "erdos-renyi", "er"));
+
     private int generate(String[] args) throws Exception
         {
         String outFile = null;
@@ -1623,6 +1741,7 @@ public final class Cli
         double pOut = 0.05;
         int branching = 2;
         boolean lateral = false;
+        boolean typeGiven = false;
 
         for (int i = 1; i < args.length; i++)
             {
@@ -1636,6 +1755,7 @@ public final class Cli
                 } else if ("--type".equals(a) && i + 1 < args.length)
                 {
                 type = args[++i].toLowerCase();
+                typeGiven = true;
                 } else if ("--seed".equals(a) && i + 1 < args.length)
                 {
                 seed = Long.parseLong(args[++i]);
@@ -1693,6 +1813,16 @@ public final class Cli
                 } else if ("--lateral".equals(a))
                 {
                 lateral = true;
+                } else if (!a.startsWith("-") && !typeGiven)
+                {
+                // 2.2.2: 'agna generate star --nodes 8 ...' (positional type)
+                type = a.toLowerCase();
+                typeGiven = true;
+                } else
+                {
+                // 2.2.2: unknown options are an error, not silently ignored
+                out.println("agna generate: unknown option '" + a + "'. Run 'agna --help' for the generate options.");
+                return 1;
                 }
             }
         if (outFile == null)
@@ -1707,6 +1837,12 @@ public final class Cli
             return 1;
             }
 
+        if (!GENERATE_TYPES.contains(type))
+            {
+            out.println("agna generate: unknown network type '" + type + "'. Known types: "
+                    + String.join(", ", new java.util.TreeSet<>(GENERATE_TYPES)));
+            return 1;
+            }
         Network net;
         if ("empty".equals(type) || "isolated".equals(type))
             {
@@ -1776,6 +1912,15 @@ public final class Cli
         return 0;
         }
 
+    private static String cell(String name, String sep)
+        {
+        if (name == null)
+            return "";
+        if (name.contains(sep) || name.contains("\"") || name.contains("\n"))
+            return "\"" + name.replace("\"", "\"\"") + "\"";
+        return name;
+        }
+
     private int matrix(String[] args) throws Exception
         {
         String file = null;
@@ -1805,18 +1950,17 @@ public final class Cli
         Network net = open(file).getNetwork();
         int n = net.getSize();
         StringBuilder sb = new StringBuilder(128 + 8 * n * n);
+        // 2.2.2: empty corner cell so the header lines up with the data columns and the output
+        // re-imports as a labelled matrix; names containing the separator are quoted
         for (int j = 0; j < n; j++)
             {
-            if (j > 0)
-                {
-                sb.append(sep);
-                }
-            sb.append(net.getActor(j).getName());
+            sb.append(sep);
+            sb.append(cell(net.getActor(j).getName(), sep));
             }
         sb.append('\n');
         for (int i = 0; i < n; i++)
             {
-            sb.append(net.getActor(i).getName());
+            sb.append(cell(net.getActor(i).getName(), sep));
             for (int j = 0; j < n; j++)
                 {
                 sb.append(sep).append(fmt(net.getValue(i, j)));
@@ -2099,9 +2243,47 @@ public final class Cli
                 || wanted.contains("betweenness");
         if (wantsDistance && !CliMetrics.isConnected(net))
             {
-            out.println("note: the network is disconnected; the "
+            System.err.println("note: the network is disconnected; the "
                     + "distance-based measures (diameter, eccentricity, "
                     + "closeness, betweenness) are omitted");
+            }
+        else if (wantsDistance)
+            {
+            // 2.2.2: diameter and eccentricity need every actor to reach every other actor
+            Network chk = net;
+            boolean strongNote = false;
+            for (int a = 0; a < chk.getSize() && !strongNote; a++)
+                {
+                boolean[] seen = new boolean[chk.getSize()];
+                java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<>();
+                q.add(a);
+                seen[a] = true;
+                int cnt = 1;
+                while (!q.isEmpty())
+                    {
+                    int v = q.poll();
+                    for (int w = 0; w < chk.getSize(); w++)
+                        {
+                        if (!seen[w] && chk.getValue(v, w) != 0f)
+                            {
+                            seen[w] = true;
+                            cnt++;
+                            q.add(w);
+                            }
+                        }
+                    }
+                if (cnt < chk.getSize()) strongNote = true;
+                }
+            if (strongNote)
+                {
+                System.err.println("note: some actors cannot reach every other actor (directed paths); diameter and "
+                        + "eccentricity are undefined and omitted, closeness uses the Wasserman-Faust normalisation");
+                }
+            }
+        if (!"json".equals(format) && (wanted == null || wanted.contains("betweenness")))
+            {
+            System.err.println("note: raw betweenness is summed over ordered pairs; on an undirected network it is twice "
+                    + "the NetworkX/igraph unnormalised value (divide by 2 to compare).");
             }
         String text = "json".equals(format) ? CliMetrics.json(net, wanted, topN)
                 : String.join("\n", CliMetrics.csv(net, wanted)) + "\n";
@@ -2180,7 +2362,7 @@ public final class Cli
         queue.add(from);
         while (!queue.isEmpty())
             {
-            int v = queue.remove(queue.size() - 1);
+            int v = queue.remove(0);
             for (int w = 0; w < n; w++)
                 {
                 if (dist[w] == -1 && net.getValue(v, w) != 0f)

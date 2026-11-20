@@ -52,13 +52,41 @@ public final class AgnaLog
         {
         }
 
+    // 2.2.2: per-thread capture of warnings so callers (CLI validate, MCP,
+    // Workbench open) can surface parser problems to the user instead of
+    // only printing them to stderr.
+    private static final ThreadLocal<java.util.List<String>> CAPTURE = new ThreadLocal<>();
+
+    /** Starts collecting warnings logged on the current thread. */
+    public static void startCapture()
+        {
+        CAPTURE.set(new java.util.ArrayList<>());
+        }
+
+    /** Stops collecting and returns the warnings logged since startCapture(). */
+    public static java.util.List<String> stopCapture()
+        {
+        java.util.List<String> l = CAPTURE.get();
+        CAPTURE.remove();
+        return l == null ? java.util.Collections.emptyList() : l;
+        }
+
+    private static void captured(String message)
+        {
+        java.util.List<String> l = CAPTURE.get();
+        if (l != null && message != null && l.size() < 1000)
+            l.add(message);
+        }
+
     public static void warn(String message)
         {
+        captured(message);
         LOGGER.warning(message);
         }
 
     public static void warn(String message, Throwable thrown)
         {
+        captured(message + (thrown != null ? " (" + thrown + ")" : ""));
         if (thrown == null)
             {
             LOGGER.warning(message);

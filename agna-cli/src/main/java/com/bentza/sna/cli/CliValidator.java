@@ -38,6 +38,10 @@ public final class CliValidator {
         public List<String> isolates = new ArrayList<>();
         public List<String> outsiders = new ArrayList<>();
         public List<String> diagnostics = new ArrayList<>();
+        /** 2.2.2: structural integrity issues ("SEVERITY [CODE] message"). */
+        public List<com.bentza.sna.io.InputIntegrityChecker.Issue> integrity = new ArrayList<>();
+        /** 2.2.2: warnings logged by the format parser while loading. */
+        public List<String> parserWarnings = new ArrayList<>();
         public String error;
         public String hint;
 
@@ -50,6 +54,7 @@ public final class CliValidator {
                 if (hint != null) {
                     sb.append("Hint:  ").append(hint).append("\n");
                 }
+                appendIssues(sb);
                 return sb.toString();
             }
 
@@ -66,6 +71,7 @@ public final class CliValidator {
             if (!outsiders.isEmpty()) {
                 sb.append("Outsiders:   ").append(outsiders.size()).append(" (").append(String.join(", ", outsiders)).append(")\n");
             }
+            appendIssues(sb);
             if (diagnostics.isEmpty()) {
                 sb.append("Diagnostics: None (Clean structure)\n");
             } else {
@@ -77,6 +83,32 @@ public final class CliValidator {
             return sb.toString();
         }
 
+        private void appendIssues(StringBuilder sb) {
+            if (!integrity.isEmpty()) {
+                sb.append("Integrity:\n");
+                for (com.bentza.sna.io.InputIntegrityChecker.Issue i : integrity) {
+                    sb.append("  - ").append(i.severity).append(" [").append(i.code).append("] ")
+                      .append(i.message).append("\n");
+                }
+            }
+            if (!parserWarnings.isEmpty()) {
+                sb.append("Parser warnings:\n");
+                for (String w : parserWarnings) sb.append("  - ").append(w.replace("\n", " ").trim()).append("\n");
+            }
+        }
+
+        private void putIssues(ObjectMapper mapper, ObjectNode root) {
+            ArrayNode ia = root.putArray("integrity");
+            for (com.bentza.sna.io.InputIntegrityChecker.Issue i : integrity) {
+                ObjectNode o = ia.addObject();
+                o.put("severity", i.severity.name());
+                o.put("code", i.code);
+                o.put("message", i.message);
+            }
+            ArrayNode pw = root.putArray("parserWarnings");
+            for (String w : parserWarnings) pw.add(w.replace("\n", " ").trim());
+        }
+
         public String toJson() {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode root = mapper.createObjectNode();
@@ -85,6 +117,7 @@ public final class CliValidator {
             if (!valid) {
                 root.put("error", error != null ? error : "Validation failed");
                 if (hint != null) root.put("hint", hint);
+                putIssues(mapper, root);
                 try {
                     return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
                 } catch (Exception e) {
@@ -95,7 +128,9 @@ public final class CliValidator {
             root.put("format", format != null ? format : "");
             root.put("nodes", nodes);
             root.put("edges", edges);
-            root.put("density", density);
+            // 2.2.2: densities are computed in float; report them rounded so
+            // JSON does not show float noise such as 0.4000000059604645
+            root.put("density", Math.round(density * 1e6) / 1e6);
             root.put("directed", directed);
             root.put("weighted", weighted);
             root.put("connected", connected);
@@ -110,6 +145,9 @@ public final class CliValidator {
 
             ArrayNode diag = root.putArray("diagnostics");
             for (String s : diagnostics) diag.add(s);
+
+            putIssues(mapper, root);
+
 
             try {
                 return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
@@ -149,12 +187,29 @@ public final class CliValidator {
         }
 
         FullNet full;
+        cli.setIntegrityAdvisory(true);
         try {
             full = cli.open(filePath);
         } catch (Exception e) {
             report.valid = false;
+            report.integrity.addAll(cli.getLastIssues());
+            report.parserWarnings.addAll(cli.getLastParseWarnings());
             report.error = "Failed to parse network file: " + e.getMessage();
             report.hint = "Check file encoding and syntax. Supported formats: agn, csv, txt, net (Pajek), graphml, gml, graphson, dl, xls.";
+            return report;
+        } finally {
+            cli.setIntegrityAdvisory(false);
+        }
+        report.integrity.addAll(cli.getLastIssues());
+        report.parserWarnings.addAll(cli.getLastParseWarnings());
+        if (com.bentza.sna.io.InputIntegrityChecker.hasErrors(report.integrity)) {
+            report.valid = false;
+            StringBuilder em = new StringBuilder("Invalid network data:");
+            for (com.bentza.sna.io.InputIntegrityChecker.Issue i : report.integrity) {
+                if (i.severity == com.bentza.sna.io.InputIntegrityChecker.Severity.ERROR) em.append(' ').append(i.message);
+            }
+            report.error = em.toString();
+            report.hint = "Fix the listed problems in the source file. Other commands refuse this file unless --lenient is given.";
             return report;
         }
 
@@ -253,6 +308,7 @@ public final class CliValidator {
         } else if (report.density == 0.0) {
             report.diagnostics.add("Graph has zero edges.");
         }
+
 
         return report;
     }

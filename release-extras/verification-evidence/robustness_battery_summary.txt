@@ -1,0 +1,2 @@
+2.2.1: 667 runs {'timeouts': 3, 'malformed files accepted': 115, 'stack traces': 8, 'JSON with text prefix': 18}
+2.2.2 (final jar): 667 runs {'malformed files accepted': 28}

@@ -1572,15 +1572,16 @@ public class NodeArea extends JButton implements MouseListener,
 
     public void paintGrids(Graphics2D g)
         {
+        // 2.2.2: a grid step of 0 (or a tiny area) made this loop run forever; headless `agna draw` hung
+        if (g == null || area_width <= 10 || area_width <= 10) return;
+        final int step = Math.max(10, this.getGridSpace());
         int contor = 0;
-        final int step = this.getGridSpace();
-        int text_transparency = grid_transparency;
+        int text_transparency = Math.min(255, Math.max(10, grid_transparency));
+        if (grid_color == null) grid_color = new Color(10, 210, 10, text_transparency);
         grid_color = new Color(grid_color.getRed(), grid_color.getGreen(),
-                grid_color.getBlue(), grid_transparency);
-        text_transparency = grid_transparency + 25;
-        if (text_transparency > 255)
-            text_transparency = 255;
-        Color grid_names_color = new Color(210, 10, 10, text_transparency);
+                grid_color.getBlue(), text_transparency);
+        int names_transparency = Math.min(255, text_transparency + 25);
+        Color grid_names_color = new Color(210, 10, 10, names_transparency);
         for (int gi = 0; gi < area_width - 1; gi += step)
             {
             g.setColor(grid_color);
