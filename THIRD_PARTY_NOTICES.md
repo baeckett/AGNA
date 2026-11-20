@@ -56,8 +56,7 @@ included in the distributed jars or installers.
     events, commonly analyzed as a two-mode affiliation network. Source:
     Davis, A., Gardner, B. B., & Gardner, M. R. (1941). *Deep South: A Social
     Anthropological Study of Caste and Class*. University of Chicago Press.
-- These datasets are included with attribution to their original sources.
-  Redistribution terms may depend on the original source or the particular
+- Redistribution terms may depend on the original source or the particular
   distributor from which a copy was obtained; users are responsible for
   reviewing and complying with applicable terms.
 
