@@ -40,9 +40,6 @@ included in the distributed jars or installers.
 
 ## Bundled content from the original distribution
 
-- The example networks under `samples/` and the node-face/help assets are
-  part of the original AGNA distribution by Marius Ion Bența (2001-2005)
-  and are carried over unchanged.
 - Icons, splash artwork, and the website are created for this project and
   are licensed under Apache License 2.0 with the project.
 - The historical paper *Studying Communication Networks with AGNA 2.1*
