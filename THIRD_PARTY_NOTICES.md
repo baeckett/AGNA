@@ -45,6 +45,21 @@ included in the distributed jars or installers.
 - The historical paper *Studying Communication Networks with AGNA 2.1*
   (Bența, 2005) is attached to the release as a separate asset (CC BY 4.0
   per its Zenodo record) and is not part of the source distribution.
+- Two classic example datasets are bundled for demonstration, testing, and
+  educational use:
+  - **Zachary Karate Club** — social ties among 34 members of a university
+    karate club. Source: Zachary, W. W. (1977). *An information flow model
+    for conflict and fission in small groups*. *Journal of Anthropological
+    Research*, 33(4), 452–473.
+    https://doi.org/10.1086/jar.33.4.3629752
+  - **Davis Southern Women** — attendance by 18 Southern women at 14 social
+    events, commonly analyzed as a two-mode affiliation network. Source:
+    Davis, A., Gardner, B. B., & Gardner, M. R. (1941). *Deep South: A Social
+    Anthropological Study of Caste and Class*. University of Chicago Press.
+- These datasets are included with attribution to their original sources.
+  Redistribution terms may depend on the original source or the particular
+  distributor from which a copy was obtained; users are responsible for
+  reviewing and complying with applicable terms.
 
 ## Keeping this document accurate
 
