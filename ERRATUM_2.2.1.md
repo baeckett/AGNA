@@ -28,7 +28,7 @@ Results on connected (strongly connected) networks are correct.
 ## Versions
 Affected: 2.1.3 to 2.2.1. Fixed: 2.2.2.
 
-## Other bugs in 2.2.1 (also fixed in 2.2.2)
+## Other defects in 2.2.1 (also fixed in 2.2.2)
 - Corrupt files (random bytes, NaN or text cells, ragged or non-square matrices, header-less `.agn`) were accepted as valid networks.
 - Several `agna analyse` text reports (clustering, transitivity, k-core, triads, structural holes, connectivity, eigenvector, Bonacich, PageRank) printed only a title.
 - Louvain modularity was too low (single phase); Bonacich power was wrong for beta at or above 1/lambda-max.
