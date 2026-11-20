@@ -56,7 +56,13 @@ included in the distributed jars or installers.
     events, commonly analyzed as a two-mode affiliation network. Source:
     Davis, A., Gardner, B. B., & Gardner, M. R. (1941). *Deep South: A Social
     Anthropological Study of Caste and Class*. University of Chicago Press.
-- Redistribution terms may depend on the original source or the particular
+  - **Padgett Florentine Families** — a multiplex network of marriage and
+  business ties among 16 Renaissance Florentine families. Source:
+  Padgett, J. F., & Ansell, C. K. (1993). *Robust Action and the Rise of
+  the Medici, 1400–1434*. *American Journal of Sociology*, 98(6),
+  1259–1319. https://doi.org/10.1086/230190
+- These datasets are included with attribution to their original sources.
+  Redistribution terms may depend on the original source or the particular
   distributor from which a copy was obtained; users are responsible for
   reviewing and complying with applicable terms.
 
