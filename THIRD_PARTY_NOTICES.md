@@ -45,7 +45,7 @@ included in the distributed jars or installers.
 - The historical paper *Studying Communication Networks with AGNA 2.1*
   (Bența, 2005) is attached to the release as a separate asset (CC BY 4.0
   per its Zenodo record) and is not part of the source distribution.
-- Two classic example datasets are bundled for demonstration, testing, and
+- Three classic example datasets are bundled for demonstration, testing, and
   educational use:
   - **Zachary Karate Club** — social ties among 34 members of a university
     karate club. Source: Zachary, W. W. (1977). *An information flow model
